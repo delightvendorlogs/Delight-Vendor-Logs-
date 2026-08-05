@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Delight Vendor Logs Dashboard</title>
+<link rel="stylesheet" href="style.css">
+  <script src="script.js"></script>
+</head>
+
+<body>
+
+<header>
+  <h1>Delight Vendor Logs</h1>
+  <button onclick="openMenu()">☰</button>
+</header>
+
+<h2>Wallet Balance</h2>
+<p>₦0.00</p>
+
+<h2>Latest Services</h2>
+
+<div>
+  <h3>Service 1</h3>
+  <p>Price: ₦0</p>
+  <button>Buy Now</button>
+</div>
+
+<div>
+  <h3>Service 2</h3>
+  <p>Price: ₦0</p>
+  <button>Buy Now</button>
+</div>
+
+<h2>More Services</h2>
+<button onclick="window.location.href='services.html'">
+  View All services
+</button>
+<div id="menu" style="display:none;">
+
+<h3>Menu</h3>
+
+<p onclick="window.location.href='profile.html'">
+  Profile
+</p>
+<p onclick="window.location.href='wallet.html'">Fund Wallet</p>
+<p onclick="window.location.href='transactions.html'">
+  Transactions
+</p>
+<p onclick="window.location.href='purchases.html'">
+  My Purchases
+</p>
+<p onclick="window.location.href='pending.html'">
+  Pending Orders
+</p>
+<p>Settings</p>
+<p>
+  <a href="https://wa.me/2347015908401" target="_blank">
+    WhatsApp Support
+  </a>
+</p>
+<p onclick="closeMenu()">Close</p>
+
+</div>
+</body>
+</html>

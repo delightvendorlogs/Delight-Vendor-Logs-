@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Create Account - Delight Vendor Logs</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1>Create Account</h1>
+
+<form id="registerForm">
+
+  <label>Name</label>
+  <br>
+  <input id="name" type="text" placeholder="Enter your name" required>
+
+  <br><br>
+
+  <label>Email</label>
+  <br>
+  <input id="email" type="email" placeholder="Enter your email" required>
+
+  <br><br>
+
+  <label>Password</label>
+  <br>
+  <input id="password" type="password" placeholder="Create a password" required>
+
+  <br><br>
+
+  <label>Confirm Password</label>
+  <br>
+  <input id="confirmPassword" type="password" placeholder="Confirm your password" required>
+
+  <br><br>
+
+  <button type="submit">Create Account</button>
+
+</form>
+
+<p id="message"></p>
+
+<br>
+
+<button onclick="window.location.href='login.html'">
+  Already have an account? Login
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL = "https://hkfhehbhmucymusaytoe.supabase.co";
+const SUPABASE_KEY = "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+document.getElementById("registerForm").addEventListener("submit", async function(event) {
+
+  event.preventDefault();
+
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+  const message = document.getElementById("message");
+
+  if (password !== confirmPassword) {
+    message.textContent = "Passwords do not match.";
+    return;
+  }
+
+  const { data, error } = await supabaseClient.auth.signUp({
+    email: email,
+    password: password,
+    options: {
+      data: {
+        name: name
+      }
+    }
+  });
+
+  if (error) {
+    message.textContent = error.message;
+    return;
+  }
+
+  message.textContent = "Account created! Check your email to confirm your account.";
+
+});
+
+</script>
+
+</body>
+
+</html>
