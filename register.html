@@ -79,9 +79,11 @@ document.getElementById("registerForm").addEventListener("submit", async functio
     email: email,
     password: password,
     options: {
-      data: {
-        name: name
-      }
+  data: {
+    name: name
+  },
+  emailRedirectTo: "https://delightvendorlogs.github.io/Delight-Vendor-Logs-/auth-callback.html"
+}
     }
   });
 
