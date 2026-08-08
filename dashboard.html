@@ -1,41 +1,77 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
   <title>Delight Vendor Logs Dashboard</title>
 
   <link rel="stylesheet" href="style.css">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script src="script.js"></script>
+
 </head>
 
 <body>
 
 <header>
+
   <h1>Delight Vendor Logs</h1>
+
   <button onclick="openMenu()">☰</button>
+
 </header>
 
 
-<h2>Wallet Balance</h2>
-<p id="walletBalance">₦0.00</p>
+<main>
+
+  <!-- WALLET -->
+
+  <section>
+
+    <h2>Wallet Balance</h2>
+
+    <p id="walletBalance">₦0.00</p>
+
+  </section>
 
 
-<h2>Latest Services</h2>
+  <!-- LATEST SERVICES -->
 
-<div id="products">
+  <section>
 
-  <p>Loading products...</p>
+    <h2>Latest Services</h2>
 
-</div>
+    <div id="products">
+
+      <p>Loading services...</p>
+
+    </div>
+
+  </section>
 
 
-<h2>More Services</h2>
+  <!-- MORE SERVICES -->
 
-<button onclick="window.location.href='services.html'">
-  View All Services
-</button>
+  <section>
+
+    <h2>More Services</h2>
+
+    <button
+      onclick="window.location.href='services.html'">
+      View All Services
+    </button>
+
+  </section>
+
+</main>
 
 
 <!-- MENU -->
@@ -56,7 +92,7 @@
     Transactions
   </p>
 
-  <p onclick="window.location.href='purchases.html'">
+  <p onclick="window.location.href='purchase.html'">
     My Purchases
   </p>
 
@@ -85,10 +121,6 @@
 
 <script>
 
-// ==============================
-// SUPABASE
-// ==============================
-
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
 
@@ -103,7 +135,7 @@ const supabaseClient =
 
 
 // ==============================
-// LOAD PRODUCTS
+// LOAD LATEST SERVICES
 // ==============================
 
 async function loadProducts() {
@@ -129,6 +161,7 @@ async function loadProducts() {
       "<p>Unable to load services.</p>";
 
     return;
+
   }
 
 
@@ -138,6 +171,7 @@ async function loadProducts() {
       "<p>No services available yet.</p>";
 
     return;
+
   }
 
 
@@ -154,14 +188,16 @@ async function loadProducts() {
       <h3>${product.name}</h3>
 
       <p>
-        Price: ₦${Number(product.price).toLocaleString()}
+        Price:
+        ₦${Number(product.price).toLocaleString()}
       </p>
 
       <p>
         ${product.description || ""}
       </p>
 
-      <button onclick="buyProduct(${product.id})">
+      <button
+        onclick="buyProduct(${product.id})">
         Buy Now
       </button>
 
@@ -182,18 +218,20 @@ async function loadProducts() {
 
 function buyProduct(productId) {
 
-  alert(
-    "Product selected. Purchase system coming next."
-  );
+  window.location.href =
+    "product.html?id=" + productId;
 
 }
 
 
-// Load products
+// ==============================
+// START
+// ==============================
 
 loadProducts();
 
 </script>
 
 </body>
-  </html>
+
+</html>
