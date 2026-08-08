@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Delight Vendor Logs Dashboard</title>
-<link rel="stylesheet" href="style.css">
+
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="script.js"></script>
 </head>
 
@@ -13,52 +17,183 @@
   <button onclick="openMenu()">☰</button>
 </header>
 
+
 <h2>Wallet Balance</h2>
-<p>₦0.00</p>
+<p id="walletBalance">₦0.00</p>
+
 
 <h2>Latest Services</h2>
 
-<div>
-  <h3>Service 1</h3>
-  <p>Price: ₦0</p>
-  <button>Buy Now</button>
+<div id="products">
+
+  <p>Loading products...</p>
+
 </div>
 
-<div>
-  <h3>Service 2</h3>
-  <p>Price: ₦0</p>
-  <button>Buy Now</button>
-</div>
 
 <h2>More Services</h2>
+
 <button onclick="window.location.href='services.html'">
-  View All services
+  View All Services
 </button>
+
+
+<!-- MENU -->
+
 <div id="menu" style="display:none;">
 
-<h3>Menu</h3>
+  <h3>Menu</h3>
 
-<p onclick="window.location.href='profile.html'">
-  Profile
-</p>
-<p onclick="window.location.href='wallet.html'">Fund Wallet</p>
-<p onclick="window.location.href='transactions.html'">
-  Transactions
-</p>
-<p onclick="window.location.href='purchases.html'">
-  My Purchases
-</p>
-<p onclick="window.location.href='pending.html'">
-  Pending Orders
-</p>
-<p>Settings</p>
-<p>
-  <a href="https://wa.me/2347015908401" target="_blank">
-    WhatsApp Support
-  </a>
-</p>
-<p onclick="closeMenu()">Close</p>
+  <p onclick="window.location.href='profile.html'">
+    Profile
+  </p>
+
+  <p onclick="window.location.href='wallet.html'">
+    Fund Wallet
+  </p>
+
+  <p onclick="window.location.href='transactions.html'">
+    Transactions
+  </p>
+
+  <p onclick="window.location.href='purchases.html'">
+    My Purchases
+  </p>
+
+  <p onclick="window.location.href='pending.html'">
+    Pending Orders
+  </p>
+
+  <p>
+    Settings
+  </p>
+
+  <p>
+    <a
+      href="https://wa.me/2347015908401"
+      target="_blank">
+      WhatsApp Support
+    </a>
+  </p>
+
+  <p onclick="closeMenu()">
+    Close
+  </p>
 
 </div>
+
+
+<script>
+
+// ==============================
+// SUPABASE
+// ==============================
+
+const SUPABASE_URL =
+  "https://hkfhehbhmucymusaytoe.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+// ==============================
+// LOAD PRODUCTS
+// ==============================
+
+async function loadProducts() {
+
+  const productsContainer =
+    document.getElementById("products");
+
+  const { data, error } =
+    await supabaseClient
+      .from("Product")
+      .select("*")
+      .order("id", {
+        ascending: false
+      })
+      .limit(2);
+
+
+  if (error) {
+
+    console.error(error);
+
+    productsContainer.innerHTML =
+      "<p>Unable to load services.</p>";
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    productsContainer.innerHTML =
+      "<p>No services available yet.</p>";
+
+    return;
+  }
+
+
+  productsContainer.innerHTML = "";
+
+
+  data.forEach(function(product) {
+
+    const productBox =
+      document.createElement("div");
+
+    productBox.innerHTML = `
+
+      <h3>${product.name}</h3>
+
+      <p>
+        Price: ₦${Number(product.price).toLocaleString()}
+      </p>
+
+      <p>
+        ${product.description || ""}
+      </p>
+
+      <button onclick="buyProduct(${product.id})">
+        Buy Now
+      </button>
+
+      <hr>
+
+    `;
+
+    productsContainer.appendChild(productBox);
+
+  });
+
+}
+
+
+// ==============================
+// BUY PRODUCT
+// ==============================
+
+function buyProduct(productId) {
+
+  alert(
+    "Product selected. Purchase system coming next."
+  );
+
+}
+
+
+// Load products
+
+loadProducts();
+
+</script>
+
 </body>
-</html>
+  </html>
