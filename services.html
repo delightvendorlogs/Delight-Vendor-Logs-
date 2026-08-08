@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+  <title>All Services - Delight Vendor Logs</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+<body>
+
+<header>
+
+  <h1>Delight Vendor Logs</h1>
+
+  <button onclick="window.location.href='dashboard.html'">
+    ←
+  </button>
+
+</header>
+
+
+<main>
+
+  <h2>All Services</h2>
+
+  <div id="services">
+
+    <p>Loading services...</p>
+
+  </div>
+
+</main>
+
+
+<script>
+
+const SUPABASE_URL =
+  "https://hkfhehbhmucymusaytoe.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+// ==============================
+// LOAD ALL SERVICES
+// ==============================
+
+async function loadServices() {
+
+  const servicesContainer =
+    document.getElementById("services");
+
+  const { data, error } =
+    await supabaseClient
+      .from("Product")
+      .select("*")
+      .order("id", {
+        ascending: false
+      });
+
+
+  if (error) {
+
+    console.error(error);
+
+    servicesContainer.innerHTML =
+      "<p>Unable to load services.</p>";
+
+    return;
+
+  }
+
+
+  if (!data || data.length === 0) {
+
+    servicesContainer.innerHTML =
+      "<p>No services available yet.</p>";
+
+    return;
+
+  }
+
+
+  servicesContainer.innerHTML = "";
+
+
+  data.forEach(function(product) {
+
+    const serviceBox =
+      document.createElement("div");
+
+    serviceBox.innerHTML = `
+
+      <h3>${product.name}</h3>
+
+      <p>
+        Price:
+        ₦${Number(product.price).toLocaleString()}
+      </p>
+
+      <p>
+        ${product.description || ""}
+      </p>
+
+      <button
+        onclick="viewProduct(${product.id})">
+        View Service
+      </button>
+
+    `;
+
+    servicesContainer.appendChild(serviceBox);
+
+  });
+
+}
+
+
+// ==============================
+// VIEW PRODUCT
+// ==============================
+
+function viewProduct(productId) {
+
+  window.location.href =
+    "product.html?id=" + productId;
+
+}
+
+
+// ==============================
+// START
+// ==============================
+
+loadServices();
+
+</script>
+
+</body>
+
+</html>
