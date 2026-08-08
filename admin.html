@@ -3,31 +3,38 @@
 
 <head>
   <title>Admin - Delight Vendor Logs</title>
+
   <link rel="stylesheet" href="style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
 <h1>Admin Dashboard</h1>
 
+<!-- =========================
+     ADD PRODUCT
+========================= -->
+
 <h2>Add Product</h2>
 
 <label>Product Name</label>
 <br>
-<input type="text" placeholder="Enter product name">
+<input id="productName" type="text" placeholder="Enter product name">
 
 <br><br>
 
 <label>Price</label>
 <br>
-<input type="number" placeholder="Enter price">
+<input id="productPrice" type="number" placeholder="Enter price">
 
 <br><br>
 
 <label>Category</label>
 <br>
 
-<select>
+<select id="productCategory">
   <option>Digital Products</option>
   <option>Subscriptions</option>
   <option>Files</option>
@@ -38,24 +45,430 @@
 
 <label>Description</label>
 <br>
-<textarea placeholder="Describe the product"></textarea>
+
+<textarea
+  id="productDescription"
+  placeholder="Describe the product"></textarea>
 
 <br><br>
 
-<button>Add Product</button>
+<label>Image URL</label>
+<br>
+
+<input
+  id="productImage"
+  type="text"
+  placeholder="Paste image URL">
+
+<br><br>
+
+<label>Stock</label>
+<br>
+
+<input
+  id="productStock"
+  type="number"
+  value="0"
+  min="0">
+
+<br><br>
+
+<label>Status</label>
+<br>
+
+<select id="productStatus">
+  <option value="Available">Available</option>
+  <option value="Unavailable">Unavailable</option>
+</select>
+
+<br><br>
+
+<button onclick="addProduct()">
+  Add Product
+</button>
+
+<p id="productMessage"></p>
+
 
 <hr>
 
+
+<!-- =========================
+     ADD INVENTORY
+========================= -->
+
+<h2>Add Inventory</h2>
+
+<p>
+Add a legitimate digital item to one of your products.
+</p>
+
+<label>Select Product</label>
+<br>
+
+<select id="inventoryProduct">
+
+  <option value="">
+    Loading products...
+  </option>
+
+</select>
+
+<br><br>
+
+<label>Digital Item / Delivery Information</label>
+<br>
+
+<textarea
+  id="inventoryData"
+  placeholder="Enter the legitimate digital item/details to be delivered after purchase"></textarea>
+
+<br><br>
+
+<button onclick="addInventory()">
+  Add Inventory
+</button>
+
+<p id="inventoryMessage"></p>
+
+
+<hr>
+
+
+<!-- =========================
+     STORE MANAGEMENT
+========================= -->
+
 <h2>Store Management</h2>
 
-<p>Products: 0</p>
-<p>Pending Orders: 0</p>
-<p>Completed Orders: 0</p>
+<p>
+Products:
+<span id="productCount">0</span>
+</p>
+
+<p>
+Available Inventory:
+<span id="inventoryCount">0</span>
+</p>
+
+<p>
+Pending Orders: 0
+</p>
+
+<p>
+Completed Orders: 0
+</p>
+
+
+<br>
 
 <button onclick="window.location.href='dashboard.html'">
   Back to Dashboard
 </button>
 
-</body>
 
+<script>
+
+// ========================================
+// SUPABASE CONNECTION
+// ========================================
+
+const SUPABASE_URL =
+  "https://hkfhehbhmucymusaytoe.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+// ========================================
+// ADD PRODUCT
+// ========================================
+
+async function addProduct() {
+
+  const name =
+    document.getElementById("productName").value.trim();
+
+  const price =
+    Number(document.getElementById("productPrice").value);
+
+  const category =
+    document.getElementById("productCategory").value;
+
+  const description =
+    document.getElementById("productDescription").value.trim();
+
+  const image_url =
+    document.getElementById("productImage").value.trim();
+
+  const stock =
+    Number(document.getElementById("productStock").value);
+
+  const status =
+    document.getElementById("productStatus").value;
+
+  const message =
+    document.getElementById("productMessage");
+
+
+  if (!name) {
+    message.textContent =
+      "Please enter a product name.";
+    return;
+  }
+
+  if (price < 0 || isNaN(price)) {
+    message.textContent =
+      "Please enter a valid price.";
+    return;
+  }
+
+  if (stock < 0 || isNaN(stock)) {
+    message.textContent =
+      "Please enter a valid stock number.";
+    return;
+  }
+
+
+  message.textContent =
+    "Adding product...";
+
+
+  const { data, error } =
+    await supabaseClient
+      .from("Product")
+      .insert([
+        {
+          name: name,
+          price: price,
+          category: category,
+          description: description,
+          image_url: image_url,
+          stock: stock,
+          status: status
+        }
+      ])
+      .select()
+      .single();
+
+
+  if (error) {
+
+    console.error(error);
+
+    message.textContent =
+      "Error: " + error.message;
+
+    return;
+  }
+
+
+  message.textContent =
+    "✅ Product added successfully!";
+
+
+  document.getElementById("productName").value = "";
+  document.getElementById("productPrice").value = "";
+  document.getElementById("productDescription").value = "";
+  document.getElementById("productImage").value = "";
+  document.getElementById("productStock").value = "0";
+
+
+  loadProducts();
+  loadProductCount();
+}
+
+
+// ========================================
+// LOAD PRODUCTS INTO INVENTORY DROPDOWN
+// ========================================
+
+async function loadProducts() {
+
+  const dropdown =
+    document.getElementById("inventoryProduct");
+
+
+  const { data, error } =
+    await supabaseClient
+      .from("Product")
+      .select("id, name")
+      .order("id", {
+        ascending: false
+      });
+
+
+  if (error) {
+
+    console.error(error);
+
+    dropdown.innerHTML =
+      '<option value="">Unable to load products</option>';
+
+    return;
+  }
+
+
+  dropdown.innerHTML =
+    '<option value="">Choose a product</option>';
+
+
+  data.forEach(function(product) {
+
+    const option =
+      document.createElement("option");
+
+    option.value =
+      product.id;
+
+    option.textContent =
+      product.name;
+
+    dropdown.appendChild(option);
+
+  });
+
+}
+
+
+// ========================================
+// ADD INVENTORY
+// ========================================
+
+async function addInventory() {
+
+  const productId =
+    document.getElementById("inventoryProduct").value;
+
+  const itemData =
+    document.getElementById("inventoryData").value.trim();
+
+  const message =
+    document.getElementById("inventoryMessage");
+
+
+  if (!productId) {
+
+    message.textContent =
+      "Please select a product.";
+
+    return;
+  }
+
+
+  if (!itemData) {
+
+    message.textContent =
+      "Please enter the digital item/details.";
+
+    return;
+  }
+
+
+  message.textContent =
+    "Adding inventory...";
+
+
+  const { error } =
+    await supabaseClient
+      .from("product_inventory")
+      .insert([
+        {
+          product_id: Number(productId),
+          item_data: itemData,
+          status: "available"
+        }
+      ]);
+
+
+  if (error) {
+
+    console.error(error);
+
+    message.textContent =
+      "Error: " + error.message;
+
+    return;
+  }
+
+
+  message.textContent =
+    "✅ Inventory added successfully!";
+
+
+  document.getElementById("inventoryData").value = "";
+
+
+  loadInventoryCount();
+}
+
+
+// ========================================
+// PRODUCT COUNT
+// ========================================
+
+async function loadProductCount() {
+
+  const { count, error } =
+    await supabaseClient
+      .from("Product")
+      .select("*", {
+        count: "exact",
+        head: true
+      });
+
+
+  if (!error) {
+
+    document.getElementById("productCount").textContent =
+      count || 0;
+
+  }
+
+}
+
+
+// ========================================
+// INVENTORY COUNT
+// ========================================
+
+async function loadInventoryCount() {
+
+  const { count, error } =
+    await supabaseClient
+      .from("product_inventory")
+      .select("*", {
+        count: "exact",
+        head: true
+      })
+      .eq("status", "available");
+
+
+  if (!error) {
+
+    document.getElementById("inventoryCount").textContent =
+      count || 0;
+
+  }
+
+}
+
+
+// ========================================
+// START
+// ========================================
+
+loadProducts();
+loadProductCount();
+loadInventoryCount();
+
+</script>
+
+</body>
 </html>
