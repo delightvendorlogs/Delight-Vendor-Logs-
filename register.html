@@ -53,6 +53,7 @@
 <script>
 
 const SUPABASE_URL = "https://hkfhehbhmucymusaytoe.supabase.co";
+
 const SUPABASE_KEY = "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
 const supabaseClient = window.supabase.createClient(
@@ -70,6 +71,8 @@ document.getElementById("registerForm").addEventListener("submit", async functio
   const confirmPassword = document.getElementById("confirmPassword").value;
   const message = document.getElementById("message");
 
+  message.textContent = "";
+
   if (password !== confirmPassword) {
     message.textContent = "Passwords do not match.";
     return;
@@ -79,11 +82,10 @@ document.getElementById("registerForm").addEventListener("submit", async functio
     email: email,
     password: password,
     options: {
-  data: {
-    name: name
-  },
-  emailRedirectTo: "https://delightvendorlogs.github.io/Delight-Vendor-Logs-/auth-callback.html"
-}
+      data: {
+        name: name
+      },
+      emailRedirectTo: "https://delightvendorlogs.github.io/Delight-Vendor-Logs-/auth-callback.html"
     }
   });
 
