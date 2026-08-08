@@ -19,6 +19,7 @@ body {
   text-align: center;
 }
 
+
 /* =========================
    HEADER
 ========================= */
@@ -27,6 +28,7 @@ header {
   width: 100%;
   min-height: 70px;
   padding: 14px 18px;
+
   background: #111;
   color: white;
 
@@ -41,22 +43,29 @@ header h1 {
 }
 
 header button {
-  font-size: 30px;
-  padding: 8px 14px;
+  width: auto;
+  min-height: 48px;
+
   margin: 0;
+  padding: 6px 14px;
+
+  font-size: 30px;
+
   background: transparent;
   color: white;
 }
 
 
 /* =========================
-   MAIN CONTENT
+   MAIN
 ========================= */
 
 main {
   width: 100%;
   max-width: 700px;
+
   margin: 0 auto;
+
   padding: 20px 16px 40px;
 }
 
@@ -88,7 +97,6 @@ p {
 ========================= */
 
 button {
-  width: auto;
   min-height: 52px;
 
   padding: 13px 22px;
@@ -121,10 +129,9 @@ select {
   width: 100%;
   max-width: 600px;
 
-  min-height: 52px;
+  min-height: 54px;
 
   padding: 13px 15px;
-
   margin: 6px auto;
 
   font-size: 18px;
@@ -145,11 +152,13 @@ textarea {
    PRODUCTS
 ========================= */
 
-#products {
+#products,
+#services {
   width: 100%;
 }
 
-#products > div {
+#products > div,
+#services > div {
   width: 100%;
 
   background: white;
@@ -164,17 +173,19 @@ textarea {
   text-align: left;
 }
 
-#products h3 {
+#products h3,
+#services h3 {
   margin-top: 0;
 }
 
-#products button {
+#products button,
+#services button {
   width: 100%;
 }
 
 
 /* =========================
-   GENERAL LIST ITEMS
+   LISTS
 ========================= */
 
 ul {
@@ -198,7 +209,25 @@ li {
 
 
 /* =========================
-   MENU
+   WALLET
+========================= */
+
+#walletBalance {
+  font-size: 30px;
+  font-weight: bold;
+
+  background: white;
+
+  padding: 20px;
+
+  border-radius: 14px;
+
+  margin: 10px 0;
+}
+
+
+/* =========================
+   SIDE MENU
 ========================= */
 
 #menu {
@@ -206,5 +235,3 @@ li {
 
   top: 0;
   right: 0;
-
-  width: min
