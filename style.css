@@ -35,6 +35,9 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  position: relative;
+  z-index: 10;
 }
 
 header h1 {
@@ -57,7 +60,7 @@ header button {
 
 
 /* =========================
-   MAIN
+   MAIN CONTENT
 ========================= */
 
 main {
@@ -149,7 +152,7 @@ textarea {
 
 
 /* =========================
-   PRODUCTS
+   PRODUCTS & SERVICES
 ========================= */
 
 #products,
@@ -209,7 +212,7 @@ li {
 
 
 /* =========================
-   WALLET
+   WALLET BALANCE
 ========================= */
 
 #walletBalance {
@@ -231,7 +234,164 @@ li {
 ========================= */
 
 #menu {
-  position: fixed;
+  position: fixed !important;
 
-  top: 0;
-  right: 0;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+
+  width: min(330px, 85vw) !important;
+  height: 100vh !important;
+
+  margin: 0 !important;
+  padding: 26px 18px !important;
+
+  background: #ffffff !important;
+
+  opacity: 1 !important;
+
+  color: #222 !important;
+
+  box-shadow: -6px 0 20px rgba(0, 0, 0, 0.3);
+
+  border-left: 1px solid #ddd;
+
+  z-index: 999999 !important;
+
+  text-align: left;
+
+  overflow-y: auto;
+}
+
+
+/* MENU TITLE */
+
+#menu h3 {
+  color: #111;
+
+  font-size: 25px;
+
+  margin: 2px 0 20px;
+
+  padding-bottom: 14px;
+
+  border-bottom: 2px solid #eee;
+}
+
+
+/* MENU ITEMS */
+
+#menu p {
+  color: #222 !important;
+
+  font-size: 18px;
+
+  min-height: 50px;
+
+  padding: 13px 10px;
+
+  margin: 0 0 5px 0;
+
+  display: flex;
+
+  align-items: center;
+
+  border-bottom: 1px solid #eee;
+
+  cursor: pointer;
+}
+
+
+/* SMALL SPACE BETWEEN ITEMS */
+
+#menu p + p {
+  margin-top: 5px;
+}
+
+
+/* MENU HOVER */
+
+#menu p:hover {
+  background: #f5f5f5;
+
+  border-radius: 8px;
+}
+
+
+/* MENU LINKS */
+
+#menu a {
+  color: #222;
+
+  text-decoration: none;
+
+  width: 100%;
+}
+
+
+/* CLOSE */
+
+#menu p:last-child {
+  margin-top: 18px;
+
+  background: #111;
+
+  color: white !important;
+
+  border-radius: 9px;
+
+  justify-content: center;
+
+  border: none;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+  header h1 {
+    font-size: 21px;
+  }
+
+  main {
+    padding: 18px 14px 35px;
+  }
+
+  h2 {
+    font-size: 23px;
+  }
+
+  button {
+    min-height: 54px;
+
+    font-size: 18px;
+  }
+
+  input,
+  textarea,
+  select {
+    min-height: 54px;
+
+    font-size: 18px;
+  }
+
+  #menu {
+    width: 82vw !important;
+
+    padding: 24px 16px !important;
+  }
+
+  #menu p {
+    font-size: 18px;
+
+    min-height: 48px;
+
+    padding: 12px 8px;
+
+    margin-bottom: 4px;
+  }
+
+}
