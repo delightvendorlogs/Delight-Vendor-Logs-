@@ -1,40 +1,210 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Fund Wallet - Delight Vendor Logs</title>  <link rel="stylesheet" href="style.css">  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body>  <header>
+    <h1>Fund Wallet</h1>
+  </header>  <main><h2>Your Balance</h2>
 
-<head>
-  <title>Fund Wallet - Delight Vendor Logs</title>
-  <link rel="stylesheet" href="style.css">
-</head>
+<div class="profile-card">
+  <p id="walletBalance">Loading...</p>
+</div>
 
-<body>
+<h2>Add Money</h2>
 
-<h1>Fund Wallet</h1>
+<input
+  id="amount"
+  type="number"
+  min="100"
+  placeholder="Enter amount"
+>
 
-<h3>Your Balance</h3>
-<p>₦0.00</p>
+<h2>Select Payment Method</h2>
 
-<h3>Add Money</h3>
+<div>
 
-<input type="number" placeholder="Enter amount">
+  <label>
+    <input
+      type="radio"
+      name="payment"
+      value="bank"
+    >
+    Bank Transfer
+  </label>
 
-<br><br>
-<h3>Select Payment Method</h3>
+  <br><br>
 
-<label>
-<input type="radio" name="payment">
-Bank Transfer
-</label>
+  <label>
+    <input
+      type="radio"
+      name="payment"
+      value="card"
+    >
+    Card
+  </label>
+
+</div>
 
 <br>
 
-<label>
-<input type="radio" name="payment">
-Card
-</label>
+<button onclick="continuePayment()">
+  Continue
+</button>
 
-<br><br>
-<button>Continue</button>
+<p id="message"></p>
 
-</body>
+<br>
 
-</html>
+<button onclick="window.location.href='dashboard.html'">
+  🏠 Back to Dashboard
+</button>
+
+  </main>  <script>
+
+    /* =========================
+       SUPABASE
+    ========================= */
+
+    const SUPABASE_URL =
+      "https://hkfhehbhmucymusaytoe.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    /* =========================
+       LOAD WALLET
+    ========================= */
+
+    async function loadWallet() {
+
+      const {
+        data: {
+          user
+        },
+        error
+      } = await supabaseClient.auth.getUser();
+
+
+      if (error || !user) {
+
+        window.location.href = "login.html";
+
+        return;
+      }
+
+
+      const {
+        data: wallet,
+        error: walletError
+      } = await supabaseClient
+        .from("Wallet")
+        .select("balance")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+
+      if (walletError) {
+
+        console.error(walletError);
+
+        document.getElementById(
+          "walletBalance"
+        ).textContent =
+          "Unable to load balance.";
+
+        return;
+      }
+
+
+      const balance =
+        wallet?.balance || 0;
+
+
+      document.getElementById(
+        "walletBalance"
+      ).textContent =
+        "₦" +
+        Number(balance).toLocaleString(
+          "en-NG",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }
+        );
+
+    }
+
+
+    /* =========================
+       CONTINUE PAYMENT
+    ========================= */
+
+    function continuePayment() {
+
+      const amount =
+        Number(
+          document.getElementById("amount").value
+        );
+
+      const payment =
+        document.querySelector(
+          'input[name="payment"]:checked'
+        );
+
+      const message =
+        document.getElementById("message");
+
+
+      if (!amount || amount < 100) {
+
+        message.textContent =
+          "Please enter at least ₦100.";
+
+        return;
+      }
+
+
+      if (!payment) {
+
+        message.textContent =
+          "Please select a payment method.";
+
+        return;
+      }
+
+
+      /*
+        Payment integration will be connected here.
+
+        Bank Transfer:
+        → Generate payment/reference
+        → Customer transfers money
+        → Payment is verified
+        → Wallet is credited
+
+        Card:
+        → Open payment gateway
+        → Customer pays
+        → Payment is verified
+        → Wallet is credited
+      */
+
+
+      message.textContent =
+        "Payment system will be connected next.";
+
+    }
+
+
+    /* =========================
+       START
+    ========================= */
+
+    loadWallet();
+
+  </script></body></html>
