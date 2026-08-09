@@ -1,4 +1,4 @@
-     <!DOCTYPE html><html lang="en"><head>  <meta charset="UTF-8"><meta
+<!DOCTYPE html><html lang="en"><head>  <meta charset="UTF-8"><meta
 name="viewport"
 content="width=device-width, initial-scale=1.0"
 
@@ -7,7 +7,9 @@ content="width=device-width, initial-scale=1.0"
   <title>Fund Wallet - Delight Vendor Logs</title>  <link
     rel="stylesheet"
     href="style.css"
-  >  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body><header>  <h1>
+  >  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script></head><body><header>  <h1>
     Fund Wallet
   </h1></header><main>  <h2>
     Your Balance
@@ -56,25 +58,36 @@ placeholder="Enter amount"
 </label>
 
   </div>  <br><button
+type="button"
 onclick="continuePayment()"
+style="
+background:#111 !important;
+color:#fff !important;
+opacity:1 !important;
+visibility:visible !important;
+display:inline-block !important;
+"
 
 «»
 
 Continue
 
   </button>  <p id="message"></p>  <br><button
+type="button"
 onclick="window.location.href='dashboard.html'"
+style="
+background:#111 !important;
+color:#fff !important;
+opacity:1 !important;
+visibility:visible !important;
+display:inline-block !important;
+"
 
 «»
 
 🏠 Back to Dashboard
 
   </button></main><script>
-
-
-/* =========================
-   SUPABASE
-========================= */
 
 
 const SUPABASE_URL =
@@ -91,11 +104,6 @@ const supabaseClient =
     SUPABASE_KEY
   );
 
-
-
-/* =========================
-   LOAD WALLET
-========================= */
 
 
 async function loadWallet() {
@@ -163,11 +171,6 @@ async function loadWallet() {
 
 
 
-/* =========================
-   CONTINUE PAYMENT
-========================= */
-
-
 function continuePayment() {
 
 
@@ -221,12 +224,7 @@ function continuePayment() {
 
 
 
-/* =========================
-   START
-========================= */
-
-
 loadWallet();
 
 
-</script></body></html>           
+</script></body></html>
