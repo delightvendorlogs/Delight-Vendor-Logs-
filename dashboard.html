@@ -1,96 +1,165 @@
-<!DOCTYPE html><html lang="en"><head>  <meta charset="UTF-8"><meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
+<!DOCTYPE html>
+<html lang="en">
 
-«»
+<head>
 
-  <title>Delight Vendor Logs Dashboard</title>  <link
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Delight Vendor Logs Dashboard</title>
+
+  <link
     rel="stylesheet"
     href="style.css"
-  >  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body><header>  <h1>
+  >
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+  <h1>
     Delight Vendor Logs
-  </h1>  <button onclick="openMenu()">
+  </h1>
+
+  <button onclick="openMenu()">
     ☰
-  </button></header><main>  <!-- WALLET -->  <section><h2>
-  Wallet Balance
-</h2>
+  </button>
 
-<p id="walletBalance">
-  Loading...
-</p>
+</header>
 
-<button
-  onclick="window.location.href='wallet.html'"
+
+
+<main>
+
+
+  <section>
+
+    <h2>
+      Wallet Balance
+    </h2>
+
+    <p id="walletBalance">
+      Loading...
+    </p>
+
+    <button
+      onclick="window.location.href='wallet.html'"
+    >
+      💰 Fund Wallet
+    </button>
+
+  </section>
+
+
+
+  <section>
+
+    <h2>
+      Latest Services
+    </h2>
+
+    <div id="products">
+
+      <p>
+        Loading services...
+      </p>
+
+    </div>
+
+  </section>
+
+
+
+  <section>
+
+    <h2>
+      More Services
+    </h2>
+
+    <button
+      onclick="window.location.href='services.html'"
+    >
+      View All Services
+    </button>
+
+  </section>
+
+
+</main>
+
+
+
+<div
+  id="menu"
+  style="display:none;"
 >
-  💰 Fund Wallet
-</button>
 
-  </section>  <!-- LATEST SERVICES -->  <section><h2>
-  Latest Services
-</h2>
+  <h3>
+    Menu
+  </h3>
 
-<div id="products">
+
+  <p onclick="window.location.href='profile.html'">
+    👤 Profile
+  </p>
+
+
+  <p onclick="window.location.href='wallet.html'">
+    💰 Fund Wallet
+  </p>
+
+
+  <p onclick="window.location.href='transactions.html'">
+    📜 Transactions
+  </p>
+
+
+  <p onclick="window.location.href='purchases.html'">
+    🛒 My Purchases
+  </p>
+
+
+  <p onclick="window.location.href='pending.html'">
+    ⏳ Pending Orders
+  </p>
+
+
+  <p onclick="window.location.href='settings.html'">
+    ⚙️ Settings
+  </p>
+
 
   <p>
-    Loading services...
+
+    <a
+      href="https://wa.me/2347015908401"
+      target="_blank"
+    >
+      💬 WhatsApp Support
+    </a>
+
+  </p>
+
+
+  <p onclick="closeMenu()">
+    ✖ Close
   </p>
 
 </div>
 
-  </section>  <!-- MORE SERVICES -->  <section><h2>
-  More Services
-</h2>
-
-<button
-  onclick="window.location.href='services.html'"
->
-  View All Services
-</button>
-
-  </section></main><!-- SIDE MENU --><div
-  id="menu"
-  style="display:none;"
->  <h3>
-    Menu
-  </h3>  <p
-    onclick="window.location.href='profile.html'"
-  >
-    👤 Profile
-  </p>  <p
-    onclick="window.location.href='wallet.html'"
-  >
-    💰 Fund Wallet
-  </p>  <p
-    onclick="window.location.href='transactions.html'"
-  >
-    📜 Transactions
-  </p>  <p
-    onclick="window.location.href='purchases.html'"
-  >
-    🛒 My Purchases
-  </p>  <p
-    onclick="window.location.href='pending.html'"
-  >
-    ⏳ Pending Orders
-  </p>  <p
-    onclick="window.location.href='settings.html'"
-  >
-    ⚙️ Settings
-  </p>  <p><a
-  href="https://wa.me/2347015908401"
-  target="_blank"
->
-  💬 WhatsApp Support
-</a>
-
-  </p>  <p onclick="closeMenu()">
-    ✖ Close
-  </p></div><script>
 
 
-/* =========================
-   SUPABASE
-========================= */
+<script>
 
 
 const SUPABASE_URL =
@@ -107,11 +176,6 @@ const supabaseClient =
     SUPABASE_KEY
   );
 
-
-
-/* =========================
-   MENU
-========================= */
 
 
 function openMenu() {
@@ -134,23 +198,21 @@ function closeMenu() {
 
 
 /* =========================
-   LOAD WALLET
+   LOAD / CREATE WALLET
 ========================= */
 
-
 async function loadWallet() {
-
 
   const {
     data: {
       user
     },
-    error
+    error: userError
   } =
     await supabaseClient.auth.getUser();
 
 
-  if (error || !user) {
+  if (userError || !user) {
 
     window.location.href =
       "login.html";
@@ -162,27 +224,16 @@ async function loadWallet() {
 
   const {
     data: wallet,
-    error: walletError
+    error
   } =
-    await supabaseClient
-
-      .from("Wallet")
-
-      .select("balance")
-
-      .eq(
-        "user_id",
-        user.id
-      )
-
-      .maybeSingle();
-
-
-  if (walletError) {
-
-    console.error(
-      walletError
+    await supabaseClient.rpc(
+      "ensure_my_wallet"
     );
+
+
+  if (error) {
+
+    console.error(error);
 
     document.getElementById(
       "walletBalance"
@@ -195,36 +246,30 @@ async function loadWallet() {
 
 
   const balance =
-    wallet?.balance || 0;
+    wallet?.balance ?? 0;
 
 
   document.getElementById(
     "walletBalance"
   ).textContent =
-
     "₦" +
-
-    Number(balance)
-      .toLocaleString(
-        "en-NG",
-        {
-          minimumFractionDigits: 2,
-
-          maximumFractionDigits: 2
-        }
-      );
+    Number(balance).toLocaleString(
+      "en-NG",
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }
+    );
 
 }
 
 
 
 /* =========================
-   LOAD SERVICES
+   LOAD PRODUCTS
 ========================= */
 
-
 async function loadProducts() {
-
 
   const container =
     document.getElementById(
@@ -254,9 +299,7 @@ async function loadProducts() {
 
   if (error) {
 
-    console.error(
-      error
-    );
+    console.error(error);
 
     container.innerHTML =
       "<p>Unable to load services.</p>";
@@ -284,7 +327,6 @@ async function loadProducts() {
 
   data.forEach(
     function(product) {
-
 
       const box =
         document.createElement(
@@ -331,14 +373,7 @@ async function loadProducts() {
 
 
 
-/* =========================
-   BUY PRODUCT
-========================= */
-
-
-function buyProduct(
-  productId
-) {
+function buyProduct(productId) {
 
   alert(
     "Purchase system will be connected next."
@@ -348,14 +383,14 @@ function buyProduct(
 
 
 
-/* =========================
-   START
-========================= */
-
-
 loadWallet();
 
 loadProducts();
 
 
-</script></body></html>
+</script>
+
+
+</body>
+
+</html>
