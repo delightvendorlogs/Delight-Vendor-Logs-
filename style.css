@@ -30,7 +30,7 @@ header {
   padding: 14px 18px;
 
   background: #111;
-  color: #fff;
+  color: white;
 
   display: flex;
   justify-content: space-between;
@@ -43,12 +43,7 @@ header {
 header h1 {
   margin: 0;
   font-size: 24px;
-  color: #fff;
-  -webkit-text-fill-color: #fff;
 }
-
-
-/* Header menu button */
 
 header button {
   width: auto;
@@ -57,12 +52,10 @@ header button {
   margin: 0;
   padding: 6px 14px;
 
-  font-size: 30px !important;
+  font-size: 30px;
 
-  background: transparent !important;
-
-  color: #fff !important;
-  -webkit-text-fill-color: #fff !important;
+  background: transparent;
+  color: white;
 }
 
 
@@ -103,56 +96,37 @@ p {
 
 
 /* =========================
-   ALL BUTTONS
+   BUTTONS
 ========================= */
 
 button {
+  display: inline-block;
+  width: auto;
+
   min-height: 52px;
 
   padding: 13px 22px;
   margin: 8px 4px;
 
+  background: #111;
+  color: white;
+
   font-family: Arial, sans-serif;
+  font-size: 18px;
+  font-weight: bold;
 
-  font-size: 18px !important;
-  font-weight: bold !important;
-
-  border: none;
+  border: 0;
   border-radius: 10px;
 
-  background: #111111 !important;
-
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-
-  opacity: 1 !important;
-  visibility: visible !important;
+  opacity: 1;
+  visibility: visible;
 
   cursor: pointer;
-
-  appearance: none;
-  -webkit-appearance: none;
-}
-
-button * {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-button[type="submit"],
-button[type="button"],
-button[onclick] {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-
-  font-size: 18px !important;
-  font-weight: bold !important;
 }
 
 button:hover {
-  background: #222222 !important;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
+  background: #333;
+  color: white;
 }
 
 button:active {
@@ -175,37 +149,18 @@ select {
   padding: 13px 15px;
   margin: 6px auto;
 
-  font-family: Arial, sans-serif;
   font-size: 18px;
 
   border: 1px solid #ccc;
   border-radius: 10px;
 
-  background: #fff;
+  background: white;
   color: #222;
-
-  -webkit-text-fill-color: #222;
 }
 
 textarea {
   min-height: 120px;
   resize: vertical;
-}
-
-
-/* =========================
-   RADIO BUTTONS
-========================= */
-
-input[type="radio"] {
-  width: 24px;
-  height: 24px;
-
-  min-height: auto;
-
-  margin: 8px;
-
-  accent-color: #111;
 }
 
 
@@ -222,15 +177,14 @@ input[type="radio"] {
 #services > div {
   width: 100%;
 
-  background: #fff;
+  background: white;
 
   margin: 14px 0;
   padding: 20px;
 
   border-radius: 14px;
 
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 
   text-align: left;
 }
@@ -259,7 +213,7 @@ li {
   width: 100%;
   max-width: 700px;
 
-  background: #fff;
+  background: white;
 
   margin: 12px auto;
   padding: 18px;
@@ -278,16 +232,13 @@ li {
   font-size: 30px;
   font-weight: bold;
 
-  background: #fff;
+  background: white;
 
   padding: 20px;
 
   border-radius: 14px;
 
   margin: 10px 0;
-
-  color: #111 !important;
-  -webkit-text-fill-color: #111 !important;
 }
 
 
@@ -298,14 +249,13 @@ li {
 .profile-card {
   width: 100%;
 
-  background: #fff;
+  background: white;
 
   padding: 20px;
 
   border-radius: 14px;
 
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 
@@ -326,14 +276,13 @@ li {
   margin: 0 !important;
   padding: 26px 18px !important;
 
-  background: #fff !important;
+  background: #ffffff !important;
 
   opacity: 1 !important;
 
   color: #222 !important;
 
-  box-shadow:
-    -6px 0 20px rgba(0, 0, 0, 0.3);
+  box-shadow: -6px 0 20px rgba(0, 0, 0, 0.3);
 
   border-left: 1px solid #ddd;
 
@@ -348,8 +297,7 @@ li {
 /* MENU TITLE */
 
 #menu h3 {
-  color: #111 !important;
-  -webkit-text-fill-color: #111 !important;
+  color: #111;
 
   font-size: 25px;
 
@@ -365,7 +313,6 @@ li {
 
 #menu p {
   color: #222 !important;
-  -webkit-text-fill-color: #222 !important;
 
   font-size: 18px;
 
@@ -388,8 +335,7 @@ li {
 /* MENU LINKS */
 
 #menu a {
-  color: #222 !important;
-  -webkit-text-fill-color: #222 !important;
+  color: #222;
 
   text-decoration: none;
 
@@ -411,10 +357,9 @@ li {
 #menu p:last-child {
   margin-top: 18px;
 
-  background: #111 !important;
+  background: #111;
 
-  color: #fff !important;
-  -webkit-text-fill-color: #fff !important;
+  color: white !important;
 
   border-radius: 9px;
 
@@ -444,34 +389,25 @@ li {
 
   button {
     min-height: 54px;
-
-    font-size: 18px !important;
-
-    color: #fff !important;
-    -webkit-text-fill-color: #fff !important;
+    font-size: 18px;
   }
 
   input,
   textarea,
   select {
     min-height: 54px;
-
     font-size: 18px;
   }
 
   #menu {
     width: 82vw !important;
-
     padding: 24px 16px !important;
   }
 
   #menu p {
     font-size: 18px;
-
     min-height: 48px;
-
     padding: 12px 8px;
-
     margin-bottom: 4px;
   }
 
