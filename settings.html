@@ -1,0 +1,292 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Settings - Delight Vendor Logs</title>  <link rel="stylesheet" href="style.css">  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body>  <header>
+    <h1>Settings</h1>
+  </header>  <main><h2>Account Settings</h2>
+
+<div class="profile-card">
+
+  <h3>👤 Name</h3>
+
+  <input
+    id="name"
+    type="text"
+    placeholder="Your name"
+  >
+
+  <h3>📧 Email</h3>
+
+  <p id="email">
+    Loading...
+  </p>
+
+</div>
+
+<br>
+
+<button onclick="saveName()">
+  💾 Save Name
+</button>
+
+<h2>🔐 Change Password</h2>
+
+<input
+  id="newPassword"
+  type="password"
+  placeholder="Enter new password"
+>
+
+<br>
+
+<input
+  id="confirmPassword"
+  type="password"
+  placeholder="Confirm new password"
+>
+
+<br>
+
+<button onclick="changePassword()">
+  Change Password
+</button>
+
+<p id="message"></p>
+
+<br>
+
+<button onclick="logout()">
+  🚪 Logout
+</button>
+
+<br>
+
+<button onclick="window.location.href='dashboard.html'">
+  🏠 Back to Dashboard
+</button>
+
+  </main>  <script>
+
+    /* =========================
+       SUPABASE
+    ========================= */
+
+    const SUPABASE_URL =
+      "https://hkfhehbhmucymusaytoe.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    /* =========================
+       LOAD USER
+    ========================= */
+
+    async function loadUser() {
+
+      const {
+        data: {
+          user
+        },
+        error
+      } = await supabaseClient.auth.getUser();
+
+
+      if (error || !user) {
+
+        window.location.href =
+          "login.html";
+
+        return;
+      }
+
+
+      document.getElementById(
+        "email"
+      ).textContent =
+        user.email || "Not available";
+
+
+      document.getElementById(
+        "name"
+      ).value =
+        user.user_metadata?.name || "";
+
+    }
+
+
+    /* =========================
+       SAVE NAME
+    ========================= */
+
+    async function saveName() {
+
+      const name =
+        document.getElementById(
+          "name"
+        ).value.trim();
+
+
+      const message =
+        document.getElementById(
+          "message"
+        );
+
+
+      if (!name) {
+
+        message.textContent =
+          "Please enter your name.";
+
+        return;
+      }
+
+
+      const {
+        error
+      } = await supabaseClient.auth.updateUser({
+
+        data: {
+          name: name
+        }
+
+      });
+
+
+      if (error) {
+
+        message.textContent =
+          error.message;
+
+        return;
+      }
+
+
+      message.textContent =
+        "Name updated successfully.";
+
+    }
+
+
+    /* =========================
+       CHANGE PASSWORD
+    ========================= */
+
+    async function changePassword() {
+
+      const password =
+        document.getElementById(
+          "newPassword"
+        ).value;
+
+      const confirmPassword =
+        document.getElementById(
+          "confirmPassword"
+        ).value;
+
+      const message =
+        document.getElementById(
+          "message"
+        );
+
+
+      if (!password) {
+
+        message.textContent =
+          "Please enter a new password.";
+
+        return;
+      }
+
+
+      if (password.length < 6) {
+
+        message.textContent =
+          "Password must be at least 6 characters.";
+
+        return;
+      }
+
+
+      if (password !== confirmPassword) {
+
+        message.textContent =
+          "Passwords do not match.";
+
+        return;
+      }
+
+
+      const {
+        error
+      } = await supabaseClient.auth.updateUser({
+
+        password: password
+
+      });
+
+
+      if (error) {
+
+        message.textContent =
+          error.message;
+
+        return;
+      }
+
+
+      document.getElementById(
+        "newPassword"
+      ).value = "";
+
+      document.getElementById(
+        "confirmPassword"
+      ).value = "";
+
+
+      message.textContent =
+        "Password changed successfully.";
+
+    }
+
+
+    /* =========================
+       LOGOUT
+    ========================= */
+
+    async function logout() {
+
+      const {
+        error
+      } = await supabaseClient.auth.signOut();
+
+
+      if (error) {
+
+        document.getElementById(
+          "message"
+        ).textContent =
+          error.message;
+
+        return;
+      }
+
+
+      window.location.href =
+        "login.html";
+
+    }
+
+
+    /* =========================
+       START
+    ========================= */
+
+    loadUser();
+
+  </script></body></html>
