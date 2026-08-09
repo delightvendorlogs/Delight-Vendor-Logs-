@@ -1,48 +1,193 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html lang="en"><head>  <meta charset="UTF-8"><meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
 
-<head>
-  <title>Login - Delight Vendor Logs</title>
-  <link rel="stylesheet" href="style.css">
-</head>
+«»
 
-<body>
+  <title>Login - Delight Vendor Logs</title>  <link
+    rel="stylesheet"
+    href="style.css"
+  >  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body><h1>
+  Login
+</h1><form id="loginForm">  <label>
+    Email
+  </label>  <br><input
+id="email"
+type="email"
+placeholder="Enter your email"
+required
 
-<h1>Login</h1>
+«»
 
-<form>
-  <label>Email</label>
-  <br>
-  <input type="email" placeholder="Enter your email" required>
+<br><br>
 
-  <br><br>
+  <label>
+    Password
+  </label>  <br><input
+id="password"
+type="password"
+placeholder="Enter your password"
+required
 
-  <label>Password</label>
-  <br>
-  <input type="password" placeholder="Enter your password" required>
+«»
 
-  <br><br>
+<br><br>
 
-  <button type="submit">Login</button>
-  <br><br>
+<button
+id="loginButton"
+type="submit"
 
-<button type="button" onclick="window.location.href='forgot-password.html'">
-  Forgot Password?
+«»
+
+Login
+
+  </button></form><p id="message"></p><br><button
+type="button"
+onclick="window.location.href='forgot-password.html'"
+
+«»
+
+Forgot Password?
 </button>
-</form>
 
-<p>Don't have an account?</p>
+<p>
+  Don't have an account?
+</p><button
+onclick="window.location.href='register.html'"
 
-<button onclick="window.location.href='register.html'">
-  Create Account
+«»
+
+Create Account
 </button>
 
 <br><br>
 
-<button onclick="window.location.href='index.html'">
-  Back
+<button
+onclick="window.location.href='index.html'"
+
+«»
+
+Back
 </button>
 
-</body>
+<script>
 
-</html>
+
+/* =========================
+   SUPABASE
+========================= */
+
+
+const SUPABASE_URL =
+  "https://hkfhehbhmucymusaytoe.supabase.co";
+
+
+const SUPABASE_KEY =
+  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+
+/* =========================
+   LOGIN
+========================= */
+
+
+document
+  .getElementById("loginForm")
+  .addEventListener(
+    "submit",
+    async function(event) {
+
+
+      event.preventDefault();
+
+
+      const email =
+        document
+          .getElementById("email")
+          .value
+          .trim();
+
+
+      const password =
+        document
+          .getElementById("password")
+          .value;
+
+
+      const message =
+        document
+          .getElementById("message");
+
+
+      const button =
+        document
+          .getElementById("loginButton");
+
+
+      message.textContent =
+        "Logging in...";
+
+
+      button.disabled = true;
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth.signInWithPassword({
+
+          email: email,
+
+          password: password
+
+        });
+
+
+      if (error) {
+
+        console.error(error);
+
+        message.textContent =
+          error.message;
+
+        button.disabled = false;
+
+        return;
+
+      }
+
+
+      if (!data || !data.user) {
+
+        message.textContent =
+          "Login failed. Please try again.";
+
+        button.disabled = false;
+
+        return;
+
+      }
+
+
+      message.textContent =
+        "Login successful. Opening dashboard...";
+
+
+      window.location.href =
+        "dashboard.html";
+
+
+    }
+  );
+
+
+</script></body></html>
