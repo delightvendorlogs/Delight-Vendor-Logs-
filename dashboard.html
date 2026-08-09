@@ -1,131 +1,114 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8"><meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
 
-<head>
+«»
 
-  <meta charset="UTF-8">
+  <title>Delight Vendor Logs Dashboard</title>  <link
+    rel="stylesheet"
+    href="style.css"
+  >  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body><header>  <h1>
+    Delight Vendor Logs
+  </h1>  <button onclick="openMenu()">
+    ☰
+  </button></header><main>  <!-- =========================
+       WALLET
+  ========================== -->  <section><h2>
+  Wallet Balance
+</h2>
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0">
+<p id="walletBalance">
+  Loading...
+</p>
 
-  <title>Delight Vendor Logs Dashboard</title>
+<button
+  onclick="window.location.href='wallet.html'"
+>
+  💰 Fund Wallet
+</button>
 
-  <link rel="stylesheet" href="style.css">
+  </section>  <!-- =========================
+       LATEST SERVICES
+  ========================== -->  <section><h2>
+  Latest Services
+</h2>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <script src="script.js"></script>
-
-</head>
-
-<body>
-
-<header>
-
-  <h1>Delight Vendor Logs</h1>
-
-  <button onclick="openMenu()">☰</button>
-
-</header>
-
-
-<main>
-
-  <!-- WALLET -->
-
-  <section>
-
-    <h2>Wallet Balance</h2>
-
-    <p id="walletBalance">₦0.00</p>
-
-  </section>
-
-
-  <!-- LATEST SERVICES -->
-
-  <section>
-
-    <h2>Latest Services</h2>
-
-    <div id="products">
-
-      <p>Loading services...</p>
-
-    </div>
-
-  </section>
-
-
-  <!-- MORE SERVICES -->
-
-  <section>
-
-    <h2>More Services</h2>
-
-    <button
-      onclick="window.location.href='services.html'">
-      View All Services
-    </button>
-
-  </section>
-
-</main>
-
-
-<!-- MENU -->
-
-<div id="menu" style="display:none;">
-
-  <h3>Menu</h3>
-
-  <p onclick="window.location.href='profile.html'">
-    Profile
-  </p>
-
-  <p onclick="window.location.href='wallet.html'">
-    Fund Wallet
-  </p>
-
-  <p onclick="window.location.href='transactions.html'">
-    Transactions
-  </p>
-
-  <p onclick="window.location.href='purchase.html'">
-    My Purchases
-  </p>
-
-  <p onclick="window.location.href='pending.html'">
-    Pending Orders
-  </p>
+<div id="products">
 
   <p>
-    Settings
-  </p>
-
-  <p>
-    <a
-      href="https://wa.me/2347015908401"
-      target="_blank">
-      WhatsApp Support
-    </a>
-  </p>
-
-  <p onclick="closeMenu()">
-    Close
+    Loading services...
   </p>
 
 </div>
 
+  </section>  <!-- =========================
+       MORE SERVICES
+  ========================== -->  <section><h2>
+  More Services
+</h2>
 
-<script>
+<button
+  onclick="window.location.href='services.html'"
+>
+  View All Services
+</button>
+
+  </section></main><!-- =========================
+     SIDE MENU
+========================== --><div
+  id="menu"
+  style="display:none;"
+>  <h3>
+    Menu
+  </h3>  <p
+    onclick="window.location.href='profile.html'"
+  >
+    👤 Profile
+  </p>  <p
+    onclick="window.location.href='wallet.html'"
+  >
+    💰 Fund Wallet
+  </p>  <p
+    onclick="window.location.href='transaction.html'"
+  >
+    📜 Transactions
+  </p>  <p
+    onclick="window.location.href='purchase.html'"
+  >
+    🛒 My Purchases
+  </p>  <p
+    onclick="window.location.href='pending.html'"
+  >
+    ⏳ Pending Orders
+  </p>  <p
+    onclick="window.location.href='settings.html'"
+  >
+    ⚙️ Settings
+  </p>  <p><a
+  href="https://wa.me/2347015908401"
+  target="_blank"
+>
+  💬 WhatsApp Support
+</a>
+
+  </p>  <p onclick="closeMenu()">
+    ✖ Close
+  </p></div><script>
+
+
+/* =========================
+   SUPABASE
+========================= */
+
 
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
 
+
 const SUPABASE_KEY =
   "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
 
 const supabaseClient =
   window.supabase.createClient(
@@ -134,30 +117,157 @@ const supabaseClient =
   );
 
 
-// ==============================
-// LOAD LATEST SERVICES
-// ==============================
+
+/* =========================
+   MENU
+========================= */
+
+
+function openMenu() {
+
+  document.getElementById(
+    "menu"
+  ).style.display = "block";
+
+}
+
+
+function closeMenu() {
+
+  document.getElementById(
+    "menu"
+  ).style.display = "none";
+
+}
+
+
+
+/* =========================
+   LOAD WALLET
+========================= */
+
+
+async function loadWallet() {
+
+
+  const {
+    data: {
+      user
+    },
+    error
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if (error || !user) {
+
+    window.location.href =
+      "login.html";
+
+    return;
+
+  }
+
+
+  const {
+    data: wallet,
+    error: walletError
+  } =
+    await supabaseClient
+
+      .from("Wallet")
+
+      .select("balance")
+
+      .eq(
+        "user_id",
+        user.id
+      )
+
+      .maybeSingle();
+
+
+  if (walletError) {
+
+    console.error(
+      walletError
+    );
+
+    document.getElementById(
+      "walletBalance"
+    ).textContent =
+      "Unable to load balance.";
+
+    return;
+
+  }
+
+
+  const balance =
+    wallet?.balance || 0;
+
+
+  document.getElementById(
+    "walletBalance"
+  ).textContent =
+
+    "₦" +
+
+    Number(balance)
+      .toLocaleString(
+        "en-NG",
+        {
+          minimumFractionDigits: 2,
+
+          maximumFractionDigits: 2
+        }
+      );
+
+}
+
+
+
+/* =========================
+   LOAD SERVICES
+========================= */
+
 
 async function loadProducts() {
 
-  const productsContainer =
-    document.getElementById("products");
 
-  const { data, error } =
+  const container =
+    document.getElementById(
+      "products"
+    );
+
+
+  const {
+    data,
+    error
+  } =
     await supabaseClient
+
       .from("Product")
+
       .select("*")
-      .order("id", {
-        ascending: false
-      })
+
+      .order(
+        "id",
+        {
+          ascending: false
+        }
+      )
+
       .limit(2);
 
 
   if (error) {
 
-    console.error(error);
+    console.error(
+      error
+    );
 
-    productsContainer.innerHTML =
+    container.innerHTML =
       "<p>Unable to load services.</p>";
 
     return;
@@ -165,9 +275,12 @@ async function loadProducts() {
   }
 
 
-  if (!data || data.length === 0) {
+  if (
+    !data ||
+    data.length === 0
+  ) {
 
-    productsContainer.innerHTML =
+    container.innerHTML =
       "<p>No services available yet.</p>";
 
     return;
@@ -175,63 +288,83 @@ async function loadProducts() {
   }
 
 
-  productsContainer.innerHTML = "";
+  container.innerHTML = "";
 
 
-  data.forEach(function(product) {
+  data.forEach(
+    function(product) {
 
-    const productBox =
-      document.createElement("div");
 
-    productBox.innerHTML = `
+      const box =
+        document.createElement(
+          "div"
+        );
 
-      <h3>${product.name}</h3>
 
-      <p>
-        Price:
-        ₦${Number(product.price).toLocaleString()}
-      </p>
+      box.innerHTML = `
 
-      <p>
-        ${product.description || ""}
-      </p>
+        <h3>
+          ${product.name}
+        </h3>
 
-      <button
-        onclick="buyProduct(${product.id})">
-        Buy Now
-      </button>
+        <p>
+          Price:
+          ₦${Number(
+            product.price || 0
+          ).toLocaleString()}
+        </p>
 
-      <hr>
+        <p>
+          ${
+            product.description || ""
+          }
+        </p>
 
-    `;
+        <button
+          onclick="buyProduct(${product.id})"
+        >
+          Buy Now
+        </button>
 
-    productsContainer.appendChild(productBox);
+      `;
 
-  });
+
+      container.appendChild(
+        box
+      );
+
+    }
+  );
 
 }
 
 
-// ==============================
-// BUY PRODUCT
-// ==============================
 
-function buyProduct(productId) {
+/* =========================
+   BUY PRODUCT
+========================= */
 
-  window.location.href =
-    "product.html?id=" + productId;
+
+function buyProduct(
+  productId
+) {
+
+  alert(
+    "Purchase system will be connected next."
+  );
 
 }
 
 
-// ==============================
-// START
-// ==============================
+
+/* =========================
+   START
+========================= */
+
+
+loadWallet();
 
 loadProducts();
 
-</script>
 
-</body>
-
-</html>
+</script></body></html>
