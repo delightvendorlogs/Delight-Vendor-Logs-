@@ -7,7 +7,7 @@ content="width=device-width, initial-scale=1.0"
   <title>Login - Delight Vendor Logs</title>  <link
     rel="stylesheet"
     href="style.css"
-  >  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body><h1>
+  ></head><body><h1>
   Login
 </h1><form id="loginForm">  <label>
     Email
@@ -34,26 +34,48 @@ required
 <br><br>
 
 <button
-id="loginButton"
 type="submit"
+style="
+background:#111 !important;
+color:#fff !important;
+opacity:1 !important;
+visibility:visible !important;
+display:inline-block !important;
+"
 
 «»
 
 Login
 
-  </button></form><p id="message"></p><br><button
+  </button><br><br>
+
+<button
 type="button"
 onclick="window.location.href='forgot-password.html'"
+style="
+background:#111 !important;
+color:#fff !important;
+opacity:1 !important;
+visibility:visible !important;
+display:inline-block !important;
+"
 
 «»
 
 Forgot Password?
-</button>
 
-<p>
+  </button></form><p>
   Don't have an account?
 </p><button
+type="button"
 onclick="window.location.href='register.html'"
+style="
+background:#111 !important;
+color:#fff !important;
+opacity:1 !important;
+visibility:visible !important;
+display:inline-block !important;
+"
 
 «»
 
@@ -63,19 +85,22 @@ Create Account
 <br><br>
 
 <button
+type="button"
 onclick="window.location.href='index.html'"
+style="
+background:#111 !important;
+color:#fff !important;
+opacity:1 !important;
+visibility:visible !important;
+display:inline-block !important;
+"
 
 «»
 
 Back
 </button>
 
-<script>
-
-
-/* =========================
-   SUPABASE
-========================= */
+<p id="message"></p><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
 
 
 const SUPABASE_URL =
@@ -94,17 +119,11 @@ const supabaseClient =
 
 
 
-/* =========================
-   LOGIN
-========================= */
-
-
 document
   .getElementById("loginForm")
   .addEventListener(
     "submit",
     async function(event) {
-
 
       event.preventDefault();
 
@@ -127,16 +146,8 @@ document
           .getElementById("message");
 
 
-      const button =
-        document
-          .getElementById("loginButton");
-
-
       message.textContent =
         "Logging in...";
-
-
-      button.disabled = true;
 
 
       const {
@@ -144,11 +155,8 @@ document
         error
       } =
         await supabaseClient.auth.signInWithPassword({
-
           email: email,
-
           password: password
-
         });
 
 
@@ -159,32 +167,17 @@ document
         message.textContent =
           error.message;
 
-        button.disabled = false;
-
         return;
 
       }
 
 
-      if (!data || !data.user) {
+      if (data.user) {
 
-        message.textContent =
-          "Login failed. Please try again.";
-
-        button.disabled = false;
-
-        return;
+        window.location.href =
+          "dashboard.html";
 
       }
-
-
-      message.textContent =
-        "Login successful. Opening dashboard...";
-
-
-      window.location.href =
-        "dashboard.html";
-
 
     }
   );
