@@ -1,34 +1,172 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>My Profile - Delight Vendor Logs</title>  <link rel="stylesheet" href="style.css">  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body>  <header>
+    <h1>My Profile</h1>
+  </header>  <main><h2>Account Information</h2>
 
-<head>
-  <title>Profile - Delight Vendor Logs</title>
-  <link rel="stylesheet" href="style.css">
-</head>
+<div class="profile-card">
 
-<body>
+  <h3>👤 Name</h3>
+  <p id="userName">Loading...</p>
 
-<h1>My Profile</h1>
+  <h3>📧 Email</h3>
+  <p id="userEmail">Loading...</p>
 
-<h3>Account Information</h3>
+  <h3>💰 Wallet Balance</h3>
+  <p id="walletBalance">Loading...</p>
 
-<p>Name: Not set</p>
-<p>Email: Not set</p>
+</div>
 
-<h3>Wallet</h3>
-
-<p>Balance: ₦0.00</p>
+<br>
 
 <button onclick="window.location.href='wallet.html'">
-  Fund Wallet
+  💳 Fund Wallet
 </button>
 
-<br><br>
+<br>
+
+<button onclick="logout()">
+  🚪 Logout
+</button>
+
+<br>
 
 <button onclick="window.location.href='dashboard.html'">
-  Back to Dashboard
+  🏠 Back to Dashboard
 </button>
 
-</body>
+<p id="message"></p>
 
-</html>
+  </main>  <script>
+
+    /* =========================
+       SUPABASE
+    ========================= */
+
+    const SUPABASE_URL =
+      "https://hkfhehbhmucymusaytoe.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    /* =========================
+       LOAD PROFILE
+    ========================= */
+
+    async function loadProfile() {
+
+      const {
+        data: {
+          user
+        },
+        error
+      } = await supabaseClient.auth.getUser();
+
+
+      if (error || !user) {
+
+        window.location.href = "login.html";
+
+        return;
+      }
+
+
+      /* EMAIL */
+
+      document.getElementById("userEmail").textContent =
+        user.email || "Not available";
+
+
+      /* NAME */
+
+      const name =
+        user.user_metadata?.name;
+
+      document.getElementById("userName").textContent =
+        name || "Not set";
+
+
+      /* =========================
+         WALLET
+      ========================= */
+
+      const {
+        data: wallet,
+        error: walletError
+      } = await supabaseClient
+        .from("Wallet")
+        .select("balance")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+
+      if (walletError) {
+
+        console.error(walletError);
+
+        document.getElementById("walletBalance").textContent =
+          "Unable to load balance";
+
+        return;
+      }
+
+
+      if (!wallet) {
+
+        document.getElementById("walletBalance").textContent =
+          "₦0.00";
+
+        return;
+      }
+
+
+      document.getElementById("walletBalance").textContent =
+        "₦" +
+        Number(wallet.balance || 0)
+          .toLocaleString("en-NG", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          });
+
+    }
+
+
+    /* =========================
+       LOGOUT
+    ========================= */
+
+    async function logout() {
+
+      const {
+        error
+      } = await supabaseClient.auth.signOut();
+
+
+      if (error) {
+
+        document.getElementById("message").textContent =
+          error.message;
+
+        return;
+      }
+
+
+      window.location.href = "login.html";
+
+    }
+
+
+    /* =========================
+       START
+    ========================= */
+
+    loadProfile();
+
+  </script></body></html>
