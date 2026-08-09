@@ -1,210 +1,232 @@
-<!DOCTYPE html><html lang="en"><head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Fund Wallet - Delight Vendor Logs</title>  <link rel="stylesheet" href="style.css">  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body>  <header>
-    <h1>Fund Wallet</h1>
-  </header>  <main><h2>Your Balance</h2>
+     <!DOCTYPE html><html lang="en"><head>  <meta charset="UTF-8"><meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
 
-<div class="profile-card">
-  <p id="walletBalance">Loading...</p>
-</div>
+«»
 
-<h2>Add Money</h2>
+  <title>Fund Wallet - Delight Vendor Logs</title>  <link
+    rel="stylesheet"
+    href="style.css"
+  >  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body><header>  <h1>
+    Fund Wallet
+  </h1></header><main>  <h2>
+    Your Balance
+  </h2>  <div class="profile-card"><p id="walletBalance">
+  Loading...
+</p>
 
-<input
-  id="amount"
-  type="number"
-  min="100"
-  placeholder="Enter amount"
->
+  </div>  <h2>
+    Add Money
+  </h2><input
+id="amount"
+type="number"
+min="100"
+placeholder="Enter amount"
 
-<h2>Select Payment Method</h2>
+«»
 
-<div>
+  <h2>
+    Select Payment Method
+  </h2>  <div><label>
 
-  <label>
-    <input
-      type="radio"
-      name="payment"
-      value="bank"
-    >
-    Bank Transfer
-  </label>
+  <input
+    type="radio"
+    name="payment"
+    value="bank"
+  >
 
-  <br><br>
+  Bank Transfer
 
-  <label>
-    <input
-      type="radio"
-      name="payment"
-      value="card"
-    >
-    Card
-  </label>
-
-</div>
-
-<br>
-
-<button onclick="continuePayment()">
-  Continue
-</button>
-
-<p id="message"></p>
-
-<br>
-
-<button onclick="window.location.href='dashboard.html'">
-  🏠 Back to Dashboard
-</button>
-
-  </main>  <script>
-
-    /* =========================
-       SUPABASE
-    ========================= */
-
-    const SUPABASE_URL =
-      "https://hkfhehbhmucymusaytoe.supabase.co";
-
-    const SUPABASE_KEY =
-      "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
-
-    const supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-      );
+</label>
 
 
-    /* =========================
-       LOAD WALLET
-    ========================= */
-
-    async function loadWallet() {
-
-      const {
-        data: {
-          user
-        },
-        error
-      } = await supabaseClient.auth.getUser();
+<br><br>
 
 
-      if (error || !user) {
+<label>
 
-        window.location.href = "login.html";
+  <input
+    type="radio"
+    name="payment"
+    value="card"
+  >
 
-        return;
+  Card
+
+</label>
+
+  </div>  <br><button
+onclick="continuePayment()"
+
+«»
+
+Continue
+
+  </button>  <p id="message"></p>  <br><button
+onclick="window.location.href='dashboard.html'"
+
+«»
+
+🏠 Back to Dashboard
+
+  </button></main><script>
+
+
+/* =========================
+   SUPABASE
+========================= */
+
+
+const SUPABASE_URL =
+  "https://hkfhehbhmucymusaytoe.supabase.co";
+
+
+const SUPABASE_KEY =
+  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+
+/* =========================
+   LOAD WALLET
+========================= */
+
+
+async function loadWallet() {
+
+
+  const {
+    data: {
+      user
+    },
+    error: userError
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if (userError || !user) {
+
+    window.location.href =
+      "login.html";
+
+    return;
+
+  }
+
+
+  const {
+    data: wallet,
+    error
+  } =
+    await supabaseClient.rpc(
+      "ensure_my_wallet"
+    );
+
+
+  if (error) {
+
+    console.error(error);
+
+    document.getElementById(
+      "walletBalance"
+    ).textContent =
+      "Unable to load balance.";
+
+    return;
+
+  }
+
+
+  const balance =
+    wallet?.balance ?? 0;
+
+
+  document.getElementById(
+    "walletBalance"
+  ).textContent =
+    "₦" +
+    Number(balance).toLocaleString(
+      "en-NG",
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
       }
+    );
+
+}
 
 
-      const {
-        data: wallet,
-        error: walletError
-      } = await supabaseClient
-        .from("Wallet")
-        .select("balance")
-        .eq("user_id", user.id)
-        .maybeSingle();
+
+/* =========================
+   CONTINUE PAYMENT
+========================= */
 
 
-      if (walletError) {
-
-        console.error(walletError);
-
-        document.getElementById(
-          "walletBalance"
-        ).textContent =
-          "Unable to load balance.";
-
-        return;
-      }
+function continuePayment() {
 
 
-      const balance =
-        wallet?.balance || 0;
-
-
+  const amount =
+    Number(
       document.getElementById(
-        "walletBalance"
-      ).textContent =
-        "₦" +
-        Number(balance).toLocaleString(
-          "en-NG",
-          {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }
-        );
-
-    }
+        "amount"
+      ).value
+    );
 
 
-    /* =========================
-       CONTINUE PAYMENT
-    ========================= */
-
-    function continuePayment() {
-
-      const amount =
-        Number(
-          document.getElementById("amount").value
-        );
-
-      const payment =
-        document.querySelector(
-          'input[name="payment"]:checked'
-        );
-
-      const message =
-        document.getElementById("message");
+  const payment =
+    document.querySelector(
+      'input[name="payment"]:checked'
+    );
 
 
-      if (!amount || amount < 100) {
-
-        message.textContent =
-          "Please enter at least ₦100.";
-
-        return;
-      }
+  const message =
+    document.getElementById(
+      "message"
+    );
 
 
-      if (!payment) {
+  if (
+    !amount ||
+    amount < 100
+  ) {
 
-        message.textContent =
-          "Please select a payment method.";
+    message.textContent =
+      "Please enter at least ₦100.";
 
-        return;
-      }
+    return;
 
-
-      /*
-        Payment integration will be connected here.
-
-        Bank Transfer:
-        → Generate payment/reference
-        → Customer transfers money
-        → Payment is verified
-        → Wallet is credited
-
-        Card:
-        → Open payment gateway
-        → Customer pays
-        → Payment is verified
-        → Wallet is credited
-      */
+  }
 
 
-      message.textContent =
-        "Payment system will be connected next.";
+  if (!payment) {
 
-    }
+    message.textContent =
+      "Please select a payment method.";
+
+    return;
+
+  }
 
 
-    /* =========================
-       START
-    ========================= */
+  message.textContent =
+    "Payment system will be connected next.";
 
-    loadWallet();
+}
 
-  </script></body></html>
+
+
+/* =========================
+   START
+========================= */
+
+
+loadWallet();
+
+
+</script></body></html>           
