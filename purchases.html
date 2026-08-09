@@ -1,21 +1,175 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>My Purchases - Delight Vendor Logs</title>  <link rel="stylesheet" href="style.css">  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body>  <header>
+    <h1>My Purchases</h1>
+  </header>  <main><h2>Purchase History</h2>
 
-<head>
-  <title>My Purchases - Delight Vendor Logs</title>
-  <link rel="stylesheet" href="style.css">
-</head>
+<div id="purchases">
 
-<body>
+  <p>Loading purchases...</p>
 
-<h1>My Purchases</h1>
+</div>
 
-<p>You haven't purchased anything yet.</p>
+<br>
 
 <button onclick="window.location.href='dashboard.html'">
-  Back to Dashboard
+  🏠 Back to Dashboard
 </button>
 
-</body>
+  </main>  <script>
 
-</html>
+    /* =========================
+       SUPABASE
+    ========================= */
+
+    const SUPABASE_URL =
+      "https://hkfhehbhmucymusaytoe.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    /* =========================
+       LOAD PURCHASES
+    ========================= */
+
+    async function loadPurchases() {
+
+      const container =
+        document.getElementById("purchases");
+
+
+      const {
+        data: {
+          user
+        },
+        error
+      } = await supabaseClient.auth.getUser();
+
+
+      if (error || !user) {
+
+        window.location.href = "login.html";
+
+        return;
+      }
+
+
+      /*
+        We will connect this page
+        to the real purchase table
+        after we confirm your
+        Supabase database structure.
+      */
+
+
+      const {
+        data,
+        error: purchaseError
+      } = await supabaseClient
+        .from("Purchase")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", {
+          ascending: false
+        });
+
+
+      if (purchaseError) {
+
+        console.error(purchaseError);
+
+        container.innerHTML =
+          "<p>Unable to load purchases.</p>";
+
+        return;
+      }
+
+
+      if (!data || data.length === 0) {
+
+        container.innerHTML =
+          "<p>You haven't purchased anything yet.</p>";
+
+        return;
+      }
+
+
+      container.innerHTML = "";
+
+
+      data.forEach(function(purchase) {
+
+        const box =
+          document.createElement("div");
+
+
+        const amount =
+          Number(
+            purchase.amount || 0
+          ).toLocaleString(
+            "en-NG",
+            {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            }
+          );
+
+
+        const date =
+          purchase.created_at
+            ? new Date(
+                purchase.created_at
+              ).toLocaleString()
+            : "Date unavailable";
+
+
+        box.style.background = "white";
+        box.style.padding = "18px";
+        box.style.margin = "12px 0";
+        box.style.borderRadius = "12px";
+        box.style.textAlign = "left";
+
+
+        box.innerHTML = `
+
+          <h3>
+            ${purchase.product_name || "Purchase"}
+          </h3>
+
+          <p>
+            Amount: ₦${amount}
+          </p>
+
+          <p>
+            Status:
+            ${purchase.status || "Pending"}
+          </p>
+
+          <small>
+            ${date}
+          </small>
+
+        `;
+
+
+        container.appendChild(box);
+
+      });
+
+    }
+
+
+    /* =========================
+       START
+    ========================= */
+
+    loadPurchases();
+
+  </script></body></html>
