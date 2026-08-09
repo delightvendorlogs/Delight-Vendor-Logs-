@@ -1,427 +1,478 @@
 * {
   box-sizing: border-box;
-  }
+}
 
 html,
 body {
-width: 100%;
-min-height: 100%;
-margin: 0;
-padding: 0;
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-font-family: Arial, sans-serif;
-background: #f5f5f5;
-color: #222;
-font-size: 18px;
-line-height: 1.5;
-text-align: center;
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  color: #222;
+  font-size: 18px;
+  line-height: 1.5;
+  text-align: center;
 }
 
+
 /* =========================
-HEADER
+   HEADER
 ========================= */
 
 header {
-width: 100%;
-min-height: 70px;
-padding: 14px 18px;
+  width: 100%;
+  min-height: 70px;
+  padding: 14px 18px;
 
-background: #111;
-color: white;
+  background: #111;
+  color: #fff;
 
-display: flex;
-justify-content: space-between;
-align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-position: relative;
-z-index: 10;
+  position: relative;
+  z-index: 10;
 }
 
 header h1 {
-margin: 0;
-font-size: 24px;
+  margin: 0;
+  font-size: 24px;
+  color: #fff;
+  -webkit-text-fill-color: #fff;
 }
+
+
+/* Header menu button */
 
 header button {
-width: auto;
-min-height: 48px;
+  width: auto;
+  min-height: 48px;
 
-margin: 0;
-padding: 6px 14px;
+  margin: 0;
+  padding: 6px 14px;
 
-font-size: 30px;
+  font-size: 30px !important;
 
-background: transparent;
-color: white;
+  background: transparent !important;
+
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
 }
 
+
 /* =========================
-MAIN CONTENT
+   MAIN CONTENT
 ========================= */
 
 main {
-width: 100%;
-max-width: 700px;
+  width: 100%;
+  max-width: 700px;
 
-margin: 0 auto;
+  margin: 0 auto;
 
-padding: 20px 16px 40px;
+  padding: 20px 16px 40px;
 }
 
 section {
-width: 100%;
-margin-bottom: 28px;
+  width: 100%;
+  margin-bottom: 28px;
 }
 
 h1 {
-font-size: 30px;
+  font-size: 30px;
 }
 
 h2 {
-font-size: 24px;
-margin: 20px 0 12px;
+  font-size: 24px;
+  margin: 20px 0 12px;
 }
 
 h3 {
-font-size: 21px;
+  font-size: 21px;
 }
 
 p {
-font-size: 18px;
+  font-size: 18px;
 }
 
+
 /* =========================
-BUTTONS
+   ALL BUTTONS
 ========================= */
 
 button {
-min-height: 52px;
+  min-height: 52px;
 
-padding: 13px 22px;
-margin: 8px 4px;
+  padding: 13px 22px;
+  margin: 8px 4px;
 
-font-family: Arial, sans-serif;
-font-size: 18px;
-font-weight: bold;
+  font-family: Arial, sans-serif;
 
-border: none;
-border-radius: 10px;
+  font-size: 18px !important;
+  font-weight: bold !important;
 
-background-color: #111111;
-color: #ffffff;
+  border: none;
+  border-radius: 10px;
 
-cursor: pointer;
+  background: #111111 !important;
 
-opacity: 1;
-visibility: visible;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  cursor: pointer;
+
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+button * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+button[type="submit"],
+button[type="button"],
+button[onclick] {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+
+  font-size: 18px !important;
+  font-weight: bold !important;
 }
 
 button:hover {
-background-color: #222222;
-color: #ffffff;
+  background: #222222 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 button:active {
-transform: scale(0.98);
+  transform: scale(0.98);
 }
 
-/* =========================
-FORM BUTTONS
-========================= */
-
-form button {
-display: inline-block;
-
-width: auto;
-min-width: 130px;
-min-height: 52px;
-
-background-color: #111111;
-color: #ffffff;
-
-opacity: 1;
-visibility: visible;
-}
 
 /* =========================
-INPUTS
+   INPUTS
 ========================= */
 
 input,
 textarea,
 select {
-width: 100%;
-max-width: 600px;
+  width: 100%;
+  max-width: 600px;
 
-min-height: 54px;
+  min-height: 54px;
 
-padding: 13px 15px;
-margin: 6px auto;
+  padding: 13px 15px;
+  margin: 6px auto;
 
-font-family: Arial, sans-serif;
-font-size: 18px;
+  font-family: Arial, sans-serif;
+  font-size: 18px;
 
-border: 1px solid #ccc;
-border-radius: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
 
-background: white;
-color: #222;
+  background: #fff;
+  color: #222;
+
+  -webkit-text-fill-color: #222;
 }
 
 textarea {
-min-height: 120px;
-resize: vertical;
+  min-height: 120px;
+  resize: vertical;
 }
 
+
 /* =========================
-PRODUCTS & SERVICES
+   RADIO BUTTONS
+========================= */
+
+input[type="radio"] {
+  width: 24px;
+  height: 24px;
+
+  min-height: auto;
+
+  margin: 8px;
+
+  accent-color: #111;
+}
+
+
+/* =========================
+   PRODUCTS & SERVICES
 ========================= */
 
 #products,
 #services {
-width: 100%;
+  width: 100%;
 }
 
 #products > div,
 #services > div {
-width: 100%;
+  width: 100%;
 
-background: white;
+  background: #fff;
 
-margin: 14px 0;
-padding: 20px;
+  margin: 14px 0;
+  padding: 20px;
 
-border-radius: 14px;
+  border-radius: 14px;
 
-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.08);
 
-text-align: left;
+  text-align: left;
 }
 
 #products h3,
 #services h3 {
-margin-top: 0;
+  margin-top: 0;
 }
 
 #products button,
 #services button {
-width: 100%;
+  width: 100%;
 }
 
+
 /* =========================
-LISTS
+   LISTS
 ========================= */
 
 ul {
-list-style: none;
-padding: 0;
+  list-style: none;
+  padding: 0;
 }
 
 li {
-width: 100%;
-max-width: 700px;
+  width: 100%;
+  max-width: 700px;
 
-background: white;
+  background: #fff;
 
-margin: 12px auto;
-padding: 18px;
+  margin: 12px auto;
+  padding: 18px;
 
-border-radius: 12px;
+  border-radius: 12px;
 
-font-size: 18px;
+  font-size: 18px;
 }
 
+
 /* =========================
-WALLET BALANCE
+   WALLET BALANCE
 ========================= */
 
 #walletBalance {
-font-size: 30px;
-font-weight: bold;
+  font-size: 30px;
+  font-weight: bold;
 
-background: white;
+  background: #fff;
 
-padding: 20px;
+  padding: 20px;
 
-border-radius: 14px;
+  border-radius: 14px;
 
-margin: 10px 0;
+  margin: 10px 0;
 
-color: #111111;
+  color: #111 !important;
+  -webkit-text-fill-color: #111 !important;
 }
 
+
 /* =========================
-PROFILE CARD
+   PROFILE CARD
 ========================= */
 
 .profile-card {
-width: 100%;
+  width: 100%;
 
-background: white;
+  background: #fff;
 
-padding: 20px;
+  padding: 20px;
 
-border-radius: 14px;
+  border-radius: 14px;
 
-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
+
 /* =========================
-SIDE MENU
+   SIDE MENU
 ========================= */
 
 #menu {
-position: fixed !important;
+  position: fixed !important;
 
-top: 0 !important;
-right: 0 !important;
-bottom: 0 !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
 
-width: min(330px, 85vw) !important;
-height: 100vh !important;
+  width: min(330px, 85vw) !important;
+  height: 100vh !important;
 
-margin: 0 !important;
-padding: 26px 18px !important;
+  margin: 0 !important;
+  padding: 26px 18px !important;
 
-background: #ffffff !important;
+  background: #fff !important;
 
-opacity: 1 !important;
+  opacity: 1 !important;
 
-color: #222 !important;
+  color: #222 !important;
 
-box-shadow: -6px 0 20px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    -6px 0 20px rgba(0, 0, 0, 0.3);
 
-border-left: 1px solid #ddd;
+  border-left: 1px solid #ddd;
 
-z-index: 999999 !important;
+  z-index: 999999 !important;
 
-text-align: left;
+  text-align: left;
 
-overflow-y: auto;
+  overflow-y: auto;
 }
+
 
 /* MENU TITLE */
 
 #menu h3 {
-color: #111;
+  color: #111 !important;
+  -webkit-text-fill-color: #111 !important;
 
-font-size: 25px;
+  font-size: 25px;
 
-margin: 2px 0 20px;
+  margin: 2px 0 20px;
 
-padding-bottom: 14px;
+  padding-bottom: 14px;
 
-border-bottom: 2px solid #eee;
+  border-bottom: 2px solid #eee;
 }
+
 
 /* MENU ITEMS */
 
 #menu p {
-color: #222 !important;
+  color: #222 !important;
+  -webkit-text-fill-color: #222 !important;
 
-font-size: 18px;
+  font-size: 18px;
 
-min-height: 50px;
+  min-height: 50px;
 
-padding: 13px 10px;
+  padding: 13px 10px;
 
-margin: 0 0 5px 0;
+  margin: 0 0 5px 0;
 
-display: flex;
+  display: flex;
 
-align-items: center;
+  align-items: center;
 
-border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #eee;
 
-cursor: pointer;
+  cursor: pointer;
 }
+
 
 /* MENU LINKS */
 
 #menu a {
-color: #222;
+  color: #222 !important;
+  -webkit-text-fill-color: #222 !important;
 
-text-decoration: none;
+  text-decoration: none;
 
-width: 100%;
+  width: 100%;
 }
+
 
 /* MENU HOVER */
 
 #menu p:hover {
-background: #f5f5f5;
+  background: #f5f5f5;
 
-border-radius: 8px;
+  border-radius: 8px;
 }
+
 
 /* CLOSE */
 
 #menu p:last-child {
-margin-top: 18px;
+  margin-top: 18px;
 
-background: #111 !important;
+  background: #111 !important;
 
-color: white !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
 
-border-radius: 9px;
+  border-radius: 9px;
 
-justify-content: center;
+  justify-content: center;
 
-border: none;
+  border: none;
 }
 
+
 /* =========================
-MOBILE
+   MOBILE
 ========================= */
 
 @media (max-width: 600px) {
 
-header h1 {
-font-size: 21px;
-}
+  header h1 {
+    font-size: 21px;
+  }
 
-main {
-padding: 18px 14px 35px;
-}
+  main {
+    padding: 18px 14px 35px;
+  }
 
-h2 {
-font-size: 23px;
-}
+  h2 {
+    font-size: 23px;
+  }
 
-button {
-min-height: 54px;
+  button {
+    min-height: 54px;
 
-font-size: 18px;
+    font-size: 18px !important;
 
-}
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+  }
 
-input,
-textarea,
-select {
-min-height: 54px;
+  input,
+  textarea,
+  select {
+    min-height: 54px;
 
-font-size: 18px;
+    font-size: 18px;
+  }
 
-}
+  #menu {
+    width: 82vw !important;
 
-#menu {
-width: 82vw !important;
+    padding: 24px 16px !important;
+  }
 
-padding: 24px 16px !important;
+  #menu p {
+    font-size: 18px;
 
-}
+    min-height: 48px;
 
-#menu p {
-font-size: 18px;
+    padding: 12px 8px;
 
-min-height: 48px;
-
-padding: 12px 8px;
-
-margin-bottom: 4px;
-
-}
+    margin-bottom: 4px;
+  }
 
 }
