@@ -1,230 +1,125 @@
-<!DOCTYPE html><html lang="en"><head>  <meta charset="UTF-8"><meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
+<!DOCTYPE html>
+<html lang="en">
 
-«»
+<head>
 
-  <title>Fund Wallet - Delight Vendor Logs</title>  <link
-    rel="stylesheet"
-    href="style.css"
-  >  <script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-  ></script></head><body><header>  <h1>
-    Fund Wallet
-  </h1></header><main>  <h2>
-    Your Balance
-  </h2>  <div class="profile-card"><p id="walletBalance">
-  Loading...
-</p>
+  <meta charset="UTF-8">
 
-  </div>  <h2>
-    Add Money
-  </h2><input
-id="amount"
-type="number"
-min="100"
-placeholder="Enter amount"
-
-«»
-
-  <h2>
-    Select Payment Method
-  </h2>  <div><label>
-
-  <input
-    type="radio"
-    name="payment"
-    value="bank"
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
   >
 
-  Bank Transfer
+  <title>Fund Wallet - Delight Vendor Logs</title>
 
-</label>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
 
 
-<br><br>
+<body>
 
 
-<label>
+<header>
+
+  <h1>Fund Wallet</h1>
+
+</header>
+
+
+<main>
+
+
+  <h2>Your Balance</h2>
+
+
+  <div class="profile-card">
+
+    <p id="walletBalance">
+      Loading...
+    </p>
+
+  </div>
+
+
+  <h2>Add Money</h2>
+
 
   <input
-    type="radio"
-    name="payment"
-    value="card"
+    id="amount"
+    type="number"
+    min="100"
+    placeholder="Enter amount"
   >
 
-  Card
 
-</label>
+  <h2>Select Payment Method</h2>
 
-  </div>  <br><button
-type="button"
-onclick="continuePayment()"
-style="
-background:#111 !important;
-color:#fff !important;
-opacity:1 !important;
-visibility:visible !important;
-display:inline-block !important;
-"
 
-«»
+  <div>
 
-Continue
+    <label>
 
-  </button>  <p id="message"></p>  <br><button
-type="button"
-onclick="window.location.href='dashboard.html'"
-style="
-background:#111 !important;
-color:#fff !important;
-opacity:1 !important;
-visibility:visible !important;
-display:inline-block !important;
-"
+      <input
+        type="radio"
+        name="payment"
+        value="bank"
+      >
 
-«»
+      Bank Transfer
 
-🏠 Back to Dashboard
+    </label>
 
-  </button></main><script>
 
+    <br><br>
 
-const SUPABASE_URL =
-  "https://hkfhehbhmucymusaytoe.supabase.co";
 
+    <label>
 
-const SUPABASE_KEY =
-  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+      <input
+        type="radio"
+        name="payment"
+        value="card"
+      >
 
+      Card
 
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+    </label>
 
+  </div>
 
 
-async function loadWallet() {
+  <br>
 
 
-  const {
-    data: {
-      user
-    },
-    error: userError
-  } =
-    await supabaseClient.auth.getUser();
+  <!-- CONTINUE -->
 
+  <div
+    onclick="continuePayment()"
+    style="
+      display:inline-block;
+      background:#111;
+      color:#fff;
+      padding:15px 30px;
+      margin:10px;
+      border-radius:10px;
+      font-family:Arial,sans-serif;
+      font-size:18px;
+      font-weight:bold;
+      cursor:pointer;
+    "
+  >
+    Continue
+  </div>
 
-  if (userError || !user) {
 
-    window.location.href =
-      "login.html";
+  <p id="message"></p>
 
-    return;
 
-  }
+  <br>
 
 
-  const {
-    data: wallet,
-    error
-  } =
-    await supabaseClient.rpc(
-      "ensure_my_wallet"
-    );
+  <!-- BACK TO DASHBOARD -->
 
-
-  if (error) {
-
-    console.error(error);
-
-    document.getElementById(
-      "walletBalance"
-    ).textContent =
-      "Unable to load balance.";
-
-    return;
-
-  }
-
-
-  const balance =
-    wallet?.balance ?? 0;
-
-
-  document.getElementById(
-    "walletBalance"
-  ).textContent =
-    "₦" +
-    Number(balance).toLocaleString(
-      "en-NG",
-      {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }
-    );
-
-}
-
-
-
-function continuePayment() {
-
-
-  const amount =
-    Number(
-      document.getElementById(
-        "amount"
-      ).value
-    );
-
-
-  const payment =
-    document.querySelector(
-      'input[name="payment"]:checked'
-    );
-
-
-  const message =
-    document.getElementById(
-      "message"
-    );
-
-
-  if (
-    !amount ||
-    amount < 100
-  ) {
-
-    message.textContent =
-      "Please enter at least ₦100.";
-
-    return;
-
-  }
-
-
-  if (!payment) {
-
-    message.textContent =
-      "Please select a payment method.";
-
-    return;
-
-  }
-
-
-  message.textContent =
-    "Payment system will be connected next.";
-
-}
-
-
-
-loadWallet();
-
-
-</script></body></html>
+  <div
+   
