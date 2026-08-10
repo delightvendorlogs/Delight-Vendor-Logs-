@@ -1,17 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <title>Admin - Delight Vendor Logs</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 </head>
+
 
 <body>
 
+
 <h1>Admin Dashboard</h1>
+
 
 <!-- =========================
      ADD PRODUCT
@@ -19,73 +34,129 @@
 
 <h2>Add Product</h2>
 
+
 <label>Product Name</label>
+
 <br>
-<input id="productName" type="text" placeholder="Enter product name">
+
+<input
+  id="productName"
+  type="text"
+  placeholder="Enter product name"
+>
+
 
 <br><br>
+
 
 <label>Price</label>
+
 <br>
-<input id="productPrice" type="number" placeholder="Enter price">
+
+<input
+  id="productPrice"
+  type="number"
+  placeholder="Enter price"
+>
+
 
 <br><br>
 
+
 <label>Category</label>
+
 <br>
 
 <select id="productCategory">
-  <option>Digital Products</option>
-  <option>Subscriptions</option>
-  <option>Files</option>
-  <option>Other Services</option>
+
+  <option value="Digital Products">
+    Digital Products
+  </option>
+
+  <option value="Subscriptions">
+    Subscriptions
+  </option>
+
+  <option value="Files">
+    Files
+  </option>
+
+  <option value="Other Services">
+    Other Services
+  </option>
+
 </select>
+
 
 <br><br>
 
+
 <label>Description</label>
+
 <br>
 
 <textarea
   id="productDescription"
-  placeholder="Describe the product"></textarea>
+  placeholder="Describe the product"
+></textarea>
+
 
 <br><br>
 
+
 <label>Image URL</label>
+
 <br>
 
 <input
   id="productImage"
   type="text"
-  placeholder="Paste image URL">
+  placeholder="Paste image URL"
+>
+
 
 <br><br>
 
+
 <label>Stock</label>
+
 <br>
 
 <input
   id="productStock"
   type="number"
   value="0"
-  min="0">
+  min="0"
+>
+
 
 <br><br>
 
+
 <label>Status</label>
+
 <br>
 
 <select id="productStatus">
-  <option value="Available">Available</option>
-  <option value="Unavailable">Unavailable</option>
+
+  <option value="Available">
+    Available
+  </option>
+
+  <option value="Unavailable">
+    Unavailable
+  </option>
+
 </select>
 
+
 <br><br>
+
 
 <button onclick="addProduct()">
   Add Product
 </button>
+
 
 <p id="productMessage"></p>
 
@@ -99,12 +170,16 @@
 
 <h2>Add Inventory</h2>
 
+
 <p>
 Add a legitimate digital item to one of your products.
 </p>
 
+
 <label>Select Product</label>
+
 <br>
+
 
 <select id="inventoryProduct">
 
@@ -114,20 +189,30 @@ Add a legitimate digital item to one of your products.
 
 </select>
 
+
 <br><br>
 
-<label>Digital Item / Delivery Information</label>
+
+<label>
+  Digital Item / Delivery Information
+</label>
+
 <br>
+
 
 <textarea
   id="inventoryData"
-  placeholder="Enter the legitimate digital item/details to be delivered after purchase"></textarea>
+  placeholder="Enter the legitimate digital item/details to be delivered after purchase"
+></textarea>
+
 
 <br><br>
+
 
 <button onclick="addInventory()">
   Add Inventory
 </button>
+
 
 <p id="inventoryMessage"></p>
 
@@ -141,43 +226,56 @@ Add a legitimate digital item to one of your products.
 
 <h2>Store Management</h2>
 
-<p>
-Products:
-<span id="productCount">0</span>
-</p>
 
 <p>
-Available Inventory:
-<span id="inventoryCount">0</span>
+  Products:
+  <span id="productCount">0</span>
 </p>
 
-<p>
-Pending Orders: 0
-</p>
 
 <p>
-Completed Orders: 0
+  Available Inventory:
+  <span id="inventoryCount">0</span>
+</p>
+
+
+<p>
+  Pending Orders:
+  <span id="pendingOrderCount">0</span>
+</p>
+
+
+<p>
+  Completed Orders:
+  <span id="completedOrderCount">0</span>
 </p>
 
 
 <br>
 
-<button onclick="window.location.href='dashboard.html'">
+
+<button
+  onclick="window.location.href='dashboard.html'"
+>
   Back to Dashboard
 </button>
 
 
 <script>
 
-// ========================================
-// SUPABASE CONNECTION
-// ========================================
+
+/* ========================================
+   SUPABASE CONNECTION
+======================================== */
+
 
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
 
+
 const SUPABASE_KEY =
   "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
 
 const supabaseClient =
   window.supabase.createClient(
@@ -186,53 +284,227 @@ const supabaseClient =
   );
 
 
-// ========================================
-// ADD PRODUCT
-// ========================================
+/* ========================================
+   ADMIN ACCESS CHECK
+======================================== */
+
+
+async function checkAdminAccess() {
+
+
+  const {
+    data: {
+      user
+    },
+    error: userError
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  /* NOT LOGGED IN */
+
+  if (userError || !user) {
+
+    window.location.href =
+      "login.html";
+
+    return false;
+
+  }
+
+
+  /* CHECK ADMIN */
+
+  const {
+    data: isAdmin,
+    error
+  } =
+    await supabaseClient.rpc(
+      "is_admin"
+    );
+
+
+  if (error) {
+
+    console.error(
+      "Admin check error:",
+      error
+    );
+
+
+    document.body.innerHTML = `
+
+      <div style="
+        padding:30px;
+        text-align:center;
+        font-family:Arial;
+      ">
+
+        <h2>
+          Unable to verify admin access.
+        </h2>
+
+        <p>
+          ${error.message}
+        </p>
+
+      </div>
+
+    `;
+
+    return false;
+
+  }
+
+
+  /* NOT ADMIN */
+
+  if (!isAdmin) {
+
+    document.body.innerHTML = `
+
+      <div style="
+        padding:30px;
+        text-align:center;
+        font-family:Arial;
+      ">
+
+        <h2>
+          Access Denied
+        </h2>
+
+        <p>
+          You are not authorized to access the admin dashboard.
+        </p>
+
+        <br>
+
+        <button
+          onclick="window.location.href='dashboard.html'"
+          style="
+            background:#111;
+            color:#fff;
+            padding:14px 22px;
+            border:none;
+            border-radius:10px;
+            font-size:17px;
+            font-weight:bold;
+          "
+        >
+          Back to Dashboard
+        </button>
+
+      </div>
+
+    `;
+
+    return false;
+
+  }
+
+
+  /* ADMIN APPROVED */
+
+  return true;
+
+}
+
+
+/* ========================================
+   ADD PRODUCT
+======================================== */
+
 
 async function addProduct() {
 
+
   const name =
-    document.getElementById("productName").value.trim();
+    document
+      .getElementById("productName")
+      .value
+      .trim();
+
 
   const price =
-    Number(document.getElementById("productPrice").value);
+    Number(
+      document
+        .getElementById("productPrice")
+        .value
+    );
+
 
   const category =
-    document.getElementById("productCategory").value;
+    document
+      .getElementById("productCategory")
+      .value;
+
 
   const description =
-    document.getElementById("productDescription").value.trim();
+    document
+      .getElementById("productDescription")
+      .value
+      .trim();
+
 
   const image_url =
-    document.getElementById("productImage").value.trim();
+    document
+      .getElementById("productImage")
+      .value
+      .trim();
+
 
   const stock =
-    Number(document.getElementById("productStock").value);
+    Number(
+      document
+        .getElementById("productStock")
+        .value
+    );
+
 
   const status =
-    document.getElementById("productStatus").value;
+    document
+      .getElementById("productStatus")
+      .value;
+
 
   const message =
-    document.getElementById("productMessage");
+    document
+      .getElementById("productMessage");
 
 
   if (!name) {
+
     message.textContent =
       "Please enter a product name.";
+
     return;
+
   }
 
-  if (price < 0 || isNaN(price)) {
+
+  if (
+    price < 0 ||
+    isNaN(price)
+  ) {
+
     message.textContent =
       "Please enter a valid price.";
+
     return;
+
   }
 
-  if (stock < 0 || isNaN(stock)) {
+
+  if (
+    stock < 0 ||
+    isNaN(stock)
+  ) {
+
     message.textContent =
       "Please enter a valid stock number.";
+
     return;
+
   }
 
 
@@ -240,10 +512,14 @@ async function addProduct() {
     "Adding product...";
 
 
-  const { data, error } =
+  const {
+    data,
+    error
+  } =
     await supabaseClient
       .from("Product")
       .insert([
+
         {
           name: name,
           price: price,
@@ -253,6 +529,7 @@ async function addProduct() {
           stock: stock,
           status: status
         }
+
       ])
       .select()
       .single();
@@ -263,9 +540,11 @@ async function addProduct() {
     console.error(error);
 
     message.textContent =
-      "Error: " + error.message;
+      "Error: " +
+      error.message;
 
     return;
+
   }
 
 
@@ -273,29 +552,56 @@ async function addProduct() {
     "✅ Product added successfully!";
 
 
-  document.getElementById("productName").value = "";
-  document.getElementById("productPrice").value = "";
-  document.getElementById("productDescription").value = "";
-  document.getElementById("productImage").value = "";
-  document.getElementById("productStock").value = "0";
+  document
+    .getElementById("productName")
+    .value = "";
+
+
+  document
+    .getElementById("productPrice")
+    .value = "";
+
+
+  document
+    .getElementById("productDescription")
+    .value = "";
+
+
+  document
+    .getElementById("productImage")
+    .value = "";
+
+
+  document
+    .getElementById("productStock")
+    .value = "0";
 
 
   loadProducts();
+
   loadProductCount();
+
 }
 
 
-// ========================================
-// LOAD PRODUCTS INTO INVENTORY DROPDOWN
-// ========================================
+/* ========================================
+   LOAD PRODUCTS
+======================================== */
+
 
 async function loadProducts() {
 
+
   const dropdown =
-    document.getElementById("inventoryProduct");
+    document.getElementById(
+      "inventoryProduct"
+    );
 
 
-  const { data, error } =
+  const {
+    data,
+    error
+  } =
     await supabaseClient
       .from("Product")
       .select("id, name")
@@ -308,10 +614,12 @@ async function loadProducts() {
 
     console.error(error);
 
+
     dropdown.innerHTML =
       '<option value="">Unable to load products</option>';
 
     return;
+
   }
 
 
@@ -319,38 +627,65 @@ async function loadProducts() {
     '<option value="">Choose a product</option>';
 
 
-  data.forEach(function(product) {
+  data.forEach(
+    function(product) {
 
-    const option =
-      document.createElement("option");
 
-    option.value =
-      product.id;
+      const option =
+        document.createElement(
+          "option"
+        );
 
-    option.textContent =
-      product.name;
 
-    dropdown.appendChild(option);
+      option.value =
+        product.id;
 
-  });
+
+      option.textContent =
+        product.name;
+
+
+      dropdown.appendChild(
+        option
+      );
+
+
+    }
+  );
 
 }
 
 
-// ========================================
-// ADD INVENTORY
-// ========================================
+/* ========================================
+   ADD INVENTORY
+======================================== */
+
 
 async function addInventory() {
 
+
   const productId =
-    document.getElementById("inventoryProduct").value;
+    document
+      .getElementById(
+        "inventoryProduct"
+      )
+      .value;
+
 
   const itemData =
-    document.getElementById("inventoryData").value.trim();
+    document
+      .getElementById(
+        "inventoryData"
+      )
+      .value
+      .trim();
+
 
   const message =
-    document.getElementById("inventoryMessage");
+    document
+      .getElementById(
+        "inventoryMessage"
+      );
 
 
   if (!productId) {
@@ -359,6 +694,7 @@ async function addInventory() {
       "Please select a product.";
 
     return;
+
   }
 
 
@@ -368,6 +704,7 @@ async function addInventory() {
       "Please enter the digital item/details.";
 
     return;
+
   }
 
 
@@ -375,15 +712,24 @@ async function addInventory() {
     "Adding inventory...";
 
 
-  const { error } =
+  const {
+    error
+  } =
     await supabaseClient
       .from("product_inventory")
       .insert([
+
         {
-          product_id: Number(productId),
-          item_data: itemData,
-          status: "available"
+          product_id:
+            Number(productId),
+
+          item_data:
+            itemData,
+
+          status:
+            "available"
         }
+
       ]);
 
 
@@ -391,10 +737,13 @@ async function addInventory() {
 
     console.error(error);
 
+
     message.textContent =
-      "Error: " + error.message;
+      "Error: " +
+      error.message;
 
     return;
+
   }
 
 
@@ -402,31 +751,48 @@ async function addInventory() {
     "✅ Inventory added successfully!";
 
 
-  document.getElementById("inventoryData").value = "";
+  document
+    .getElementById(
+      "inventoryData"
+    )
+    .value = "";
 
 
   loadInventoryCount();
+
 }
 
 
-// ========================================
-// PRODUCT COUNT
-// ========================================
+/* ========================================
+   PRODUCT COUNT
+======================================== */
+
 
 async function loadProductCount() {
 
-  const { count, error } =
+
+  const {
+    count,
+    error
+  } =
     await supabaseClient
       .from("Product")
       .select("*", {
+
         count: "exact",
+
         head: true
+
       });
 
 
   if (!error) {
 
-    document.getElementById("productCount").textContent =
+    document
+      .getElementById(
+        "productCount"
+      )
+      .textContent =
       count || 0;
 
   }
@@ -434,25 +800,40 @@ async function loadProductCount() {
 }
 
 
-// ========================================
-// INVENTORY COUNT
-// ========================================
+/* ========================================
+   INVENTORY COUNT
+======================================== */
+
 
 async function loadInventoryCount() {
 
-  const { count, error } =
+
+  const {
+    count,
+    error
+  } =
     await supabaseClient
       .from("product_inventory")
       .select("*", {
+
         count: "exact",
+
         head: true
+
       })
-      .eq("status", "available");
+      .eq(
+        "status",
+        "available"
+      );
 
 
   if (!error) {
 
-    document.getElementById("inventoryCount").textContent =
+    document
+      .getElementById(
+        "inventoryCount"
+      )
+      .textContent =
       count || 0;
 
   }
@@ -460,15 +841,126 @@ async function loadInventoryCount() {
 }
 
 
-// ========================================
-// START
-// ========================================
+/* ========================================
+   PENDING ORDERS COUNT
+======================================== */
 
-loadProducts();
-loadProductCount();
-loadInventoryCount();
+
+async function loadPendingOrderCount() {
+
+
+  const {
+    count,
+    error
+  } =
+    await supabaseClient
+      .from("orders")
+      .select("*", {
+
+        count: "exact",
+
+        head: true
+
+      })
+      .eq(
+        "status",
+        "pending"
+      );
+
+
+  if (!error) {
+
+    document
+      .getElementById(
+        "pendingOrderCount"
+      )
+      .textContent =
+      count || 0;
+
+  }
+
+}
+
+
+/* ========================================
+   COMPLETED ORDERS COUNT
+======================================== */
+
+
+async function loadCompletedOrderCount() {
+
+
+  const {
+    count,
+    error
+  } =
+    await supabaseClient
+      .from("orders")
+      .select("*", {
+
+        count: "exact",
+
+        head: true
+
+      })
+      .eq(
+        "status",
+        "delivered"
+      );
+
+
+  if (!error) {
+
+    document
+      .getElementById(
+        "completedOrderCount"
+      )
+      .textContent =
+      count || 0;
+
+  }
+
+}
+
+
+/* ========================================
+   START ADMIN DASHBOARD
+======================================== */
+
+
+async function startAdminDashboard() {
+
+
+  const allowed =
+    await checkAdminAccess();
+
+
+  if (!allowed) {
+
+    return;
+
+  }
+
+
+  loadProducts();
+
+  loadProductCount();
+
+  loadInventoryCount();
+
+  loadPendingOrderCount();
+
+  loadCompletedOrderCount();
+
+}
+
+
+startAdminDashboard();
+
 
 </script>
 
+
 </body>
-</html>
+
+  </html>
