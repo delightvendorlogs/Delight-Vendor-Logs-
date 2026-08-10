@@ -122,4 +122,220 @@
   <!-- BACK TO DASHBOARD -->
 
   <div
-   
+    onclick="window.location.href='dashboard.html'"
+    style="
+      display:inline-block;
+      background:#111;
+      color:#fff;
+      padding:15px 30px;
+      margin:10px;
+      border-radius:10px;
+      font-family:Arial,sans-serif;
+      font-size:18px;
+      font-weight:bold;
+      cursor:pointer;
+    "
+  >
+    🏠 Back to Dashboard
+  </div>
+
+
+</main>
+
+
+<script>
+
+
+/* =========================
+   SUPABASE
+========================= */
+
+const SUPABASE_URL =
+  "https://hkfhehbhmucymusaytoe.supabase.co";
+
+
+const SUPABASE_KEY =
+  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* =========================
+   LOAD WALLET
+========================= */
+
+async function loadWallet() {
+
+
+  const {
+    data: {
+      user
+    },
+    error: userError
+  } = await supabaseClient.auth.getUser();
+
+
+  /* USER NOT LOGGED IN */
+
+  if (userError || !user) {
+
+    window.location.href =
+      "login.html";
+
+    return;
+
+  }
+
+
+  console.log(
+    "Logged in user:",
+    user.id
+  );
+
+
+  /* =========================
+     GET WALLET
+  ========================= */
+
+  const {
+    data: wallet,
+    error
+  } =
+    await supabaseClient.rpc(
+      "ensure_my_wallet"
+    );
+
+
+  /* RPC ERROR */
+
+  if (error) {
+
+    console.error(
+      "WALLET ERROR:",
+      error
+    );
+
+
+    document.getElementById(
+      "walletBalance"
+    ).textContent =
+      "Wallet error: " +
+      error.message;
+
+
+    return;
+
+  }
+
+
+  /* SHOW RPC RESULT */
+
+  console.log(
+    "WALLET DATA:",
+    wallet
+  );
+
+
+  /* =========================
+     GET BALANCE
+  ========================= */
+
+  const balance =
+    wallet?.balance ?? 0;
+
+
+  document.getElementById(
+    "walletBalance"
+  ).textContent =
+    "₦" +
+    Number(balance).toLocaleString(
+      "en-NG",
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }
+    );
+
+}
+
+
+/* =========================
+   CONTINUE PAYMENT
+========================= */
+
+function continuePayment() {
+
+
+  const amount =
+    Number(
+      document.getElementById(
+        "amount"
+      ).value
+    );
+
+
+  const payment =
+    document.querySelector(
+      'input[name="payment"]:checked'
+    );
+
+
+  const message =
+    document.getElementById(
+      "message"
+    );
+
+
+  /* AMOUNT CHECK */
+
+  if (
+    !amount ||
+    amount < 100
+  ) {
+
+    message.textContent =
+      "Please enter at least ₦100.";
+
+    return;
+
+  }
+
+
+  /* PAYMENT METHOD CHECK */
+
+  if (!payment) {
+
+    message.textContent =
+      "Please select a payment method.";
+
+    return;
+
+  }
+
+
+  /* TEMPORARY MESSAGE */
+
+  message.textContent =
+    "Payment system will be connected next.";
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+loadWallet();
+
+
+</script>
+
+
+</body>
+
+  </html>
