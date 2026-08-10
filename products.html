@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
 
@@ -66,9 +67,9 @@
 
 <script>
 
-/* =========================================
+/* ========================================
    SUPABASE
-========================================= */
+======================================== */
 
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
@@ -83,41 +84,57 @@ const supabaseClient =
   );
 
 
-/* =========================================
-   GET PRODUCT ID FROM URL
-========================================= */
+/* ========================================
+   GET PRODUCT ID
+======================================== */
 
 const params =
-  new URLSearchParams(window.location.search);
+  new URLSearchParams(
+    window.location.search
+  );
 
 const productId =
   params.get("id");
 
 
-/* =========================================
+/* ========================================
    LOAD PRODUCT
-========================================= */
+======================================== */
 
 async function loadProduct() {
 
   const name =
-    document.getElementById("productName");
+    document.getElementById(
+      "productName"
+    );
 
   const description =
-    document.getElementById("productDescription");
+    document.getElementById(
+      "productDescription"
+    );
 
   const price =
-    document.getElementById("productPrice");
+    document.getElementById(
+      "productPrice"
+    );
 
   const status =
-    document.getElementById("productStatus");
+    document.getElementById(
+      "productStatus"
+    );
 
   const button =
-    document.getElementById("buyButton");
+    document.getElementById(
+      "buyButton"
+    );
 
   const message =
-    document.getElementById("message");
+    document.getElementById(
+      "message"
+    );
 
+
+  /* CHECK PRODUCT ID */
 
   if (!productId) {
 
@@ -127,11 +144,17 @@ async function loadProduct() {
     description.textContent =
       "No product ID was provided.";
 
-    button.disabled = true;
+    status.textContent =
+      "Unavailable";
+
+    button.disabled =
+      true;
 
     return;
   }
 
+
+  /* LOAD PRODUCT */
 
   const {
     data: product,
@@ -140,13 +163,19 @@ async function loadProduct() {
     await supabaseClient
       .from("products")
       .select("*")
-      .eq("id", productId)
+      .eq(
+        "id",
+        productId
+      )
       .single();
 
 
   if (error || !product) {
 
-    console.error(error);
+    console.error(
+      "Product error:",
+      error
+    );
 
     name.textContent =
       "Product not found";
@@ -154,68 +183,98 @@ async function loadProduct() {
     description.textContent =
       "Unable to load this product.";
 
-    button.disabled = true;
+    status.textContent =
+      "Unavailable";
+
+    button.disabled =
+      true;
 
     return;
   }
 
 
-  name.textContent =
-    product.name || "Product";
+  /* PRODUCT NAME */
 
+  name.textContent =
+    product.name ||
+    "Product";
+
+
+  /* DESCRIPTION */
 
   description.textContent =
     product.description ||
     "No description available.";
 
 
+  /* PRICE */
+
   price.textContent =
     "₦" +
-    Number(product.price || 0)
-      .toLocaleString(
-        "en-NG",
-        {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }
-      );
+    Number(
+      product.price || 0
+    ).toLocaleString(
+      "en-NG",
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }
+    );
 
+
+  /* STATUS */
 
   status.textContent =
-    product.status || "Unavailable";
+    product.status ||
+    "Unavailable";
 
+
+  /* CHECK AVAILABILITY */
 
   if (
-    String(product.status).toLowerCase()
-    !== "available"
+    String(
+      product.status
+    ).toLowerCase() !==
+    "available"
   ) {
 
-    button.disabled = true;
+    button.disabled =
+      true;
 
     button.textContent =
       "Unavailable";
 
   } else {
 
-    button.disabled = false;
+    button.disabled =
+      false;
+
+    button.textContent =
+      "Buy Now";
 
   }
 
 }
 
 
-/* =========================================
+/* ========================================
    BUY PRODUCT
-========================================= */
+======================================== */
 
 async function buyProduct() {
 
   const button =
-    document.getElementById("buyButton");
+    document.getElementById(
+      "buyButton"
+    );
 
   const message =
-    document.getElementById("message");
+    document.getElementById(
+      "message"
+    );
 
+
+  /* CHECK PRODUCT ID */
 
   if (!productId) {
 
@@ -226,7 +285,10 @@ async function buyProduct() {
   }
 
 
-  button.disabled = true;
+  /* DISABLE BUTTON */
+
+  button.disabled =
+    true;
 
   button.textContent =
     "Processing...";
@@ -235,7 +297,9 @@ async function buyProduct() {
     "Checking your wallet...";
 
 
-  /* Check logged-in customer */
+  /* ======================================
+     CHECK LOGIN
+  ====================================== */
 
   const {
     data: {
@@ -246,12 +310,16 @@ async function buyProduct() {
     await supabaseClient.auth.getUser();
 
 
-  if (userError || !user) {
+  if (
+    userError ||
+    !user
+  ) {
 
     message.textContent =
       "Please login first.";
 
-    button.disabled = false;
+    button.disabled =
+      false;
 
     button.textContent =
       "Buy Now";
@@ -260,9 +328,9 @@ async function buyProduct() {
   }
 
 
-  /* =====================================
-     CALL SECURE PURCHASE FUNCTION
-  ===================================== */
+  /* ======================================
+     CALL BUY FUNCTION
+  ====================================== */
 
   const {
     data: order,
@@ -277,15 +345,73 @@ async function buyProduct() {
     );
 
 
+  /* ======================================
+     PURCHASE ERROR
+  ====================================== */
+
   if (error) {
 
-    console.error(error);
+    console.error(
+      "Purchase error:",
+      error
+    );
 
-    message.textContent =
+
+    let errorMessage =
       error.message ||
       "Purchase failed.";
 
-    button.disabled = false;
+
+    /* FRIENDLIER MESSAGES */
+
+    if (
+      errorMessage
+        .toLowerCase()
+        .includes(
+          "insufficient"
+        )
+    ) {
+
+      errorMessage =
+        "Insufficient wallet balance. Please fund your wallet.";
+
+    }
+
+
+    if (
+      errorMessage
+        .toLowerCase()
+        .includes(
+          "not authenticated"
+        )
+    ) {
+
+      errorMessage =
+        "Please login first.";
+
+    }
+
+
+    if (
+      errorMessage
+        .toLowerCase()
+        .includes(
+          "not available"
+        )
+    ) {
+
+      errorMessage =
+        "Service is currently unavailable. Please choose another service.";
+
+    }
+
+
+    message.textContent =
+      errorMessage;
+
+
+    button.disabled =
+      false;
 
     button.textContent =
       "Buy Now";
@@ -294,37 +420,47 @@ async function buyProduct() {
   }
 
 
-  /* =====================================
-     SUCCESS
-  ===================================== */
+  /* ======================================
+     PURCHASE SUCCESS
+  ====================================== */
 
   message.textContent =
     "✅ Purchase successful. Your order is now pending.";
+
 
   button.textContent =
     "Order Pending";
 
 
-  /* Give Supabase a moment,
-     then open purchases */
+  /*
+     NO CANCEL BUTTON HERE.
 
-  setTimeout(function() {
+     The order remains pending until
+     delivery/admin processing.
+  */
 
-    window.location.href =
-      "purchases.html";
 
-  }, 1200);
+  setTimeout(
+    function() {
+
+      window.location.href =
+        "purchase.html";
+
+    },
+    1200
+  );
 
 }
 
 
-/* =========================================
+/* ========================================
    START
-========================================= */
+======================================== */
 
 loadProduct();
 
 </script>
 
 </body>
+
 </html>
