@@ -251,6 +251,25 @@ Add a legitimate digital item to one of your products.
 </p>
 
 
+<hr>
+
+
+<!-- =========================
+     ORDERS MANAGEMENT
+========================= -->
+
+<h2>Orders Management</h2>
+
+
+<div id="ordersList">
+
+  <p>
+    Loading orders...
+  </p>
+
+</div>
+
+
 <br>
 
 
@@ -301,9 +320,10 @@ async function checkAdminAccess() {
     await supabaseClient.auth.getUser();
 
 
-  /* NOT LOGGED IN */
-
-  if (userError || !user) {
+  if (
+    userError ||
+    !user
+  ) {
 
     window.location.href =
       "login.html";
@@ -312,8 +332,6 @@ async function checkAdminAccess() {
 
   }
 
-
-  /* CHECK ADMIN */
 
   const {
     data: isAdmin,
@@ -356,8 +374,6 @@ async function checkAdminAccess() {
 
   }
 
-
-  /* NOT ADMIN */
 
   if (!isAdmin) {
 
@@ -402,8 +418,6 @@ async function checkAdminAccess() {
 
   }
 
-
-  /* ADMIN APPROVED */
 
   return true;
 
@@ -924,6 +938,219 @@ async function loadCompletedOrderCount() {
 
 
 /* ========================================
+   LOAD ORDERS
+======================================== */
+
+
+async function loadOrders() {
+
+
+  const container =
+    document.getElementById(
+      "ordersList"
+    );
+
+
+  container.innerHTML =
+    "<p>Loading orders...</p>";
+
+
+  const {
+    data: orders,
+    error
+  } =
+    await supabaseClient
+      .from("orders")
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      });
+
+
+  if (error) {
+
+    console.error(
+      "Orders error:",
+      error
+    );
+
+
+    container.innerHTML =
+      "<p>Unable to load orders: " +
+      error.message +
+      "</p>";
+
+    return;
+
+  }
+
+
+  if (
+    !orders ||
+    orders.length === 0
+  ) {
+
+    container.innerHTML =
+      "<p>No orders yet.</p>";
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    "";
+
+
+  orders.forEach(
+    function(order) {
+
+
+      const box =
+        document.createElement(
+          "div"
+        );
+
+
+      box.style.background =
+        "white";
+
+
+      box.style.padding =
+        "18px";
+
+
+      box.style.margin =
+        "12px 0";
+
+
+      box.style.borderRadius =
+        "12px";
+
+
+      box.style.textAlign =
+        "left";
+
+
+      box.style.boxShadow =
+        "0 2px 8px rgba(0,0,0,0.08)";
+
+
+      const amount =
+        Number(
+          order.amount || 0
+        ).toLocaleString(
+          "en-NG",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }
+        );
+
+
+      const date =
+        order.created_at
+          ? new Date(
+              order.created_at
+            ).toLocaleString()
+          : "Date unavailable";
+
+
+      let status =
+        order.status ||
+        "pending";
+
+
+      let statusText =
+        status;
+
+
+      if (
+        status.toLowerCase() ===
+        "pending"
+      ) {
+
+        statusText =
+          "⏳ Pending";
+
+      }
+
+
+      if (
+        status.toLowerCase() ===
+        "delivered"
+      ) {
+
+        statusText =
+          "✅ Delivered";
+
+      }
+
+
+      if (
+        status.toLowerCase() ===
+        "cancelled"
+      ) {
+
+        statusText =
+          "❌ Cancelled";
+
+      }
+
+
+      box.innerHTML = `
+
+        <h3>
+          Order #${order.id}
+        </h3>
+
+        <p>
+          Customer ID:
+          <br>
+          <small>
+            ${order.user_id}
+          </small>
+        </p>
+
+        <p>
+          Product ID:
+          ${order.product_id}
+        </p>
+
+        <p>
+          Amount:
+          <strong>
+            ₦${amount}
+          </strong>
+        </p>
+
+        <p>
+          Status:
+          <strong>
+            ${statusText}
+          </strong>
+        </p>
+
+        <p>
+          Created:
+          ${date}
+        </p>
+
+      `;
+
+
+      container.appendChild(
+        box
+      );
+
+
+    }
+  );
+
+}
+
+
+/* ========================================
    START ADMIN DASHBOARD
 ======================================== */
 
@@ -951,6 +1178,8 @@ async function startAdminDashboard() {
   loadPendingOrderCount();
 
   loadCompletedOrderCount();
+
+  loadOrders();
 
 }
 
