@@ -1,106 +1,167 @@
-<!DOCTYPE html><html lang="en"><head>  <meta charset="UTF-8"><meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
+<!DOCTYPE html>
+<html lang="en">
 
-«»
+<head>
 
-  <title>Login - Delight Vendor Logs</title>  <link
-    rel="stylesheet"
-    href="style.css"
-  ></head><body><h1>
-  Login
-</h1><form id="loginForm">  <label>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Login - Delight Vendor Logs</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+
+<body>
+
+
+<h1>Login</h1>
+
+
+<form id="loginForm">
+
+
+  <label for="email">
     Email
-  </label>  <br><input
-id="email"
-type="email"
-placeholder="Enter your email"
-required
+  </label>
 
-«»
+  <br>
 
-<br><br>
+  <input
+    id="email"
+    type="email"
+    placeholder="Enter your email"
+    required
+  >
 
-  <label>
+
+  <br><br>
+
+
+  <label for="password">
     Password
-  </label>  <br><input
-id="password"
-type="password"
-placeholder="Enter your password"
-required
+  </label>
 
-«»
+  <br>
 
-<br><br>
+  <input
+    id="password"
+    type="password"
+    placeholder="Enter your password"
+    required
+  >
 
-<button
-type="submit"
-style="
-background:#111 !important;
-color:#fff !important;
-opacity:1 !important;
-visibility:visible !important;
-display:inline-block !important;
-"
 
-«»
+  <br><br>
 
-Login
 
-  </button><br><br>
+  <!-- LOGIN -->
 
-<button
-type="button"
-onclick="window.location.href='forgot-password.html'"
-style="
-background:#111 !important;
-color:#fff !important;
-opacity:1 !important;
-visibility:visible !important;
-display:inline-block !important;
-"
+  <div
+    onclick="loginUser()"
+    style="
+      display:inline-block;
+      background:#111;
+      color:#fff;
+      padding:15px 30px;
+      margin:10px;
+      border-radius:10px;
+      font-family:Arial,sans-serif;
+      font-size:18px;
+      font-weight:bold;
+      cursor:pointer;
+    "
+  >
+    Login
+  </div>
 
-«»
 
-Forgot Password?
+  <br>
 
-  </button></form><p>
+
+  <!-- FORGOT PASSWORD -->
+
+  <div
+    onclick="window.location.href='forgot-password.html'"
+    style="
+      display:inline-block;
+      background:#111;
+      color:#fff;
+      padding:15px 30px;
+      margin:10px;
+      border-radius:10px;
+      font-family:Arial,sans-serif;
+      font-size:18px;
+      font-weight:bold;
+      cursor:pointer;
+    "
+  >
+    Forgot Password?
+  </div>
+
+
+</form>
+
+
+<p>
   Don't have an account?
-</p><button
-type="button"
-onclick="window.location.href='register.html'"
-style="
-background:#111 !important;
-color:#fff !important;
-opacity:1 !important;
-visibility:visible !important;
-display:inline-block !important;
-"
+</p>
 
-«»
 
-Create Account
-</button>
+<!-- CREATE ACCOUNT -->
 
-<br><br>
+<div
+  onclick="window.location.href='register.html'"
+  style="
+    display:inline-block;
+    background:#111;
+    color:#fff;
+    padding:15px 30px;
+    margin:10px;
+    border-radius:10px;
+    font-family:Arial,sans-serif;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+  "
+>
+  Create Account
+</div>
 
-<button
-type="button"
-onclick="window.location.href='index.html'"
-style="
-background:#111 !important;
-color:#fff !important;
-opacity:1 !important;
-visibility:visible !important;
-display:inline-block !important;
-"
 
-«»
+<br>
 
-Back
-</button>
 
-<p id="message"></p><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
+<!-- BACK -->
+
+<div
+  onclick="window.location.href='index.html'"
+  style="
+    display:inline-block;
+    background:#111;
+    color:#fff;
+    padding:15px 30px;
+    margin:10px;
+    border-radius:10px;
+    font-family:Arial,sans-serif;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+  "
+>
+  Back
+</div>
+
+
+<p id="message"></p>
+
+
+<script>
 
 
 const SUPABASE_URL =
@@ -118,69 +179,79 @@ const supabaseClient =
   );
 
 
-
-document
-  .getElementById("loginForm")
-  .addEventListener(
-    "submit",
-    async function(event) {
-
-      event.preventDefault();
+async function loginUser() {
 
 
-      const email =
-        document
-          .getElementById("email")
-          .value
-          .trim();
+  const email =
+    document
+      .getElementById("email")
+      .value
+      .trim();
 
 
-      const password =
-        document
-          .getElementById("password")
-          .value;
+  const password =
+    document
+      .getElementById("password")
+      .value;
 
 
-      const message =
-        document
-          .getElementById("message");
+  const message =
+    document
+      .getElementById("message");
 
 
-      message.textContent =
-        "Logging in...";
+  if (!email || !password) {
+
+    message.textContent =
+      "Please enter your email and password.";
+
+    return;
+
+  }
 
 
-      const {
-        data,
-        error
-      } =
-        await supabaseClient.auth.signInWithPassword({
-          email: email,
-          password: password
-        });
+  message.textContent =
+    "Logging in...";
 
 
-      if (error) {
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.auth.signInWithPassword({
 
-        console.error(error);
+      email: email,
 
-        message.textContent =
-          error.message;
+      password: password
 
-        return;
-
-      }
-
-
-      if (data.user) {
-
-        window.location.href =
-          "dashboard.html";
-
-      }
-
-    }
-  );
+    });
 
 
-</script></body></html>
+  if (error) {
+
+    console.error(error);
+
+    message.textContent =
+      error.message;
+
+    return;
+
+  }
+
+
+  if (data && data.user) {
+
+    window.location.href =
+      "dashboard.html";
+
+  }
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
