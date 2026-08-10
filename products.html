@@ -1,77 +1,330 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-  <title>More Products - Delight Vendor Logs</title>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Product - Delight Vendor Logs</title>
+
   <link rel="stylesheet" href="style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
-<h1>More Products</h1>
+<header>
+  <h1 id="productName">Loading...</h1>
+</header>
 
-<p>Choose a product below.</p>
+<main>
 
-<h2>Digital Products</h2>
+  <div class="profile-card">
 
-<div>
-  <h3>Sample Digital Product</h3>
-  <p>Price: ₦0.00</p>
-  <p>Status: Available</p>
+    <p id="productDescription">
+      Loading product...
+    </p>
 
-  <button onclick="window.location.href='product.html'">
-    View Product
+    <h2 id="productPrice">
+      ₦0.00
+    </h2>
+
+    <p>
+      Status:
+      <strong id="productStatus">
+        Loading...
+      </strong>
+    </p>
+
+    <button
+      id="buyButton"
+      type="button"
+      onclick="buyProduct()"
+    >
+      Buy Now
+    </button>
+
+    <p id="message"></p>
+
+  </div>
+
+  <br>
+
+  <button
+    type="button"
+    onclick="window.location.href='dashboard.html'"
+  >
+    🏠 Back to Dashboard
   </button>
-</div>
 
-<br>
+</main>
 
-<h2>Subscriptions</h2>
 
-<div>
-  <h3>Sample Subscription</h3>
-  <p>Price: ₦0.00</p>
-  <p>Status: Available</p>
+<script>
 
-  <button>
-    View Product
-  </button>
-</div>
+/* =========================================
+   SUPABASE
+========================================= */
 
-<br>
+const SUPABASE_URL =
+  "https://hkfhehbhmucymusaytoe.supabase.co";
 
-<h2>Files</h2>
+const SUPABASE_KEY =
+  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
-<div>
-  <h3>Sample File</h3>
-  <p>Price: ₦0.00</p>
-  <p>Status: Available</p>
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
-  <button>
-    View Product
-  </button>
-</div>
 
-<br>
+/* =========================================
+   GET PRODUCT ID FROM URL
+========================================= */
 
-<h2>Other Services</h2>
+const params =
+  new URLSearchParams(window.location.search);
 
-<div>
-  <h3>Sample Service</h3>
-  <p>Price: ₦0.00</p>
-  <p>Status: Available</p>
+const productId =
+  params.get("id");
 
-  <button>
-    View Product
-  </button>
-</div>
 
-<br>
+/* =========================================
+   LOAD PRODUCT
+========================================= */
 
-<button onclick="window.location.href='dashboard.html'">
-  Back to Dashboard
-</button>
+async function loadProduct() {
+
+  const name =
+    document.getElementById("productName");
+
+  const description =
+    document.getElementById("productDescription");
+
+  const price =
+    document.getElementById("productPrice");
+
+  const status =
+    document.getElementById("productStatus");
+
+  const button =
+    document.getElementById("buyButton");
+
+  const message =
+    document.getElementById("message");
+
+
+  if (!productId) {
+
+    name.textContent =
+      "Product not found";
+
+    description.textContent =
+      "No product ID was provided.";
+
+    button.disabled = true;
+
+    return;
+  }
+
+
+  const {
+    data: product,
+    error
+  } =
+    await supabaseClient
+      .from("products")
+      .select("*")
+      .eq("id", productId)
+      .single();
+
+
+  if (error || !product) {
+
+    console.error(error);
+
+    name.textContent =
+      "Product not found";
+
+    description.textContent =
+      "Unable to load this product.";
+
+    button.disabled = true;
+
+    return;
+  }
+
+
+  name.textContent =
+    product.name || "Product";
+
+
+  description.textContent =
+    product.description ||
+    "No description available.";
+
+
+  price.textContent =
+    "₦" +
+    Number(product.price || 0)
+      .toLocaleString(
+        "en-NG",
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      );
+
+
+  status.textContent =
+    product.status || "Unavailable";
+
+
+  if (
+    String(product.status).toLowerCase()
+    !== "available"
+  ) {
+
+    button.disabled = true;
+
+    button.textContent =
+      "Unavailable";
+
+  } else {
+
+    button.disabled = false;
+
+  }
+
+}
+
+
+/* =========================================
+   BUY PRODUCT
+========================================= */
+
+async function buyProduct() {
+
+  const button =
+    document.getElementById("buyButton");
+
+  const message =
+    document.getElementById("message");
+
+
+  if (!productId) {
+
+    message.textContent =
+      "Product ID is missing.";
+
+    return;
+  }
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "Processing...";
+
+  message.textContent =
+    "Checking your wallet...";
+
+
+  /* Check logged-in customer */
+
+  const {
+    data: {
+      user
+    },
+    error: userError
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if (userError || !user) {
+
+    message.textContent =
+      "Please login first.";
+
+    button.disabled = false;
+
+    button.textContent =
+      "Buy Now";
+
+    return;
+  }
+
+
+  /* =====================================
+     CALL SECURE PURCHASE FUNCTION
+  ===================================== */
+
+  const {
+    data: order,
+    error
+  } =
+    await supabaseClient.rpc(
+      "buy_product",
+      {
+        p_product_id:
+          Number(productId)
+      }
+    );
+
+
+  if (error) {
+
+    console.error(error);
+
+    message.textContent =
+      error.message ||
+      "Purchase failed.";
+
+    button.disabled = false;
+
+    button.textContent =
+      "Buy Now";
+
+    return;
+  }
+
+
+  /* =====================================
+     SUCCESS
+  ===================================== */
+
+  message.textContent =
+    "✅ Purchase successful. Your order is now pending.";
+
+  button.textContent =
+    "Order Pending";
+
+
+  /* Give Supabase a moment,
+     then open purchases */
+
+  setTimeout(function() {
+
+    window.location.href =
+      "purchases.html";
+
+  }, 1200);
+
+}
+
+
+/* =========================================
+   START
+========================================= */
+
+loadProduct();
+
+</script>
 
 </body>
-
 </html>
