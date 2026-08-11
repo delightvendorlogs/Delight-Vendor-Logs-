@@ -17,13 +17,18 @@
 
 </head>
 
+
 <body>
+
 
 <header>
 
   <h1>Delight Vendor Logs</h1>
 
-  <button onclick="window.location.href='dashboard.html'">
+  <button
+    type="button"
+    onclick="window.location.href='dashboard.html'"
+  >
     ←
   </button>
 
@@ -45,11 +50,19 @@
 
 <script>
 
+
+/* ========================================
+   SUPABASE
+======================================== */
+
+
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
 
+
 const SUPABASE_KEY =
-  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSF_";
+
 
 const supabaseClient =
   window.supabase.createClient(
@@ -58,16 +71,28 @@ const supabaseClient =
   );
 
 
-// ==============================
-// LOAD ALL SERVICES
-// ==============================
+/* ========================================
+   LOAD ALL SERVICES
+======================================== */
+
 
 async function loadServices() {
 
-  const servicesContainer =
-    document.getElementById("services");
 
-  const { data, error } =
+  const servicesContainer =
+    document.getElementById(
+      "services"
+    );
+
+
+  servicesContainer.innerHTML =
+    "<p>Loading services...</p>";
+
+
+  const {
+    data,
+    error
+  } =
     await supabaseClient
       .from("Product")
       .select("*")
@@ -76,9 +101,15 @@ async function loadServices() {
       });
 
 
+  /* DATABASE ERROR */
+
   if (error) {
 
-    console.error(error);
+    console.error(
+      "Services error:",
+      error
+    );
+
 
     servicesContainer.innerHTML =
       "<p>Unable to load services.</p>";
@@ -88,7 +119,12 @@ async function loadServices() {
   }
 
 
-  if (!data || data.length === 0) {
+  /* NO SERVICES */
+
+  if (
+    !data ||
+    data.length === 0
+  ) {
 
     servicesContainer.innerHTML =
       "<p>No services available yet.</p>";
@@ -98,61 +134,42 @@ async function loadServices() {
   }
 
 
-  servicesContainer.innerHTML = "";
+  /* CLEAR LOADING */
+
+  servicesContainer.innerHTML =
+    "";
 
 
-  data.forEach(function(product) {
-
-    const serviceBox =
-      document.createElement("div");
-
-    serviceBox.innerHTML = `
-
-      <h3>${product.name}</h3>
-
-      <p>
-        Price:
-        ₦${Number(product.price).toLocaleString()}
-      </p>
-
-      <p>
-        ${product.description || ""}
-      </p>
-
-      <button
-        onclick="viewProduct(${product.id})">
-        View Service
-      </button>
-
-    `;
-
-    servicesContainer.appendChild(serviceBox);
-
-  });
-
-}
+  /* ======================================
+     CREATE SERVICE CARDS
+  ====================================== */
 
 
-// ==============================
-// VIEW PRODUCT
-// ==============================
-
-function viewProduct(productId) {
-
-  window.location.href =
-    "product.html?id=" + productId;
-
-}
+  data.forEach(
+    function(product) {
 
 
-// ==============================
-// START
-// ==============================
+      const serviceBox =
+        document.createElement(
+          "div"
+        );
 
-loadServices();
 
-</script>
+      /* CARD STYLE */
 
-</body>
+      serviceBox.style.background =
+        "white";
 
-</html>
+      serviceBox.style.padding =
+        "18px";
+
+      serviceBox.style.margin =
+        "16px 0";
+
+      serviceBox.style.borderRadius =
+        "16px";
+
+      serviceBox.style.textAlign =
+        "left";
+
+      serviceBox.style.boxShadow
