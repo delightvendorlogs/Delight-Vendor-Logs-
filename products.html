@@ -12,7 +12,10 @@
 
   <title>Service - Delight Vendor Logs</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -37,20 +40,20 @@
   <div class="profile-card">
 
 
-    <!-- PRODUCT IMAGE -->
+    <!-- IMAGE -->
 
     <img
       id="productImage"
       src=""
-      alt="Service Image"
+      alt="Service image"
       style="
-        display:none;
         width:100%;
         max-width:500px;
         max-height:350px;
         object-fit:cover;
         border-radius:15px;
-        margin:0 auto 20px auto;
+        margin-bottom:20px;
+        display:none;
       "
     >
 
@@ -104,8 +107,6 @@
   <br>
 
 
-  <!-- BACK BUTTON -->
-
   <button
     type="button"
     onclick="window.location.href='dashboard.html'"
@@ -122,7 +123,7 @@
 
 
 /* ========================================
-   SUPABASE
+   SUPABASE CONNECTION
 ======================================== */
 
 
@@ -157,52 +158,10 @@ const productId =
   params.get("id");
 
 
-
-/* ========================================
-   ELEMENTS
-======================================== */
-
-
-const productName =
-  document.getElementById(
-    "productName"
-  );
-
-
-const productDescription =
-  document.getElementById(
-    "productDescription"
-  );
-
-
-const productPrice =
-  document.getElementById(
-    "productPrice"
-  );
-
-
-const productStatus =
-  document.getElementById(
-    "productStatus"
-  );
-
-
-const productImage =
-  document.getElementById(
-    "productImage"
-  );
-
-
-const buyButton =
-  document.getElementById(
-    "buyButton"
-  );
-
-
-const message =
-  document.getElementById(
-    "message"
-  );
+console.log(
+  "Product ID:",
+  productId
+);
 
 
 
@@ -214,64 +173,91 @@ const message =
 async function loadProduct() {
 
 
-  /* CHECK ID */
+  const name =
+    document.getElementById(
+      "productName"
+    );
+
+
+  const description =
+    document.getElementById(
+      "productDescription"
+    );
+
+
+  const price =
+    document.getElementById(
+      "productPrice"
+    );
+
+
+  const status =
+    document.getElementById(
+      "productStatus"
+    );
+
+
+  const button =
+    document.getElementById(
+      "buyButton"
+    );
+
+
+  const message =
+    document.getElementById(
+      "message"
+    );
+
+
+  const image =
+    document.getElementById(
+      "productImage"
+    );
+
+
+
+  /* ======================================
+     CHECK PRODUCT ID
+  ====================================== */
+
 
   if (!productId) {
 
-    productName.textContent =
+
+    name.textContent =
       "Product not found";
 
-    productDescription.textContent =
+
+    description.textContent =
       "No product ID was provided.";
 
-    productPrice.textContent =
-      "₦0.00";
 
-    productStatus.textContent =
+    status.textContent =
       "Unavailable";
 
-    buyButton.disabled =
+
+    button.disabled =
       true;
+
 
     return;
 
   }
 
 
-  /* SHOW LOADING */
-
-  productName.textContent =
-    "Loading...";
-
-  productDescription.textContent =
-    "Loading product...";
-
-  productStatus.textContent =
-    "Loading...";
-
-
-  console.log(
-    "Loading Product ID:",
-    productId
-  );
-
 
   /* ======================================
-     GET PRODUCT
-
+     LOAD FROM SUPABASE
+     
      IMPORTANT:
-     YOUR TABLE IS "Product"
-     ====================================== */
+     Your table is "Product"
+  ====================================== */
 
 
   const {
-
     data: product,
-
     error
-
   } =
-
     await supabaseClient
 
       .from("Product")
@@ -280,7 +266,7 @@ async function loadProduct() {
 
       .eq(
         "id",
-        Number(productId)
+        productId
       )
 
       .single();
@@ -292,38 +278,279 @@ async function loadProduct() {
   ====================================== */
 
 
-  if (error) {
+  if (error || !product) {
 
 
     console.error(
-      "PRODUCT LOAD ERROR:",
+      "Product loading error:",
       error
     );
 
 
-    productName.textContent =
+    name.textContent =
       "Product not found";
 
 
-    productDescription.textContent =
+    description.textContent =
       "Unable to load this product.";
 
 
-    productPrice.textContent =
+    price.textContent =
       "₦0.00";
 
 
-    productStatus.textContent =
+    status.textContent =
       "Unavailable";
 
 
-    buyButton.disabled =
+    button.disabled =
       true;
 
 
+    return;
+
+  }
+
+
+
+  console.log(
+    "PRODUCT FOUND:",
+    product
+  );
+
+
+
+  /* ======================================
+     PRODUCT NAME
+  ====================================== */
+
+
+  name.textContent =
+    product.name ||
+    "Unnamed Service";
+
+
+
+  /* ======================================
+     DESCRIPTION
+  ====================================== */
+
+
+  description.textContent =
+    product.description ||
+    "No description available.";
+
+
+
+  /* ======================================
+     PRICE
+  ====================================== */
+
+
+  price.textContent =
+    "₦" +
+
+    Number(
+      product.price || 0
+    ).toLocaleString(
+      "en-NG",
+      {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      }
+    );
+
+
+
+  /* ======================================
+     STATUS
+  ====================================== */
+
+
+  const productStatus =
+    String(
+      product.status ||
+      "Unavailable"
+    );
+
+
+  status.textContent =
+    productStatus;
+
+
+
+  /* ======================================
+     PRODUCT IMAGE
+  ====================================== */
+
+
+  if (
+    product.image_url &&
+    String(
+      product.image_url
+    ).trim() !== ""
+  ) {
+
+
+    image.src =
+      product.image_url;
+
+
+    image.alt =
+      product.name ||
+      "Service";
+
+
+    image.style.display =
+      "block";
+
+
+    image.onerror =
+      function() {
+
+        console.error(
+          "Image failed to load:",
+          product.image_url
+        );
+
+        image.style.display =
+          "none";
+
+      };
+
+
+  } else {
+
+
+    image.style.display =
+      "none";
+
+  }
+
+
+
+  /* ======================================
+     CHECK AVAILABILITY
+  ====================================== */
+
+
+  if (
+    productStatus
+      .toLowerCase()
+      .trim() !==
+    "available"
+  ) {
+
+
+    button.disabled =
+      true;
+
+
+    button.textContent =
+      "Unavailable";
+
+
+  } else {
+
+
+    button.disabled =
+      false;
+
+
+    button.textContent =
+      "Buy Now";
+
+  }
+
+
+}
+
+
+
+/* ========================================
+   BUY PRODUCT
+======================================== */
+
+
+async function buyProduct() {
+
+
+  const button =
+    document.getElementById(
+      "buyButton"
+    );
+
+
+  const message =
+    document.getElementById(
+      "message"
+    );
+
+
+
+  /* CHECK ID */
+
+
+  if (!productId) {
+
+
     message.textContent =
-      "Error: " +
-      error.message;
+      "Product ID is missing.";
+
+
+    return;
+
+  }
+
+
+
+  /* DISABLE BUTTON */
+
+
+  button.disabled =
+    true;
+
+
+  button.textContent =
+    "Processing...";
+
+
+  message.textContent =
+    "Checking your wallet...";
+
+
+
+  /* ======================================
+     CHECK LOGIN
+  ====================================== */
+
+
+  const {
+    data: {
+      user
+    },
+    error: userError
+  } =
+    await supabaseClient.auth.getUser();
+
+
+
+  if (
+    userError ||
+    !user
+  ) {
+
+
+    message.textContent =
+      "Please login first.";
+
+
+    button.disabled =
+      false;
+
+
+    button.textContent =
+      "Buy Now";
 
 
     return;
@@ -333,12 +560,147 @@ async function loadProduct() {
 
 
   /* ======================================
-     NO PRODUCT
+     BUY PRODUCT
   ====================================== */
 
 
-  if (!product) {
+  const {
+    data: order,
+    error
+  } =
+    await supabaseClient.rpc(
+      "buy_product",
+      {
+        p_product_id:
+          Number(productId)
+      }
+    );
 
 
-    productName.textContent =
-      "Product not
+
+  /* ======================================
+     PURCHASE ERROR
+  ====================================== */
+
+
+  if (error) {
+
+
+    console.error(
+      "Purchase error:",
+      error
+    );
+
+
+    let errorMessage =
+      error.message ||
+      "Purchase failed.";
+
+
+
+    if (
+      errorMessage
+        .toLowerCase()
+        .includes(
+          "insufficient"
+        )
+    ) {
+
+      errorMessage =
+        "Insufficient wallet balance. Please fund your wallet.";
+
+    }
+
+
+
+    if (
+      errorMessage
+        .toLowerCase()
+        .includes(
+          "not authenticated"
+        )
+    ) {
+
+      errorMessage =
+        "Please login first.";
+
+    }
+
+
+
+    if (
+      errorMessage
+        .toLowerCase()
+        .includes(
+          "not available"
+        )
+    ) {
+
+      errorMessage =
+        "Service is currently unavailable. Please choose another service.";
+
+    }
+
+
+
+    message.textContent =
+      errorMessage;
+
+
+    button.disabled =
+      false;
+
+
+    button.textContent =
+      "Buy Now";
+
+
+    return;
+
+  }
+
+
+
+  /* ======================================
+     PURCHASE SUCCESS
+  ====================================== */
+
+
+  message.textContent =
+    "✅ Purchase successful. Your order is now pending.";
+
+
+  button.textContent =
+    "Order Pending";
+
+
+
+  setTimeout(
+    function() {
+
+      window.location.href =
+        "purchase.html";
+
+    },
+    1200
+  );
+
+
+}
+
+
+
+/* ========================================
+   START
+======================================== */
+
+
+loadProduct();
+
+
+</script>
+
+
+</body>
+
+  </html>
