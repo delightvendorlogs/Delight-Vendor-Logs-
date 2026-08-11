@@ -23,9 +23,7 @@
 
 </head>
 
-
 <body>
-
 
 <header>
 
@@ -35,13 +33,11 @@
 
 </header>
 
-
 <main>
 
   <h2>
     Purchase History
   </h2>
-
 
   <div id="purchases">
 
@@ -51,9 +47,7 @@
 
   </div>
 
-
   <br>
-
 
   <button
     type="button"
@@ -64,25 +58,19 @@
 
   </button>
 
-
 </main>
 
-
 <script>
-
 
 /* ========================================
    SUPABASE
 ======================================== */
 
-
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
 
-
 const SUPABASE_KEY =
   "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
-
 
 const supabaseClient =
   window.supabase.createClient(
@@ -95,15 +83,12 @@ const supabaseClient =
    LOAD PURCHASES
 ======================================== */
 
-
 async function loadPurchases() {
-
 
   const container =
     document.getElementById(
       "purchases"
     );
-
 
   container.innerHTML =
     "<p>Loading purchases...</p>";
@@ -112,7 +97,6 @@ async function loadPurchases() {
   /* ======================================
      CHECK LOGIN
   ====================================== */
-
 
   const {
     data: {
@@ -140,24 +124,19 @@ async function loadPurchases() {
      LOAD USER ORDERS
   ====================================== */
 
-
   const {
     data: orders,
     error
   } =
     await supabaseClient
-
       .from("orders")
-
       .select(
-        "id, user_id, product_id, Amo, status, delivery_data, cancel_allowed, created_at, updated_at"
+        "id, user_id, product_id, amount, status, delivery_data, cancel_allowed, created_at, updated_at"
       )
-
       .eq(
         "user_id",
         user.id
       )
-
       .order(
         "created_at",
         {
@@ -170,15 +149,12 @@ async function loadPurchases() {
      DATABASE ERROR
   ====================================== */
 
-
   if (error) {
-
 
     console.error(
       "Purchases error:",
       error
     );
-
 
     container.innerHTML = `
 
@@ -206,7 +182,6 @@ async function loadPurchases() {
 
     `;
 
-
     return;
 
   }
@@ -216,12 +191,10 @@ async function loadPurchases() {
      NO PURCHASES
   ====================================== */
 
-
   if (
     !orders ||
     orders.length === 0
   ) {
-
 
     container.innerHTML = `
 
@@ -246,7 +219,6 @@ async function loadPurchases() {
 
     `;
 
-
     return;
 
   }
@@ -256,7 +228,6 @@ async function loadPurchases() {
      CLEAR LOADING
   ====================================== */
 
-
   container.innerHTML =
     "";
 
@@ -265,10 +236,8 @@ async function loadPurchases() {
      DISPLAY ORDERS
   ====================================== */
 
-
   orders.forEach(
     function(order) {
-
 
       const box =
         document.createElement(
@@ -279,22 +248,17 @@ async function loadPurchases() {
       box.style.background =
         "white";
 
-
       box.style.padding =
         "18px";
-
 
       box.style.margin =
         "12px 0";
 
-
       box.style.borderRadius =
         "12px";
 
-
       box.style.textAlign =
         "left";
-
 
       box.style.boxShadow =
         "0 2px 8px rgba(0,0,0,0.08)";
@@ -304,10 +268,9 @@ async function loadPurchases() {
          AMOUNT
       ================================== */
 
-
       const amount =
         Number(
-          order.Amo || 0
+          order.amount || 0
         ).toLocaleString(
           "en-NG",
           {
@@ -320,7 +283,6 @@ async function loadPurchases() {
       /* ==================================
          DATE
       ================================== */
-
 
       const date =
         order.created_at
@@ -335,7 +297,6 @@ async function loadPurchases() {
       /* ==================================
          STATUS
       ================================== */
-
 
       const status =
         String(
@@ -392,7 +353,6 @@ async function loadPurchases() {
          DELIVERY
       ================================== */
 
-
       let deliveryHTML =
         "";
 
@@ -403,7 +363,6 @@ async function loadPurchases() {
           order.delivery_data
         ).trim() !== ""
       ) {
-
 
         deliveryHTML = `
 
@@ -444,7 +403,6 @@ async function loadPurchases() {
          CANCEL STATUS
       ================================== */
 
-
       let cancelHTML =
         "";
 
@@ -453,28 +411,32 @@ async function loadPurchases() {
         order.cancel_allowed === true
       ) {
 
-
         cancelHTML = `
 
           <p>
+
             🔄 Cancellation:
+
             <strong>
               Allowed
             </strong>
+
           </p>
 
         `;
 
       } else {
 
-
         cancelHTML = `
 
           <p>
+
             🔒 Cancellation:
+
             <strong>
               Not allowed
             </strong>
+
           </p>
 
         `;
@@ -485,7 +447,6 @@ async function loadPurchases() {
       /* ==================================
          ORDER CARD
       ================================== */
-
 
       box.innerHTML = `
 
@@ -503,9 +464,11 @@ async function loadPurchases() {
           Product ID:
 
           <strong>
+
             ${escapeHTML(
               order.product_id
             )}
+
           </strong>
 
         </p>
@@ -516,7 +479,9 @@ async function loadPurchases() {
           Amount:
 
           <strong>
+
             ₦${amount}
+
           </strong>
 
         </p>
@@ -527,7 +492,9 @@ async function loadPurchases() {
           Status:
 
           <strong>
+
             ${statusText}
+
           </strong>
 
         </p>
@@ -541,9 +508,11 @@ async function loadPurchases() {
           Purchased:
 
           <small>
+
             ${escapeHTML(
               date
             )}
+
           </small>
 
         </p>
@@ -558,10 +527,8 @@ async function loadPurchases() {
         box
       );
 
-
     }
   );
-
 
 }
 
@@ -570,11 +537,9 @@ async function loadPurchases() {
    ESCAPE HTML
 ======================================== */
 
-
 function escapeHTML(
   value
 ) {
-
 
   return String(
     value ?? ""
@@ -612,13 +577,10 @@ function escapeHTML(
    START
 ======================================== */
 
-
 loadPurchases();
-
 
 </script>
 
-
 </body>
 
-  </html>
+</html>
