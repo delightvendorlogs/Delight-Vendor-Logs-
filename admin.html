@@ -310,7 +310,6 @@ const supabaseClient =
 
 async function checkAdminAccess() {
 
-
   const {
     data: {
       user
@@ -430,7 +429,6 @@ async function checkAdminAccess() {
 
 
 async function addProduct() {
-
 
   const name =
     document
@@ -605,7 +603,6 @@ async function addProduct() {
 
 async function loadProducts() {
 
-
   const dropdown =
     document.getElementById(
       "inventoryProduct"
@@ -644,7 +641,6 @@ async function loadProducts() {
   data.forEach(
     function(product) {
 
-
       const option =
         document.createElement(
           "option"
@@ -663,7 +659,6 @@ async function loadProducts() {
         option
       );
 
-
     }
   );
 
@@ -676,7 +671,6 @@ async function loadProducts() {
 
 
 async function addInventory() {
-
 
   const productId =
     document
@@ -726,6 +720,21 @@ async function addInventory() {
     "Adding inventory...";
 
 
+  /*
+    IMPORTANT:
+    Your product_inventory table has:
+
+    id
+    product_id
+    content
+    status
+    created_at
+
+    So we save the inventory inside
+    the "content" column.
+  */
+
+
   const {
     error
   } =
@@ -737,7 +746,7 @@ async function addInventory() {
           product_id:
             Number(productId),
 
-          item_data:
+          content:
             itemData,
 
           status:
@@ -749,7 +758,10 @@ async function addInventory() {
 
   if (error) {
 
-    console.error(error);
+    console.error(
+      "Inventory error:",
+      error
+    );
 
 
     message.textContent =
@@ -783,7 +795,6 @@ async function addInventory() {
 
 
 async function loadProductCount() {
-
 
   const {
     count,
@@ -820,7 +831,6 @@ async function loadProductCount() {
 
 
 async function loadInventoryCount() {
-
 
   const {
     count,
@@ -862,7 +872,6 @@ async function loadInventoryCount() {
 
 async function loadPendingOrderCount() {
 
-
   const {
     count,
     error
@@ -903,7 +912,6 @@ async function loadPendingOrderCount() {
 
 async function loadCompletedOrderCount() {
 
-
   const {
     count,
     error
@@ -943,7 +951,6 @@ async function loadCompletedOrderCount() {
 
 
 async function loadOrders() {
-
 
   const container =
     document.getElementById(
@@ -1004,7 +1011,6 @@ async function loadOrders() {
 
   orders.forEach(
     function(order) {
-
 
       const box =
         document.createElement(
@@ -1143,7 +1149,6 @@ async function loadOrders() {
         box
       );
 
-
     }
   );
 
@@ -1156,7 +1161,6 @@ async function loadOrders() {
 
 
 async function startAdminDashboard() {
-
 
   const allowed =
     await checkAdminAccess();
@@ -1192,4 +1196,4 @@ startAdminDashboard();
 
 </body>
 
-  </html>
+</html>
