@@ -11,7 +11,10 @@
 
   <title>All Services - Delight Vendor Logs</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -52,7 +55,7 @@
 
 
 /* ========================================
-   SUPABASE
+   SUPABASE CONNECTION
 ======================================== */
 
 
@@ -61,7 +64,7 @@ const SUPABASE_URL =
 
 
 const SUPABASE_KEY =
-  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSF_";
+  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
 
 const supabaseClient =
@@ -89,6 +92,11 @@ async function loadServices() {
     "<p>Loading services...</p>";
 
 
+  console.log(
+    "Loading products from Supabase..."
+  );
+
+
   const {
     data,
     error
@@ -101,9 +109,30 @@ async function loadServices() {
       });
 
 
-  /* DATABASE ERROR */
+  /* ======================================
+     DEBUG
+  ====================================== */
+
+
+  console.log(
+    "PRODUCT DATA:",
+    data
+  );
+
+
+  console.log(
+    "PRODUCT ERROR:",
+    error
+  );
+
+
+  /* ======================================
+     DATABASE ERROR
+  ====================================== */
+
 
   if (error) {
+
 
     console.error(
       "Services error:",
@@ -111,30 +140,78 @@ async function loadServices() {
     );
 
 
-    servicesContainer.innerHTML =
-      "<p>Unable to load services.</p>";
+    servicesContainer.innerHTML = `
+
+      <div style="
+        background:white;
+        padding:20px;
+        border-radius:15px;
+        text-align:center;
+      ">
+
+        <h3>
+          Unable to load services
+        </h3>
+
+        <p>
+          ${escapeHTML(
+            error.message ||
+            "Unknown database error"
+          )}
+        </p>
+
+      </div>
+
+    `;
+
 
     return;
 
   }
 
 
-  /* NO SERVICES */
+  /* ======================================
+     NO PRODUCTS
+  ====================================== */
+
 
   if (
     !data ||
     data.length === 0
   ) {
 
-    servicesContainer.innerHTML =
-      "<p>No services available yet.</p>";
+
+    servicesContainer.innerHTML = `
+
+      <div style="
+        background:white;
+        padding:20px;
+        border-radius:15px;
+        text-align:center;
+      ">
+
+        <h3>
+          No services available yet.
+        </h3>
+
+        <p>
+          Add a service from the admin dashboard.
+        </p>
+
+      </div>
+
+    `;
+
 
     return;
 
   }
 
 
-  /* CLEAR LOADING */
+  /* ======================================
+     CLEAR LOADING
+  ====================================== */
+
 
   servicesContainer.innerHTML =
     "";
@@ -155,21 +232,296 @@ async function loadServices() {
         );
 
 
-      /* CARD STYLE */
+      /* ==================================
+         CARD STYLE
+      ================================== */
+
 
       serviceBox.style.background =
         "white";
 
+
       serviceBox.style.padding =
         "18px";
+
 
       serviceBox.style.margin =
         "16px 0";
 
+
       serviceBox.style.borderRadius =
         "16px";
+
 
       serviceBox.style.textAlign =
         "left";
 
-      serviceBox.style.boxShadow
+
+      serviceBox.style.boxShadow =
+        "0 3px 12px rgba(0,0,0,0.08)";
+
+
+      /* ==================================
+         PRODUCT IMAGE
+      ================================== */
+
+
+      let imageHTML =
+        "";
+
+
+      if (
+        product.image_url &&
+        String(
+          product.image_url
+        ).trim() !== ""
+      ) {
+
+
+        imageHTML = `
+
+          <img
+
+            src="${escapeHTML(
+              product.image_url
+            )}"
+
+            alt="${escapeHTML(
+              product.name ||
+              "Service"
+            )}"
+
+            style="
+              width:100%;
+              max-height:220px;
+              object-fit:cover;
+              border-radius:12px;
+              margin-bottom:15px;
+              display:block;
+            "
+
+            onerror="
+              this.onerror=null;
+              this.src='';
+              this.style.display='none';
+            "
+
+          >
+
+        `;
+
+      }
+
+
+      /* ==================================
+         PRODUCT INFORMATION
+      ================================== */
+
+
+      const productName =
+        product.name ||
+        "Unnamed Service";
+
+
+      const productDescription =
+        product.description ||
+        "No description available.";
+
+
+      const productPrice =
+        Number(
+          product.price || 0
+        ).toLocaleString(
+          "en-NG",
+          {
+            minimumFractionDigits:0,
+            maximumFractionDigits:2
+          }
+        );
+
+
+      const productStatus =
+        product.status ||
+        "Unavailable";
+
+
+      /* ==================================
+         SERVICE CARD
+      ================================== */
+
+
+      serviceBox.innerHTML = `
+
+        ${imageHTML}
+
+
+        <h3>
+
+          ${escapeHTML(
+            productName
+          )}
+
+        </h3>
+
+
+        <p>
+
+          <strong>
+            Price:
+          </strong>
+
+          ₦${productPrice}
+
+        </p>
+
+
+        <p>
+
+          ${escapeHTML(
+            productDescription
+          )}
+
+        </p>
+
+
+        <p>
+
+          <strong>
+            Status:
+          </strong>
+
+          ${escapeHTML(
+            productStatus
+          )}
+
+        </p>
+
+
+        <button
+
+          type="button"
+
+          onclick="
+            viewProduct(
+              ${Number(product.id)}
+            )
+          "
+
+        >
+
+          View Service
+
+        </button>
+
+      `;
+
+
+      servicesContainer.appendChild(
+        serviceBox
+      );
+
+
+    }
+  );
+
+
+}
+
+
+/* ========================================
+   VIEW SERVICE
+======================================== */
+
+
+function viewProduct(
+  productId
+) {
+
+
+  if (
+    !productId
+  ) {
+
+
+    alert(
+      "Product ID is missing."
+    );
+
+
+    return;
+
+  }
+
+
+  /*
+     YOUR DETAIL PAGE IS:
+
+     products.html
+  */
+
+
+  window.location.href =
+    "products.html?id=" +
+    encodeURIComponent(
+      productId
+    );
+
+}
+
+
+/* ========================================
+   ESCAPE HTML
+======================================== */
+
+
+function escapeHTML(
+  value
+) {
+
+
+  return String(
+    value
+  )
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+/* ========================================
+   START
+======================================== */
+
+
+loadServices();
+
+
+</script>
+
+
+</body>
+
+</html>
