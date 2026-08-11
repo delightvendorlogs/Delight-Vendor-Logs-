@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -11,48 +12,77 @@
 
   <title>My Purchases - Delight Vendor Logs</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
 </head>
+
 
 <body>
 
+
 <header>
-  <h1>My Purchases</h1>
+
+  <h1>
+    My Purchases
+  </h1>
+
 </header>
+
 
 <main>
 
-  <h2>Purchase History</h2>
+  <h2>
+    Purchase History
+  </h2>
+
 
   <div id="purchases">
-    <p>Loading purchases...</p>
+
+    <p>
+      Loading purchases...
+    </p>
+
   </div>
 
+
   <br>
+
 
   <button
     type="button"
     onclick="window.location.href='dashboard.html'"
   >
+
     🏠 Back to Dashboard
+
   </button>
+
 
 </main>
 
 
 <script>
 
+
 /* ========================================
    SUPABASE
 ======================================== */
 
+
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
 
+
 const SUPABASE_KEY =
   "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
 
 const supabaseClient =
   window.supabase.createClient(
@@ -65,13 +95,24 @@ const supabaseClient =
    LOAD PURCHASES
 ======================================== */
 
+
 async function loadPurchases() {
 
+
   const container =
-    document.getElementById("purchases");
+    document.getElementById(
+      "purchases"
+    );
 
 
-  /* CHECK LOGIN */
+  container.innerHTML =
+    "<p>Loading purchases...</p>";
+
+
+  /* ======================================
+     CHECK LOGIN
+  ====================================== */
+
 
   const {
     data: {
@@ -82,120 +123,502 @@ async function loadPurchases() {
     await supabaseClient.auth.getUser();
 
 
-  if (userError || !user) {
+  if (
+    userError ||
+    !user
+  ) {
 
     window.location.href =
       "login.html";
 
     return;
+
   }
 
 
-  /* LOAD ORDERS */
+  /* ======================================
+     LOAD USER ORDERS
+  ====================================== */
+
 
   const {
     data: orders,
     error
   } =
     await supabaseClient
+
       .from("orders")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", {
-        ascending: false
-      });
+
+      .select(
+        "id, user_id, product_id, Amo, status, delivery_data, cancel_allowed, created_at, updated_at"
+      )
+
+      .eq(
+        "user_id",
+        user.id
+      )
+
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+  /* ======================================
+     DATABASE ERROR
+  ====================================== */
 
 
   if (error) {
 
+
     console.error(
-      "Orders error:",
+      "Purchases error:",
       error
     );
 
-    container.innerHTML =
-      "<p>Unable to load purchases.</p>";
+
+    container.innerHTML = `
+
+      <div
+        style="
+          background:white;
+          padding:20px;
+          border-radius:12px;
+          text-align:center;
+        "
+      >
+
+        <h3>
+          Unable to load purchases
+        </h3>
+
+        <p>
+          ${escapeHTML(
+            error.message ||
+            "Unknown error"
+          )}
+        </p>
+
+      </div>
+
+    `;
+
 
     return;
+
   }
 
 
-  /* NO PURCHASES */
+  /* ======================================
+     NO PURCHASES
+  ====================================== */
+
 
   if (
     !orders ||
     orders.length === 0
   ) {
 
-    container.innerHTML =
-      "<p>You haven't purchased anything yet.</p>";
+
+    container.innerHTML = `
+
+      <div
+        style="
+          background:white;
+          padding:20px;
+          border-radius:12px;
+          text-align:center;
+        "
+      >
+
+        <h3>
+          No Purchases Yet
+        </h3>
+
+        <p>
+          You haven't purchased anything yet.
+        </p>
+
+      </div>
+
+    `;
+
 
     return;
+
   }
 
 
-  /* DISPLAY ORDERS */
-
-  container.innerHTML = "";
-
-
-  orders.forEach(function(order) {
-
-    const box =
-      document.createElement("div");
+  /* ======================================
+     CLEAR LOADING
+  ====================================== */
 
 
-    box.style.background =
-      "white";
-
-    box.style.padding =
-      "18px";
-
-    box.style.margin =
-      "12px 0";
-
-    box.style.borderRadius =
-      "12px";
-
-    box.style.textAlign =
-      "left";
+  container.innerHTML =
+    "";
 
 
-    const amount =
-      Number(
-        order.amount || 0
-      ).toLocaleString(
-        "en-NG",
-        {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }
+  /* ======================================
+     DISPLAY ORDERS
+  ====================================== */
+
+
+  orders.forEach(
+    function(order) {
+
+
+      const box =
+        document.createElement(
+          "div"
+        );
+
+
+      box.style.background =
+        "white";
+
+
+      box.style.padding =
+        "18px";
+
+
+      box.style.margin =
+        "12px 0";
+
+
+      box.style.borderRadius =
+        "12px";
+
+
+      box.style.textAlign =
+        "left";
+
+
+      box.style.boxShadow =
+        "0 2px 8px rgba(0,0,0,0.08)";
+
+
+      /* ==================================
+         AMOUNT
+      ================================== */
+
+
+      const amount =
+        Number(
+          order.Amo || 0
+        ).toLocaleString(
+          "en-NG",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }
+        );
+
+
+      /* ==================================
+         DATE
+      ================================== */
+
+
+      const date =
+        order.created_at
+          ? new Date(
+              order.created_at
+            ).toLocaleString(
+              "en-NG"
+            )
+          : "Date unavailable";
+
+
+      /* ==================================
+         STATUS
+      ================================== */
+
+
+      const status =
+        String(
+          order.status ||
+          "pending"
+        ).toLowerCase();
+
+
+      let statusText =
+        "⏳ Pending";
+
+
+      if (
+        status === "delivered"
+      ) {
+
+        statusText =
+          "✅ Delivered";
+
+      }
+
+
+      if (
+        status === "completed"
+      ) {
+
+        statusText =
+          "✅ Completed";
+
+      }
+
+
+      if (
+        status === "cancelled"
+      ) {
+
+        statusText =
+          "❌ Cancelled";
+
+      }
+
+
+      if (
+        status === "processing"
+      ) {
+
+        statusText =
+          "🔄 Processing";
+
+      }
+
+
+      /* ==================================
+         DELIVERY
+      ================================== */
+
+
+      let deliveryHTML =
+        "";
+
+
+      if (
+        order.delivery_data &&
+        String(
+          order.delivery_data
+        ).trim() !== ""
+      ) {
+
+
+        deliveryHTML = `
+
+          <div
+            style="
+              margin-top:15px;
+              padding:14px;
+              background:#f4f4f4;
+              border-radius:10px;
+            "
+          >
+
+            <strong>
+              Delivery Information
+            </strong>
+
+            <p
+              style="
+                white-space:pre-wrap;
+                word-break:break-word;
+              "
+            >
+
+              ${escapeHTML(
+                order.delivery_data
+              )}
+
+            </p>
+
+          </div>
+
+        `;
+
+      }
+
+
+      /* ==================================
+         CANCEL STATUS
+      ================================== */
+
+
+      let cancelHTML =
+        "";
+
+
+      if (
+        order.cancel_allowed === true
+      ) {
+
+
+        cancelHTML = `
+
+          <p>
+            🔄 Cancellation:
+            <strong>
+              Allowed
+            </strong>
+          </p>
+
+        `;
+
+      } else {
+
+
+        cancelHTML = `
+
+          <p>
+            🔒 Cancellation:
+            <strong>
+              Not allowed
+            </strong>
+          </p>
+
+        `;
+
+      }
+
+
+      /* ==================================
+         ORDER CARD
+      ================================== */
+
+
+      box.innerHTML = `
+
+        <h3>
+
+          Purchase #${escapeHTML(
+            order.id
+          )}
+
+        </h3>
+
+
+        <p>
+
+          Product ID:
+
+          <strong>
+            ${escapeHTML(
+              order.product_id
+            )}
+          </strong>
+
+        </p>
+
+
+        <p>
+
+          Amount:
+
+          <strong>
+            ₦${amount}
+          </strong>
+
+        </p>
+
+
+        <p>
+
+          Status:
+
+          <strong>
+            ${statusText}
+          </strong>
+
+        </p>
+
+
+        ${cancelHTML}
+
+
+        <p>
+
+          Purchased:
+
+          <small>
+            ${escapeHTML(
+              date
+            )}
+          </small>
+
+        </p>
+
+
+        ${deliveryHTML}
+
+      `;
+
+
+      container.appendChild(
+        box
       );
 
 
-    const date =
-      order.created_at
-        ? new Date(
-            order.created_at
-          ).toLocaleString()
-        : "Date unavailable";
-
-
-    let status =
-      order.status ||
-      "pending";
-
-
-    let statusText =
-      status;
-
-
-    if (status === "pending") {
-
-      statusText =
-        "⏳ Pending";
-
     }
+  );
 
 
-    if (status === "
+}
+
+
+/* ========================================
+   ESCAPE HTML
+======================================== */
+
+
+function escapeHTML(
+  value
+) {
+
+
+  return String(
+    value ?? ""
+  )
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+/* ========================================
+   START
+======================================== */
+
+
+loadPurchases();
+
+
+</script>
+
+
+</body>
+
+  </html>
