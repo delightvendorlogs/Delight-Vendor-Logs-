@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -11,26 +12,48 @@
 
   <title>Transactions - Delight Vendor Logs</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
 </head>
+
 
 <body>
 
+
 <header>
-  <h1>Transactions</h1>
+
+  <h1>
+    Transactions
+  </h1>
+
 </header>
+
 
 <main>
 
-  <h2>Transaction History</h2>
+  <h2>
+    Transaction History
+  </h2>
+
 
   <div id="transactions">
-    <p>Loading transactions...</p>
+
+    <p>
+      Checking your account...
+    </p>
+
   </div>
 
+
   <br>
+
 
   <button
     type="button"
@@ -39,7 +62,9 @@
     💰 Fund Wallet
   </button>
 
+
   <br><br>
+
 
   <button
     type="button"
@@ -48,25 +73,37 @@
     🏠 Back to Dashboard
   </button>
 
+
 </main>
 
 
 <script>
 
+
 /* ========================================
-   SUPABASE
+   SUPABASE CONNECTION
 ======================================== */
+
 
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
 
+
 const SUPABASE_KEY =
-  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSF_";
+  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
 
 const supabaseClient =
   window.supabase.createClient(
     SUPABASE_URL,
-    SUPABASE_KEY
+    SUPABASE_KEY,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    }
   );
 
 
@@ -74,18 +111,24 @@ const supabaseClient =
    LOAD TRANSACTIONS
 ======================================== */
 
+
 async function loadTransactions() {
 
+
   const container =
-    document.getElementById("transactions");
+    document.getElementById(
+      "transactions"
+    );
+
 
   container.innerHTML =
-    "<p>Loading transactions...</p>";
+    "<p>Checking your login...</p>";
 
 
   /* ======================================
-     CHECK LOGIN
+     GET CURRENT USER
   ====================================== */
+
 
   const {
     data: {
@@ -96,21 +139,74 @@ async function loadTransactions() {
     await supabaseClient.auth.getUser();
 
 
+  console.log(
+    "CURRENT USER:",
+    user
+  );
+
+
+  console.log(
+    "USER ERROR:",
+    userError
+  );
+
+
+  /* ======================================
+     CHECK LOGIN
+  ====================================== */
+
+
   if (
     userError ||
     !user
   ) {
 
-    window.location.href =
-      "login.html";
+
+    console.log(
+      "No Supabase session found."
+    );
+
+
+    container.innerHTML = `
+
+      <div
+        style="
+          background:white;
+          padding:20px;
+          border-radius:12px;
+          text-align:center;
+        "
+      >
+
+        <h3>
+          Login Session Not Found
+        </h3>
+
+        <p>
+          Your login session was not detected on this page.
+        </p>
+
+        <button
+          type="button"
+          onclick="window.location.href='login.html'"
+        >
+          🔐 Login Again
+        </button>
+
+      </div>
+
+    `;
+
 
     return;
+
   }
 
 
   /* ======================================
-     LOAD USER TRANSACTIONS
+     LOAD TRANSACTIONS
   ====================================== */
+
 
   const {
     data: transactions,
@@ -141,12 +237,15 @@ async function loadTransactions() {
      DATABASE ERROR
   ====================================== */
 
+
   if (error) {
 
+
     console.error(
-      "Transactions error:",
+      "TRANSACTIONS ERROR:",
       error
     );
+
 
     container.innerHTML = `
 
@@ -174,7 +273,9 @@ async function loadTransactions() {
 
     `;
 
+
     return;
+
   }
 
 
@@ -182,10 +283,12 @@ async function loadTransactions() {
      NO TRANSACTIONS
   ====================================== */
 
+
   if (
     !transactions ||
     transactions.length === 0
   ) {
+
 
     container.innerHTML = `
 
@@ -210,7 +313,9 @@ async function loadTransactions() {
 
     `;
 
+
     return;
+
   }
 
 
@@ -218,40 +323,54 @@ async function loadTransactions() {
      CLEAR LOADING
   ====================================== */
 
-  container.innerHTML = "";
+
+  container.innerHTML =
+    "";
 
 
   /* ======================================
      DISPLAY TRANSACTIONS
   ====================================== */
 
+
   transactions.forEach(
     function(transaction) {
 
+
       const box =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
 
       box.style.background =
         "white";
 
+
       box.style.padding =
         "18px";
+
 
       box.style.margin =
         "12px 0";
 
+
       box.style.borderRadius =
         "12px";
 
+
       box.style.textAlign =
         "left";
+
 
       box.style.boxShadow =
         "0 2px 8px rgba(0,0,0,0.08)";
 
 
-      /* AMOUNT */
+      /* ==================================
+         AMOUNT
+      ================================== */
+
 
       const amount =
         Number(
@@ -265,7 +384,10 @@ async function loadTransactions() {
         );
 
 
-      /* DATE */
+      /* ==================================
+         DATE
+      ================================== */
+
 
       const date =
         transaction.created_at
@@ -277,34 +399,47 @@ async function loadTransactions() {
           : "Date unavailable";
 
 
-      /* TYPE */
+      /* ==================================
+         TYPE
+      ================================== */
+
 
       const type =
         transaction.type ||
         "Transaction";
 
 
-      /* STATUS */
+      /* ==================================
+         STATUS
+      ================================== */
+
 
       const status =
         transaction.status ||
         "Pending";
 
 
-      /* DESCRIPTION */
+      /* ==================================
+         DESCRIPTION
+      ================================== */
+
 
       const description =
         transaction.description ||
         "";
 
 
-      /* CARD */
+      /* ==================================
+         CARD
+      ================================== */
+
 
       box.innerHTML = `
 
         <h3>
           ${escapeHTML(type)}
         </h3>
+
 
         <p>
           Amount:
@@ -313,6 +448,7 @@ async function loadTransactions() {
           </strong>
         </p>
 
+
         <p>
           Status:
           <strong>
@@ -320,15 +456,19 @@ async function loadTransactions() {
           </strong>
         </p>
 
+
         ${
           description
             ? `
               <p>
-                ${escapeHTML(description)}
+                ${escapeHTML(
+                  description
+                )}
               </p>
             `
             : ""
         }
+
 
         <small>
           ${escapeHTML(date)}
@@ -341,8 +481,10 @@ async function loadTransactions() {
         box
       );
 
+
     }
   );
+
 
 }
 
@@ -351,31 +493,40 @@ async function loadTransactions() {
    ESCAPE HTML
 ======================================== */
 
-function escapeHTML(value) {
+
+function escapeHTML(
+  value
+) {
+
 
   return String(
     value ?? ""
   )
+
 
     .replace(
       /&/g,
       "&amp;"
     )
 
+
     .replace(
       /</g,
       "&lt;"
     )
+
 
     .replace(
       />/g,
       "&gt;"
     )
 
+
     .replace(
       /"/g,
       "&quot;"
     )
+
 
     .replace(
       /'/g,
@@ -389,9 +540,13 @@ function escapeHTML(value) {
    START
 ======================================== */
 
+
 loadTransactions();
+
 
 </script>
 
+
 </body>
+
 </html>
