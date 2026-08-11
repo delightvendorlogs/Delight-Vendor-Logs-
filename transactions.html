@@ -1,192 +1,397 @@
-<!DOCTYPE html><html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Transactions - Delight Vendor Logs</title>  <link rel="stylesheet" href="style.css">  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body>  <header>
-    <h1>Transactions</h1>
-  </header>  <main><h2>Transaction History</h2>
 
-<div id="transactions">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-  <p>Loading transactions...</p>
+  <title>Transactions - Delight Vendor Logs</title>
 
-</div>
+  <link rel="stylesheet" href="style.css">
 
-<br>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
 
-<button onclick="window.location.href='wallet.html'">
-  💰 Fund Wallet
-</button>
+<body>
 
-<br>
+<header>
+  <h1>Transactions</h1>
+</header>
 
-<button onclick="window.location.href='dashboard.html'">
-  🏠 Back to Dashboard
-</button>
+<main>
 
-  </main>  <script>
+  <h2>Transaction History</h2>
 
-    /* =========================
-       SUPABASE
-    ========================= */
+  <div id="transactions">
+    <p>Loading transactions...</p>
+  </div>
 
-    const SUPABASE_URL =
-      "https://hkfhehbhmucymusaytoe.supabase.co";
+  <br>
 
-    const SUPABASE_KEY =
-      "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+  <button
+    type="button"
+    onclick="window.location.href='wallet.html'"
+  >
+    💰 Fund Wallet
+  </button>
 
-    const supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
+  <br><br>
+
+  <button
+    type="button"
+    onclick="window.location.href='dashboard.html'"
+  >
+    🏠 Back to Dashboard
+  </button>
+
+</main>
+
+
+<script>
+
+/* ========================================
+   SUPABASE
+======================================== */
+
+const SUPABASE_URL =
+  "https://hkfhehbhmucymusaytoe.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSF_";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* ========================================
+   LOAD TRANSACTIONS
+======================================== */
+
+async function loadTransactions() {
+
+  const container =
+    document.getElementById("transactions");
+
+  container.innerHTML =
+    "<p>Loading transactions...</p>";
+
+
+  /* ======================================
+     CHECK LOGIN
+  ====================================== */
+
+  const {
+    data: {
+      user
+    },
+    error: userError
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if (
+    userError ||
+    !user
+  ) {
+
+    window.location.href =
+      "login.html";
+
+    return;
+  }
+
+
+  /* ======================================
+     LOAD USER TRANSACTIONS
+  ====================================== */
+
+  const {
+    data: transactions,
+    error
+  } =
+    await supabaseClient
+
+      .from("transactions")
+
+      .select(
+        "id, user_id, type, amount, status, description, created_at"
+      )
+
+      .eq(
+        "user_id",
+        user.id
+      )
+
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
       );
 
 
-    /* =========================
-       LOAD TRANSACTIONS
-    ========================= */
+  /* ======================================
+     DATABASE ERROR
+  ====================================== */
 
-    async function loadTransactions() {
+  if (error) {
 
-      const container =
-        document.getElementById("transactions");
+    console.error(
+      "Transactions error:",
+      error
+    );
 
+    container.innerHTML = `
 
-      const {
-        data: {
-          user
-        },
-        error
-      } = await supabaseClient.auth.getUser();
+      <div
+        style="
+          background:white;
+          padding:20px;
+          border-radius:12px;
+          text-align:center;
+        "
+      >
 
+        <h3>
+          Unable to load transactions
+        </h3>
 
-      if (error || !user) {
+        <p>
+          ${escapeHTML(
+            error.message ||
+            "Unknown database error"
+          )}
+        </p>
 
-        window.location.href = "login.html";
+      </div>
 
-        return;
-      }
+    `;
 
-
-      /*
-        We will connect this to the
-        actual Transactions table.
-
-        The table should eventually contain:
-
-        user_id
-        type
-        amount
-        status
-        description
-        created_at
-      */
-
-
-      const {
-        data,
-        error: transactionError
-      } = await supabaseClient
-        .from("Transaction")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", {
-          ascending: false
-        });
+    return;
+  }
 
 
-      if (transactionError) {
+  /* ======================================
+     NO TRANSACTIONS
+  ====================================== */
 
-        console.error(transactionError);
+  if (
+    !transactions ||
+    transactions.length === 0
+  ) {
 
-        container.innerHTML =
-          "<p>Unable to load transactions.</p>";
+    container.innerHTML = `
 
-        return;
-      }
+      <div
+        style="
+          background:white;
+          padding:20px;
+          border-radius:12px;
+          text-align:center;
+        "
+      >
 
+        <h3>
+          No Transactions Yet
+        </h3>
 
-      if (!data || data.length === 0) {
+        <p>
+          Your wallet transactions will appear here.
+        </p>
 
-        container.innerHTML =
-          "<p>No transactions yet.</p>";
+      </div>
 
-        return;
-      }
+    `;
 
-
-      container.innerHTML = "";
-
-
-      data.forEach(function(transaction) {
-
-        const box =
-          document.createElement("div");
-
-
-        const amount =
-          Number(
-            transaction.amount || 0
-          ).toLocaleString(
-            "en-NG",
-            {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2
-            }
-          );
+    return;
+  }
 
 
-        const date =
-          transaction.created_at
-            ? new Date(
-                transaction.created_at
-              ).toLocaleString()
-            : "Date unavailable";
+  /* ======================================
+     CLEAR LOADING
+  ====================================== */
+
+  container.innerHTML = "";
 
 
-        box.style.background = "white";
-        box.style.padding = "18px";
-        box.style.margin = "12px 0";
-        box.style.borderRadius = "12px";
-        box.style.textAlign = "left";
+  /* ======================================
+     DISPLAY TRANSACTIONS
+  ====================================== */
+
+  transactions.forEach(
+    function(transaction) {
+
+      const box =
+        document.createElement("div");
 
 
-        box.innerHTML = `
+      box.style.background =
+        "white";
 
-          <h3>
-            ${transaction.type || "Transaction"}
-          </h3>
+      box.style.padding =
+        "18px";
 
-          <p>
-            Amount: ₦${amount}
-          </p>
+      box.style.margin =
+        "12px 0";
 
-          <p>
-            Status:
-            ${transaction.status || "Pending"}
-          </p>
+      box.style.borderRadius =
+        "12px";
 
-          <p>
-            ${transaction.description || ""}
-          </p>
+      box.style.textAlign =
+        "left";
 
-          <small>
-            ${date}
-          </small>
-
-        `;
+      box.style.boxShadow =
+        "0 2px 8px rgba(0,0,0,0.08)";
 
 
-        container.appendChild(box);
+      /* AMOUNT */
 
-      });
+      const amount =
+        Number(
+          transaction.amount || 0
+        ).toLocaleString(
+          "en-NG",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }
+        );
+
+
+      /* DATE */
+
+      const date =
+        transaction.created_at
+          ? new Date(
+              transaction.created_at
+            ).toLocaleString(
+              "en-NG"
+            )
+          : "Date unavailable";
+
+
+      /* TYPE */
+
+      const type =
+        transaction.type ||
+        "Transaction";
+
+
+      /* STATUS */
+
+      const status =
+        transaction.status ||
+        "Pending";
+
+
+      /* DESCRIPTION */
+
+      const description =
+        transaction.description ||
+        "";
+
+
+      /* CARD */
+
+      box.innerHTML = `
+
+        <h3>
+          ${escapeHTML(type)}
+        </h3>
+
+        <p>
+          Amount:
+          <strong>
+            ₦${amount}
+          </strong>
+        </p>
+
+        <p>
+          Status:
+          <strong>
+            ${escapeHTML(status)}
+          </strong>
+        </p>
+
+        ${
+          description
+            ? `
+              <p>
+                ${escapeHTML(description)}
+              </p>
+            `
+            : ""
+        }
+
+        <small>
+          ${escapeHTML(date)}
+        </small>
+
+      `;
+
+
+      container.appendChild(
+        box
+      );
 
     }
+  );
+
+}
 
 
-    /* =========================
-       START
-    ========================= */
+/* ========================================
+   ESCAPE HTML
+======================================== */
 
-    loadTransactions();
+function escapeHTML(value) {
 
-  </script></body></html>
+  return String(
+    value ?? ""
+  )
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+/* ========================================
+   START
+======================================== */
+
+loadTransactions();
+
+</script>
+
+</body>
+</html>
