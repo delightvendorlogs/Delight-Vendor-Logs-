@@ -7,7 +7,8 @@
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0">
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>All Services - Delight Vendor Logs</title>
 
@@ -74,6 +75,7 @@ const supabaseClient =
   );
 
 
+
 /* ========================================
    LOAD ALL SERVICES
 ======================================== */
@@ -93,20 +95,28 @@ async function loadServices() {
 
 
   console.log(
-    "Loading products from Supabase..."
+    "Loading services from Product table..."
   );
 
 
   const {
+
     data,
+
     error
+
   } =
+
     await supabaseClient
+
       .from("Product")
+
       .select("*")
+
       .order("id", {
         ascending: false
       });
+
 
 
   /* ======================================
@@ -115,15 +125,16 @@ async function loadServices() {
 
 
   console.log(
-    "PRODUCT DATA:",
+    "SERVICES DATA:",
     data
   );
 
 
   console.log(
-    "PRODUCT ERROR:",
+    "SERVICES ERROR:",
     error
   );
+
 
 
   /* ======================================
@@ -145,8 +156,10 @@ async function loadServices() {
       <div style="
         background:white;
         padding:20px;
-        border-radius:15px;
+        margin:15px 0;
+        border-radius:16px;
         text-align:center;
+        box-shadow:0 3px 12px rgba(0,0,0,0.08);
       ">
 
         <h3>
@@ -170,8 +183,9 @@ async function loadServices() {
   }
 
 
+
   /* ======================================
-     NO PRODUCTS
+     NO SERVICES
   ====================================== */
 
 
@@ -186,8 +200,10 @@ async function loadServices() {
       <div style="
         background:white;
         padding:20px;
-        border-radius:15px;
+        margin:15px 0;
+        border-radius:16px;
         text-align:center;
+        box-shadow:0 3px 12px rgba(0,0,0,0.08);
       ">
 
         <h3>
@@ -208,6 +224,7 @@ async function loadServices() {
   }
 
 
+
   /* ======================================
      CLEAR LOADING
   ====================================== */
@@ -215,6 +232,7 @@ async function loadServices() {
 
   servicesContainer.innerHTML =
     "";
+
 
 
   /* ======================================
@@ -230,6 +248,7 @@ async function loadServices() {
         document.createElement(
           "div"
         );
+
 
 
       /* ==================================
@@ -259,6 +278,7 @@ async function loadServices() {
 
       serviceBox.style.boxShadow =
         "0 3px 12px rgba(0,0,0,0.08)";
+
 
 
       /* ==================================
@@ -302,7 +322,6 @@ async function loadServices() {
 
             onerror="
               this.onerror=null;
-              this.src='';
               this.style.display='none';
             "
 
@@ -311,6 +330,7 @@ async function loadServices() {
         `;
 
       }
+
 
 
       /* ==================================
@@ -343,6 +363,36 @@ async function loadServices() {
       const productStatus =
         product.status ||
         "Unavailable";
+
+
+
+      /* ==================================
+         IMPORTANT PRODUCT ID
+      ================================== */
+
+
+      /*
+        DO NOT USE Number(product.id)
+
+        We keep the ID exactly as Supabase
+        gives it to us.
+      */
+
+
+      const productId =
+        String(
+          product.id
+        );
+
+
+
+      console.log(
+        "Service:",
+        productName,
+        "ID:",
+        productId
+      );
+
 
 
       /* ==================================
@@ -401,11 +451,9 @@ async function loadServices() {
 
           type="button"
 
-          onclick="
-            viewProduct(
-              ${Number(product.id)}
-            )
-          "
+          onclick="viewProduct(
+            '${escapeJS(productId)}'
+          )"
 
         >
 
@@ -428,6 +476,7 @@ async function loadServices() {
 }
 
 
+
 /* ========================================
    VIEW SERVICE
 ======================================== */
@@ -438,8 +487,18 @@ function viewProduct(
 ) {
 
 
+  console.log(
+    "Opening service with ID:",
+    productId
+  );
+
+
+  /* CHECK ID */
+
   if (
-    !productId
+    !productId ||
+    productId === "undefined" ||
+    productId === "null"
   ) {
 
 
@@ -453,20 +512,30 @@ function viewProduct(
   }
 
 
-  /*
-     YOUR DETAIL PAGE IS:
 
-     products.html
-  */
+  /* ======================================
+     OPEN PRODUCTS.HTML
+  ====================================== */
 
 
-  window.location.href =
+  const url =
     "products.html?id=" +
     encodeURIComponent(
       productId
     );
 
+
+  console.log(
+    "Opening:",
+    url
+  );
+
+
+  window.location.href =
+    url;
+
 }
+
 
 
 /* ========================================
@@ -511,6 +580,50 @@ function escapeHTML(
 }
 
 
+
+/* ========================================
+   ESCAPE JAVASCRIPT STRING
+======================================== */
+
+
+function escapeJS(
+  value
+) {
+
+
+  return String(
+    value
+  )
+
+    .replace(
+      /\\/g,
+      "\\\\"
+    )
+
+    .replace(
+      /'/g,
+      "\\'"
+    )
+
+    .replace(
+      /"/g,
+      '\\"'
+    )
+
+    .replace(
+      /\r/g,
+      "\\r"
+    )
+
+    .replace(
+      /\n/g,
+      "\\n"
+    );
+
+}
+
+
+
 /* ========================================
    START
 ======================================== */
@@ -524,4 +637,4 @@ loadServices();
 
 </body>
 
-</html>
+  </html>
