@@ -17,27 +17,33 @@
     href="style.css"
   >
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
 
 </head>
 
 
 <body>
 
+
 <header>
 
-  <h1>Admin Dashboard</h1>
+  <h1>
+    Admin Dashboard
+  </h1>
 
   <button
     type="button"
     onclick="refreshDashboard()"
     style="
       background:#111;
-      color:#fff;
+      color:white;
       border:none;
-      padding:12px 18px;
+      padding:13px 20px;
       border-radius:10px;
       font-weight:bold;
+      font-size:16px;
       cursor:pointer;
       margin-top:10px;
     "
@@ -57,9 +63,14 @@
      ADD PRODUCT
 ================================================== -->
 
-<h2>Add Product / Service</h2>
+<h2>
+  Add Product / Service
+</h2>
 
-<label>Product / Service Name</label>
+
+<label>
+  Product / Service Name
+</label>
 
 <br>
 
@@ -69,9 +80,13 @@
   placeholder="Enter product or service name"
 >
 
+
 <br><br>
 
-<label>Price</label>
+
+<label>
+  Price
+</label>
 
 <br>
 
@@ -83,9 +98,13 @@
   step="0.01"
 >
 
+
 <br><br>
 
-<label>Category</label>
+
+<label>
+  Category
+</label>
 
 <br>
 
@@ -109,9 +128,13 @@
 
 </select>
 
+
 <br><br>
 
-<label>Description</label>
+
+<label>
+  Description
+</label>
 
 <br>
 
@@ -120,9 +143,13 @@
   placeholder="Describe the product or service"
 ></textarea>
 
+
 <br><br>
 
-<label>Image URL</label>
+
+<label>
+  Image URL
+</label>
 
 <br>
 
@@ -132,9 +159,13 @@
   placeholder="Paste image URL"
 >
 
+
 <br><br>
 
-<label>Stock</label>
+
+<label>
+  Stock
+</label>
 
 <br>
 
@@ -145,9 +176,13 @@
   min="0"
 >
 
+
 <br><br>
 
-<label>Status</label>
+
+<label>
+  Status
+</label>
 
 <br>
 
@@ -163,7 +198,9 @@
 
 </select>
 
+
 <br><br>
+
 
 <button
   type="button"
@@ -171,6 +208,7 @@
 >
   ➕ Add Product
 </button>
+
 
 <p id="productMessage"></p>
 
@@ -182,15 +220,22 @@
      ADD INVENTORY
 ================================================== -->
 
-<h2>Add Inventory</h2>
+<h2>
+  Add Inventory
+</h2>
+
 
 <p>
   Add a legitimate digital item/details that will be delivered after purchase.
 </p>
 
-<label>Select Product</label>
+
+<label>
+  Select Product
+</label>
 
 <br>
+
 
 <select id="inventoryProduct">
 
@@ -200,7 +245,9 @@
 
 </select>
 
+
 <br><br>
+
 
 <label>
   Digital Item / Delivery Information
@@ -208,12 +255,15 @@
 
 <br>
 
+
 <textarea
   id="inventoryData"
   placeholder="Enter the legitimate digital item/details to be delivered"
 ></textarea>
 
+
 <br><br>
+
 
 <button
   type="button"
@@ -221,6 +271,7 @@
 >
   ➕ Add Inventory
 </button>
+
 
 <p id="inventoryMessage"></p>
 
@@ -232,22 +283,28 @@
      STORE MANAGEMENT
 ================================================== -->
 
-<h2>Store Management</h2>
+<h2>
+  Store Management
+</h2>
+
 
 <p>
   Products:
   <strong id="productCount">0</strong>
 </p>
 
+
 <p>
   Available Inventory:
   <strong id="inventoryCount">0</strong>
 </p>
 
+
 <p>
   Pending Orders:
   <strong id="pendingOrderCount">0</strong>
 </p>
+
 
 <p>
   Completed Orders:
@@ -262,11 +319,16 @@
      PRODUCTS MANAGEMENT
 ================================================== -->
 
-<h2>Products Management</h2>
+<h2>
+  Products Management
+</h2>
+
 
 <div id="productsList">
 
-  <p>Loading products...</p>
+  <p>
+    Loading products...
+  </p>
 
 </div>
 
@@ -278,11 +340,16 @@
      INVENTORY MANAGEMENT
 ================================================== -->
 
-<h2>Inventory Management</h2>
+<h2>
+  Inventory Management
+</h2>
+
 
 <div id="inventoryList">
 
-  <p>Loading inventory...</p>
+  <p>
+    Loading inventory...
+  </p>
 
 </div>
 
@@ -294,16 +361,22 @@
      ORDERS MANAGEMENT
 ================================================== -->
 
-<h2>Orders Management</h2>
+<h2>
+  Orders Management
+</h2>
+
 
 <div id="ordersList">
 
-  <p>Loading orders...</p>
+  <p>
+    Loading orders...
+  </p>
 
 </div>
 
 
 <br>
+
 
 <button
   type="button"
@@ -330,7 +403,7 @@ const SUPABASE_URL =
 
 /*
   IMPORTANT:
-  This is the corrected key.
+  This is the publishable key you were using previously.
 */
 
 const SUPABASE_KEY =
@@ -344,11 +417,9 @@ const supabaseClient =
   );
 
 
-
 /* ==================================================
    ESCAPE HTML
 ================================================== */
-
 
 function escapeHTML(value) {
 
@@ -367,143 +438,182 @@ function escapeHTML(value) {
 }
 
 
-
 /* ==================================================
-   ADMIN ACCESS
+   ADMIN ACCESS CHECK
 ================================================== */
-
 
 async function checkAdminAccess() {
 
-  const {
-    data: {
-      user
-    },
-    error: userError
-  } =
-    await supabaseClient.auth.getUser();
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.getUser();
 
 
-  if (userError || !user) {
+    if (error) {
 
-    window.location.href =
-      "login.html";
+      console.error(
+        "User check error:",
+        error
+      );
 
-    return false;
+      window.location.href =
+        "login.html";
+
+      return false;
+
+    }
+
+
+    const user =
+      data?.user;
+
+
+    if (!user) {
+
+      window.location.href =
+        "login.html";
+
+      return false;
+
+    }
+
+
+    const {
+      data: isAdmin,
+      error: adminError
+    } =
+      await supabaseClient.rpc(
+        "is_admin"
+      );
+
+
+    if (adminError) {
+
+      console.error(
+        "Admin RPC error:",
+        adminError
+      );
+
+
+      document.body.innerHTML = `
+
+        <div
+          style="
+            padding:30px;
+            text-align:center;
+            font-family:Arial;
+          "
+        >
+
+          <h2>
+            Unable to verify admin access
+          </h2>
+
+          <p>
+            ${escapeHTML(adminError.message)}
+          </p>
+
+          <br>
+
+          <button
+            onclick="location.reload()"
+            style="
+              background:#111;
+              color:white;
+              border:none;
+              padding:13px 20px;
+              border-radius:10px;
+              font-weight:bold;
+            "
+          >
+            🔄 Try Again
+          </button>
+
+        </div>
+
+      `;
+
+      return false;
+
+    }
+
+
+    if (!isAdmin) {
+
+      document.body.innerHTML = `
+
+        <div
+          style="
+            padding:30px;
+            text-align:center;
+            font-family:Arial;
+          "
+        >
+
+          <h2>
+            🚫 Access Denied
+          </h2>
+
+          <p>
+            You are not authorized to access the admin dashboard.
+          </p>
+
+          <br>
+
+          <button
+            onclick="window.location.href='dashboard.html'"
+            style="
+              background:#111;
+              color:#fff;
+              padding:14px 22px;
+              border:none;
+              border-radius:10px;
+              font-size:17px;
+              font-weight:bold;
+            "
+          >
+            Back to Dashboard
+          </button>
+
+        </div>
+
+      `;
+
+      return false;
+
+    }
+
+
+    return true;
 
   }
 
-
-  const {
-    data: isAdmin,
-    error
-  } =
-    await supabaseClient.rpc(
-      "is_admin"
-    );
-
-
-  if (error) {
+  catch (error) {
 
     console.error(
-      "Admin check error:",
+      "Admin access exception:",
       error
     );
 
-
-    document.body.innerHTML = `
-
-      <div style="
-        padding:30px;
-        text-align:center;
-        font-family:Arial;
-      ">
-
-        <h2>
-          Unable to verify admin access
-        </h2>
-
-        <p>
-          ${escapeHTML(error.message)}
-        </p>
-
-        <button
-          onclick="location.reload()"
-          style="
-            background:#111;
-            color:#fff;
-            border:none;
-            padding:12px 20px;
-            border-radius:10px;
-            font-weight:bold;
-          "
-        >
-          🔄 Try Again
-        </button>
-
-      </div>
-
-    `;
+    alert(
+      "Unable to check admin access: " +
+      error.message
+    );
 
     return false;
 
   }
-
-
-  if (!isAdmin) {
-
-    document.body.innerHTML = `
-
-      <div style="
-        padding:30px;
-        text-align:center;
-        font-family:Arial;
-      ">
-
-        <h2>
-          🚫 Access Denied
-        </h2>
-
-        <p>
-          You are not authorized to access the admin dashboard.
-        </p>
-
-        <br>
-
-        <button
-          onclick="window.location.href='dashboard.html'"
-          style="
-            background:#111;
-            color:#fff;
-            border:none;
-            padding:14px 22px;
-            border-radius:10px;
-            font-size:17px;
-            font-weight:bold;
-          "
-        >
-          🏠 Back to Dashboard
-        </button>
-
-      </div>
-
-    `;
-
-    return false;
-
-  }
-
-
-  return true;
 
 }
-
 
 
 /* ==================================================
    ADD PRODUCT
 ================================================== */
-
 
 async function addProduct() {
 
@@ -565,7 +675,7 @@ async function addProduct() {
   if (!name) {
 
     message.textContent =
-      "Please enter a product/service name.";
+      "Please enter a product name.";
 
     return;
 
@@ -591,7 +701,7 @@ async function addProduct() {
   ) {
 
     message.textContent =
-      "Please enter a valid stock number.";
+      "Please enter a valid stock.";
 
     return;
 
@@ -602,9 +712,11 @@ async function addProduct() {
     "Adding product...";
 
 
-  const {
-    error
-  } =
+  try {
+
+    const {
+      error
+    } =
     await supabaseClient
       .from("Product")
       .insert([
@@ -622,63 +734,73 @@ async function addProduct() {
       ]);
 
 
-  if (error) {
+    if (error) {
 
-    console.error(
-      "Add product error:",
-      error
-    );
+      console.error(
+        "Add product error:",
+        error
+      );
+
+      message.textContent =
+        "❌ " +
+        error.message;
+
+      return;
+
+    }
 
 
     message.textContent =
-      "❌ " + error.message;
+      "✅ Product added successfully!";
 
-    return;
+
+    document
+      .getElementById("productName")
+      .value = "";
+
+
+    document
+      .getElementById("productPrice")
+      .value = "";
+
+
+    document
+      .getElementById("productDescription")
+      .value = "";
+
+
+    document
+      .getElementById("productImage")
+      .value = "";
+
+
+    document
+      .getElementById("productStock")
+      .value = "0";
+
+
+    await refreshDashboard();
 
   }
 
+  catch (error) {
 
-  message.textContent =
-    "✅ Product added successfully!";
+    console.error(error);
 
+    message.textContent =
+      "❌ " +
+      error.message;
 
-  document
-    .getElementById("productName")
-    .value = "";
-
-
-  document
-    .getElementById("productPrice")
-    .value = "";
-
-
-  document
-    .getElementById("productDescription")
-    .value = "";
-
-
-  document
-    .getElementById("productImage")
-    .value = "";
-
-
-  document
-    .getElementById("productStock")
-    .value = "0";
-
-
-  await refreshDashboard();
+  }
 
 }
 
 
-
 /* ==================================================
-   LOAD PRODUCT DROPDOWN
+   LOAD PRODUCTS DROPDOWN
 ================================================== */
 
-
-async function loadProducts() {
+async function loadProductsDropdown() {
 
   const dropdown =
     document.getElementById(
@@ -686,89 +808,119 @@ async function loadProducts() {
     );
 
 
-  dropdown.innerHTML = `
-
-    <option value="">
-      Loading products...
-    </option>
-
-  `;
+  dropdown.innerHTML =
+    "<option value=''>Loading products...</option>";
 
 
-  const {
-    data,
-    error
-  } =
+  try {
+
+    const {
+      data,
+      error
+    } =
     await supabaseClient
       .from("Product")
-      .select("id,name")
+      .select("id, name")
       .order("id", {
         ascending: false
       });
 
 
-  if (error) {
+    if (error) {
 
-    console.error(
-      "Dropdown error:",
-      error
-    );
+      console.error(
+        "Dropdown error:",
+        error
+      );
+
+
+      dropdown.innerHTML = `
+
+        <option value="">
+          Failed to load products
+        </option>
+
+      `;
+
+      return;
+
+    }
 
 
     dropdown.innerHTML = `
 
       <option value="">
-        Unable to load products
+        Choose a product
       </option>
 
     `;
 
-    return;
+
+    if (
+      !data ||
+      data.length === 0
+    ) {
+
+      dropdown.innerHTML = `
+
+        <option value="">
+          No products available
+        </option>
+
+      `;
+
+      return;
+
+    }
+
+
+    data.forEach(
+      function(product) {
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+
+        option.value =
+          product.id;
+
+
+        option.textContent =
+          product.name;
+
+
+        dropdown.appendChild(
+          option
+        );
+
+      }
+    );
 
   }
 
+  catch (error) {
 
-  dropdown.innerHTML = `
-
-    <option value="">
-      Choose a product
-    </option>
-
-  `;
+    console.error(error);
 
 
-  (data || []).forEach(
-    function(product) {
+    dropdown.innerHTML = `
 
-      const option =
-        document.createElement(
-          "option"
-        );
+      <option value="">
+        Failed to load products
+      </option>
 
+    `;
 
-      option.value =
-        product.id;
-
-
-      option.textContent =
-        product.name;
-
-
-      dropdown.appendChild(
-        option
-      );
-
-    }
-  );
+  }
 
 }
-
 
 
 /* ==================================================
    ADD INVENTORY
 ================================================== */
-
 
 async function addInventory() {
 
@@ -819,9 +971,11 @@ async function addInventory() {
     "Adding inventory...";
 
 
-  const {
-    error
-  } =
+  try {
+
+    const {
+      error
+    } =
     await supabaseClient
       .from("product_inventory")
       .insert([
@@ -841,50 +995,63 @@ async function addInventory() {
       ]);
 
 
-  if (error) {
+    if (error) {
 
-    console.error(
-      "Inventory error:",
-      error
-    );
+      console.error(
+        "Inventory insert error:",
+        error
+      );
+
+
+      message.textContent =
+        "❌ " +
+        error.message;
+
+      return;
+
+    }
 
 
     message.textContent =
-      "❌ " + error.message;
+      "✅ Inventory added successfully!";
 
-    return;
+
+    document
+      .getElementById(
+        "inventoryData"
+      )
+      .value = "";
+
+
+    await refreshDashboard();
 
   }
 
+  catch (error) {
 
-  message.textContent =
-    "✅ Inventory added successfully!";
+    console.error(error);
 
+    message.textContent =
+      "❌ " +
+      error.message;
 
-  document
-    .getElementById(
-      "inventoryData"
-    )
-    .value = "";
-
-
-  await refreshDashboard();
+  }
 
 }
 
 
-
 /* ==================================================
-   PRODUCT COUNT
+   LOAD PRODUCT COUNT
 ================================================== */
-
 
 async function loadProductCount() {
 
-  const {
-    count,
-    error
-  } =
+  try {
+
+    const {
+      count,
+      error
+    } =
     await supabaseClient
       .from("Product")
       .select("*", {
@@ -893,40 +1060,62 @@ async function loadProductCount() {
       });
 
 
-  if (error) {
+    if (error) {
 
-    console.error(
-      "Product count error:",
-      error
-    );
+      console.error(
+        "Product count error:",
+        error
+      );
 
-    return;
+      document
+        .getElementById(
+          "productCount"
+        )
+        .textContent =
+        "Error";
+
+      return;
+
+    }
+
+
+    document
+      .getElementById(
+        "productCount"
+      )
+      .textContent =
+      count ?? 0;
 
   }
 
+  catch (error) {
 
-  document
-    .getElementById(
-      "productCount"
-    )
-    .textContent =
-      count || 0;
+    console.error(error);
+
+    document
+      .getElementById(
+        "productCount"
+      )
+      .textContent =
+      "Error";
+
+  }
 
 }
 
 
-
 /* ==================================================
-   INVENTORY COUNT
+   LOAD INVENTORY COUNT
 ================================================== */
-
 
 async function loadInventoryCount() {
 
-  const {
-    count,
-    error
-  } =
+  try {
+
+    const {
+      count,
+      error
+    } =
     await supabaseClient
       .from("product_inventory")
       .select("*", {
@@ -939,40 +1128,55 @@ async function loadInventoryCount() {
       );
 
 
-  if (error) {
+    if (error) {
 
-    console.error(
-      "Inventory count error:",
-      error
-    );
+      console.error(
+        "Inventory count error:",
+        error
+      );
 
-    return;
+      document
+        .getElementById(
+          "inventoryCount"
+        )
+        .textContent =
+        "Error";
+
+      return;
+
+    }
+
+
+    document
+      .getElementById(
+        "inventoryCount"
+      )
+      .textContent =
+      count ?? 0;
 
   }
 
+  catch (error) {
 
-  document
-    .getElementById(
-      "inventoryCount"
-    )
-    .textContent =
-      count || 0;
+    console.error(error);
+
+  }
 
 }
 
 
-
 /* ==================================================
-   PENDING ORDERS COUNT
+   LOAD PENDING ORDERS COUNT
 ================================================== */
-
 
 async function loadPendingOrderCount() {
 
-  const {
-    count,
-    error
-  } =
+  try {
+
+    const {
+      count,
+      error
+    } =
     await supabaseClient
       .from("orders")
       .select("*", {
@@ -985,40 +1189,55 @@ async function loadPendingOrderCount() {
       );
 
 
-  if (error) {
+    if (error) {
 
-    console.error(
-      "Pending order count error:",
-      error
-    );
+      console.error(
+        "Pending count error:",
+        error
+      );
 
-    return;
+      document
+        .getElementById(
+          "pendingOrderCount"
+        )
+        .textContent =
+        "Error";
+
+      return;
+
+    }
+
+
+    document
+      .getElementById(
+        "pendingOrderCount"
+      )
+      .textContent =
+      count ?? 0;
 
   }
 
+  catch (error) {
 
-  document
-    .getElementById(
-      "pendingOrderCount"
-    )
-    .textContent =
-      count || 0;
+    console.error(error);
+
+  }
 
 }
 
 
-
 /* ==================================================
-   COMPLETED ORDERS COUNT
+   LOAD COMPLETED ORDERS COUNT
 ================================================== */
-
 
 async function loadCompletedOrderCount() {
 
-  const {
-    count,
-    error
-  } =
+  try {
+
+    const {
+      count,
+      error
+    } =
     await supabaseClient
       .from("orders")
       .select("*", {
@@ -1031,33 +1250,46 @@ async function loadCompletedOrderCount() {
       );
 
 
-  if (error) {
+    if (error) {
 
-    console.error(
-      "Completed order count error:",
-      error
-    );
+      console.error(
+        "Completed count error:",
+        error
+      );
 
-    return;
+      document
+        .getElementById(
+          "completedOrderCount"
+        )
+        .textContent =
+        "Error";
+
+      return;
+
+    }
+
+
+    document
+      .getElementById(
+        "completedOrderCount"
+      )
+      .textContent =
+      count ?? 0;
 
   }
 
+  catch (error) {
 
-  document
-    .getElementById(
-      "completedOrderCount"
-    )
-    .textContent =
-      count || 0;
+    console.error(error);
+
+  }
 
 }
 
 
-
 /* ==================================================
-   PRODUCTS MANAGEMENT
+   LOAD PRODUCTS MANAGEMENT
 ================================================== */
-
 
 async function loadProductsManagement() {
 
@@ -1071,10 +1303,12 @@ async function loadProductsManagement() {
     "<p>Loading products...</p>";
 
 
-  const {
-    data,
-    error
-  } =
+  try {
+
+    const {
+      data,
+      error
+    } =
     await supabaseClient
       .from("Product")
       .select("*")
@@ -1083,385 +1317,190 @@ async function loadProductsManagement() {
       });
 
 
-  if (error) {
+    if (error) {
 
-    console.error(
-      "Products management error:",
-      error
-    );
-
-
-    container.innerHTML = `
-
-      <p>
-        ❌ Unable to load products:
-        ${escapeHTML(error.message)}
-      </p>
-
-    `;
-
-    return;
-
-  }
-
-
-  if (
-    !data ||
-    data.length === 0
-  ) {
-
-    container.innerHTML =
-      "<p>No products yet.</p>";
-
-    return;
-
-  }
-
-
-  container.innerHTML = "";
-
-
-  data.forEach(
-    function(product) {
-
-      const box =
-        document.createElement(
-          "div"
-        );
-
-
-      box.style.background =
-        "white";
-
-      box.style.padding =
-        "18px";
-
-      box.style.margin =
-        "12px 0";
-
-      box.style.borderRadius =
-        "12px";
-
-      box.style.textAlign =
-        "left";
-
-      box.style.boxShadow =
-        "0 2px 8px rgba(0,0,0,0.08)";
-
-
-      const price =
-        Number(
-          product.price || 0
-        ).toLocaleString(
-          "en-NG",
-          {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }
-        );
-
-
-      box.innerHTML = `
-
-        <h3>
-          ${escapeHTML(
-            product.name ||
-            "Unnamed Product"
-          )}
-        </h3>
-
-        <p>
-          ID:
-          <strong>
-            ${escapeHTML(product.id)}
-          </strong>
-        </p>
-
-        <p>
-          Price:
-          <strong>
-            ₦${price}
-          </strong>
-        </p>
-
-        <p>
-          Category:
-          ${escapeHTML(
-            product.category ||
-            "Not specified"
-          )}
-        </p>
-
-        <p>
-          Stock:
-          ${escapeHTML(
-            product.stock ?? 0
-          )}
-        </p>
-
-        <p>
-          Status:
-          <strong>
-            ${escapeHTML(
-              product.status ||
-              "Unavailable"
-            )}
-          </strong>
-        </p>
-
-        <button
-          type="button"
-          onclick="deleteProduct(${Number(product.id)})"
-          style="
-            background:#b00020;
-            color:white;
-            border:none;
-            padding:10px 15px;
-            border-radius:8px;
-            font-weight:bold;
-            cursor:pointer;
-          "
-        >
-          🗑️ Delete Product
-        </button>
-
-      `;
-
-
-      container.appendChild(
-        box
+      console.error(
+        "Products management error:",
+        error
       );
 
-    }
-  );
 
-}
+      container.innerHTML = `
 
+        <div
+          style="
+            background:#ffe5e5;
+            padding:15px;
+            border-radius:10px;
+          "
+        >
 
+          ❌ Unable to load products.
 
-/* ==================================================
-   INVENTORY MANAGEMENT
-================================================== */
+          <br><br>
 
+          ${escapeHTML(error.message)}
 
-async function loadInventoryManagement() {
-
-  const container =
-    document.getElementById(
-      "inventoryList"
-    );
-
-
-  container.innerHTML =
-    "<p>Loading inventory...</p>";
-
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("product_inventory")
-      .select("*")
-      .order("id", {
-        ascending: false
-      });
-
-
-  if (error) {
-
-    console.error(
-      "Inventory management error:",
-      error
-    );
-
-
-    container.innerHTML = `
-
-      <p>
-        ❌ Unable to load inventory:
-        ${escapeHTML(error.message)}
-      </p>
-
-    `;
-
-    return;
-
-  }
-
-
-  if (
-    !data ||
-    data.length === 0
-  ) {
-
-    container.innerHTML =
-      "<p>No inventory yet.</p>";
-
-    return;
-
-  }
-
-
-  container.innerHTML = "";
-
-
-  data.forEach(
-    function(item) {
-
-      const box =
-        document.createElement(
-          "div"
-        );
-
-
-      box.style.background =
-        "white";
-
-      box.style.padding =
-        "18px";
-
-      box.style.margin =
-        "12px 0";
-
-      box.style.borderRadius =
-        "12px";
-
-      box.style.textAlign =
-        "left";
-
-      box.style.boxShadow =
-        "0 2px 8px rgba(0,0,0,0.08)";
-
-
-      box.innerHTML = `
-
-        <h3>
-          Inventory #${escapeHTML(item.id)}
-        </h3>
-
-        <p>
-          Product ID:
-          <strong>
-            ${escapeHTML(item.product_id)}
-          </strong>
-        </p>
-
-        <p>
-          Status:
-          <strong>
-            ${escapeHTML(
-              item.status || "unknown"
-            )}
-          </strong>
-        </p>
-
-        <p>
-          Delivery Information:
-        </p>
-
-        <div style="
-          background:#f4f4f4;
-          padding:12px;
-          border-radius:8px;
-          word-break:break-word;
-        ">
-          ${escapeHTML(item.content)}
         </div>
 
-        <br>
-
-        <button
-          type="button"
-          onclick="deleteInventory(${Number(item.id)})"
-          style="
-            background:#b00020;
-            color:white;
-            border:none;
-            padding:10px 15px;
-            border-radius:8px;
-            font-weight:bold;
-            cursor:pointer;
-          "
-        >
-          🗑️ Delete Inventory
-        </button>
-
       `;
 
-
-      container.appendChild(
-        box
-      );
+      return;
 
     }
-  );
+
+
+    if (
+      !data ||
+      data.length === 0
+    ) {
+
+      container.innerHTML =
+        "<p>No products yet.</p>";
+
+      return;
+
+    }
+
+
+    container.innerHTML =
+      "";
+
+
+    data.forEach(
+      function(product) {
+
+        const box =
+          document.createElement(
+            "div"
+          );
+
+
+        box.style.background =
+          "white";
+
+        box.style.padding =
+          "18px";
+
+        box.style.margin =
+          "12px 0";
+
+        box.style.borderRadius =
+          "12px";
+
+        box.style.textAlign =
+          "left";
+
+        box.style.boxShadow =
+          "0 2px 8px rgba(0,0,0,0.08)";
+
+
+        const price =
+          Number(
+            product.price || 0
+          ).toLocaleString(
+            "en-NG",
+            {
+              minimumFractionDigits:2,
+              maximumFractionDigits:2
+            }
+          );
+
+
+        box.innerHTML = `
+
+          <h3>
+            ${escapeHTML(
+              product.name ||
+              "Unnamed Product"
+            )}
+          </h3>
+
+          <p>
+            ID:
+            <strong>
+              ${escapeHTML(product.id)}
+            </strong>
+          </p>
+
+          <p>
+            Price:
+            <strong>
+              ₦${price}
+            </strong>
+          </p>
+
+          <p>
+            Category:
+            ${escapeHTML(
+              product.category ||
+              "Not specified"
+            )}
+          </p>
+
+          <p>
+            Stock:
+            ${escapeHTML(
+              product.stock ?? 0
+            )}
+          </p>
+
+          <p>
+            Status:
+            <strong>
+              ${escapeHTML(
+                product.status ||
+                "Unavailable"
+              )}
+            </strong>
+          </p>
+
+          <button
+            type="button"
+            onclick="deleteProduct(${Number(product.id)})"
+            style="
+              background:#b00020;
+              color:white;
+              border:none;
+              padding:11px 15px;
+              border-radius:8px;
+              font-weight:bold;
+              cursor:pointer;
+            "
+          >
+            🗑️ Delete Product
+          </button>
+
+        `;
+
+
+        container.appendChild(
+          box
+        );
+
+      }
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+
+    container.innerHTML = `
+
+      <p>
+        ❌ ${escapeHTML(error.message)}
+      </p>
+
+    `;
+
+  }
 
 }
 
 
-
 /* ==================================================
-   DELETE INVENTORY
-================================================== */
-
-
-async function deleteInventory(
-  inventoryId
-) {
-
-  if (!inventoryId) {
-
-    alert(
-      "Inventory ID is missing."
-    );
-
-    return;
-
-  }
-
-
-  const confirmed =
-    confirm(
-      "Are you sure you want to delete this inventory item?"
-    );
-
-
-  if (!confirmed) {
-
-    return;
-
-  }
-
-
-  const message =
-    document.getElementById(
-      "refreshMessage"
-    );
-
-
-  message.textContent =
-    "Deleting inventory...";
-
-
-  const {
-    error
-  } =
-    await supabaseClient
-      .from("product_inventory")
-      .delete()
-      .eq(
-        "id",
-        inventoryId
-      );
-
-
-  if (error) {
-
-    console.error(
-      "Delete inventory error:",
-      error
-    );
-
-
-    message.textConten
+   LOAD INVENTORY MANAGEMENT
+=============================================
