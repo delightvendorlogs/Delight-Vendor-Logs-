@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -9,58 +10,80 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Product - Delight Vendor Logs</title>
+  <title>Service - Delight Vendor Logs</title>
 
   <link rel="stylesheet" href="style.css">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 </head>
+
 
 <body>
 
+
 <header>
-  <h1 id="productName">Loading...</h1>
+
+  <h1 id="productName">
+    Loading...
+  </h1>
+
 </header>
+
 
 <main>
 
+
   <div class="profile-card">
 
+
     <!-- PRODUCT IMAGE -->
+
     <img
       id="productImage"
       src=""
-      alt="Product image"
+      alt="Service Image"
       style="
+        display:none;
         width:100%;
         max-width:500px;
         max-height:350px;
         object-fit:cover;
         border-radius:15px;
-        display:none;
         margin:0 auto 20px auto;
       "
     >
 
+
     <!-- DESCRIPTION -->
+
     <p id="productDescription">
       Loading product...
     </p>
 
+
     <!-- PRICE -->
+
     <h2 id="productPrice">
       ₦0.00
     </h2>
 
+
     <!-- STATUS -->
+
     <p>
+
       Status:
+
       <strong id="productStatus">
         Loading...
       </strong>
+
     </p>
 
+
     <!-- BUY BUTTON -->
+
     <button
       id="buyButton"
       type="button"
@@ -69,12 +92,19 @@
       Buy Now
     </button>
 
+
     <!-- MESSAGE -->
+
     <p id="message"></p>
+
 
   </div>
 
+
   <br>
+
+
+  <!-- BACK BUTTON -->
 
   <button
     type="button"
@@ -83,20 +113,26 @@
     🏠 Back to Dashboard
   </button>
 
+
 </main>
 
 
+
 <script>
+
 
 /* ========================================
    SUPABASE
 ======================================== */
 
+
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
 
+
 const SUPABASE_KEY =
   "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
 
 const supabaseClient =
   window.supabase.createClient(
@@ -105,48 +141,204 @@ const supabaseClient =
   );
 
 
+
 /* ========================================
    GET PRODUCT ID FROM URL
 ======================================== */
+
 
 const params =
   new URLSearchParams(
     window.location.search
   );
 
+
 const productId =
   params.get("id");
+
+
+
+/* ========================================
+   ELEMENTS
+======================================== */
+
+
+const productName =
+  document.getElementById(
+    "productName"
+  );
+
+
+const productDescription =
+  document.getElementById(
+    "productDescription"
+  );
+
+
+const productPrice =
+  document.getElementById(
+    "productPrice"
+  );
+
+
+const productStatus =
+  document.getElementById(
+    "productStatus"
+  );
+
+
+const productImage =
+  document.getElementById(
+    "productImage"
+  );
+
+
+const buyButton =
+  document.getElementById(
+    "buyButton"
+  );
+
+
+const message =
+  document.getElementById(
+    "message"
+  );
+
 
 
 /* ========================================
    LOAD PRODUCT
 ======================================== */
 
+
 async function loadProduct() {
 
-  const name =
-    document.getElementById(
-      "productName"
+
+  /* CHECK ID */
+
+  if (!productId) {
+
+    productName.textContent =
+      "Product not found";
+
+    productDescription.textContent =
+      "No product ID was provided.";
+
+    productPrice.textContent =
+      "₦0.00";
+
+    productStatus.textContent =
+      "Unavailable";
+
+    buyButton.disabled =
+      true;
+
+    return;
+
+  }
+
+
+  /* SHOW LOADING */
+
+  productName.textContent =
+    "Loading...";
+
+  productDescription.textContent =
+    "Loading product...";
+
+  productStatus.textContent =
+    "Loading...";
+
+
+  console.log(
+    "Loading Product ID:",
+    productId
+  );
+
+
+  /* ======================================
+     GET PRODUCT
+
+     IMPORTANT:
+     YOUR TABLE IS "Product"
+     ====================================== */
+
+
+  const {
+
+    data: product,
+
+    error
+
+  } =
+
+    await supabaseClient
+
+      .from("Product")
+
+      .select("*")
+
+      .eq(
+        "id",
+        Number(productId)
+      )
+
+      .single();
+
+
+
+  /* ======================================
+     DATABASE ERROR
+  ====================================== */
+
+
+  if (error) {
+
+
+    console.error(
+      "PRODUCT LOAD ERROR:",
+      error
     );
 
-  const description =
-    document.getElementById(
-      "productDescription"
-    );
 
-  const price =
-    document.getElementById(
-      "productPrice"
-    );
+    productName.textContent =
+      "Product not found";
 
-  const status =
-    document.getElementById(
-      "productStatus"
-    );
 
-  const button =
-    document.getElementById(
-      "buyButton"
-    );
+    productDescription.textContent =
+      "Unable to load this product.";
 
-  const
+
+    productPrice.textContent =
+      "₦0.00";
+
+
+    productStatus.textContent =
+      "Unavailable";
+
+
+    buyButton.disabled =
+      true;
+
+
+    message.textContent =
+      "Error: " +
+      error.message;
+
+
+    return;
+
+  }
+
+
+
+  /* ======================================
+     NO PRODUCT
+  ====================================== */
+
+
+  if (!product) {
+
+
+    productName.textContent =
+      "Product not
