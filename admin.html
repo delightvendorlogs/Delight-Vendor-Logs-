@@ -1790,93 +1790,10 @@ async function toggleStockMode(id) {
    DELETE PRODUCT
 ===================================================== */
 
-async async function deleteProduct(productId) {
+async function deleteProduct(productId) {
+}
 
-  const confirmed = confirm(
-    "Are you sure you want to delete this product?"
-  );
-
-  if (!confirmed) {
-    return;
-  }
-
-  try {
-
-    const {
-      data,
-      error
-    } = await supabaseClient.rpc(
-      "admin_delete_product",
-      {
-        p_product_id: Number(productId)
-      }
-    );
-
-    if (error) {
-      console.error(error);
-
-      alert(
-        "❌ Delete failed:\n\n" +
-        error.message
-      );
-
-      return;
-    }
-
-
-    if (!data || data.success !== true) {
-
-      alert(
-        "❌ " +
-        (data?.message || "Product could not be deleted.")
-      );
-
-      return;
-    }
-
-
-    alert(
-      "✅ " +
-      (data.message || "Product deleted successfully.")
-    );
-
-
-    // Remove it immediately from the screen
-    const row =
-      document.querySelector(
-        `[data-product-id="${productId}"]`
-      );
-
-    if (row) {
-      row.remove();
-    }
-
-
-    // Reload the product list if your dashboard uses loadProducts()
-    if (typeof loadProducts === "function") {
-      await loadProducts();
-    }
-
-    if (typeof loadProductsFromDatabase === "function") {
-      await loadProductsFromDatabase();
-    }
-
-
-  } catch (err) {
-
-    console.error(err);
-
-    alert(
-      "❌ Something went wrong:\n\n" +
-      err.message
-    );
-
-  }
-
-      }
-
-
-
+      
 /* =====================================================
    INVENTORY DROPDOWN
 ===================================================== */
