@@ -492,59 +492,175 @@
 
         <option value="Available">
           Available
-        </option>
+async function addProduct() {
 
-        <option value="Unavailable">
-          Unavailable
-        </option>
+  const message =
+    document.getElementById("productMessage");
 
-      </select>
+  const name =
+    document.getElementById("productName").value.trim();
 
-    </div>
+  const price =
+    Number(
+      document.getElementById("productPrice").value
+    );
 
-  </div>
+  const category =
+    document.getElementById("productCategory").value;
 
+  const description =
+    document.getElementById("productDescription").value.trim();
 
-  <br>
+  const imageInput =
+    document.getElementById("productImage");
 
+  const stock =
+    Number(
+      document.getElementById("productStock").value
+    );
 
-  <label>
+  const status =
+    document.getElementById("productStatus").value;
 
-    <input
-      id="trackStock"
-      type="checkbox"
-      checked
-      style="width:auto;"
-    >
-
-    Track stock / allow this service to become Sold Out
-
-  </label>
-
-
-  <p style="font-size:13px;color:#666;">
-
-    Untick this for services that should remain available even when
-    stock is 0.
-
-  </p>
+  const track_stock =
+    document.getElementById("trackStock").checked;
 
 
-  <button
-    class="black"
-    onclick="addProduct()"
-  >
-    ➕ Add Service
-  </button>
+  if (!name) {
+    message.textContent = "❌ Enter a service name.";
+    return;
+  }
+
+  if (isNaN(price) || price < 0) {
+    message.textContent = "❌ Enter a valid price.";
+    return;
+  }
+
+  if (isNaN(stock) || stock < 0) {
+    message.textContent = "❌ Enter a valid stock number.";
+    return;
+  }
 
 
-  <p
-    id="productMessage"
-    class="message"
-  ></p>
+  message.textContent = "Adding service...";
 
-</section>
 
+  let image_url = "";
+
+
+  /* UPLOAD IMAGE */
+
+  const file = imageInput.files[0];
+
+  if (file) {
+
+    const fileExt =
+      file.name.split(".").pop();
+
+    const fileName =
+      `${Date.now()}-${crypto.randomUUID()}.${fileExt}`;
+
+
+    const {
+      error: uploadError
+    } =
+    await supabaseClient
+      .storage
+      .from("product-images")
+      .upload(
+        fileName,
+        file,
+        {
+          cacheControl: "3600",
+          upsert: false
+        }
+      );
+
+
+    if (uploadError) {
+
+      message.textContent =
+        "❌ Image upload failed: " +
+        uploadError.message;
+
+      return;
+
+    }
+
+
+    const {
+      data: publicUrlData
+    } =
+    supabaseClient
+      .storage
+      .from("product-images")
+      .getPublicUrl(fileName);
+
+
+    image_url =
+      publicUrlData.publicUrl;
+
+  }
+
+
+  /* ADD PRODUCT */
+
+  const {
+    error
+  } =
+  await supabaseClient
+    .from("Product")
+    .insert([
+
+      {
+        name,
+        price,
+        category,
+        description,
+        image_url,
+        stock,
+        status,
+        track_stock
+      }
+
+    ]);
+
+
+  if (error) {
+
+    message.textContent =
+      "❌ " +
+      error.message;
+
+    return;
+
+  }
+
+
+  message.textContent =
+    "✅ Service added successfully.";
+
+
+  document.getElementById("productName").value = "";
+
+  document.getElementById("productPrice").value = "";
+
+  document.getElementById("productDescription").value = "";
+
+  document.getElementById("productImage").value = "";
+
+  document.getElementById("productStock").value = "0";
+
+  document.getElementById("trackStock").checked = true;
+
+
+  await loadProducts();
+
+  await updateStatistics();
+
+  await loadInventoryProductDropdown();
+
+}
 
 
 <!-- =====================================================
