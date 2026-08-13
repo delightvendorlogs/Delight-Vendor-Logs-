@@ -2,3163 +2,2282 @@
 <html lang="en">
 
 <head>
+<meta charset="UTF-8">
 
-  <meta charset="UTF-8">
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+<title>Admin - Delight Vendor Logs</title>
 
-  <title>Admin - Delight Vendor Logs</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
 
-  <style>
+* {
+  box-sizing: border-box;
+}
 
-    * {
-      box-sizing: border-box;
-    }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f3f3;
+  color: #111;
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f3f3f3;
-      color: #111;
-    }
+header {
+  background: #111;
+  color: white;
+  padding: 20px 15px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
 
-    header {
-      background: #111;
-      color: white;
-      padding: 20px 15px;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
+header h1 {
+  margin: 0 0 12px;
+  font-size: 22px;
+}
 
-    header h1 {
-      margin: 0 0 12px;
-      font-size: 22px;
-    }
+header p {
+  margin: 0;
+  font-size: 13px;
+  opacity: .8;
+}
 
-    header p {
-      margin: 0;
-      font-size: 13px;
-      opacity: .8;
-    }
+main {
+  max-width: 900px;
+  margin: auto;
+  padding: 15px;
+}
 
-    main {
-      max-width: 900px;
-      margin: auto;
-      padding: 15px;
-    }
+h2 {
+  margin-top: 0;
+}
 
-    h2 {
-      margin-top: 0;
-    }
+section {
+  background: white;
+  padding: 18px;
+  margin-bottom: 18px;
+  border-radius: 15px;
+  box-shadow: 0 2px 9px rgba(0,0,0,.06);
+}
 
-    section {
-      background: white;
-      padding: 18px;
-      margin-bottom: 18px;
-      border-radius: 15px;
-      box-shadow: 0 2px 9px rgba(0,0,0,.06);
-    }
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 15px;
+  margin-top: 6px;
+  background: white;
+}
 
-    input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      font-size: 15px;
-      margin-top: 6px;
-      background: white;
-    }
+textarea {
+  min-height: 110px;
+  resize: vertical;
+}
 
-    textarea {
-      min-height: 110px;
-      resize: vertical;
-    }
+label {
+  font-weight: bold;
+  font-size: 14px;
+}
 
-    label {
-      font-weight: bold;
-      font-size: 14px;
-    }
+button {
+  border: none;
+  border-radius: 9px;
+  padding: 12px 15px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 14px;
+}
 
-    button {
-      border: none;
-      border-radius: 9px;
-      padding: 12px 15px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 14px;
-    }
+.black {
+  background: #111;
+  color: white;
+}
 
-    .black {
-      background: #111;
-      color: white;
-    }
+.red {
+  background: #b00020;
+  color: white;
+}
 
-    .red {
-      background: #b00020;
-      color: white;
-    }
+.green {
+  background: #087f23;
+  color: white;
+}
 
-    .green {
-      background: #087f23;
-      color: white;
-    }
+.gray {
+  background: #e9e9e9;
+  color: #111;
+}
 
-    .gray {
-      background: #e9e9e9;
-      color: #111;
-    }
+.blue {
+  background: #1261a0;
+  color: white;
+}
 
-    .blue {
-      background: #1261a0;
-      color: white;
-    }
+.message {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: bold;
+}
 
-    .message {
-      margin-top: 10px;
-      font-size: 14px;
-      font-weight: bold;
-    }
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
 
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
+.stat {
+  background: #f5f5f5;
+  padding: 15px;
+  border-radius: 12px;
+}
 
-    .stat {
-      background: #f5f5f5;
-      padding: 15px;
-      border-radius: 12px;
-    }
+.stat strong {
+  display: block;
+  font-size: 25px;
+  margin-top: 5px;
+}
 
-    .stat strong {
-      display: block;
-      font-size: 25px;
-      margin-top: 5px;
-    }
+.category-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
 
-    .category-bar {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-    }
+.category-bar::-webkit-scrollbar {
+  height: 4px;
+}
 
-    .category-bar::-webkit-scrollbar {
-      height: 4px;
-    }
+.category-btn {
+  flex: 0 0 auto;
+  background: #eee;
+  border-radius: 20px;
+}
 
-    .category-btn {
-      flex: 0 0 auto;
-      background: #eee;
-      border-radius: 20px;
-    }
+.category-btn.active {
+  background: #111;
+  color: white;
+}
 
-    .category-btn.active {
-      background: #111;
-      color: white;
-    }
+.item {
+  background: #fafafa;
+  border: 1px solid #e5e5e5;
+  border-radius: 13px;
+  padding: 15px;
+  margin-top: 12px;
+}
 
-    .item {
-      background: #fafafa;
-      border: 1px solid #e5e5e5;
-      border-radius: 13px;
-      padding: 15px;
-      margin-top: 12px;
-    }
+.item h3 {
+  margin: 0 0 10px;
+}
 
-    .item h3 {
-      margin: 0 0 10px;
-    }
+.item p {
+  margin: 7px 0;
+  font-size: 14px;
+}
 
-    .item p {
-      margin: 7px 0;
-      font-size: 14px;
-    }
+.item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 12px;
+}
 
-    .item-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-      margin-top: 12px;
-    }
+.image-preview {
+  width: 100%;
+  max-height: 190px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-top: 10px;
+  background: #eee;
+}
 
-    .image-preview {
-      width: 100%;
-      max-height: 190px;
-      object-fit: cover;
-      border-radius: 10px;
-      margin-top: 10px;
-      background: #eee;
-    }
+.image-picker {
+  border: 2px dashed #bbb;
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  margin-top: 6px;
+}
 
-    .badge {
-      display: inline-block;
-      padding: 5px 9px;
-      border-radius: 7px;
-      background: #eee;
-      font-size: 12px;
-      font-weight: bold;
-      margin: 3px 2px 3px 0;
-    }
+.image-picker button {
+  margin-top: 5px;
+}
 
-    .available {
-      background: #dff6e4;
-      color: #087f23;
-    }
+#imagePreview {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-top: 10px;
+  display: none;
+}
 
-    .sold {
-      background: #ffe1e1;
-      color: #a00000;
-    }
+.badge {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 7px;
+  background: #eee;
+  font-size: 12px;
+  font-weight: bold;
+  margin: 3px 2px 3px 0;
+}
 
-    .never {
-      background: #e4edff;
-      color: #174ea6;
-    }
+.available {
+  background: #dff6e4;
+  color: #087f23;
+}
 
-    .search {
-      margin-bottom: 10px;
-    }
+.sold {
+  background: #ffe1e1;
+  color: #a00000;
+}
 
-    .hidden {
-      display: none !important;
-    }
+.never {
+  background: #e4edff;
+  color: #174ea6;
+}
 
-    .two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
+.search {
+  margin-bottom: 10px;
+}
 
-    .top-buttons {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
+.hidden {
+  display: none !important;
+}
 
-    .loading {
-      text-align: center;
-      padding: 20px;
-      color: #777;
-    }
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
 
-    .error {
-      background: #ffe5e5;
-      color: #a00000;
-      padding: 14px;
-      border-radius: 10px;
-      margin-top: 10px;
-    }
+.top-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
 
-    .success {
-      background: #e3f8e8;
-      color: #087f23;
-      padding: 14px;
-      border-radius: 10px;
-      margin-top: 10px;
-    }
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #777;
+}
 
-    @media (max-width: 600px) {
+.error {
+  background: #ffe5e5;
+  color: #a00000;
+  padding: 14px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
 
-      .dashboard-grid {
-        grid-template-columns: 1fr 1fr;
-      }
+.success {
+  background: #e3f8e8;
+  color: #087f23;
+  padding: 14px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
 
-      .two-col {
-        grid-template-columns: 1fr;
-      }
+@media (max-width: 600px) {
 
-    }
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 
-  </style>
+  .two-col {
+    grid-template-columns: 1fr;
+  }
 
+}
+
+</style>
 </head>
-
 
 <body>
 
-
 <header>
 
-  <h1>⚡ Delight Vendor Logs — Admin</h1>
+<h1>⚡ Delight Vendor Logs — Admin</h1>
 
-  <p id="adminStatus">
-    Checking administrator access...
-  </p>
+<p id="adminStatus">
+Checking administrator access...
+</p>
 
-  <div class="top-buttons">
+<div class="top-buttons">
 
-    <button
-      class="gray"
-      onclick="refreshEverything()"
-    >
-      🔄 Refresh Everything
-    </button>
+<button
+  class="gray"
+  onclick="refreshEverything()"
+>
+🔄 Refresh Everything
+</button>
 
-    <button
-      class="gray"
-      onclick="location.href='dashboard.html'"
-    >
-      🏠 Customer Dashboard
-    </button>
+<button
+  class="gray"
+  onclick="location.href='dashboard.html'"
+>
+🏠 Customer Dashboard
+</button>
 
-  </div>
+</div>
 
 </header>
 
-
 <main>
 
-
-<!-- =====================================================
-     STORE STATISTICS
-===================================================== -->
-
 <section>
 
-  <h2>📊 Store Overview</h2>
+<h2>📊 Store Overview</h2>
 
-  <div class="dashboard-grid">
+<div class="dashboard-grid">
 
-    <div class="stat">
-      Products
-      <strong id="productCount">0</strong>
-    </div>
+<div class="stat">
+Products
+<strong id="productCount">0</strong>
+</div>
 
-    <div class="stat">
-      Available Inventory
-      <strong id="inventoryCount">0</strong>
-    </div>
+<div class="stat">
+Available Inventory
+<strong id="inventoryCount">0</strong>
+</div>
 
-    <div class="stat">
-      Pending Orders
-      <strong id="pendingCount">0</strong>
-    </div>
+<div class="stat">
+Pending Orders
+<strong id="pendingCount">0</strong>
+</div>
 
-    <div class="stat">
-      Completed Orders
-      <strong id="completedCount">0</strong>
-    </div>
+<div class="stat">
+Completed Orders
+<strong id="completedCount">0</strong>
+</div>
 
-    <div class="stat">
-      Users
-      <strong id="userCount">0</strong>
-    </div>
+<div class="stat">
+Users
+<strong id="userCount">0</strong>
+</div>
 
-    <div class="stat">
-      Never Sell Out
-      <strong id="neverSellOutCount">0</strong>
-    </div>
+<div class="stat">
+Never Sell Out
+<strong id="neverSellOutCount">0</strong>
+</div>
 
-  </div>
+</div>
 
-  <p id="refreshMessage" class="message"></p>
+<p id="refreshMessage" class="message"></p>
 
 </section>
 
-
-
-<!-- =====================================================
-     CATEGORIES
-===================================================== -->
-
 <section>
 
-  <h2>📂 Service Categories</h2>
+<h2>📂 Service Categories</h2>
 
-  <p>
-    These are the categories shown at the top of the customer dashboard.
-  </p>
+<p>
+These are the categories shown at the top of the customer dashboard.
+</p>
 
-  <div
-    id="categoryBar"
-    class="category-bar"
-  ></div>
+<div id="categoryBar" class="category-bar"></div>
 
 </section>
 
-
-<!-- =====================================================
-     ADD PRODUCT
-===================================================== -->
-
 <section>
 
-  <h2>➕ Add Product / Service</h2>
+<h2>➕ Add Product / Service</h2>
 
-  <label>
-    Service Name
-  </label>
+<label>Service Name</label>
 
-  <input
-    id="productName"
-    placeholder="Example: Facebook Working Log"
-  >
+<input
+  id="productName"
+  placeholder="Example: Facebook Working Log"
+>
 
-  <br><br>
+<br><br>
 
-  <label>
-    Price
-  </label>
+<label>Price</label>
 
-  <input
-    id="productPrice"
-    type="number"
-    min="0"
-    step="0.01"
-    placeholder="Enter price"
-  >
+<input
+  id="productPrice"
+  type="number"
+  min="0"
+  step="0.01"
+  placeholder="Enter price"
+>
 
-  <br><br>
+<br><br>
 
-  <label>
-    Category
-  </label>
+<label>Category</label>
 
-  <select id="productCategory"></select>
+<select id="productCategory"></select>
 
-  <br><br>
+<br><br>
 
-  <label>
-    Description
-  </label>
+<label>Description</label>
 
-  <textarea
-    id="productDescription"
-    placeholder="Describe this service..."
-  ></textarea>
+<textarea
+  id="productDescription"
+  placeholder="Describe this service..."
+></textarea>
 
-  <br><br>
+<br><br>
 
-  <label>
-    Product Image
-  </label>
+<label>Product Image</label>
 
-  <input
-    id="productImage"
-    type="file"
-    accept="image/*"
-  >
+<div class="image-picker">
 
-  <br>
+<input
+  id="productImageFile"
+  type="file"
+  accept="image/*"
+  style="display:none"
+  onchange="previewProductImage(event)"
+>
 
-  <img
-    id="selectedImagePreview"
-    class="image-preview hidden"
-    alt="Selected image preview"
-  >
+<button
+  type="button"
+  class="blue"
+  onclick="document.getElementById('productImageFile').click()"
+>
+📷 Choose Image From Gallery
+</button>
 
-  <br><br>
+<p
+  id="imageName"
+  style="font-size:13px;color:#666;"
+>
+No image selected
+</p>
 
-  <div class="two-col">
+<img id="imagePreview">
 
-    <div>
+</div>
 
-      <label>
-        Stock
-      </label>
-
-      <input
-        id="productStock"
-        type="number"
-        min="0"
-        value="0"
-      >
-
-    </div>
-
-    <div>
-
-      <label>
-        Status
-      </label>
-
-      <select id="productStatus">
-
-        <option value="Available">
-          Available
-        </option>
-
-        <option value="Unavailable">
-          Unavailable
-        </option>
-
-      </select>
-
-    </div>
-
-  </div>
-
-  <br>
-
-  <label>
-
-    <input
-      id="trackStock"
-      type="checkbox"
-      checked
-      style="width:auto;"
-    >
-
-    Track stock / allow this service to become Sold Out
-
-  </label>
-
-  <p style="font-size:13px;color:#666;">
-
-    Untick this for services that should remain available even when
-    stock is 0.
-
-  </p>
-
-  <button
-    class="black"
-    onclick="addProduct()"
-  >
-    ➕ Add Service
-  </button>
-
-  <p
-    id="productMessage"
-    class="message"
-  ></p>
-
-</section>
-
-
-<!-- =====================================================
-     INVENTORY
-===================================================== -->
-
-<section>
-
-  <h2>📦 Add Inventory</h2>
-
-  <label>
-    Select Service
-  </label>
-
-  <select id="inventoryProduct">
-
-    <option value="">
-      Loading services...
-    </option>
-
-  </select>
-
-  <br><br>
-
-  <label>
-    Delivery Information
-  </label>
-
-  <textarea
-    id="inventoryData"
-    placeholder="Enter the legitimate digital item/details to be delivered after purchase"
-  ></textarea>
-
-  <br><br>
-
-  <button
-    class="black"
-    onclick="addInventory()"
-  >
-    ➕ Add Inventory
-  </button>
-
-  <p
-    id="inventoryMessage"
-    class="message"
-  ></p>
-
-</section>
-
-
-<section>
-
-  <h2>📦 Inventory Management</h2>
-
-  <input
-    id="inventorySearch"
-    class="search"
-    placeholder="🔍 Search inventory..."
-    oninput="renderInventory()"
-  >
-
-  <div id="inventoryList">
-
-    <div class="loading">
-      Loading inventory...
-    </div>
-
-  </div>
-
-  </section>
-
-
-<!-- =====================================================
-     ORDERS
-===================================================== -->
-
-<section>
-
-  <h2>🧾 Orders Management</h2>
-
-  <input
-    id="orderSearch"
-    class="search"
-    placeholder="🔍 Search orders..."
-    oninput="renderOrders()"
-  >
-
-
-  <div id="ordersList">
-
-    <div class="loading">
-      Loading orders...
-    </div>
-
-  </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     USERS
-===================================================== -->
-
-<section>
-
-  <h2>👥 Manage Users</h2>
-
-  <p style="color:#666;font-size:14px;">
-
-    User management is displayed from your application's user/profile
-    records. Do not put a Supabase service-role key inside this page.
-
-  </p>
-
-
-  <input
-    id="userSearch"
-    class="search"
-    placeholder="🔍 Search user..."
-    oninput="renderUsers()"
-  >
-
-
-  <div id="usersList">
-
-    <div class="loading">
-      Loading users...
-    </div>
-
-  </div>
-
-</section>
-
-
+<input
+  id="productImage"
+  type="hidden"
+>
 
 <br>
 
+<div class="two-col">
+
+<div>
+
+<label>Stock</label>
+
+<input
+  id="productStock"
+  type="number"
+  min="0"
+  value="0"
+>
+
+</div>
+
+<div>
+
+<label>Status</label>
+
+<select id="productStatus">
+
+<option value="Available">
+Available
+</option>
+
+<option value="Unavailable">
+Unavailable
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+<br>
+
+<label>
+
+<input
+  id="trackStock"
+  type="checkbox"
+  checked
+  style="width:auto;"
+>
+
+Track stock / allow this service to become Sold Out
+
+</label>
+
+<p style="font-size:13px;color:#666;">
+
+Untick this for services that should remain available even when
+stock is 0.
+
+</p>
+
+<button
+  class="black"
+  onclick="addProduct()"
+>
+➕ Add Service
+</button>
+
+<p
+  id="productMessage"
+  class="message"
+></p>
+
+</section>
+
+<section>
+
+<h2>🛍️ Product Management</h2>
+
+<input
+  id="productSearch"
+  class="search"
+  placeholder="🔍 Search service..."
+  oninput="renderProducts()"
+>
+
+<div id="productsList">
+
+<div class="loading">
+Loading products...
+</div>
+
+</div>
+
+</section>
+
+<section>
+
+<h2>📦 Add Inventory</h2>
+
+<label>Select Service</label>
+
+<select id="inventoryProduct">
+
+<option value="">
+Loading services...
+</option>
+
+</select>
+
+<br><br>
+
+<label>Delivery Information</label>
+
+<textarea
+  id="inventoryData"
+  placeholder="Enter the legitimate digital item/details to be delivered after purchase"
+></textarea>
+
+<br><br>
+
+<button
+  class="black"
+  onclick="addInventory()"
+>
+➕ Add Inventory
+</button>
+
+<p
+  id="inventoryMessage"
+  class="message"
+></p>
+
+</section>
+
+<section>
+
+<h2>📦 Inventory Management</h2>
+
+<input
+  id="inventorySearch"
+  class="search"
+  placeholder="🔍 Search inventory..."
+  oninput="renderInventory()"
+>
+
+<div id="inventoryList">
+
+<div class="loading">
+Loading inventory...
+</div>
+
+</div>
+
+</section>
+
+  <section>
+
+<h2>🧾 Orders Management</h2>
+
+<input
+  id="orderSearch"
+  class="search"
+  placeholder="🔍 Search orders..."
+  oninput="renderOrders()"
+>
+
+<div id="ordersList">
+
+<div class="loading">
+Loading orders...
+</div>
+
+</div>
+
+</section>
+
+<section>
+
+<h2>👥 Manage Users</h2>
+
+<p style="color:#666;font-size:14px;">
+
+User management is displayed from your application's user/profile
+records. Do not put a Supabase service-role key inside this page.
+
+</p>
+
+<input
+  id="userSearch"
+  class="search"
+  placeholder="🔍 Search user..."
+  oninput="renderUsers()"
+>
+
+<div id="usersList">
+
+<div class="loading">
+Loading users...
+</div>
+
+</div>
+
+</section>
+
+<br>
 
 <button
   class="black"
   onclick="location.href='dashboard.html'"
 >
-  🏠 Back to Customer Dashboard
+🏠 Back to Customer Dashboard
 </button>
-
 
 </main>
 
-
-
 <script>
 
-
-/* =====================================================
-   SUPABASE
-===================================================== */
-
 const SUPABASE_URL =
-  "https://hkfhehbhmucymusaytoe.supabase.co";
-
+"https://hkfhehbhmucymusaytoe.supabase.co";
 
 const SUPABASE_KEY =
-  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
-
+"sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
 const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
-
-
-/* =====================================================
-   CATEGORIES
-===================================================== */
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 const CATEGORIES = [
 
-  "Home",
-
-  "All Social Logs",
-
-  "Working Pictures",
-
-  "Formats",
-
-  "Working Links",
-
-  "Voice Cloner/Fake Video Call",
-
-  "All Countries Number"
+"Home",
+"All Social Logs",
+"Working Pictures",
+"Formats",
+"Working Links",
+"Voice Cloner/Fake Video Call",
+"All Countries Number"
 
 ];
 
-
-
-/* =====================================================
-   GLOBAL DATA
-===================================================== */
-
 let products = [];
-
 let inventory = [];
-
 let orders = [];
-
 let users = [];
-
-
-
-/* =====================================================
-   ESCAPE
-===================================================== */
 
 function escapeHTML(value) {
 
-  return String(value ?? "")
-
-    .replace(/&/g, "&amp;")
-
-    .replace(/</g, "&lt;")
-
-    .replace(/>/g, "&gt;")
-
-    .replace(/"/g, "&quot;")
-
-    .replace(/'/g, "&#039;");
+return String(value ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
 
 }
-
-
-
-/* =====================================================
-   MONEY
-===================================================== */
 
 function money(value) {
 
-  return Number(value || 0)
-    .toLocaleString(
-      "en-NG",
-      {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }
-    );
+return Number(value || 0)
+.toLocaleString(
+"en-NG",
+{
+minimumFractionDigits:2,
+maximumFractionDigits:2
+}
+);
 
 }
 
+/* IMAGE PICKER */
 
+function previewProductImage(event) {
 
-/* =====================================================
-   ADMIN CHECK
-===================================================== */
+const file =
+event.target.files[0];
+
+const preview =
+document.getElementById("imagePreview");
+
+const name =
+document.getElementById("imageName");
+
+if (!file) {
+
+preview.style.display = "none";
+name.textContent = "No image selected";
+document.getElementById("productImage").value = "";
+
+return;
+
+}
+
+if (!file.type.startsWith("image/")) {
+
+alert("Please choose an image file.");
+
+event.target.value = "";
+
+return;
+
+}
+
+name.textContent =
+"Selected: " + file.name;
+
+const reader =
+new FileReader();
+
+reader.onload = function(e) {
+
+document.getElementById("productImage").value =
+e.target.result;
+
+preview.src =
+e.target.result;
+
+preview.style.display =
+"block";
+
+};
+
+reader.readAsDataURL(file);
+
+}
+
+/* ADMIN CHECK */
 
 async function checkAdmin() {
 
-  const status =
-    document.getElementById(
-      "adminStatus"
-    );
+const status =
+document.getElementById("adminStatus");
 
+try {
 
-  try {
+const {
+data,
+error
+} =
+await supabaseClient.auth.getUser();
 
-    const {
-      data,
-      error
-    } =
-    await supabaseClient.auth.getUser();
+if (error || !data?.user) {
 
+status.textContent =
+"❌ You are not logged in.";
 
-    if (error || !data?.user) {
+setTimeout(
+() => location.href="login.html",
+1200
+);
 
-      status.textContent =
-        "❌ You are not logged in.";
-
-      setTimeout(
-        () => {
-          location.href =
-            "login.html";
-        },
-        1200
-      );
-
-      return false;
-
-    }
-
-
-    const {
-      data: admin,
-      error: adminError
-    } =
-    await supabaseClient.rpc(
-      "is_admin"
-    );
-
-
-    if (adminError) {
-
-      status.textContent =
-        "❌ Admin verification failed: " +
-        adminError.message;
-
-      return false;
-
-    }
-
-
-    if (!admin) {
-
-      status.textContent =
-        "🚫 You are not an administrator.";
-
-      return false;
-
-    }
-
-
-    status.textContent =
-      "✅ Administrator access confirmed.";
-
-    return true;
-
-  }
-
-  catch (error) {
-
-    status.textContent =
-      "❌ " +
-      error.message;
-
-    return false;
-
-  }
+return false;
 
 }
 
+const {
+data: admin,
+error: adminError
+} =
+await supabaseClient.rpc("is_admin");
 
+if (adminError) {
 
-/* =====================================================
-   CATEGORY UI
-===================================================== */
+status.textContent =
+"❌ Admin verification failed: " +
+adminError.message;
+
+return false;
+
+}
+
+if (!admin) {
+
+status.textContent =
+"🚫 You are not an administrator.";
+
+return false;
+
+}
+
+status.textContent =
+"✅ Administrator access confirmed.";
+
+return true;
+
+}
+
+catch(error) {
+
+status.textContent =
+"❌ " + error.message;
+
+return false;
+
+}
+
+}
+
+/* CATEGORIES */
 
 function buildCategoryUI() {
 
-  const bar =
-    document.getElementById(
-      "categoryBar"
-    );
+const bar =
+document.getElementById("categoryBar");
 
+const select =
+document.getElementById("productCategory");
 
-  const select =
-    document.getElementById(
-      "productCategory"
-    );
+bar.innerHTML = "";
+select.innerHTML = "";
 
+CATEGORIES.forEach(category => {
 
-  bar.innerHTML = "";
+if (category !== "Home") {
 
-  select.innerHTML = "";
+const button =
+document.createElement("button");
 
+button.className =
+"category-btn";
 
-  CATEGORIES.forEach(
-    function(category, index) {
+button.textContent =
+category;
 
-      if (category !== "Home") {
+bar.appendChild(button);
 
-        const button =
-          document.createElement(
-            "button"
-          );
+const option =
+document.createElement("option");
 
+option.value =
+category;
 
-        button.className =
-          "category-btn";
+option.textContent =
+category;
 
-
-        button.textContent =
-          category;
-
-
-        bar.appendChild(
-          button
-        );
-
-      }
-
-
-      if (category !== "Home") {
-
-        const option =
-          document.createElement(
-            "option"
-          );
-
-
-        option.value =
-          category;
-
-
-        option.textContent =
-          category;
-
-
-        select.appendChild(
-          option
-        );
-
-      }
-
-    }
-  );
+select.appendChild(option);
 
 }
 
+});
 
+}
 
-/* =====================================================
-   LOAD PRODUCTS
-===================================================== */
+/* PRODUCTS */
 
 async function loadProducts() {
 
-  const container =
-    document.getElementById(
-      "productsList"
-    );
+const container =
+document.getElementById("productsList");
 
+container.innerHTML =
+'<div class="loading">Loading products...</div>';
 
-  container.innerHTML =
-    '<div class="loading">Loading products...</div>';
+const {
+data,
+error
+} =
+await supabaseClient
+.from("Product")
+.select("*")
+.order("id",{ascending:false});
 
+if (error) {
 
-  const {
-    data,
-    error
-  } =
-  await supabaseClient
-    .from("Product")
-    .select("*")
-    .order(
-      "id",
-      {
-        ascending: false
-      }
-    );
+container.innerHTML =
+'<div class="error">❌ Products could not be loaded.<br><br>' +
+escapeHTML(error.message) +
+'</div>';
 
+products = [];
 
-  if (error) {
-
-    container.innerHTML = `
-
-      <div class="error">
-
-        ❌ Products could not be loaded.
-
-        <br><br>
-
-        ${escapeHTML(error.message)}
-
-      </div>
-
-    `;
-
-    products = [];
-
-    return;
-
-  }
-
-
-  products =
-    data || [];
-
-
-  renderProducts();
+return;
 
 }
 
+products = data || [];
 
+renderProducts();
 
-/* =====================================================
-   RENDER PRODUCTS
-===================================================== */
+}
 
 function renderProducts() {
 
-  const container =
-    document.getElementById(
-      "productsList"
-    );
+const container =
+document.getElementById("productsList");
 
+const search =
+(document.getElementById("productSearch").value || "")
+.toLowerCase()
+.trim();
 
-  const search =
-    (
-      document.getElementById(
-        "productSearch"
-      ).value || ""
-    )
-    .toLowerCase()
-    .trim();
+const list =
+products.filter(product => {
 
+return !search ||
 
-  let list =
-    products.filter(
-      function(product) {
+String(product.name || "")
+.toLowerCase()
+.includes(search) ||
 
-        if (!search) {
-          return true;
-        }
+String(product.category || "")
+.toLowerCase()
+.includes(search) ||
 
+String(product.description || "")
+.toLowerCase()
+.includes(search);
 
-        return (
+});
 
-          String(
-            product.name || ""
-          )
-          .toLowerCase()
-          .includes(search)
+if (!list.length) {
 
-          ||
+container.innerHTML =
+'<div class="loading">No services found.</div>';
 
-          String(
-            product.category || ""
-          )
-          .toLowerCase()
-          .includes(search)
-
-          ||
-
-          String(
-            product.description || ""
-          )
-          .toLowerCase()
-          .includes(search)
-
-        );
-
-      }
-    );
-
-
-  if (list.length === 0) {
-
-    container.innerHTML =
-      '<div class="loading">No services found.</div>';
-
-    return;
-
-  }
-
-
-  container.innerHTML = "";
-
-
-  list.forEach(
-    function(product) {
-
-      const card =
-        document.createElement(
-          "div"
-        );
-
-
-      card.className =
-        "item";
-
-
-      const trackStock =
-        product.track_stock !== false;
-
-
-      const stock =
-        Number(
-          product.stock || 0
-        );
-
-
-      const sold =
-        trackStock &&
-        stock <= 0;
-
-
-      let statusHTML;
-
-
-      if (
-        product.status ===
-        "Unavailable"
-      ) {
-
-        statusHTML =
-          '<span class="badge sold">Unavailable</span>';
-
-      }
-
-      else if (sold) {
-
-        statusHTML =
-          '<span class="badge sold">Sold Out</span>';
-
-      }
-
-      else if (!trackStock) {
-
-        statusHTML =
-          '<span class="badge never">Never Sell Out</span>';
-
-      }
-
-      else {
-
-        statusHTML =
-          '<span class="badge available">Available</span>';
-
-      }
-
-
-      card.innerHTML = `
-
-        <h3>
-          ${escapeHTML(
-            product.name ||
-            "Unnamed Service"
-          )}
-        </h3>
-
-
-        <span class="badge">
-          ID: ${escapeHTML(product.id)}
-        </span>
-
-
-        <span class="badge">
-          ${escapeHTML(
-            product.category ||
-            "Uncategorized"
-          )}
-        </span>
-
-
-        ${statusHTML}
-
-
-        <p>
-          <strong>
-            Price:
-          </strong>
-
-          ₦${money(product.price)}
-        </p>
-
-
-        <p>
-          <strong>
-            Stock:
-          </strong>
-
-          ${escapeHTML(
-            product.stock ?? 0
-          )}
-        </p>
-
-
-        <p>
-          <strong>
-            Stock Tracking:
-          </strong>
-
-          ${
-            trackStock
-              ? "ON"
-              : "OFF — Never Sell Out"
-          }
-
-        </p>
-
-
-        <p>
-          <strong>
-            Description:
-          </strong>
-
-          ${escapeHTML(
-            product.description ||
-            "No description"
-          )}
-
-        </p>
-
-
-        ${
-          product.image_url
-            ? `
-              <img
-                class="image-preview"
-                src="${escapeHTML(
-                  product.image_url
-                )}"
-                onerror="this.style.display='none'"
-              >
-            `
-            : ""
-        }
-
-
-        <div class="item-actions">
-
-          <button
-            class="blue"
-            onclick="editProduct(${Number(product.id)})"
-          >
-            ✏️ Edit
-          </button>
-
-
-          <button
-            class="gray"
-            onclick="toggleStockMode(${Number(product.id)})"
-          >
-            ${
-              trackStock
-                ? "🔓 Make Never Sell Out"
-                : "📦 Turn Stock Tracking On"
-            }
-          </button>
-
-
-          <button
-            class="red"
-            onclick="deleteProduct(${Number(product.id)})"
-          >
-            🗑️ Delete
-          </button>
-
-        </div>
-
-      `;
-
-
-      container.appendChild(
-        card
-      );
-
-    }
-  );
+return;
 
 }
 
+container.innerHTML = "";
 
+list.forEach(product => {
 
-/* =====================================================
-   ADD PRODUCT
-===================================================== */
+const card =
+document.createElement("div");
+
+card.className = "item";
+
+const trackStock =
+product.track_stock !== false;
+
+const stock =
+Number(product.stock || 0);
+
+const sold =
+trackStock && stock <= 0;
+
+let statusHTML;
+
+if (product.status === "Unavailable") {
+
+statusHTML =
+'<span class="badge sold">Unavailable</span>';
+
+}
+
+else if (sold) {
+
+statusHTML =
+'<span class="badge sold">Sold Out</span>';
+
+}
+
+else if (!trackStock) {
+
+statusHTML =
+'<span class="badge never">Never Sell Out</span>';
+
+}
+
+else {
+
+statusHTML =
+'<span class="badge available">Available</span>';
+
+}
+
+card.innerHTML = `
+
+<h3>
+${escapeHTML(product.name || "Unnamed Service")}
+</h3>
+
+<span class="badge">
+ID: ${escapeHTML(product.id)}
+</span>
+
+<span class="badge">
+${escapeHTML(product.category || "Uncategorized")}
+</span>
+
+${statusHTML}
+
+<p>
+<strong>Price:</strong>
+₦${money(product.price)}
+</p>
+
+<p>
+<strong>Stock:</strong>
+${escapeHTML(product.stock ?? 0)}
+</p>
+
+<p>
+<strong>Stock Tracking:</strong>
+${trackStock ? "ON" : "OFF — Never Sell Out"}
+</p>
+
+<p>
+<strong>Description:</strong>
+${escapeHTML(product.description || "No description")}
+</p>
+
+${
+product.image_url
+?
+`
+<img
+class="image-preview"
+src="${escapeHTML(product.image_url)}"
+onerror="this.style.display='none'"
+>
+`
+:
+""
+}
+
+<div class="item-actions">
+
+<button
+class="blue"
+onclick="editProduct(${Number(product.id)})"
+>
+✏️ Edit
+</button>
+
+<button
+class="gray"
+onclick="toggleStockMode(${Number(product.id)})"
+>
+${
+trackStock
+?
+"🔓 Make Never Sell Out"
+:
+"📦 Turn Stock Tracking On"
+}
+</button>
+
+<button
+class="red"
+onclick="deleteProduct(${Number(product.id)})"
+>
+🗑️ Delete
+</button>
+
+</div>
+`;
+
+container.appendChild(card);
+
+});
+
+}
+
+/* ADD PRODUCT */
 
 async function addProduct() {
 
-  const message =
-    document.getElementById(
-      "productMessage"
-    );
+const message =
+document.getElementById("productMessage");
 
+const name =
+document.getElementById("productName")
+.value.trim();
 
-  const name =
-    document.getElementById(
-      "productName"
-    ).value.trim();
+const price =
+Number(document.getElementById("productPrice").value);
 
+const category =
+document.getElementById("productCategory").value;
 
-  const price =
-    Number(
-      document.getElementById(
-        "productPrice"
-      ).value
-    );
+const description =
+document.getElementById("productDescription")
+.value.trim();
 
+const image_url =
+document.getElementById("productImage").value;
 
-  const category =
-    document.getElementById(
-      "productCategory"
-    ).value;
+const stock =
+Number(document.getElementById("productStock").value);
 
+const status =
+document.getElementById("productStatus").value;
 
-  const description =
-    document.getElementById(
-      "productDescription"
-    ).value.trim();
+const track_stock =
+document.getElementById("trackStock").checked;
 
+if (!name) {
 
-  const image_url =
-    document.getElementById(
-      "productImage"
-    ).value.trim();
+message.textContent =
+"❌ Enter a service name.";
 
-
-  const stock =
-    Number(
-      document.getElementById(
-        "productStock"
-      ).value
-    );
-
-
-  const status =
-    document.getElementById(
-      "productStatus"
-    ).value;
-
-
-  const track_stock =
-    document.getElementById(
-      "trackStock"
-    ).checked;
-
-
-  if (!name) {
-
-    message.textContent =
-      "❌ Enter a service name.";
-
-    return;
-
-  }
-
-
-  if (
-    isNaN(price) ||
-    price < 0
-  ) {
-
-    message.textContent =
-      "❌ Enter a valid price.";
-
-    return;
-
-  }
-
-
-  if (
-    isNaN(stock) ||
-    stock < 0
-  ) {
-
-    message.textContent =
-      "❌ Enter a valid stock number.";
-
-    return;
-
-  }
-
-
-  message.textContent =
-    "Adding service...";
-
-
-  const {
-    error
-  } =
-  await supabaseClient
-    .from("Product")
-    .insert([
-
-      {
-
-        name,
-
-        price,
-
-        category,
-
-        description,
-
-        image_url,
-
-        stock,
-
-        status,
-
-        track_stock
-
-      }
-
-    ]);
-
-
-  if (error) {
-
-    message.textContent =
-      "❌ " +
-      error.message;
-
-    return;
-
-  }
-
-
-  message.textContent =
-    "✅ Service added successfully.";
-
-
-  document.getElementById(
-    "productName"
-  ).value = "";
-
-
-  document.getElementById(
-    "productPrice"
-  ).value = "";
-
-
-  document.getElementById(
-    "productDescription"
-  ).value = "";
-
-
-  document.getElementById(
-    "productImage"
-  ).value = "";
-
-
-  document.getElementById(
-    "productStock"
-  ).value = "0";
-
-
-  document.getElementById(
-    "trackStock"
-  ).checked = true;
-
-
-  await loadProducts();
-
-  await updateStatistics();
-
-  await loadInventoryProductDropdown();
+return;
 
 }
 
+if (isNaN(price) || price < 0) {
 
+message.textContent =
+"❌ Enter a valid price.";
 
-/* =====================================================
-   EDIT PRODUCT
-===================================================== */
+return;
+
+}
+
+if (isNaN(stock) || stock < 0) {
+
+message.textContent =
+"❌ Enter a valid stock number.";
+
+return;
+
+}
+
+message.textContent =
+"Adding service...";
+
+const {
+error
+} =
+await supabaseClient
+.from("Product")
+.insert([{
+
+name,
+price,
+category,
+description,
+image_url,
+stock,
+status,
+track_stock
+
+}]);
+
+if (error) {
+
+message.textContent =
+"❌ " + error.message;
+
+return;
+
+}
+
+message.textContent =
+"✅ Service added successfully.";
+
+document.getElementById("productName").value="";
+document.getElementById("productPrice").value="";
+document.getElementById("productDescription").value="";
+document.getElementById("productImage").value="";
+document.getElementById("productStock").value="0";
+document.getElementById("trackStock").checked=true;
+
+document.getElementById("productImageFile").value="";
+document.getElementById("imageName").textContent="No image selected";
+
+const preview =
+document.getElementById("imagePreview");
+
+preview.src="";
+preview.style.display="none";
+
+await loadProducts();
+await updateStatistics();
+await loadInventoryProductDropdown();
+
+}
+
+  <script>
 
 async function editProduct(id) {
 
-  const product =
-    products.find(
-      p => Number(p.id) === Number(id)
-    );
+const product =
+products.find(
+p => Number(p.id) === Number(id)
+);
 
+if (!product) {
 
-  if (!product) {
+alert("Product could not be found.");
 
-    alert(
-      "Product could not be found."
-    );
-
-    return;
-
-  }
-
-
-  const name =
-    prompt(
-      "Service name:",
-      product.name || ""
-    );
-
-
-  if (name === null) {
-    return;
-  }
-
-
-  const priceInput =
-    prompt(
-      "Price:",
-      product.price ?? 0
-    );
-
-
-  if (priceInput === null) {
-    return;
-  }
-
-
-  const category =
-    prompt(
-      "Category:\n\n" +
-      CATEGORIES
-        .filter(
-          c => c !== "Home"
-        )
-        .join("\n"),
-      product.category || "All Social Logs"
-    );
-
-
-  if (category === null) {
-    return;
-  }
-
-
-  const description =
-    prompt(
-      "Description:",
-      product.description || ""
-    );
-
-
-  if (description === null) {
-    return;
-  }
-
-
-  const image =
-    prompt(
-      "Image URL:",
-      product.image_url || ""
-    );
-
-
-  if (image === null) {
-    return;
-  }
-
-
-  const stockInput =
-    prompt(
-      "Stock:",
-      product.stock ?? 0
-    );
-
-
-  if (stockInput === null) {
-    return;
-  }
-
-
-  const price =
-    Number(priceInput);
-
-
-  const stock =
-    Number(stockInput);
-
-
-  if (
-    isNaN(price) ||
-    isNaN(stock)
-  ) {
-
-    alert(
-      "Invalid price or stock."
-    );
-
-    return;
-
-  }
-
-
-  const validCategory =
-    CATEGORIES.includes(category) &&
-    category !== "Home";
-
-
-  if (!validCategory) {
-
-    alert(
-      "Invalid category."
-    );
-
-    return;
-
-  }
-
-
-  const {
-    error
-  } =
-  await supabaseClient
-    .from("Product")
-    .update({
-
-      name,
-
-      price,
-
-      category,
-
-      description,
-
-      image_url: image,
-
-      stock
-
-    })
-    .eq(
-      "id",
-      id
-    );
-
-
-  if (error) {
-
-    alert(
-      "❌ " +
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  alert(
-    "✅ Product updated."
-  );
-
-
-  await loadProducts();
-
-  await updateStatistics();
+return;
 
 }
 
+const name =
+prompt(
+"Service name:",
+product.name || ""
+);
 
+if (name === null) return;
 
-/* =====================================================
-   TOGGLE STOCK MODE
-===================================================== */
+const priceInput =
+prompt(
+"Price:",
+product.price ?? 0
+);
+
+if (priceInput === null) return;
+
+const category =
+prompt(
+"Category:\n\n" +
+CATEGORIES.filter(c => c !== "Home").join("\n"),
+product.category || "All Social Logs"
+);
+
+if (category === null) return;
+
+const description =
+prompt(
+"Description:",
+product.description || ""
+);
+
+if (description === null) return;
+
+const image =
+prompt(
+"Image URL:",
+product.image_url || ""
+);
+
+if (image === null) return;
+
+const stockInput =
+prompt(
+"Stock:",
+product.stock ?? 0
+);
+
+if (stockInput === null) return;
+
+const price =
+Number(priceInput);
+
+const stock =
+Number(stockInput);
+
+if (isNaN(price) || isNaN(stock)) {
+
+alert("Invalid price or stock.");
+
+return;
+
+}
+
+if (
+!CATEGORIES.includes(category) ||
+category === "Home"
+) {
+
+alert("Invalid category.");
+
+return;
+
+}
+
+const {
+error
+} =
+await supabaseClient
+.from("Product")
+.update({
+
+name,
+price,
+category,
+description,
+image_url:image,
+stock
+
+})
+.eq("id",id);
+
+if (error) {
+
+alert("❌ " + error.message);
+
+return;
+
+}
+
+alert("✅ Product updated.");
+
+await loadProducts();
+await updateStatistics();
+
+}
 
 async function toggleStockMode(id) {
 
-  const product =
-    products.find(
-      p => Number(p.id) === Number(id)
-    );
+const product =
+products.find(
+p => Number(p.id) === Number(id)
+);
 
+if (!product) return;
 
-  if (!product) {
-    return;
-  }
+const current =
+product.track_stock !== false;
 
+const newValue =
+!current;
 
-  const current =
-    product.track_stock !== false;
+const text =
+newValue
 
+?
+"Turn stock tracking ON?\n\nThis service can become Sold Out when stock reaches 0."
 
-  const newValue =
-    !current;
+:
+"Make this service NEVER SELL OUT?\n\nIt will remain available even when stock is 0.";
 
+if (!confirm(text)) return;
 
-  const text =
-    newValue
+const {
+error
+} =
+await supabaseClient
+.from("Product")
+.update({
+track_stock:newValue
+})
+.eq("id",id);
 
-      ? "Turn stock tracking ON?\n\nThis service can become Sold Out when stock reaches 0."
+if (error) {
 
-      : "Make this service NEVER SELL OUT?\n\nIt will remain available even when stock is 0.";
+alert("❌ " + error.message);
 
-
-  if (!confirm(text)) {
-    return;
-  }
-
-
-  const {
-    error
-  } =
-  await supabaseClient
-    .from("Product")
-    .update({
-
-      track_stock:
-        newValue
-
-    })
-    .eq(
-      "id",
-      id
-    );
-
-
-  if (error) {
-
-    alert(
-      "❌ " +
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  await loadProducts();
-
-  await updateStatistics();
+return;
 
 }
 
+await loadProducts();
+await updateStatistics();
 
-
-/* =====================================================
-   DELETE PRODUCT
-===================================================== */
+}
 
 async function deleteProduct(productId) {
 
-  const confirmed = confirm(
-    "Are you sure you want to delete this product?"
-  );
+if (!confirm(
+"Are you sure you want to delete this product?"
+)) return;
 
-  if (!confirmed) {
-    return;
-  }
+try {
 
-  try {
+const {
+data,
+error
+} =
+await supabaseClient.rpc(
+"admin_delete_product",
+{
+p_product_id:Number(productId)
+}
+);
 
-    const {
-      data,
-      error
-    } = await supabaseClient.rpc(
-      "admin_delete_product",
-      {
-        p_product_id: Number(productId)
-      }
-    );
+if (error) {
 
+alert(
+"❌ Delete failed:\n\n" +
+error.message
+);
 
-    if (error) {
-
-      console.error(error);
-
-      alert(
-        "❌ Delete failed:\n\n" +
-        error.message
-      );
-
-      return;
-    }
-
-
-    if (!data || data.success !== true) {
-
-      alert(
-        "❌ " +
-        (
-          data?.message ||
-          "Product could not be deleted."
-        )
-      );
-
-      return;
-    }
-
-
-    alert(
-      "✅ " +
-      (
-        data.message ||
-        "Product deleted successfully."
-      )
-    );
-
-
-    await loadProducts();
-
-    await loadInventory();
-
-    await updateStatistics();
-
-    await loadInventoryProductDropdown();
-
-
-  } catch (err) {
-
-    console.error(err);
-
-    alert(
-      "❌ Something went wrong:\n\n" +
-      err.message
-    );
-
-  }
+return;
 
 }
 
-      
-/* =====================================================
-   INVENTORY DROPDOWN
-===================================================== */
+if (!data || data.success !== true) {
+
+alert(
+"❌ " +
+(data?.message ||
+"Product could not be deleted.")
+);
+
+return;
+
+}
+
+alert(
+"✅ " +
+(data.message ||
+"Product deleted successfully.")
+);
+
+await loadProducts();
+await loadInventory();
+await updateStatistics();
+await loadInventoryProductDropdown();
+
+}
+
+catch(err) {
+
+alert(
+"❌ Something went wrong:\n\n" +
+err.message
+);
+
+}
+
+}
+
+/* INVENTORY DROPDOWN */
 
 async function loadInventoryProductDropdown() {
 
-  const dropdown =
-    document.getElementById(
-      "inventoryProduct"
-    );
+const dropdown =
+document.getElementById("inventoryProduct");
 
+dropdown.innerHTML =
+'<option value="">Loading services...</option>';
 
-  dropdown.innerHTML =
-    '<option value="">Loading services...</option>';
+const {
+data,
+error
+} =
+await supabaseClient
+.from("Product")
+.select("id,name")
+.order("name",{ascending:true});
 
+if (error) {
 
-  const {
-    data,
-    error
-  } =
-  await supabaseClient
-    .from("Product")
-    .select("id,name")
-    .order(
-      "name",
-      {
-        ascending: true
-      }
-    );
+dropdown.innerHTML =
+'<option value="">Unable to load services</option>';
 
-
-  if (error) {
-
-    dropdown.innerHTML =
-      '<option value="">Unable to load services</option>';
-
-    return;
-
-  }
-
-
-  dropdown.innerHTML =
-    '<option value="">Choose service</option>';
-
-
-  (data || []).forEach(
-    function(product) {
-
-      const option =
-        document.createElement(
-          "option"
-        );
-
-
-      option.value =
-        product.id;
-
-
-      option.textContent =
-        product.name;
-
-
-      dropdown.appendChild(
-        option
-      );
-
-    }
-  );
+return;
 
 }
 
+dropdown.innerHTML =
+'<option value="">Choose service</option>';
 
+(data || []).forEach(product => {
 
-/* =====================================================
-   ADD INVENTORY
-===================================================== */
+const option =
+document.createElement("option");
+
+option.value =
+product.id;
+
+option.textContent =
+product.name;
+
+dropdown.appendChild(option);
+
+});
+
+}
+
+/* ADD INVENTORY */
 
 async function addInventory() {
 
-  const message =
-    document.getElementById(
-      "inventoryMessage"
-    );
+const message =
+document.getElementById("inventoryMessage");
 
+const product_id =
+Number(
+document.getElementById("inventoryProduct").value
+);
 
-  const product_id =
-    Number(
-      document.getElementById(
-        "inventoryProduct"
-      ).value
-    );
+const content =
+document.getElementById("inventoryData")
+.value.trim();
 
+if (!product_id) {
 
-  const content =
-    document.getElementById(
-      "inventoryData"
-    ).value.trim();
+message.textContent =
+"❌ Select a service.";
 
-
-  if (!product_id) {
-
-    message.textContent =
-      "❌ Select a service.";
-
-    return;
-
-  }
-
-
-  if (!content) {
-
-    message.textContent =
-      "❌ Enter delivery information.";
-
-    return;
-
-  }
-
-
-  message.textContent =
-    "Adding inventory...";
-
-
-  const {
-    error
-  } =
-  await supabaseClient
-    .from("product_inventory")
-    .insert([
-
-      {
-
-        product_id,
-
-        content,
-
-        status: "available"
-
-      }
-
-    ]);
-
-
-  if (error) {
-
-    message.textContent =
-      "❌ " +
-      error.message;
-
-    return;
-
-  }
-
-
-  message.textContent =
-    "✅ Inventory added.";
-
-
-  document.getElementById(
-    "inventoryData"
-  ).value = "";
-
-
-  await loadInventory();
-
-  await updateStatistics();
+return;
 
 }
 
+if (!content) {
 
+message.textContent =
+"❌ Enter delivery information.";
 
-/* =====================================================
-   LOAD INVENTORY
-===================================================== */
+return;
+
+}
+
+message.textContent =
+"Adding inventory...";
+
+const {
+error
+} =
+await supabaseClient
+.from("product_inventory")
+.insert([{
+
+product_id,
+content,
+status:"available"
+
+}]);
+
+if (error) {
+
+message.textContent =
+"❌ " + error.message;
+
+return;
+
+}
+
+message.textContent =
+"✅ Inventory added.";
+
+document.getElementById("inventoryData").value="";
+
+await loadInventory();
+await updateStatistics();
+
+}
+
+/* LOAD INVENTORY */
 
 async function loadInventory() {
 
-  const container =
-    document.getElementById(
-      "inventoryList"
-    );
+const container =
+document.getElementById("inventoryList");
 
+container.innerHTML =
+'<div class="loading">Loading inventory...</div>';
 
-  container.innerHTML =
-    '<div class="loading">Loading inventory...</div>';
+const {
+data,
+error
+} =
+await supabaseClient
+.from("product_inventory")
+.select("*")
+.order("id",{ascending:false});
 
+if (error) {
 
-  const {
-    data,
-    error
-  } =
-  await supabaseClient
-    .from("product_inventory")
-    .select("*")
-    .order(
-      "id",
-      {
-        ascending: false
-      }
-    );
+container.innerHTML =
+'<div class="error">❌ Inventory could not be loaded.<br><br>' +
+escapeHTML(error.message) +
+'</div>';
 
+inventory=[];
 
-  if (error) {
-
-    container.innerHTML = `
-
-      <div class="error">
-
-        ❌ Inventory could not be loaded.
-
-        <br><br>
-
-        ${escapeHTML(error.message)}
-
-      </div>
-
-    `;
-
-    inventory = [];
-
-    return;
-
-  }
-
-
-  inventory =
-    data || [];
-
-
-  renderInventory();
+return;
 
 }
 
+inventory =
+data || [];
 
+renderInventory();
 
-/* =====================================================
-   RENDER INVENTORY
-===================================================== */
+}
 
 function renderInventory() {
 
-  const container =
-    document.getElementById(
-      "inventoryList"
-    );
+const container =
+document.getElementById("inventoryList");
 
+const search =
+(document.getElementById("inventorySearch").value || "")
+.toLowerCase()
+.trim();
 
-  const search =
-    (
-      document.getElementById(
-        "inventorySearch"
-      ).value || ""
-    )
-    .toLowerCase()
-    .trim();
+const list =
+inventory.filter(item => {
 
+const product =
+products.find(
+p =>
+Number(p.id) === Number(item.product_id)
+);
 
-  let list =
-    inventory.filter(
-      function(item) {
+const productName =
+product?.name || "";
 
-        const product =
-          products.find(
-            p =>
-              Number(p.id) ===
-              Number(item.product_id)
-          );
+return !search ||
 
+productName.toLowerCase().includes(search) ||
 
-        const productName =
-          product?.name || "";
+String(item.content || "")
+.toLowerCase().includes(search) ||
 
+String(item.status || "")
+.toLowerCase().includes(search);
 
-        return (
-          !search ||
-          productName
-            .toLowerCase()
-            .includes(search) ||
+});
 
-          String(
-            item.content || ""
-          )
-          .toLowerCase()
-          .includes(search) ||
+if (!list.length) {
 
-          String(
-            item.status || ""
-          )
-          .toLowerCase()
-          .includes(search)
-        );
+container.innerHTML =
+'<div class="loading">No inventory found.</div>';
 
-      }
-    );
-
-
-  if (!list.length) {
-
-    container.innerHTML =
-      '<div class="loading">No inventory found.</div>';
-
-    return;
-
-  }
-
-
-  container.innerHTML = "";
-
-
-  list.forEach(
-    function(item) {
-
-      const product =
-        products.find(
-          p =>
-            Number(p.id) ===
-            Number(item.product_id)
-        );
-
-
-      const box =
-        document.createElement(
-          "div"
-        );
-
-
-      box.className =
-        "item";
-
-
-      box.innerHTML = `
-
-        <h3>
-          Inventory #${escapeHTML(item.id)}
-        </h3>
-
-
-        <p>
-          <strong>
-            Service:
-          </strong>
-
-          ${escapeHTML(
-            product?.name ||
-            "Unknown Service"
-          )}
-
-        </p>
-
-
-        <p>
-          <strong>
-            Product ID:
-          </strong>
-
-          ${escapeHTML(
-            item.product_id
-          )}
-
-        </p>
-
-
-        <p>
-          <strong>
-            Status:
-          </strong>
-
-          ${escapeHTML(
-            item.status || "unknown"
-          )}
-
-        </p>
-
-
-        <p>
-          <strong>
-            Delivery Information:
-          </strong>
-        </p>
-
-
-        <div
-          style="
-            background:#eee;
-            padding:12px;
-            border-radius:9px;
-            white-space:pre-wrap;
-            word-break:break-word;
-          "
-        >
-          ${escapeHTML(
-            item.content
-          )}
-        </div>
-
-
-        <div class="item-actions">
-
-          <button
-            class="red"
-            onclick="deleteInventory(${Number(item.id)})"
-          >
-            🗑️ Delete
-          </button>
-
-        </div>
-
-      `;
-
-
-      container.appendChild(
-        box
-      );
-
-    }
-  );
+return;
 
 }
 
+container.innerHTML="";
 
+list.forEach(item => {
 
-/* =====================================================
-   DELETE INVENTORY
-===================================================== */
+const product =
+products.find(
+p =>
+Number(p.id) === Number(item.product_id)
+);
+
+const box =
+document.createElement("div");
+
+box.className="item";
+
+box.innerHTML = `
+
+<h3>
+Inventory #${escapeHTML(item.id)}
+</h3>
+
+<p>
+<strong>Service:</strong>
+${escapeHTML(product?.name || "Unknown Service")}
+</p>
+
+<p>
+<strong>Product ID:</strong>
+${escapeHTML(item.product_id)}
+</p>
+
+<p>
+<strong>Status:</strong>
+${escapeHTML(item.status || "unknown")}
+</p>
+
+<p>
+<strong>Delivery Information:</strong>
+</p>
+
+<div
+style="
+background:#eee;
+padding:12px;
+border-radius:9px;
+white-space:pre-wrap;
+word-break:break-word;
+"
+>
+${escapeHTML(item.content)}
+</div>
+
+<div class="item-actions">
+
+<button
+class="red"
+onclick="deleteInventory(${Number(item.id)})"
+>
+🗑️ Delete
+</button>
+
+</div>
+
+`;
+
+container.appendChild(box);
+
+});
+
+}
 
 async function deleteInventory(id) {
 
-  if (
-    !confirm(
-      "Delete this inventory item?"
-    )
-  ) {
+if (!confirm(
+"Delete this inventory item?"
+)) return;
 
-    return;
+const {
+error
+} =
+await supabaseClient
+.from("product_inventory")
+.delete()
+.eq("id",id);
 
-  }
+if (error) {
 
+alert("❌ " + error.message);
 
-  const {
-    error
-  } =
-  await supabaseClient
-    .from("product_inventory")
-    .delete()
-    .eq(
-      "id",
-      id
-    );
-
-
-  if (error) {
-
-    alert(
-      "❌ " +
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  alert(
-    "✅ Inventory deleted."
-  );
-
-
-  await loadInventory();
-
-  await updateStatistics();
+return;
 
 }
 
+alert("✅ Inventory deleted.");
 
+await loadInventory();
+await updateStatistics();
 
-/* =====================================================
-   LOAD ORDERS
-===================================================== */
+}
+
+  <script>
+
+/* ORDERS */
 
 async function loadOrders() {
 
-  const container =
-    document.getElementById(
-      "ordersList"
-    );
+const container =
+document.getElementById("ordersList");
 
+container.innerHTML =
+'<div class="loading">Loading orders...</div>';
 
-  container.innerHTML =
-    '<div class="loading">Loading orders...</div>';
+const {
+data,
+error
+} =
+await supabaseClient
+.from("orders")
+.select("*")
+.order("created_at",{ascending:false});
 
+if (error) {
 
-  const {
-    data,
-    error
-  } =
-  await supabaseClient
-    .from("orders")
-    .select("*")
-    .order(
-      "created_at",
-      {
-        ascending: false
-      }
-    );
+container.innerHTML =
+'<div class="error">❌ Orders could not be loaded.<br><br>' +
+escapeHTML(error.message) +
+'</div>';
 
+orders=[];
 
-  if (error) {
-
-    container.innerHTML = `
-
-      <div class="error">
-
-        ❌ Orders could not be loaded.
-
-        <br><br>
-
-        ${escapeHTML(error.message)}
-
-      </div>
-
-    `;
-
-    orders = [];
-
-    return;
-
-  }
-
-
-  orders =
-    data || [];
-
-
-  renderOrders();
+return;
 
 }
 
+orders =
+data || [];
 
+renderOrders();
 
-/* =====================================================
-   RENDER ORDERS
-===================================================== */
+}
 
 function renderOrders() {
 
-  const container =
-    document.getElementById(
-      "ordersList"
-    );
+const container =
+document.getElementById("ordersList");
 
+const search =
+(document.getElementById("orderSearch").value || "")
+.toLowerCase()
+.trim();
 
-  const search =
-    (
-      document.getElementById(
-        "orderSearch"
-      ).value || ""
-    )
-    .toLowerCase()
-    .trim();
+const list =
+orders.filter(order => {
 
+return !search ||
 
-  let list =
-    orders.filter(
-      function(order) {
+String(order.id || "")
+.toLowerCase()
+.includes(search) ||
 
-        return (
+String(order.user_id || "")
+.toLowerCase()
+.includes(search) ||
 
-          !search ||
+String(order.product_id || "")
+.toLowerCase()
+.includes(search) ||
 
-          String(
-            order.id || ""
-          )
-          .toLowerCase()
-          .includes(search) ||
+String(order.status || "")
+.toLowerCase()
+.includes(search);
 
-          String(
-            order.user_id || ""
-          )
-          .toLowerCase()
-          .includes(search) ||
+});
 
-          String(
-            order.product_id || ""
-          )
-          .toLowerCase()
-          .includes(search) ||
+if (!list.length) {
 
-          String(
-            order.status || ""
-          )
-          .toLowerCase()
-          .includes(search)
+container.innerHTML =
+'<div class="loading">No orders found.</div>';
 
-        );
-
-      }
-    );
-
-
-  if (!list.length) {
-
-    container.innerHTML =
-      '<div class="loading">No orders found.</div>';
-
-    return;
-
-  }
-
-
-  container.innerHTML = "";
-
-
-  list.forEach(
-    function(order) {
-
-      const product =
-        products.find(
-          p =>
-            Number(p.id) ===
-            Number(order.product_id)
-        );
-
-
-      const box =
-        document.createElement(
-          "div"
-        );
-
-
-      box.className =
-        "item";
-
-
-      const status =
-        String(
-          order.status ||
-          "pending"
-        )
-        .toLowerCase();
-
-
-      box.innerHTML = `
-
-        <h3>
-          Order #${escapeHTML(order.id)}
-        </h3>
-
-
-        <p>
-          <strong>
-            Customer:
-          </strong>
-
-          ${escapeHTML(
-            order.user_id
-          )}
-
-        </p>
-
-
-        <p>
-          <strong>
-            Service:
-          </strong>
-
-          ${escapeHTML(
-            product?.name ||
-            order.product_id
-          )}
-
-        </p>
-
-
-        <p>
-          <strong>
-            Amount:
-          </strong>
-
-          ₦${money(order.amount)}
-
-        </p>
-
-
-        <p>
-          <strong>
-            Status:
-          </strong>
-
-          ${escapeHTML(status)}
-
-        </p>
-
-
-        <p>
-          <strong>
-            Created:
-          </strong>
-
-          ${escapeHTML(
-            order.created_at
-              ? new Date(
-                  order.created_at
-                ).toLocaleString(
-                  "en-NG"
-                )
-              : "Unknown"
-          )}
-
-        </p>
-
-
-        <div class="item-actions">
-
-          ${
-            status === "pending"
-              ? `
-                <button
-                  class="green"
-                  onclick="setOrderStatus('${String(order.id).replace(/'/g,"\\'")}','delivered')"
-                >
-                  ✅ Mark Delivered
-                </button>
-              `
-              : ""
-          }
-
-
-          ${
-            status !== "cancelled"
-              ? `
-                <button
-                  class="red"
-                  onclick="setOrderStatus('${String(order.id).replace(/'/g,"\\'")}','cancelled')"
-                >
-                  ❌ Cancel
-                </button>
-              `
-              : ""
-          }
-
-        </div>
-
-      `;
-
-
-      container.appendChild(
-        box
-      );
-
-    }
-  );
+return;
 
 }
 
+container.innerHTML="";
 
+list.forEach(order => {
 
-/* =====================================================
-   ORDER STATUS
-===================================================== */
+const product =
+products.find(
+p =>
+Number(p.id) === Number(order.product_id)
+);
 
-async function setOrderStatus(
-  id,
-  status
-) {
+const box =
+document.createElement("div");
 
-  const {
-    error
-  } =
-  await supabaseClient
-    .from("orders")
-    .update({
-      status
-    })
-    .eq(
-      "id",
-      id
-    );
+box.className="item";
 
+const status =
+String(order.status || "pending")
+.toLowerCase();
 
-  if (error) {
+box.innerHTML = `
 
-    alert(
-      "❌ " +
-      error.message
-    );
+<h3>
+Order #${escapeHTML(order.id)}
+</h3>
 
-    return;
+<p>
+<strong>Customer:</strong>
+${escapeHTML(order.user_id)}
+</p>
 
-  }
+<p>
+<strong>Service:</strong>
+${escapeHTML(product?.name || order.product_id)}
+</p>
 
+<p>
+<strong>Amount:</strong>
+₦${money(order.amount)}
+</p>
 
-  await loadOrders();
+<p>
+<strong>Status:</strong>
+${escapeHTML(status)}
+</p>
 
-  await updateStatistics();
+<p>
+<strong>Created:</strong>
+${
+order.created_at
+?
+escapeHTML(
+new Date(order.created_at)
+.toLocaleString("en-NG")
+)
+:
+"Unknown"
+}
+</p>
+
+<div class="item-actions">
+
+${
+status === "pending"
+?
+`
+<button
+class="green"
+onclick="setOrderStatus('${String(order.id).replace(/'/g,"\\'")}','delivered')"
+>
+✅ Mark Delivered
+</button>
+`
+:
+""
+}
+
+${
+status !== "cancelled"
+?
+`
+<button
+class="red"
+onclick="setOrderStatus('${String(order.id).replace(/'/g,"\\'")}','cancelled')"
+>
+❌ Cancel
+</button>
+`
+:
+""
+}
+
+</div>
+
+`;
+
+container.appendChild(box);
+
+});
 
 }
 
+async function setOrderStatus(id,status) {
 
+const {
+error
+} =
+await supabaseClient
+.from("orders")
+.update({status})
+.eq("id",id);
 
-/* =====================================================
-   LOAD USERS
-===================================================== */
+if (error) {
+
+alert("❌ " + error.message);
+
+return;
+
+}
+
+await loadOrders();
+await updateStatistics();
+
+}
+
+/* USERS */
 
 async function loadUsers() {
 
-  const container =
-    document.getElementById(
-      "usersList"
-    );
+const container =
+document.getElementById("usersList");
 
+container.innerHTML =
+'<div class="loading">Loading users...</div>';
 
-  container.innerHTML =
-    '<div class="loading">Loading users...</div>';
+const {
+data,
+error
+} =
+await supabaseClient
+.from("profiles")
+.select("*")
+.order("created_at",{ascending:false});
 
+if (error) {
 
-  /*
-    This reads from the application's
-    public profile table.
+container.innerHTML =
+'<div class="error">❌ User records could not be loaded.<br><br>' +
+escapeHTML(error.message) +
+'<br><br>Your project needs a public <strong>profiles</strong> table for this section.</div>';
 
-    It does NOT expose auth.users
-    directly and does NOT use a
-    service-role key.
-  */
+users=[];
 
-
-  const {
-    data,
-    error
-  } =
-  await supabaseClient
-    .from("profiles")
-    .select("*")
-    .order(
-      "created_at",
-      {
-        ascending: false
-      }
-    );
-
-
-  if (error) {
-
-    container.innerHTML = `
-
-      <div class="error">
-
-        ❌ User records could not be loaded.
-
-        <br><br>
-
-        ${escapeHTML(error.message)}
-
-        <br><br>
-
-        Your project needs a public
-        <strong>profiles</strong> table
-        for this section.
-
-      </div>
-
-    `;
-
-    users = [];
-
-    return;
-
-  }
-
-
-  users =
-    data || [];
-
-
-  renderUsers();
+return;
 
 }
 
+users =
+data || [];
 
+renderUsers();
 
-/* =====================================================
-   RENDER USERS
-===================================================== */
+}
 
 function renderUsers() {
 
-  const container =
-    document.getElementById(
-      "usersList"
-    );
+const container =
+document.getElementById("usersList");
 
+const search =
+(document.getElementById("userSearch").value || "")
+.toLowerCase()
+.trim();
 
-  const search =
-    (
-      document.getElementById(
-        "userSearch"
-      ).value || ""
-    )
-    .toLowerCase()
-    .trim();
+const list =
+users.filter(user => {
 
+return !search ||
 
-  const list =
-    users.filter(
-      function(user) {
+String(user.email || "")
+.toLowerCase()
+.includes(search) ||
 
-        return (
+String(user.full_name || "")
+.toLowerCase()
+.includes(search) ||
 
-          !search ||
+String(user.id || "")
+.toLowerCase()
+.includes(search);
 
-          String(
-            user.email || ""
-          )
-          .toLowerCase()
-          .includes(search) ||
+});
 
-          String(
-            user.full_name || ""
-          )
-          .toLowerCase()
-          .includes(search) ||
+if (!list.length) {
 
-          String(
-            user.id || ""
-          )
-          .toLowerCase()
-          .includes(search)
+container.innerHTML =
+'<div class="loading">No users found.</div>';
 
-        );
-
-      }
-    );
-
-
-  if (!list.length) {
-
-    container.innerHTML =
-      '<div class="loading">No users found.</div>';
-
-    return;
-
-  }
-
-
-  container.innerHTML = "";
-
-
-  list.forEach(
-    function(user) {
-
-      const box =
-        document.createElement(
-          "div"
-        );
-
-
-      box.className =
-        "item";
-
-
-      box.innerHTML = `
-
-        <h3>
-          👤
-          ${escapeHTML(
-            user.full_name ||
-            "User"
-          )}
-
-        </h3>
-
-
-        <p>
-          <strong>
-            Email:
-          </strong>
-
-          ${escapeHTML(
-            user.email ||
-            "Not available"
-          )}
-
-        </p>
-
-
-        <p>
-          <strong>
-            User ID:
-          </strong>
-
-          ${escapeHTML(
-            user.id
-          )}
-
-        </p>
-
-
-        ${
-          user.created_at
-            ? `
-              <p>
-                <strong>
-                  Joined:
-                </strong>
-
-                ${escapeHTML(
-                  new Date(
-                    user.created_at
-                  ).toLocaleString(
-                    "en-NG"
-                  )
-                )}
-
-              </p>
-            `
-            : ""
-        }
-
-
-        <div class="item-actions">
-
-          ${
-            user.is_banned !== undefined
-              ? `
-                <button
-                  class="${
-                    user.is_banned
-                      ? "green"
-                      : "red"
-                  }"
-                  onclick="toggleUserBan('${String(user.id).replace(/'/g,"\\'")}', ${!user.is_banned})"
-                >
-                  ${
-                    user.is_banned
-                      ? "🔓 Unban User"
-                      : "🚫 Ban User"
-                  }
-                </button>
-              `
-              : ""
-          }
-
-        </div>
-
-      `;
-
-
-      container.appendChild(
-        box
-      );
-
-    }
-  );
+return;
 
 }
 
+container.innerHTML="";
 
+list.forEach(user => {
 
-/* =====================================================
-   USER BAN
-===================================================== */
+const box =
+document.createElement("div");
 
-async function toggleUserBan(
-  id,
-  banned
-) {
+box.className="item";
 
-  const {
-    error
-  } =
-  await supabaseClient
-    .from("profiles")
-    .update({
-      is_banned: banned
-    })
-    .eq(
-      "id",
-      id
-    );
+box.innerHTML = `
 
+<h3>
+👤 ${escapeHTML(user.full_name || "User")}
+</h3>
 
-  if (error) {
+<p>
+<strong>Email:</strong>
+${escapeHTML(user.email || "Not available")}
+</p>
 
-    alert(
-      "❌ " +
-      error.message
-    );
+<p>
+<strong>User ID:</strong>
+${escapeHTML(user.id)}
+</p>
 
-    return;
+${
+user.created_at
+?
+`
+<p>
+<strong>Joined:</strong>
+${escapeHTML(
+new Date(user.created_at)
+.toLocaleString("en-NG")
+)}
+</p>
+`
+:
+""
+}
 
-  }
+<div class="item-actions">
 
+${
+user.is_banned !== undefined
+?
+`
+<button
+class="${user.is_banned ? "green":"red"}"
+onclick="toggleUserBan(
+'${String(user.id).replace(/'/g,"\\'")}',
+${!user.is_banned}
+)"
+>
+${user.is_banned ? "🔓 Unban User":"🚫 Ban User"}
+</button>
+`
+:
+""
+}
 
-  await loadUsers();
+</div>
+
+`;
+
+container.appendChild(box);
+
+});
 
 }
 
+async function toggleUserBan(id,banned) {
 
+const {
+error
+} =
+await supabaseClient
+.from("profiles")
+.update({
+is_banned:banned
+})
+.eq("id",id);
 
-/* =====================================================
-   STATISTICS
-===================================================== */
+if (error) {
+
+alert("❌ " + error.message);
+
+return;
+
+}
+
+await loadUsers();
+
+}
+
+/* STATISTICS */
 
 async function updateStatistics() {
 
-  const productCount =
-    document.getElementById(
-      "productCount"
-    );
+const {
+count: productsTotal
+} =
+await supabaseClient
+.from("Product")
+.select("*",{count:"exact",head:true});
 
+const {
+count: inventoryTotal
+} =
+await supabaseClient
+.from("product_inventory")
+.select("*",{count:"exact",head:true})
+.eq("status","available");
 
-  const inventoryCount =
-    document.getElementById(
-      "inventoryCount"
-    );
+const {
+count: pendingTotal
+} =
+await supabaseClient
+.from("orders")
+.select("*",{count:"exact",head:true})
+.eq("status","pending");
 
+const {
+count: completedTotal
+} =
+await supabaseClient
+.from("orders")
+.select("*",{count:"exact",head:true})
+.eq("status","delivered");
 
-  const pendingCount =
-    document.getElementById(
-      "pendingCount"
-    );
+const {
+count: neverTotal
+} =
+await supabaseClient
+.from("Product")
+.select("*",{count:"exact",head:true})
+.eq("track_stock",false);
 
+document.getElementById("productCount")
+.textContent =
+productsTotal ?? 0;
 
-  const completedCount =
-    document.getElementById(
-      "completedCount"
-    );
+document.getElementById("inventoryCount")
+.textContent =
+inventoryTotal ?? 0;
 
+document.getElementById("pendingCount")
+.textContent =
+pendingTotal ?? 0;
 
-  const neverSellOutCount =
-    document.getElementById(
-      "neverSellOutCount"
-    );
+document.getElementById("completedCount")
+.textContent =
+completedTotal ?? 0;
 
+document.getElementById("neverSellOutCount")
+.textContent =
+neverTotal ?? 0;
 
-  const {
-    count: productsTotal
-  } =
-  await supabaseClient
-    .from("Product")
-    .select(
-      "*",
-      {
-        count: "exact",
-        head: true
-      }
-    );
-
-
-  const {
-    count: inventoryTotal
-  } =
-  await supabaseClient
-    .from("product_inventory")
-    .select(
-      "*",
-      {
-        count: "exact",
-        head: true
-      }
-    )
-    .eq(
-      "status",
-      "available"
-    );
-
-
-  const {
-    count: pendingTotal
-  } =
-  await supabaseClient
-    .from("orders")
-    .select(
-      "*",
-      {
-        count: "exact",
-        head: true
-      }
-    )
-    .eq(
-      "status",
-      "pending"
-    );
-
-
-  const {
-    count: completedTotal
-  } =
-  await supabaseClient
-    .from("orders")
-    .select(
-      "*",
-      {
-        count: "exact",
-        head: true
-      }
-    )
-    .eq(
-      "status",
-      "delivered"
-    );
-
-
-  const {
-    count: neverTotal
-  } =
-  await supabaseClient
-    .from("Product")
-    .select(
-      "*",
-      {
-        count: "exact",
-        head: true
-      }
-    )
-    .eq(
-      "track_stock",
-      false
-    );
-
-
-  productCount.textContent =
-    productsTotal ?? 0;
-
-
-  inventoryCount.textContent =
-    inventoryTotal ?? 0;
-
-
-  pendingCount.textContent =
-    pendingTotal ?? 0;
-
-
-  completedCount.textContent =
-    completedTotal ?? 0;
-
-
-  neverSellOutCount.textContent =
-    neverTotal ?? 0;
-
-
-  document.getElementById(
-    "userCount"
-  ).textContent =
-    users.length || 0;
+document.getElementById("userCount")
+.textContent =
+users.length || 0;
 
 }
 
-
-
-/* =====================================================
-   REFRESH EVERYTHING
-===================================================== */
+/* REFRESH */
 
 async function refreshEverything() {
 
-  const message =
-    document.getElementById(
-      "refreshMessage"
-    );
+const message =
+document.getElementById("refreshMessage");
 
+message.textContent =
+"🔄 Refreshing everything...";
 
-  message.textContent =
-    "🔄 Refreshing everything...";
+try {
 
+await loadProducts();
 
-  try {
+await loadInventoryProductDropdown();
 
-    await loadProducts();
+await loadInventory();
 
-    await loadInventoryProductDropdown();
+await loadOrders();
 
-    await loadInventory();
+await loadUsers();
 
-    await loadOrders();
+await updateStatistics();
 
-    await loadUsers();
-
-    await updateStatistics();
-
-
-    message.textContent =
-      "✅ Everything refreshed successfully.";
-
-  }
-
-  catch (error) {
-
-    console.error(
-      error
-    );
-
-
-    message.textContent =
-      "❌ Refresh failed: " +
-      error.message;
-
-  }
+message.textContent =
+"✅ Everything refreshed successfully.";
 
 }
 
+catch(error) {
 
+console.error(error);
 
-/* =====================================================
-   START
-===================================================== */
+message.textContent =
+"❌ Refresh failed: " +
+error.message;
+
+}
+
+}
+
+/* START */
 
 async function startAdmin() {
 
-  buildCategoryUI();
+buildCategoryUI();
 
+const allowed =
+await checkAdmin();
 
-  const allowed =
-    await checkAdmin();
+if (!allowed) return;
 
-
-  if (!allowed) {
-    return;
-  }
-
-
-  await refreshEverything();
+await refreshEverything();
 
 }
 
-
 startAdmin();
-
 
 </script>
 
-
 </body>
-
 </html>
