@@ -388,249 +388,152 @@
 </section>
 
 
-
 <!-- =====================================================
      ADD PRODUCT
 ===================================================== -->
-async function addProduct() {
 
-  const message =
-    document.getElementById("productMessage");
+<section>
 
-  const name =
-    document.getElementById("productName").value.trim();
+  <h2>➕ Add Product / Service</h2>
 
-  const price =
-    Number(
-      document.getElementById("productPrice").value
-    );
+  <label>
+    Service Name
+  </label>
 
-  const category =
-    document.getElementById("productCategory").value;
+  <input
+    id="productName"
+    placeholder="Example: Facebook Working Log"
+  >
 
-  const description =
-    document.getElementById("productDescription").value.trim();
+  <br><br>
 
-  const imageInput =
-    document.getElementById("productImage");
+  <label>
+    Price
+  </label>
 
-  const stock =
-    Number(
-      document.getElementById("productStock").value
-    );
+  <input
+    id="productPrice"
+    type="number"
+    min="0"
+    step="0.01"
+    placeholder="Enter price"
+  >
 
-  const status =
-    document.getElementById("productStatus").value;
+  <br><br>
 
-  const track_stock =
-    document.getElementById("trackStock").checked;
+  <label>
+    Category
+  </label>
 
+  <select id="productCategory"></select>
 
-  if (!name) {
+  <br><br>
 
-    message.textContent =
-      "❌ Enter a service name.";
+  <label>
+    Description
+  </label>
 
-    return;
+  <textarea
+    id="productDescription"
+    placeholder="Describe this service..."
+  ></textarea>
 
-  }
+  <br><br>
 
+  <label>
+    Product Image
+  </label>
 
-  if (
-    isNaN(price) ||
-    price < 0
-  ) {
+  <input
+    id="productImage"
+    type="file"
+    accept="image/*"
+  >
 
-    message.textContent =
-      "❌ Enter a valid price.";
+  <br>
 
-    return;
+  <img
+    id="selectedImagePreview"
+    class="image-preview hidden"
+    alt="Selected image preview"
+  >
 
-  }
+  <br><br>
 
+  <div class="two-col">
 
-  if (
-    isNaN(stock) ||
-    stock < 0
-  ) {
+    <div>
 
-    message.textContent =
-      "❌ Enter a valid stock number.";
+      <label>
+        Stock
+      </label>
 
-    return;
+      <input
+        id="productStock"
+        type="number"
+        min="0"
+        value="0"
+      >
 
-  }
+    </div>
 
+    <div>
 
-  message.textContent =
-    "Adding service...";
+      <label>
+        Status
+      </label>
 
+      <select id="productStatus">
 
-  let image_url = "";
+        <option value="Available">
+          Available
+        </option>
 
+        <option value="Unavailable">
+          Unavailable
+        </option>
 
-  /* =====================================================
-     UPLOAD IMAGE FROM GALLERY
-  ===================================================== */
+      </select>
 
-  const file =
-    imageInput.files[0];
+    </div>
 
+  </div>
 
-  if (file) {
+  <br>
 
-    const fileExt =
-      file.name
-        .split(".")
-        .pop()
-        .toLowerCase();
+  <label>
 
+    <input
+      id="trackStock"
+      type="checkbox"
+      checked
+      style="width:auto;"
+    >
 
-    const fileName =
-      `${Date.now()}-${crypto.randomUUID()}.${fileExt}`;
+    Track stock / allow this service to become Sold Out
 
+  </label>
 
-    const {
-      error: uploadError
-    } =
-    await supabaseClient
-      .storage
-      .from("product-images")
-      .upload(
-        fileName,
-        file,
-        {
-          cacheControl: "3600",
-          upsert: false
-        }
-      );
+  <p style="font-size:13px;color:#666;">
 
+    Untick this for services that should remain available even when
+    stock is 0.
 
-    if (uploadError) {
+  </p>
 
-      message.textContent =
-        "❌ Image upload failed: " +
-        uploadError.message;
+  <button
+    class="black"
+    onclick="addProduct()"
+  >
+    ➕ Add Service
+  </button>
 
-      return;
+  <p
+    id="productMessage"
+    class="message"
+  ></p>
 
-    }
-
-
-    const {
-      data: publicUrlData
-    } =
-    supabaseClient
-      .storage
-      .from("product-images")
-      .getPublicUrl(
-        fileName
-      );
-
-
-    image_url =
-      publicUrlData.publicUrl;
-
-  }
-
-
-  /* =====================================================
-     ADD PRODUCT
-  ===================================================== */
-
-  const {
-    error
-  } =
-  await supabaseClient
-    .from("Product")
-    .insert([
-
-      {
-
-        name,
-
-        price,
-
-        category,
-
-        description,
-
-        image_url,
-
-        stock,
-
-        status,
-
-        track_stock
-
-      }
-
-    ]);
-
-
-  if (error) {
-
-    message.textContent =
-      "❌ " +
-      error.message;
-
-    return;
-
-  }
-
-
-  message.textContent =
-    "✅ Service added successfully.";
-
-
-  /* =====================================================
-     CLEAR FORM
-  ===================================================== */
-
-  document.getElementById(
-    "productName"
-  ).value = "";
-
-
-  document.getElementById(
-    "productPrice"
-  ).value = "";
-
-
-  document.getElementById(
-    "productDescription"
-  ).value = "";
-
-
-  document.getElementById(
-    "productImage"
-  ).value = "";
-
-
-  document.getElementById(
-    "productStock"
-  ).value = "0";
-
-
-  document.getElementById(
-    "productStatus"
-  ).value = "Available";
-
-
-  document.getElementById(
-    "trackStock"
-  ).checked = true;
-
-
-  await loadProducts();
-
-  await updateStatistics();
-
-  await loadInventoryProductDropdown();
-
-}
-
-
+</section>
 
 
 <!-- =====================================================
@@ -646,14 +549,14 @@ async function addProduct() {
   </label>
 
   <select id="inventoryProduct">
+
     <option value="">
       Loading services...
     </option>
+
   </select>
 
-
   <br><br>
-
 
   <label>
     Delivery Information
@@ -664,9 +567,7 @@ async function addProduct() {
     placeholder="Enter the legitimate digital item/details to be delivered after purchase"
   ></textarea>
 
-
   <br><br>
-
 
   <button
     class="black"
@@ -675,14 +576,12 @@ async function addProduct() {
     ➕ Add Inventory
   </button>
 
-
   <p
     id="inventoryMessage"
     class="message"
   ></p>
 
 </section>
-
 
 
 <section>
@@ -696,7 +595,6 @@ async function addProduct() {
     oninput="renderInventory()"
   >
 
-
   <div id="inventoryList">
 
     <div class="loading">
@@ -705,8 +603,7 @@ async function addProduct() {
 
   </div>
 
-</section>
-
+  </section>
 
 
 <!-- =====================================================
