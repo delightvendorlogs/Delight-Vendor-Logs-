@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -11,24 +12,30 @@
 
   <title>Fund Wallet - Delight Vendor Logs</title>
 
-  <!-- Supabase -->
+
+  <!-- SUPABASE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- ZevPay Inline Checkout -->
+
+  <!-- ZEVPAY CHECKOUT -->
   <script src="https://js.zevpaycheckout.com/v1/inline.js"></script>
 
+
   <style>
+
     * {
       box-sizing: border-box;
     }
+
 
     body {
       margin: 0;
       padding: 0;
       background: #f5f5f5;
-      font-family: Arial, sans-serif;
       color: #111;
+      font-family: Arial, sans-serif;
     }
+
 
     header {
       background: #111;
@@ -37,105 +44,145 @@
       text-align: center;
     }
 
-    main {
-      max-width: 500px;
-      margin: 30px auto;
-      padding: 20px;
+
+    header h1 {
+      margin: 0;
+      font-size: 25px;
     }
+
+
+    main {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 25px 20px 40px;
+    }
+
 
     h2 {
       margin-top: 25px;
+      margin-bottom: 12px;
     }
+
 
     .profile-card {
       background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
     }
 
+
     #walletBalance {
-      font-size: 28px;
-      font-weight: bold;
       margin: 0;
+      font-size: 30px;
+      font-weight: bold;
     }
+
 
     #amount {
       width: 100%;
-      padding: 15px;
-      font-size: 18px;
+      padding: 16px;
       border: 1px solid #ccc;
       border-radius: 10px;
-      margin-top: 10px;
+      font-size: 18px;
+      outline: none;
     }
+
+
+    #amount:focus {
+      border-color: #111;
+    }
+
 
     .payment-option {
       background: white;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 10px;
       border: 1px solid #ddd;
+      padding: 17px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      font-size: 17px;
     }
+
 
     .payment-option input {
       margin-right: 10px;
     }
 
+
     .btn {
-      display: inline-block;
+      width: 100%;
       border: none;
       background: #111;
       color: white;
-      padding: 15px 30px;
-      margin: 10px 0;
+      padding: 16px;
+      margin-top: 10px;
       border-radius: 10px;
       font-size: 18px;
       font-weight: bold;
       cursor: pointer;
     }
+
 
     .btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
 
+
     #message {
+      min-height: 25px;
+      margin-top: 18px;
       font-weight: bold;
-      margin-top: 15px;
       line-height: 1.5;
     }
 
+
     .back-btn {
-      display: inline-block;
+      width: 100%;
       background: #333;
       color: white;
-      padding: 15px 25px;
+      padding: 16px;
       margin-top: 15px;
       border-radius: 10px;
+      text-align: center;
+      font-size: 17px;
       font-weight: bold;
       cursor: pointer;
     }
+
   </style>
+
 </head>
 
 
 <body>
 
+
 <header>
+
   <h1>Fund Wallet</h1>
+
 </header>
 
 
 <main>
 
+
+  <!-- WALLET BALANCE -->
+
   <h2>Your Balance</h2>
 
   <div class="profile-card">
+
     <p id="walletBalance">
       Loading...
     </p>
+
   </div>
 
+
+  <!-- ADD MONEY -->
 
   <h2>Add Money</h2>
 
@@ -148,30 +195,46 @@
   >
 
 
+  <!-- PAYMENT METHOD -->
+
   <h2>Select Payment Method</h2>
 
+
   <div class="payment-option">
+
     <label>
+
       <input
         type="radio"
         name="payment"
         value="bank"
       >
+
       Bank Transfer
+
     </label>
+
   </div>
 
+
   <div class="payment-option">
+
     <label>
+
       <input
         type="radio"
         name="payment"
         value="card"
       >
+
       Card
+
     </label>
+
   </div>
 
+
+  <!-- CONTINUE -->
 
   <button
     id="continueButton"
@@ -182,8 +245,12 @@
   </button>
 
 
+  <!-- MESSAGE -->
+
   <p id="message"></p>
 
+
+  <!-- BACK -->
 
   <div
     class="back-btn"
@@ -192,14 +259,17 @@
     🏠 Back to Dashboard
   </div>
 
+
 </main>
 
 
 <script>
 
+
 /* =====================================================
    SUPABASE
 ===================================================== */
+
 
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
@@ -216,121 +286,135 @@ const supabaseClient =
   );
 
 
+
 /* =====================================================
    ZEVPAY PUBLIC KEY
 ===================================================== */
 
+
 const ZEVPAY_PUBLIC_KEY =
   "pk_live_d27da0360c991aab38fd0d8b3e84a9742c65b36391f1fe7e";
+
 
 
 /* =====================================================
    LOAD WALLET
 ===================================================== */
 
+
 async function loadWallet() {
 
-  const {
-    data: {
-      user
-    },
-    error: userError
-  } =
-    await supabaseClient.auth.getUser();
+
+  try {
 
 
-  /* USER NOT LOGGED IN */
-
-  if (userError || !user) {
-
-    window.location.href =
-      "login.html";
-
-    return;
-  }
+    const {
+      data: {
+        user
+      },
+      error: userError
+    } =
+      await supabaseClient.auth.getUser();
 
 
-  console.log(
-    "Logged in user:",
-    user.id
-  );
+    /* NOT LOGGED IN */
+
+    if (userError || !user) {
+
+      window.location.href =
+        "login.html";
+
+      return;
+
+    }
 
 
-  /* GET / CREATE WALLET */
-
-  const {
-    data: wallet,
-    error
-  } =
-    await supabaseClient.rpc(
-      "ensure_my_wallet"
+    console.log(
+      "Logged in user:",
+      user.id
     );
 
 
-  if (error) {
+    /* GET WALLET */
 
-    console.error(
-      "WALLET ERROR:",
+    const {
+      data: wallet,
       error
+    } =
+      await supabaseClient.rpc(
+        "ensure_my_wallet"
+      );
+
+
+    if (error) {
+
+      console.error(
+        "Wallet error:",
+        error
+      );
+
+
+      document.getElementById(
+        "walletBalance"
+      ).textContent =
+        "Wallet error";
+
+
+      return;
+
+    }
+
+
+    console.log(
+      "Wallet:",
+      wallet
     );
+
+
+    const balance =
+      wallet?.balance ?? 0;
+
 
     document.getElementById(
       "walletBalance"
     ).textContent =
-      "Wallet error: " +
-      error.message;
+      "₦" +
+      Number(balance).toLocaleString(
+        "en-NG",
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      );
 
-    return;
+
+  } catch (error) {
+
+
+    console.error(
+      "Load wallet error:",
+      error
+    );
+
+
+    document.getElementById(
+      "walletBalance"
+    ).textContent =
+      "Unable to load wallet";
+
   }
 
-
-  console.log(
-    "WALLET DATA:",
-    wallet
-  );
-
-
-  const balance =
-    wallet?.balance ?? 0;
-
-
-  document.getElementById(
-    "walletBalance"
-  ).textContent =
-    "₦" +
-    Number(balance).toLocaleString(
-      "en-NG",
-      {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }
-    );
 }
 
-
-/* =====================================================
-   GENERATE PAYMENT REFERENCE
-===================================================== */
-
-function generateReference() {
-
-  return (
-    "WALLET-" +
-    Date.now() +
-    "-" +
-    Math.random()
-      .toString(36)
-      .substring(2, 8)
-      .toUpperCase()
-  );
-}
 
 
 /* =====================================================
    CONTINUE PAYMENT
 ===================================================== */
 
+
 async function continuePayment() {
+
 
   const amount =
     Number(
@@ -358,56 +442,58 @@ async function continuePayment() {
     );
 
 
-  /* AMOUNT CHECK */
+
+  /* ===================================================
+     CHECK AMOUNT
+  =================================================== */
+
 
   if (
     !Number.isFinite(amount) ||
     amount < 100
   ) {
 
-    message.style.color = "red";
+
+    message.style.color =
+      "red";
+
 
     message.textContent =
       "Please enter at least ₦100.";
 
+
     return;
+
   }
 
 
-  /* PAYMENT METHOD CHECK */
+
+  /* ===================================================
+     CHECK PAYMENT METHOD
+  =================================================== */
+
 
   if (!payment) {
 
-    message.style.color = "red";
+
+    message.style.color =
+      "red";
+
 
     message.textContent =
       "Please select a payment method.";
 
+
     return;
+
   }
 
 
-  /* CHECK ZEVPAY SDK */
 
-  if (
-    !window.ZevPay ||
-    !window.ZevPay.ZevPayCheckout
-  ) {
+  /* ===================================================
+     CHECK LOGIN
+  =================================================== */
 
-    message.style.color = "red";
-
-    message.textContent =
-      "ZevPay checkout failed to load. Please refresh the page.";
-
-    console.error(
-      "ZevPay SDK is not available."
-    );
-
-    return;
-  }
-
-
-  /* GET USER */
 
   const {
     data: {
@@ -418,59 +504,112 @@ async function continuePayment() {
     await supabaseClient.auth.getUser();
 
 
-  if (userError || !user) {
+  if (
+    userError ||
+    !user
+  ) {
 
-    message.style.color = "red";
+
+    message.style.color =
+      "red";
+
 
     message.textContent =
-      "Your session has expired. Please log in again.";
+      "Please log in again.";
+
 
     window.location.href =
       "login.html";
 
+
     return;
+
   }
 
 
-  /* AMOUNT IN KOBO */
+
+  /* ===================================================
+     CHECK ZEVPAY SDK
+  =================================================== */
+
+
+  if (
+    !window.ZevPay ||
+    !window.ZevPay.ZevPayCheckout
+  ) {
+
+
+    message.style.color =
+      "red";
+
+
+    message.textContent =
+      "ZevPay checkout failed to load. Please refresh.";
+
+
+    console.error(
+      "ZevPay SDK not loaded."
+    );
+
+
+    return;
+
+  }
+
+
+
+  /* ===================================================
+     CONVERT NAIRA TO KOBO
+  =================================================== */
+
 
   const amountKobo =
-    Math.round(amount * 100);
+    Math.round(
+      amount * 100
+    );
 
-
-  /* UNIQUE REFERENCE */
-
-  const reference =
-    generateReference();
 
 
   console.log(
-    "Starting ZevPay payment:",
+    "ZevPay payment:",
     {
       amountNaira: amount,
-      amountKobo,
-      reference,
-      userId: user.id
+      amountKobo: amountKobo,
+      email: user.email
     }
   );
 
 
-  /* DISABLE BUTTON */
 
-  button.disabled = true;
+  /* ===================================================
+     DISABLE BUTTON
+  =================================================== */
+
+
+  button.disabled =
+    true;
+
 
   button.textContent =
-    "Opening payment...";
+    "Opening checkout...";
 
 
   message.style.color =
     "#111";
 
+
   message.textContent =
     "Opening ZevPay checkout...";
 
 
+
+  /* ===================================================
+     OPEN ZEVPAY
+  =================================================== */
+
+
   try {
+
 
     const zp =
       new ZevPay.ZevPayCheckout();
@@ -481,33 +620,18 @@ async function continuePayment() {
       apiKey:
         ZEVPAY_PUBLIC_KEY,
 
+
       email:
         user.email,
+
 
       amount:
         amountKobo,
 
-      reference:
-        reference,
-
-      metadata: {
-
-        user_id:
-          user.id,
-
-        purpose:
-          "wallet_funding",
-
-        amount_naira:
-          amount
-
-      },
-
-
-      /* PAYMENT SUCCESS */
 
       onSuccess:
-        async function(ref) {
+        async (ref) => {
+
 
           console.log(
             "ZevPay payment successful:",
@@ -518,19 +642,9 @@ async function continuePayment() {
           message.style.color =
             "green";
 
+
           message.textContent =
-            "Payment successful! Your wallet is being updated...";
-
-
-          /*
-            IMPORTANT:
-
-            We DO NOT directly add money
-            to the wallet here.
-
-            The ZevPay webhook does that
-            securely on the server.
-          */
+            "Payment successful! Confirming your wallet...";
 
 
           button.textContent =
@@ -538,53 +652,33 @@ async function continuePayment() {
 
 
           /*
-            Give the webhook a moment,
-            then reload the wallet balance.
+             The webhook is responsible
+             for actually crediting the wallet.
           */
 
+
           setTimeout(
-            async function() {
+            async () => {
+
 
               await loadWallet();
 
+
               message.textContent =
-                "Payment confirmed. Your wallet balance has been updated.";
+                "Payment confirmed. Your wallet balance will update shortly.";
+
 
               button.disabled =
                 false;
 
+
               button.textContent =
                 "Continue";
 
+
             },
-            3000
+            4000
           );
-
-        },
-
-
-      /* PAYMENT CANCELLED */
-
-      onCancel:
-        function() {
-
-          console.log(
-            "ZevPay payment cancelled."
-          );
-
-
-          message.style.color =
-            "red";
-
-          message.textContent =
-            "Payment cancelled.";
-
-
-          button.disabled =
-            false;
-
-          button.textContent =
-            "Continue";
 
         }
 
@@ -592,6 +686,7 @@ async function continuePayment() {
 
 
   } catch (error) {
+
 
     console.error(
       "ZevPay checkout error:",
@@ -602,25 +697,31 @@ async function continuePayment() {
     message.style.color =
       "red";
 
+
     message.textContent =
-      "Unable to open payment checkout. Please try again.";
+      "Unable to open ZevPay checkout. Please try again.";
 
 
     button.disabled =
       false;
 
+
     button.textContent =
       "Continue";
+
   }
 
 }
+
 
 
 /* =====================================================
    START
 ===================================================== */
 
+
 loadWallet();
+
 
 </script>
 
