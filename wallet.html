@@ -1,20 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Fund Wallet - Delight Vendor Logs</title>
 
-  <!-- SUPABASE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- ZEVPAY -->
   <script src="https://js.zevpaycheckout.com/v1/inline.js"></script>
 
   <style>
@@ -53,11 +45,11 @@
       margin-bottom: 12px;
     }
 
-    .profile-card {
+    .card {
       background: white;
       padding: 22px;
       border-radius: 14px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 10px rgba(0,0,0,.08);
     }
 
     #walletBalance {
@@ -73,10 +65,6 @@
       border-radius: 10px;
       font-size: 18px;
       outline: none;
-    }
-
-    #amount:focus {
-      border-color: #111;
     }
 
     .payment-option {
@@ -106,7 +94,7 @@
     }
 
     .btn:disabled {
-      opacity: 0.6;
+      opacity: .6;
       cursor: not-allowed;
     }
 
@@ -142,7 +130,7 @@
 
   <h2>Your Balance</h2>
 
-  <div class="profile-card">
+  <div class="card">
     <p id="walletBalance">Loading...</p>
   </div>
 
@@ -201,10 +189,6 @@
 
 <script>
 
-/* =====================================================
-   SUPABASE
-===================================================== */
-
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
 
@@ -218,61 +202,61 @@ const supabaseClient =
   );
 
 
-/* =====================================================
-   ZEVPAY PUBLIC KEY
-===================================================== */
-
+/*
+  IMPORTANT:
+  Put your NEW ZevPay public key here.
+  This is the pk_live key you regenerated.
+*/
 const ZEVPAY_PUBLIC_KEY =
   "pk_live_44ba87722fc7b872d0338b516253b8ac6cfce03e8a909e78";
 
 
-/* =====================================================
-   WEBHOOK / VERIFY FUNCTION
-===================================================== */
+/*
+  This must be the SAME Supabase Edge Function
+  where you saved the ZevPay function.
+*/
+const VERIFY_FUNCTION =
+  "zevpay_webhook";
 
-const ZEVPAY_VERIFY_FUNCTION =
-  `${SUPABASE_URL}/functions/v1/zevpay_webhook`;
 
+async function getCurrentUser() {
 
-/* =====================================================
-   MESSAGE HELPER
-===================================================== */
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.auth.getUser();
 
-function showMessage(text, color = "#111") {
+  if (error || !data.user) {
+    return null;
+  }
 
-  const message =
-    document.getElementById("message");
-
-  message.style.color = color;
-  message.textContent = text;
-
+  return data.user;
 }
 
 
-/* =====================================================
+/* ==========================================
    LOAD WALLET
-===================================================== */
+========================================== */
 
 async function loadWallet() {
 
+  const balanceElement =
+    document.getElementById(
+      "walletBalance"
+    );
+
   try {
 
-    const {
-      data: {
-        user
-      },
-      error: userError
-    } =
-      await supabaseClient.auth.getUser();
+    const user =
+      await getCurrentUser();
 
-
-    if (userError || !user) {
+    if (!user) {
 
       window.location.href =
         "login.html";
 
       return;
-
     }
 
 
@@ -292,13 +276,10 @@ async function loadWallet() {
         error
       );
 
-      document.getElementById(
-        "walletBalance"
-      ).textContent =
+      balanceElement.textContent =
         "Wallet error";
 
       return;
-
     }
 
 
@@ -306,9 +287,7 @@ async function loadWallet() {
       wallet?.balance ?? 0;
 
 
-    document.getElementById(
-      "walletBalance"
-    ).textContent =
+    balanceElement.textContent =
       "₦" +
       Number(balance).toLocaleString(
         "en-NG",
@@ -321,138 +300,122 @@ async function loadWallet() {
   } catch (error) {
 
     console.error(
-      "Load wallet error:",
+      "Wallet loading error:",
       error
     );
 
-    document.getElementById(
-      "walletBalance"
-    ).textContent =
+    balanceElement.textContent =
       "Unable to load wallet";
   }
+}
+
+
+/* ==========================================
+   CREATE PENDING TRANSACTION
+========================================== */
+
+async function createPendingTransaction(
+  user,
+  amount
+) {
+
+  /*
+    We cannot know the ZevPay reference until
+    checkout gives it to us.
+
+    So this function is only used to keep
+    the payment amount/user context ready.
+  */
+
+  console.log(
+    "Starting payment:",
+    {
+      userId: user.id,
+      email: user.email,
+      amount
+    }
+  );
 
 }
 
 
-/* =====================================================
+/* ==========================================
    VERIFY PAYMENT
-===================================================== */
+========================================== */
 
-async function verifyPayment(reference) {
+async function verifyPayment(
+  reference
+) {
 
-  try {
+  const {
+    data: sessionData
+  } =
+    await supabaseClient.auth.getSession();
 
-    showMessage(
-      "Payment received. Verifying with ZevPay...",
-      "#111"
+
+  const accessToken =
+    sessionData?.session?.access_token;
+
+
+  if (!accessToken) {
+
+    throw new Error(
+      "Your login session expired."
     );
-
-
-    const {
-      data: {
-        session
-      }
-    } =
-      await supabaseClient.auth.getSession();
-
-
-    if (!session) {
-
-      throw new Error(
-        "Your login session has expired."
-      );
-
-    }
-
-
-    const response =
-      await fetch(
-        ZEVPAY_VERIFY_FUNCTION,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json",
-
-            "Authorization":
-              `Bearer ${session.access_token}`
-          },
-
-          body: JSON.stringify({
-            action: "verify_payment",
-            reference: reference
-          })
-        }
-      );
-
-
-    const result =
-      await response.json();
-
-
-    console.log(
-      "Verify result:",
-      result
-    );
-
-
-    if (!response.ok) {
-
-      throw new Error(
-        result?.error ||
-        "Payment verification failed."
-      );
-
-    }
-
-
-    if (
-      !result.success ||
-      !result.credited
-    ) {
-
-      showMessage(
-        result?.message ||
-        "Payment has not been confirmed yet.",
-        "#cc6600"
-      );
-
-      return;
-
-    }
-
-
-    showMessage(
-      "Payment confirmed! Your wallet has been credited.",
-      "green"
-    );
-
-
-    await loadWallet();
-
-
-  } catch (error) {
-
-    console.error(
-      "Verify payment error:",
-      error
-    );
-
-    showMessage(
-      error.message ||
-      "Unable to verify payment.",
-      "red"
-    );
-
   }
 
+
+  const response =
+    await fetch(
+      `${SUPABASE_URL}/functions/v1/${VERIFY_FUNCTION}`,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+
+          "Authorization":
+            `Bearer ${accessToken}`
+        },
+
+        body: JSON.stringify({
+          action:
+            "verify_payment",
+
+          reference:
+            reference
+        })
+      }
+    );
+
+
+  const result =
+    await response.json();
+
+
+  console.log(
+    "Payment verification:",
+    result
+  );
+
+
+  if (!response.ok) {
+
+    throw new Error(
+      result?.error ||
+      "Payment verification failed"
+    );
+  }
+
+
+  return result;
 }
 
 
-/* =====================================================
-   CONTINUE PAYMENT
-===================================================== */
+/* ==========================================
+   PAYMENT
+========================================== */
 
 async function continuePayment() {
 
@@ -470,61 +433,56 @@ async function continuePayment() {
     );
 
 
+  const message =
+    document.getElementById(
+      "message"
+    );
+
+
   const button =
     document.getElementById(
       "continueButton"
     );
 
 
-  /* CHECK AMOUNT */
-
   if (
     !Number.isFinite(amount) ||
     amount < 100
   ) {
 
-    showMessage(
-      "Please enter at least ₦100.",
-      "red"
-    );
+    message.style.color =
+      "red";
+
+    message.textContent =
+      "Please enter at least ₦100.";
 
     return;
   }
 
-
-  /* CHECK PAYMENT METHOD */
 
   if (!payment) {
 
-    showMessage(
-      "Please select a payment method.",
-      "red"
-    );
+    message.style.color =
+      "red";
+
+    message.textContent =
+      "Please select a payment method.";
 
     return;
   }
 
 
-  /* CHECK LOGIN */
-
-  const {
-    data: {
-      user
-    },
-    error: userError
-  } =
-    await supabaseClient.auth.getUser();
+  const user =
+    await getCurrentUser();
 
 
-  if (
-    userError ||
-    !user
-  ) {
+  if (!user) {
 
-    showMessage(
-      "Please log in again.",
-      "red"
-    );
+    message.style.color =
+      "red";
+
+    message.textContent =
+      "Please log in again.";
 
     window.location.href =
       "login.html";
@@ -533,23 +491,20 @@ async function continuePayment() {
   }
 
 
-  /* CHECK SDK */
-
   if (
     !window.ZevPay ||
     !window.ZevPay.ZevPayCheckout
   ) {
 
-    showMessage(
-      "ZevPay checkout failed to load. Please refresh.",
-      "red"
-    );
+    message.style.color =
+      "red";
+
+    message.textContent =
+      "ZevPay checkout failed to load. Refresh the page.";
 
     return;
   }
 
-
-  /* NAIRA → KOBO */
 
   const amountKobo =
     Math.round(
@@ -557,18 +512,18 @@ async function continuePayment() {
     );
 
 
-  /* BUTTON */
-
-  button.disabled = true;
+  button.disabled =
+    true;
 
   button.textContent =
     "Opening checkout...";
 
 
-  showMessage(
-    "Opening ZevPay checkout...",
-    "#111"
-  );
+  message.style.color =
+    "#111";
+
+  message.textContent =
+    "Opening ZevPay checkout...";
 
 
   try {
@@ -588,26 +543,88 @@ async function continuePayment() {
       amount:
         amountKobo,
 
-      paymentMethods: [
-        payment
-      ],
+      /*
+        Match your dashboard payment methods.
+      */
+      paymentMethods:
+        payment.value === "bank"
+          ? ["bank"]
+          : ["payid"],
+
 
       onSuccess:
-        async function(reference) {
+        async (reference) => {
 
           console.log(
-            "ZevPay success:",
+            "ZevPay SUCCESS:",
             reference
           );
 
 
-          button.textContent =
-            "Verifying payment...";
+          message.style.color =
+            "#111";
+
+          message.textContent =
+            "Payment successful. Confirming payment...";
 
 
-          await verifyPayment(
-            reference
-          );
+          try {
+
+            /*
+              Server verifies the payment
+              before touching the wallet.
+            */
+
+            const result =
+              await verifyPayment(
+                reference
+              );
+
+
+            if (
+              result.success &&
+              result.credited
+            ) {
+
+              message.style.color =
+                "green";
+
+              message.textContent =
+                "₦" +
+                Number(amount).toLocaleString(
+                  "en-NG"
+                ) +
+                " added to your wallet successfully!";
+
+
+              await loadWallet();
+
+
+            } else {
+
+              message.style.color =
+                "#111";
+
+              message.textContent =
+                result.message ||
+                "Payment received. Your wallet is being updated...";
+            }
+
+
+          } catch (error) {
+
+            console.error(
+              "Verification error:",
+              error
+            );
+
+
+            message.style.color =
+              "red";
+
+            message.textContent =
+              "Payment was received, but wallet confirmation is still processing. Please refresh shortly.";
+          }
 
 
           button.disabled =
@@ -628,10 +645,11 @@ async function continuePayment() {
     );
 
 
-    showMessage(
-      "Unable to open ZevPay checkout. Please try again.",
-      "red"
-    );
+    message.style.color =
+      "red";
+
+    message.textContent =
+      "Unable to open ZevPay checkout. Please try again.";
 
 
     button.disabled =
@@ -644,13 +662,13 @@ async function continuePayment() {
 }
 
 
-/* =====================================================
+/* ==========================================
    START
-===================================================== */
+========================================== */
 
 loadWallet();
 
 </script>
 
 </body>
-</html>
+  </html>
