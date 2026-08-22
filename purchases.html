@@ -1,3317 +1,587 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin - Delight Vendor Logs</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8">
 
-<style>
-* {
-    box-sizing: border-box;
-}
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f3f3f3;
-    color: #111;
-}
+  <title>My Purchases - Delight Vendor Logs</title>
 
-header {
-    background: #111;
-    color: white;
-    padding: 20px 15px;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-}
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 
-header h1 {
-    margin: 0 0 12px;
-    font-size: 22px;
-}
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
 
-header p {
-    margin: 0;
-    font-size: 13px;
-    opacity: .8;
-}
-
-main {
-    max-width: 900px;
-    margin: auto;
-    padding: 15px;
-}
-
-h2 {
-    margin-top: 0;
-}
-
-section {
-    background: white;
-    padding: 18px;
-    margin-bottom: 18px;
-    border-radius: 15px;
-    box-shadow: 0 2px 9px rgba(0,0,0,.06);
-}
-
-input,
-select,
-textarea {
-    width: 100%;
-    padding: 13px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    font-size: 15px;
-    margin-top: 6px;
-    background: white;
-}
-
-textarea {
-    min-height: 110px;
-    resize: vertical;
-}
-
-label {
-    font-weight: bold;
-    font-size: 14px;
-}
-
-button {
-    border: none;
-    border-radius: 9px;
-    padding: 12px 15px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.black {
-    background: #111;
-    color: white;
-}
-
-.red {
-    background: #b00020;
-    color: white;
-}
-
-.green {
-    background: #087f23;
-    color: white;
-}
-
-.gray {
-    background: #e9e9e9;
-    color: #111;
-}
-
-.blue {
-    background: #1261a0;
-    color: white;
-}
-
-.message {
-    margin-top: 10px;
-    font-size: 14px;
-    font-weight: bold;
-}
-
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-}
-
-.stat {
-    background: #f5f5f5;
-    padding: 15px;
-    border-radius: 12px;
-}
-
-.stat strong {
-    display: block;
-    font-size: 25px;
-    margin-top: 5px;
-}
-
-.category-bar {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding-bottom: 8px;
-}
-
-.category-bar::-webkit-scrollbar {
-    height: 4px;
-}
-
-.category-btn {
-    flex: 0 0 auto;
-    background: #eee;
-    border-radius: 20px;
-}
-
-.category-btn.active {
-    background: #111;
-    color: white;
-}
-
-.item {
-    background: #fafafa;
-    border: 1px solid #e5e5e5;
-    border-radius: 13px;
-    padding: 15px;
-    margin-top: 12px;
-}
-
-.item h3 {
-    margin: 0 0 10px;
-}
-
-.item p {
-    margin: 7px 0;
-    font-size: 14px;
-}
-
-.item-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-    margin-top: 12px;
-}
-
-.image-preview {
-    width: 100%;
-    max-height: 190px;
-    object-fit: cover;
-    border-radius: 10px;
-    margin-top: 10px;
-    background: #eee;
-}
-
-.image-picker {
-    border: 2px dashed #bbb;
-    border-radius: 12px;
-    padding: 15px;
-    text-align: center;
-    margin-top: 6px;
-}
-
-.image-picker button {
-    margin-top: 5px;
-}
-
-#imagePreview {
-    width: 100%;
-    max-height: 220px;
-    object-fit: cover;
-    border-radius: 12px;
-    margin-top: 10px;
-    display: none;
-}
-
-.badge {
-    display: inline-block;
-    padding: 5px 9px;
-    border-radius: 7px;
-    background: #eee;
-    font-size: 12px;
-    font-weight: bold;
-    margin: 3px 2px 3px 0;
-}
-
-.available {
-    background: #dff6e4;
-    color: #087f23;
-}
-
-.sold {
-    background: #ffe1e1;
-    color: #a00000;
-}
-
-.never {
-    background: #e4edff;
-    color: #174ea6;
-}
-
-.search {
-    margin-bottom: 10px;
-}
-
-.hidden {
-    display: none !important;
-}
-
-.two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-
-.top-buttons {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 12px;
-}
-
-.form-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-
-.form-box {
-    background: #f8f8f8;
-    padding: 15px;
-    border-radius: 12px;
-}
-
-.loading {
-    text-align: center;
-    padding: 20px;
-    color: #777;
-}
-
-.error {
-    background: #ffe5e5;
-    color: #a00000;
-    padding: 14px;
-    border-radius: 10px;
-    margin-top: 10px;
-}
-
-.success {
-    background: #e3f8e8;
-    color: #087f23;
-    padding: 14px;
-    border-radius: 10px;
-    margin-top: 10px;
-}
-
-@media (max-width: 600px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .two-col {
-        grid-template-columns: 1fr;
-    }
-
-    .form-buttons {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-</style>
 </head>
 
 <body>
 
 <header>
 
-<h1>⚡ Delight Vendor Logs — Admin</h1>
-
-<p id="adminStatus">
-Checking administrator access...
-</p>
-
-<div class="top-buttons">
-
-<button
-    class="gray"
-    onclick="refreshEverything()"
->
-🔄 Refresh Everything
-</button>
-
-<button
-    class="gray"
-    onclick="location.href='dashboard.html'"
->
-🏠 Customer Dashboard
-</button>
-
-</div>
+  <h1>
+    My Purchases
+  </h1>
 
 </header>
 
 <main>
 
-<section>
+  <h2>
+    Purchase History
+  </h2>
 
-<h2>📊 Store Overview</h2>
+  <div id="purchases">
 
-<div class="dashboard-grid">
+    <p>
+      Loading purchases...
+    </p>
 
-<div class="stat">
-Products
-<strong id="productCount">0</strong>
-</div>
+  </div>
 
-<div class="stat">
-Available Inventory
-<strong id="inventoryCount">0</strong>
-</div>
+  <br>
 
-<div class="stat">
-Pending Orders
-<strong id="pendingCount">0</strong>
-</div>
-
-<div class="stat">
-Completed Orders
-<strong id="completedCount">0</strong>
-</div>
-
-<div class="stat">
-Users
-<strong id="userCount">0</strong>
-</div>
-
-<div class="stat">
-Never Sell Out
-<strong id="neverSellOutCount">0</strong>
-</div>
-
-</div>
-
-<p
-    id="refreshMessage"
-    class="message"
-></p>
-
-</section>
-
-<section>
-
-<h2>📂 Service Categories</h2>
-
-<p>
-Click a category to see only the services inside it.
-</p>
-
-<div
-    id="categoryBar"
-    class="category-bar"
-></div>
-
-</section>
-
-<!-- ADD SERVICE + ADD INVENTORY BESIDE EACH OTHER -->
-
-<section>
-
-<div class="form-buttons">
-
-<div class="form-box">
-
-<h2>➕ Add Service</h2>
-
-<label>
-Service Name
-</label>
-
-<input
-    id="productName"
-    placeholder="Example: Facebook Working Log"
->
-
-<br><br>
-
-<label>
-Price
-</label>
-
-<input
-    id="productPrice"
-    type="number"
-    min="0"
-    step="0.01"
-    placeholder="Enter price"
->
-
-<br><br>
-
-<label>
-Category
-</label>
-
-<select id="productCategory"></select>
-
-<br><br>
-
-<label>
-Description
-</label>
-
-<textarea
-    id="productDescription"
-    placeholder="Describe this service..."
-></textarea>
-
-<br><br>
-
-<label>
-Product Image
-</label>
-
-<div class="image-picker">
-
-<input
-    id="productImageFile"
-    type="file"
-    accept="image/*"
-    style="display:none"
-    onchange="previewProductImage(event)"
->
-
-<button
+  <button
     type="button"
-    class="blue"
-    onclick="
-        document
-        .getElementById('productImageFile')
-        .click()
-    "
->
-📷 Choose Image
-</button>
+    onclick="window.location.href='dashboard.html'"
+  >
 
-<p
-    id="imageName"
-    style="font-size:13px;color:#666;"
->
-No image selected
-</p>
+    🏠 Back to Dashboard
 
-<img id="imagePreview">
-
-</div>
-
-<input
-    id="productImage"
-    type="hidden"
->
-
-<br>
-
-<div class="two-col">
-
-<div>
-
-<label>
-Stock
-</label>
-
-<input
-    id="productStock"
-    type="number"
-    min="0"
-    value="0"
->
-
-</div>
-
-<div>
-
-<label>
-Status
-</label>
-
-<select id="productStatus">
-
-<option value="Available">
-Available
-</option>
-
-<option value="Unavailable">
-Unavailable
-</option>
-
-</select>
-
-</div>
-
-</div>
-
-<br>
-
-<label>
-
-<input
-    id="trackStock"
-    type="checkbox"
-    checked
-    style="width:auto;"
->
-
-Track stock
-
-</label>
-
-<br><br>
-
-<button
-    class="black"
-    onclick="addProduct()"
->
-➕ Add Service
-</button>
-
-<p
-    id="productMessage"
-    class="message"
-></p>
-
-</div>
-
-<div class="form-box">
-
-<h2>📦 Add Inventory</h2>
-
-<label>
-Choose Service
-</label>
-
-<select
-    id="inventoryProduct"
->
-<option value="">
-Loading services...
-</option>
-</select>
-
-<br><br>
-
-<label>
-Delivery Information
-</label>
-
-<textarea
-    id="inventoryData"
-    placeholder="Enter inventory / delivery information"
-></textarea>
-
-<br><br>
-
-<button
-    class="black"
-    onclick="addInventory()"
->
-➕ Add Inventory
-</button>
-
-<p
-    id="inventoryMessage"
-    class="message"
-></p>
-
-</div>
-
-</div>
-
-</section>
-
-<section>
-
-<h2>🛍️ Product Management</h2>
-
-<input
-    id="productSearch"
-    class="search"
-    placeholder="🔍 Search service..."
-    oninput="renderProducts()"
->
-
-<div id="productsList">
-
-<div class="loading">
-Loading products...
-</div>
-
-</div>
-
-</section>
-
-<section>
-
-<h2>📦 Inventory Management</h2>
-
-<input
-    id="inventorySearch"
-    class="search"
-    placeholder="🔍 Search inventory..."
-    oninput="renderInventory()"
->
-
-<div id="inventoryList">
-
-<div class="loading">
-Loading inventory...
-</div>
-
-</div>
-
-</section>
-
-<section>
-
-<h2>🧾 Orders Management</h2>
-
-<input
-    id="orderSearch"
-    class="search"
-    placeholder="🔍 Search orders..."
-    oninput="renderOrders()"
->
-
-<div id="ordersList">
-
-<div class="loading">
-Loading orders...
-</div>
-
-</div>
-
-</section>
-
-<section>
-
-<h2>👥 Manage Users</h2>
-
-<input
-    id="userSearch"
-    class="search"
-    placeholder="🔍 Search user..."
-    oninput="renderUsers()"
->
-
-<div id="usersList">
-
-<div class="loading">
-Loading users...
-</div>
-
-</div>
-
-</section>
-
-<br>
-
-<button
-    class="black"
-    onclick="location.href='dashboard.html'"
->
-🏠 Back to Customer Dashboard
-</button>
+  </button>
 
 </main>
 
 <script>
 
+/* ========================================
+   SUPABASE
+======================================== */
+
 const SUPABASE_URL =
-"https://hkfhehbhmucymusaytoe.supabase.co";
+  "https://hkfhehbhmucymusaytoe.supabase.co";
 
 const SUPABASE_KEY =
-"sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
 const supabaseClient =
-window.supabase.createClient(
+  window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
-);
+  );
 
-/*
-    IMPORTANT:
-    Keep these category names EXACTLY the same
-    as the dashboard categories.
-*/
 
-const CATEGORIES = [
-    "All Social Logs",
-    "Working Pictures",
-    "Formats",
-    "Working Links",
-    "Voice Cloner/Fake Video Call",
-    "All Countries Number",
-    "Streaming & More"
-];
+/* ========================================
+   LOAD PURCHASES
+======================================== */
 
-const CATEGORY_SYMBOLS = {
-    "All Social Logs": "📱",
-    "Working Pictures": "🖼️",
-    "Formats": "📄",
-    "Working Links": "🔗",
-    "Voice Cloner/Fake Video Call": "🎙️",
-    "All Countries Number": "🌍",
-    "Streaming & More": "📺"
-};
+async function loadPurchases() {
 
-let products = [];
-let inventory = [];
-let orders = [];
-let users = [];
-
-let selectedAdminCategory = "All Social Logs";
-
-let editingProductId = null;
-
-let editingInventoryId = null;
-
-function escapeHTML(value) {
-
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
-
-function money(value) {
-
-    return Number(value || 0)
-        .toLocaleString(
-            "en-NG",
-            {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }
-        );
-
-}
-
-function getCategorySymbol(category) {
-
-    return CATEGORY_SYMBOLS[category] || "📁";
-
-}
-
-function getInventoryForProduct(productId) {
-
-    return inventory.filter(
-        item =>
-            Number(item.product_id) ===
-            Number(productId)
+  const container =
+    document.getElementById(
+      "purchases"
     );
 
-}
+  container.innerHTML =
+    "<p>Loading purchases...</p>";
 
-function getAvailableInventoryForProduct(productId) {
 
-    return getInventoryForProduct(
-        productId
-    ).filter(
-        item =>
-            String(
-                item.status || "available"
-            ).toLowerCase() !== "sold"
-    );
+  /* ======================================
+     CHECK LOGIN
+  ====================================== */
 
-}
+  const {
+    data: {
+      user
+    },
+    error: userError
+  } =
+    await supabaseClient.auth.getUser();
 
-function hasInventory(productId) {
 
-    return getInventoryForProduct(
-        productId
-    ).length > 0;
+  if (
+    userError ||
+    !user
+  ) {
 
-}
+    window.location.href =
+      "login.html";
 
-function inventoryLabel(productId) {
-
-    const items =
-        getInventoryForProduct(
-            productId
-        );
-
-    if (!items.length) {
-
-        return `
-            <span class="badge sold">
-                ⚠️ No Inventory Yet
-            </span>
-        `;
-
-    }
-
-    const available =
-        getAvailableInventoryForProduct(
-            productId
-        ).length;
-
-    return `
-        <span class="badge available">
-            ✓ Inventory Added (${available})
-        </span>
-    `;
-
-}
-
-function renderCategoryBar() {
-
-    const bar =
-        document.getElementById(
-            "categoryBar"
-        );
-
-    bar.innerHTML = "";
-
-    CATEGORIES.forEach(
-        category => {
-
-            const button =
-                document.createElement(
-                    "button"
-                );
-
-            button.type =
-                "button";
-
-            button.className =
-                "category-btn";
-
-            if (
-                selectedAdminCategory ===
-                category
-            ) {
-
-                button.classList.add(
-                    "active"
-                );
-
-            }
-
-            button.textContent =
-                getCategorySymbol(
-                    category
-                ) +
-                " " +
-                category;
-
-            button.onclick =
-                function() {
-
-                    selectedAdminCategory =
-                        category;
-
-                    document
-                        .querySelectorAll(
-                            ".category-btn"
-                        )
-                        .forEach(
-                            btn =>
-                                btn.classList
-                                    .remove(
-                                        "active"
-                                    )
-                        );
-
-                    button.classList.add(
-                        "active"
-                    );
-
-                    renderProducts();
-
-                };
-
-            bar.appendChild(
-                button
-            );
-
-        }
-    );
-
-}
-
-async function checkAdmin() {
-
-    try {
-
-        const {
-            data: {
-                session
-            }
-        } =
-        await supabaseClient
-            .auth
-            .getSession();
-
-        if (!session) {
-
-            document.getElementById(
-                "adminStatus"
-            ).textContent =
-                "⚠️ Not signed in";
-
-            return false;
-        }
-
-        document.getElementById(
-            "adminStatus"
-        ).textContent =
-            "✅ Administrator access active";
-
-        return true;
-
-    } catch (error) {
-
-        document.getElementById(
-            "adminStatus"
-        ).textContent =
-            "⚠️ Unable to check access";
-
-        return false;
-
-    }
-
-}
-
-async function loadProducts() {
-
-    const container =
-        document.getElementById(
-            "productsList"
-        );
-
-    container.innerHTML =
-        '<div class="loading">' +
-        'Loading products...' +
-        '</div>';
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
-        .from("Product")
-        .select("*")
-        .order(
-            "id",
-            {
-                ascending: false
-            }
-        );
-
-    if (error) {
-
-        container.innerHTML =
-            '<div class="error">' +
-            '❌ Products could not be loaded.<br><br>' +
-            escapeHTML(
-                error.message
-            ) +
-            '</div>';
-
-        products = [];
-
-        return;
-
-    }
-
-    products =
-        data || [];
-
-    renderProducts();
-
-    loadInventoryProductDropdown();
-
-}
-
-async function loadInventory() {
-
-    const container =
-        document.getElementById(
-            "inventoryList"
-        );
-
-    container.innerHTML =
-        '<div class="loading">' +
-        'Loading inventory...' +
-        '</div>';
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
-        .from("product_inventory")
-        .select("*")
-        .order(
-            "id",
-            {
-                ascending: false
-            }
-        );
-
-    if (error) {
-
-        container.innerHTML =
-            '<div class="error">' +
-            '❌ Inventory could not be loaded.<br><br>' +
-            escapeHTML(
-                error.message
-            ) +
-            '</div>';
-
-        inventory = [];
-
-        return;
-
-    }
-
-    inventory =
-        data || [];
-
-    renderInventory();
-
-    renderProducts();
-
-    loadInventoryProductDropdown();
-
-}
-
-function renderProducts() {
-
-    const container =
-        document.getElementById(
-            "productsList"
-        );
-
-    const search =
-        (
-            document.getElementById(
-                "productSearch"
-            ).value || ""
-        )
-        .toLowerCase()
-        .trim();
-
-    let list =
-        [...products];
-
-    list =
-        list.filter(
-            product =>
-                String(
-                    product.category || ""
-                ).toLowerCase() ===
-                String(
-                    selectedAdminCategory
-                ).toLowerCase()
-        );
-
-    if (search) {
-
-        list =
-            list.filter(
-                product => {
-
-                    return (
-
-                        String(
-                            product.name || ""
-                        )
-                        .toLowerCase()
-                        .includes(search)
-
-                        ||
-
-                        String(
-                            product.description || ""
-                        )
-                        .toLowerCase()
-                        .includes(search)
-
-                        ||
-
-                        String(
-                            product.category || ""
-                        )
-                        .toLowerCase()
-                        .includes(search)
-
-                    );
-
-                }
-            );
-
-    }
-
-    if (!list.length) {
-
-        container.innerHTML =
-            '<div class="loading">' +
-            'No services found in this category.' +
-            '</div>';
-
-        return;
-
-    }
-
-    container.innerHTML = "";
-
-    list.forEach(
-        product => {
-
-            const availableInventory =
-                getAvailableInventoryForProduct(
-                    product.id
-                ).length;
-
-            const totalInventory =
-                getInventoryForProduct(
-                    product.id
-                ).length;
-
-            const trackStock =
-                product.track_stock !== false;
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-            card.className =
-                "item";
-
-            card.innerHTML = `
-
-                <h3>
-                    ${getCategorySymbol(
-                        product.category
-                    )}
-                    ${escapeHTML(
-                        product.name ||
-                        "Unnamed Service"
-                    )}
-                </h3>
-
-                <p>
-                    <strong>Category:</strong>
-                    ${escapeHTML(
-                        product.category ||
-                        ""
-                    )}
-                </p>
-
-                <p>
-                    <strong>Price:</strong>
-                    ₦${money(
-                        product.price
-                    )}
-                </p>
-
-                <p>
-                    <strong>Description:</strong>
-                    ${escapeHTML(
-                        product.description ||
-                        "No description"
-                    )}
-                </p>
-
-                ${
-                    product.image_url
-                    ?
-                    `
-                    <img
-                        class="image-preview"
-                        src="${escapeHTML(
-                            product.image_url
-                        )}"
-                        onerror="
-                            this.style.display='none'
-                        "
-                    >
-                    `
-                    :
-                    ""
-                }
-
-                <p>
-                    <strong>Stock:</strong>
-                    ${escapeHTML(
-                        product.stock ?? 0
-                    )}
-                </p>
-
-                <p>
-                    <strong>Inventory:</strong>
-
-                    ${inventoryLabel(
-                        product.id
-                    )}
-
-                </p>
-
-                <p>
-                    <strong>Total Inventory:</strong>
-                    ${totalInventory}
-                </p>
-
-                <p>
-                    <strong>Available Inventory:</strong>
-                    ${availableInventory}
-                </p>
-
-                <p>
-                    <strong>Status:</strong>
-
-                    <span class="badge ${
-                        String(
-                            product.status ||
-                            "Available"
-                        ).toLowerCase() ===
-                        "available"
-                        ?
-                        "available"
-                        :
-                        "sold"
-                    }">
-
-                        ${escapeHTML(
-                            product.status ||
-                            "Available"
-                        )}
-
-                    </span>
-
-                </p>
-
-                <p>
-                    <strong>Stock Tracking:</strong>
-
-                    <span class="badge ${
-                        trackStock
-                        ?
-                        "available"
-                        :
-                        "never"
-                    }">
-
-                        ${
-                            trackStock
-                            ?
-                            "ON"
-                            :
-                            "NEVER SELL OUT"
-                        }
-
-                    </span>
-
-                </p>
-
-                <div class="item-actions">
-
-                    <button
-                        class="blue"
-                        onclick="
-                            editProduct(
-                                ${Number(
-                                    product.id
-                                )}
-                            )
-                        "
-                    >
-                        ✏️ Edit Everything
-                    </button>
-
-                    <button
-                        class="gray"
-                        onclick="
-                            toggleStockMode(
-                                ${Number(
-                                    product.id
-                                )}
-                            )
-                        "
-                    >
-                        ${
-                            trackStock
-                            ?
-                            "🔓 Make Never Sell Out"
-                            :
-                            "📦 Turn Stock Tracking On"
-                        }
-                    </button>
-
-                    <button
-                        class="red"
-                        onclick="
-                            deleteProduct(
-                                ${Number(
-                                    product.id
-                                )}
-                            )
-                        "
-                    >
-                        🗑️ Delete
-                    </button>
-
-                </div>
-
-            `;
-
-            container.appendChild(
-                card
-            );
-
-        }
-    );
-
-}
-
-function loadInventoryProductDropdown() {
-
-    const dropdown =
-        document.getElementById(
-            "inventoryProduct"
-        );
-
-    if (!dropdown) {
-        return;
-    }
-
-    dropdown.innerHTML =
-        '<option value="">' +
-        'Choose service' +
-        '</option>';
-
-    products.forEach(
-        product => {
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-            option.value =
-                product.id;
-
-            const count =
-                getInventoryForProduct(
-                    product.id
-                ).length;
-
-            if (count > 0) {
-
-                option.textContent =
-                    "✓ " +
-                    product.name +
-                    " — Inventory Added (" +
-                    count +
-                    ")";
-
-            } else {
-
-                option.textContent =
-                    product.name +
-                    " — No Inventory Yet";
-
-            }
-
-            dropdown.appendChild(
-                option
-            );
-
-        }
-    );
-
-}
-
-async function addProduct() {
-
-    const message =
-        document.getElementById(
-            "productMessage"
-        );
-
-    const name =
-        document.getElementById(
-            "productName"
-        ).value.trim();
-
-    const price =
-        Number(
-            document.getElementById(
-                "productPrice"
-            ).value
-        );
-
-    const category =
-        document.getElementById(
-            "productCategory"
-        ).value;
-
-    const description =
-        document.getElementById(
-            "productDescription"
-        ).value.trim();
-
-    const image_url =
-        document.getElementById(
-            "productImage"
-        ).value;
-
-    const stock =
-        Number(
-            document.getElementById(
-                "productStock"
-            ).value
-        );
-
-    const status =
-        document.getElementById(
-            "productStatus"
-        ).value;
-
-    const track_stock =
-        document.getElementById(
-            "trackStock"
-        ).checked;
-
-    if (!name) {
-
-        message.textContent =
-            "❌ Enter a service name.";
-
-        return;
-
-    }
-
-    if (
-        isNaN(price) ||
-        price < 0
-    ) {
-
-        message.textContent =
-            "❌ Enter a valid price.";
-
-        return;
-
-    }
-
-    if (
-        !CATEGORIES.includes(
-            category
-        )
-    ) {
-
-        message.textContent =
-            "❌ Select a valid category.";
-
-        return;
-
-    }
-
-    if (
-        isNaN(stock) ||
-        stock < 0
-    ) {
-
-        message.textContent =
-            "❌ Enter a valid stock number.";
-
-        return;
-
-    }
-
-    message.textContent =
-        "Adding service...";
-
-    const {
-        error
-    } =
-    await supabaseClient
-        .from("Product")
-        .insert([
-            {
-                name,
-                price,
-                category,
-                description,
-                image_url,
-                stock,
-                status,
-                track_stock
-            }
-        ]);
-
-    if (error) {
-
-        message.textContent =
-            "❌ " +
-            error.message;
-
-        return;
-
-    }
-
-    message.textContent =
-        "✅ Service added successfully.";
-
-    document.getElementById(
-        "productName"
-    ).value = "";
-
-    document.getElementById(
-        "productPrice"
-    ).value = "";
-
-    document.getElementById(
-        "productDescription"
-    ).value = "";
-
-    document.getElementById(
-        "productImage"
-    ).value = "";
-
-    document.getElementById(
-        "productStock"
-    ).value = "0";
-
-    document.getElementById(
-        "trackStock"
-    ).checked = true;
-
-    document.getElementById(
-        "productImageFile"
-    ).value = "";
-
-    document.getElementById(
-        "imageName"
-    ).textContent =
-        "No image selected";
-
-    document.getElementById(
-        "imagePreview"
-    ).style.display =
-        "none";
-
-    await loadProducts();
-
-    await updateStatistics();
-
-}
-
-async function editProduct(id) {
-
-    const product =
-        products.find(
-            item =>
-                Number(item.id) ===
-                Number(id)
-        );
-
-    if (!product) {
-
-        alert(
-            "❌ Product not found."
-        );
-
-        return;
-
-    }
-
-    const name =
-        prompt(
-            "Service Name:",
-            product.name || ""
-        );
-
-    if (name === null) {
-        return;
-    }
-
-    const price =
-        prompt(
-            "Price:",
-            product.price ?? 0
-        );
-
-    if (price === null) {
-        return;
-    }
-
-    const category =
-        prompt(
-            "Category:\n\n" +
-            CATEGORIES.join("\n"),
-            product.category || ""
-        );
-
-    if (category === null) {
-        return;
-    }
-
-    const description =
-        prompt(
-            "Description:",
-            product.description || ""
-        );
-
-    if (description === null) {
-        return;
-    }
-
-    const image_url =
-        prompt(
-            "Picture / Image URL:",
-            product.image_url || ""
-        );
-
-    if (image_url === null) {
-        return;
-    }
-
-    const stock =
-        prompt(
-            "Stock:",
-            product.stock ?? 0
-        );
-
-    if (stock === null) {
-        return;
-    }
-
-    const status =
-        prompt(
-            "Status:",
-            product.status || "Available"
-        );
-
-    if (status === null) {
-        return;
-    }
-
-    const track_stock =
-        confirm(
-            "Press OK to keep stock tracking ON.\n\n" +
-            "Press Cancel to make this service NEVER SELL OUT."
-        );
-
-    if (
-        !name.trim() ||
-        isNaN(Number(price)) ||
-        isNaN(Number(stock))
-    ) {
-
-        alert(
-            "❌ Please enter valid product information."
-        );
-
-        return;
-
-    }
-
-    if (
-        !CATEGORIES.includes(
-            category
-        )
-    ) {
-
-        alert(
-            "❌ Invalid category."
-        );
-
-        return;
-
-    }
-
-    const {
-        error
-    } =
-    await supabaseClient
-        .from("Product")
-        .update({
-            name:
-                name.trim(),
-
-            price:
-                Number(price),
-
-            category:
-                category,
-
-            description:
-                description.trim(),
-
-            image_url:
-                image_url.trim(),
-
-            stock:
-                Number(stock),
-
-            status:
-                status.trim() ||
-                "Available",
-
-            track_stock:
-                track_stock
-        })
-        .eq(
-            "id",
-            id
-        );
-
-    if (error) {
-
-        alert(
-            "❌ " +
-            error.message
-        );
-
-        return;
-
-    }
-
-    alert(
-        "✅ Product updated successfully."
-    );
-
-    await loadProducts();
-
-    await updateStatistics();
-
-}
-
-async function toggleStockMode(id) {
-
-    const product =
-        products.find(
-            item =>
-                Number(item.id) ===
-                Number(id)
-        );
-
-    if (!product) {
-        return;
-    }
-
-    const currentlyTracking =
-        product.track_stock !== false;
-
-    const newValue =
-        !currentlyTracking;
-
-    if (
-        !confirm(
-            newValue
-            ?
-            "Turn stock tracking ON?"
-            :
-            "Make this service NEVER SELL OUT?"
-        )
-    ) {
-
-        return;
-
-    }
-
-    const {
-        error
-    } =
-    await supabaseClient
-        .from("Product")
-        .update({
-            track_stock:
-                newValue
-        })
-        .eq(
-            "id",
-            id
-        );
-
-    if (error) {
-
-        alert(
-            "❌ " +
-            error.message
-        );
-
-        return;
-
-    }
-
-    await loadProducts();
-
-    await updateStatistics();
-
-}
-
-async function deleteProduct(id) {
-
-    if (
-        !confirm(
-            "Are you sure you want to delete this service?"
-        )
-    ) {
-
-        return;
-
-    }
-
-    const {
-        error
-    } =
-    await supabaseClient
-        .from("Product")
-        .delete()
-        .eq(
-            "id",
-            id
-        );
-
-    if (error) {
-
-        alert(
-            "❌ " +
-            error.message
-        );
-
-        return;
-
-    }
-
-    alert(
-        "✅ Service deleted."
-    );
-
-    await loadProducts();
-
-    await loadInventory();
-
-    await updateStatistics();
-
-}
-
-async function addInventory() {
-
-    const message =
-        document.getElementById(
-            "inventoryMessage"
-        );
-
-    const product_id =
-        Number(
-            document.getElementById(
-                "inventoryProduct"
-            ).value
-        );
-
-    const content =
-        document.getElementById(
-            "inventoryData"
-        ).value.trim();
-
-    if (!product_id) {
-
-        message.textContent =
-            "❌ Choose a service.";
-
-        return;
-
-    }
-
-    if (!content) {
-
-        message.textContent =
-            "❌ Enter inventory information.";
-
-        return;
-
-    }
-
-    message.textContent =
-        "Adding inventory...";
-
-    const {
-        error
-    } =
-    await supabaseClient
-        .from("product_inventory")
-        .insert([
-            {
-                product_id,
-                content,
-                status:
-                    "available"
-            }
-        ]);
-
-    if (error) {
-
-        message.textContent =
-            "❌ " +
-            error.message;
-
-        return;
-
-    }
-
-    message.textContent =
-        "✅ Inventory added successfully.";
-
-    document.getElementById(
-        "inventoryData"
-    ).value = "";
-
-    await loadInventory();
-
-    await updateStatistics();
+    return;
 
   }
 
-  async function loadInventory() {
 
-    const container =
-        document.getElementById(
-            "inventoryList"
-        );
+  /* ======================================
+     LOAD USER ORDERS
+  ====================================== */
 
-    container.innerHTML =
-        '<div class="loading">' +
-        'Loading inventory...' +
-        '</div>';
-
-    const {
-        data,
-        error
-    } =
+  const {
+    data: orders,
+    error
+  } =
     await supabaseClient
-        .from("product_inventory")
-        .select("*")
-        .order(
-            "id",
-            {
-                ascending: false
-            }
-        );
-
-    if (error) {
-
-        container.innerHTML =
-            '<div class="error">' +
-            '❌ Inventory could not be loaded.<br><br>' +
-            escapeHTML(
-                error.message
-            ) +
-            '</div>';
-
-        inventory = [];
-
-        return;
-    }
-
-    inventory =
-        data || [];
-
-    renderInventory();
-
-    renderProducts();
-
-    loadInventoryProductDropdown();
-
-}
-
-function renderInventory() {
-
-    const container =
-        document.getElementById(
-            "inventoryList"
-        );
-
-    const search =
-        (
-            document.getElementById(
-                "inventorySearch"
-            ).value || ""
-        )
-        .toLowerCase()
-        .trim();
-
-    let list =
-        [...inventory];
-
-    if (search) {
-
-        list =
-            list.filter(
-                item => {
-
-                    const product =
-                        products.find(
-                            product =>
-                                Number(
-                                    product.id
-                                ) ===
-                                Number(
-                                    item.product_id
-                                )
-                        );
-
-                    const productName =
-                        product?.name || "";
-
-                    return (
-
-                        productName
-                            .toLowerCase()
-                            .includes(search)
-
-                        ||
-
-                        String(
-                            item.content || ""
-                        )
-                        .toLowerCase()
-                        .includes(search)
-
-                        ||
-
-                        String(
-                            item.status || ""
-                        )
-                        .toLowerCase()
-                        .includes(search)
-
-                        ||
-
-                        String(
-                            item.id || ""
-                        )
-                        .includes(search)
-
-                    );
-
-                }
-            );
-
-    }
-
-    if (!list.length) {
-
-        container.innerHTML =
-            '<div class="loading">' +
-            'No inventory found.' +
-            '</div>';
-
-        return;
-
-    }
-
-    container.innerHTML = "";
-
-    list.forEach(
-        item => {
-
-            const product =
-                products.find(
-                    product =>
-                        Number(
-                            product.id
-                        ) ===
-                        Number(
-                            item.product_id
-                        )
-                );
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-            card.className =
-                "item";
-
-            const status =
-                String(
-                    item.status ||
-                    "available"
-                ).toLowerCase();
-
-            card.innerHTML = `
-
-                <h3>
-                    📦 Inventory #${escapeHTML(
-                        item.id
-                    )}
-                </h3>
-
-                <p>
-
-                    <strong>
-                        Service:
-                    </strong>
-
-                    ${escapeHTML(
-                        product?.name ||
-                        "Unknown Service"
-                    )}
-
-                </p>
-
-                <p>
-
-                    <strong>
-                        Category:
-                    </strong>
-
-                    ${getCategorySymbol(
-                        product?.category
-                    )}
-
-                    ${escapeHTML(
-                        product?.category ||
-                        "Unknown"
-                    )}
-
-                </p>
-
-                <p>
-
-                    <strong>
-                        Product ID:
-                    </strong>
-
-                    ${escapeHTML(
-                        item.product_id
-                    )}
-
-                </p>
-
-                <p>
-
-                    <strong>
-                        Inventory:
-                    </strong>
-
-                    <span class="badge available">
-                        ✓ Inventory Added
-                    </span>
-
-                </p>
-
-                <p>
-
-                    <strong>
-                        Status:
-                    </strong>
-
-                    <span class="badge ${
-                        status === "sold"
-                        ?
-                        "sold"
-                        :
-                        "available"
-                    }">
-
-                        ${escapeHTML(
-                            item.status ||
-                            "available"
-                        )}
-
-                    </span>
-
-                </p>
-
-                <p>
-
-                    <strong>
-                        Delivery Information:
-                    </strong>
-
-                </p>
-
-                <div
-                    style="
-                        background:#eee;
-                        padding:12px;
-                        border-radius:9px;
-                        white-space:pre-wrap;
-                        word-break:break-word;
-                    "
-                >
-
-                    ${escapeHTML(
-                        item.content
-                    )}
-
-                </div>
-
-                <div class="item-actions">
-
-                    <button
-                        class="blue"
-                        onclick="
-                            editInventory(
-                                ${Number(
-                                    item.id
-                                )}
-                            )
-                        "
-                    >
-                        ✏️ Edit Inventory
-                    </button>
-
-                    ${
-                        product
-                        ?
-                        `
-                        <button
-                            class="gray"
-                            onclick="
-                                editProduct(
-                                    ${Number(
-                                        product.id
-                                    )}
-                                )
-                            "
-                        >
-                            ✏️ Edit Service
-                        </button>
-                        `
-                        :
-                        ""
-                    }
-
-                    <button
-                        class="red"
-                        onclick="
-                            deleteInventory(
-                                ${Number(
-                                    item.id
-                                )}
-                            )
-                        "
-                    >
-                        🗑️ Delete
-                    </button>
-
-                </div>
-
-            `;
-
-            container.appendChild(
-                card
-            );
-
+      .from("orders")
+      .select(
+        "id, user_id, product_id, amount, status, delivery_data, cancel_allowed, created_at, updated_at"
+      )
+      .eq(
+        "user_id",
+        user.id
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
         }
+      );
+
+
+  /* ======================================
+     DATABASE ERROR
+  ====================================== */
+
+  if (error) {
+
+    console.error(
+      "Purchases error:",
+      error
     );
 
-}
+    container.innerHTML = `
 
-async function editInventory(id) {
+      <div
+        style="
+          background:white;
+          padding:20px;
+          border-radius:12px;
+          text-align:center;
+        "
+      >
 
-    const item =
-        inventory.find(
-            inventoryItem =>
-                Number(
-                    inventoryItem.id
-                ) ===
-                Number(id)
+        <h3>
+          Unable to load purchases
+        </h3>
+
+        <p>
+          ${escapeHTML(
+            error.message ||
+            "Unknown error"
+          )}
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  /* ======================================
+     NO PURCHASES
+  ====================================== */
+
+  if (
+    !orders ||
+    orders.length === 0
+  ) {
+
+    container.innerHTML = `
+
+      <div
+        style="
+          background:white;
+          padding:20px;
+          border-radius:12px;
+          text-align:center;
+        "
+      >
+
+        <h3>
+          No Purchases Yet
+        </h3>
+
+        <p>
+          You haven't purchased anything yet.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  /* ======================================
+     CLEAR LOADING
+  ====================================== */
+
+  container.innerHTML =
+    "";
+
+
+  /* ======================================
+     DISPLAY ORDERS
+  ====================================== */
+
+  orders.forEach(
+    function(order) {
+
+      const box =
+        document.createElement(
+          "div"
         );
 
-    if (!item) {
 
-        alert(
-            "❌ Inventory not found."
-        );
+      box.style.background =
+        "white";
 
-        return;
+      box.style.padding =
+        "18px";
 
-    }
+      box.style.margin =
+        "12px 0";
 
-    const product =
-        products.find(
-            product =>
-                Number(
-                    product.id
-                ) ===
-                Number(
-                    item.product_id
-                )
-        );
+      box.style.borderRadius =
+        "12px";
 
-    const currentProductName =
-        product?.name ||
-        "Unknown Service";
+      box.style.textAlign =
+        "left";
 
-    const newProductId =
-        prompt(
-            "Service/Product ID:\n\n" +
-            "Current service: " +
-            currentProductName +
-            "\n\n" +
-            "Enter the new service ID:",
-            item.product_id
-        );
+      box.style.boxShadow =
+        "0 2px 8px rgba(0,0,0,0.08)";
 
-    if (
-        newProductId === null
-    ) {
 
-        return;
+      /* ==================================
+         AMOUNT
+      ================================== */
 
-    }
-
-    const productId =
+      const amount =
         Number(
-            newProductId
+          order.amount || 0
+        ).toLocaleString(
+          "en-NG",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }
         );
 
-    const selectedProduct =
-        products.find(
-            product =>
-                Number(
-                    product.id
-                ) ===
-                productId
-        );
 
-    if (!selectedProduct) {
+      /* ==================================
+         DATE
+      ================================== */
 
-        alert(
-            "❌ That service ID does not exist."
-        );
+      const date =
+        order.created_at
+          ? new Date(
+              order.created_at
+            ).toLocaleString(
+              "en-NG"
+            )
+          : "Date unavailable";
 
-        return;
+
+      /* ==================================
+         STATUS
+      ================================== */
+
+      const status =
+        String(
+          order.status ||
+          "pending"
+        ).toLowerCase();
+
+
+      let statusText =
+        "⏳ Pending";
+
+
+      if (
+        status === "delivered"
+      ) {
+
+        statusText =
+          "✅ Delivered";
+
+      }
+
+
+      if (
+        status === "completed"
+      ) {
+
+        statusText =
+          "✅ Completed";
+
+      }
+
+
+      if (
+        status === "cancelled"
+      ) {
+
+        statusText =
+          "❌ Cancelled";
+
+      }
+
+
+      if (
+        status === "processing"
+      ) {
+
+        statusText =
+          "🔄 Processing";
+
+      }
+
+
+      /* ==================================
+         DELIVERY
+      ================================== */
+
+      let deliveryHTML =
+        "";
+
+
+      if (
+        order.delivery_data &&
+        String(
+          order.delivery_data
+        ).trim() !== ""
+      ) {
+
+        deliveryHTML = `
+
+          <div
+            style="
+              margin-top:15px;
+              padding:14px;
+              background:#f4f4f4;
+              border-radius:10px;
+            "
+          >
+
+            <strong>
+              Delivery Information
+            </strong>
+
+            <p
+              style="
+                white-space:pre-wrap;
+                word-break:break-word;
+              "
+            >
+
+              ${escapeHTML(
+                order.delivery_data
+              )}
+
+            </p>
+
+          </div>
+
+        `;
+
+      }
+
+
+      /* ==================================
+         CANCEL STATUS
+      ================================== */
+
+      let cancelHTML =
+        "";
+
+
+      if (
+        order.cancel_allowed === true
+      ) {
+
+        cancelHTML = `
+
+          <p>
+
+            🔄 Cancellation:
+
+            <strong>
+              Allowed
+            </strong>
+
+          </p>
+
+        `;
+
+      } else {
+
+        cancelHTML = `
+
+          <p>
+
+            🔒 Cancellation:
+
+            <strong>
+              Not allowed
+            </strong>
+
+          </p>
+
+        `;
+
+      }
+
+
+      /* ==================================
+         ORDER CARD
+      ================================== */
+
+      box.innerHTML = `
+
+        <h3>
+
+          Purchase #${escapeHTML(
+            order.id
+          )}
+
+        </h3>
+
+
+        <p>
+
+          Product ID:
+
+          <strong>
+
+            ${escapeHTML(
+              order.product_id
+            )}
+
+          </strong>
+
+        </p>
+
+
+        <p>
+
+          Amount:
+
+          <strong>
+
+            ₦${amount}
+
+          </strong>
+
+        </p>
+
+
+        <p>
+
+          Status:
+
+          <strong>
+
+            ${statusText}
+
+          </strong>
+
+        </p>
+
+
+        ${cancelHTML}
+
+
+        <p>
+
+          Purchased:
+
+          <small>
+
+            ${escapeHTML(
+              date
+            )}
+
+          </small>
+
+        </p>
+
+
+        ${deliveryHTML}
+
+      `;
+
+
+      container.appendChild(
+        box
+      );
 
     }
-
-    const newContent =
-        prompt(
-            "Inventory / Delivery Information:",
-            item.content || ""
-        );
-
-    if (
-        newContent === null
-    ) {
-
-        return;
-
-    }
-
-    if (
-        !newContent.trim()
-    ) {
-
-        alert(
-            "❌ Inventory information cannot be empty."
-        );
-
-        return;
-
-    }
-
-    const newStatus =
-        prompt(
-            "Inventory Status:\n\n" +
-            "Use: available or sold",
-            item.status ||
-            "available"
-        );
-
-    if (
-        newStatus === null
-    ) {
-
-        return;
-
-    }
-
-    const finalStatus =
-        newStatus.trim() ||
-        "available";
-
-    const {
-        error
-    } =
-    await supabaseClient
-        .from(
-            "product_inventory"
-        )
-        .update({
-            product_id:
-                productId,
-
-            content:
-                newContent.trim(),
-
-            status:
-                finalStatus
-        })
-        .eq(
-            "id",
-            id
-        );
-
-    if (error) {
-
-        alert(
-            "❌ " +
-            error.message
-        );
-
-        return;
-
-    }
-
-    alert(
-        "✅ Inventory updated successfully."
-    );
-
-    await loadInventory();
-
-    await updateStatistics();
+  );
 
 }
 
-async function deleteInventory(id) {
 
-    if (
-        !confirm(
-            "Are you sure you want to delete this inventory?"
-        )
-    ) {
-
-        return;
-
-    }
-
-    const {
-        error
-    } =
-    await supabaseClient
-        .from(
-            "product_inventory"
-        )
-        .delete()
-        .eq(
-            "id",
-            id
-        );
-
-    if (error) {
-
-        alert(
-            "❌ " +
-            error.message
-        );
-
-        return;
-
-    }
-
-    alert(
-        "✅ Inventory deleted."
-    );
-
-    await loadInventory();
-
-    await updateStatistics();
-
-}
-
-async function loadOrders() {
-
-    const container =
-        document.getElementById(
-            "ordersList"
-        );
-
-    if (!container) {
-        return;
-    }
-
-    container.innerHTML =
-        '<div class="loading">' +
-        'Loading orders...' +
-        '</div>';
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
-        .from("orders")
-        .select("*")
-        .order(
-            "id",
-            {
-                ascending: false
-            }
-        );
-
-    if (error) {
-
-        container.innerHTML =
-            '<div class="error">' +
-            '❌ Orders could not be loaded.<br><br>' +
-            escapeHTML(
-                error.message
-            ) +
-            '</div>';
-
-        orders = [];
-
-        return;
-
-    }
-
-    orders =
-        data || [];
-
-    renderOrders();
-
-}
-
-function renderOrders() {
-
-    const container =
-        document.getElementById(
-            "ordersList"
-        );
-
-    if (!container) {
-        return;
-    }
-
-    const search =
-        (
-            document.getElementById(
-                "orderSearch"
-            )?.value || ""
-        )
-        .toLowerCase()
-        .trim();
-
-    let list =
-        [...orders];
-
-    if (search) {
-
-        list =
-            list.filter(
-                order => {
-
-                    return (
-
-                        String(
-                            order.id || ""
-                        )
-                        .toLowerCase()
-                        .includes(search)
-
-                        ||
-
-                        String(
-                            order.user_id || ""
-                        )
-                        .toLowerCase()
-                        .includes(search)
-
-                        ||
-
-                        String(
-                            order.product_id || ""
-                        )
-                        .toLowerCase()
-                        .includes(search)
-
-                        ||
-
-                        String(
-                            order.status || ""
-                        )
-                        .toLowerCase()
-                        .includes(search)
-
-                    );
-
-                }
-            );
-
-    }
-
-    if (!list.length) {
-
-        container.innerHTML =
-            '<div class="loading">' +
-            'No orders found.' +
-            '</div>';
-
-        return;
-
-    }
-
-    container.innerHTML = "";
-
-    list.forEach(
-        order => {
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-            card.className =
-                "item";
-
-            card.innerHTML = `
-
-                <h3>
-                    🧾 Order #${escapeHTML(
-                        order.id
-                    )}
-                </h3>
-
-                <p>
-
-                    <strong>
-                        User:
-                    </strong>
-
-                    ${escapeHTML(
-                        order.user_id ||
-                        "Unknown"
-                    )}
-
-                </p>
-
-                <p>
-
-                    <strong>
-                        Product:
-                    </strong>
-
-                    ${escapeHTML(
-                        order.product_id ||
-                        "Unknown"
-                    )}
-
-                </p>
-
-                <p>
-
-                    <strong>
-                        Amount:
-                    </strong>
-
-                    ₦${money(
-                        order.amount ||
-                        order.price ||
-                        0
-                    )}
-
-                </p>
-
-                <p>
-
-                    <strong>
-                        Status:
-                    </strong>
-
-                    <span class="badge">
-
-                        ${escapeHTML(
-                            order.status ||
-                            "pending"
-                        )}
-
-                    </span>
-
-                </p>
-
-                <div class="item-actions">
-
-                    <button
-                        class="blue"
-                        onclick="
-                            editOrderStatus(
-                                ${Number(
-                                    order.id
-                                )}
-                            )
-                        "
-                    >
-                        ✏️ Edit Status
-                    </button>
-
-                </div>
-
-            `;
-
-            container.appendChild(
-                card
-            );
-
-        }
+/* ========================================
+   ESCAPE HTML
+======================================== */
+
+function escapeHTML(
+  value
+) {
+
+  return String(
+    value ?? ""
+  )
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
     );
 
 }
 
-async function editOrderStatus(id) {
 
-    const order =
-        orders.find(
-            item =>
-                Number(
-                    item.id
-                ) ===
-                Number(id)
-        );
+/* ========================================
+   START
+======================================== */
 
-    if (!order) {
+loadPurchases();
 
-        alert(
-            "❌ Order not found."
-        );
-
-        return;
-
-    }
-
-    const status =
-        prompt(
-            "Order Status:",
-            order.status ||
-            "pending"
-        );
-
-    if (
-        status === null
-    ) {
-
-        return;
-
-    }
-
-    const {
-        error
-    } =
-    await supabaseClient
-        .from("orders")
-        .update({
-            status:
-                status.trim()
-        })
-        .eq(
-            "id",
-            id
-        );
-
-    if (error) {
-
-        alert(
-            "❌ " +
-            error.message
-        );
-
-        return;
-
-    }
-
-    alert(
-        "✅ Order status updated."
-    );
-
-    await loadOrders();
-
-    await updateStatistics();
-
-}
-
-async function loadUsers() {
-
-    const container =
-        document.getElementById(
-            "usersList"
-        );
-
-    if (!container) {
-        return;
-    }
-
-    container.innerHTML =
-        '<div class="loading">' +
-        'Loading users...' +
-        '</div>';
-
-    /*
-        IMPORTANT:
-        Do NOT order by created_at here.
-        If that column is missing from profiles,
-        the entire query fails and shows 0 users.
-    */
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
-        .from("profiles")
-        .select("*");
-
-    if (error) {
-
-        console.error(
-            "Users error:",
-            error
-        );
-
-        container.innerHTML =
-            '<div class="error">' +
-            '❌ Users could not be loaded.<br><br>' +
-            escapeHTML(
-                error.message
-            ) +
-            '</div>';
-
-        users = [];
-
-        document.getElementById(
-            "userCount"
-        ).textContent =
-            "0";
-
-        return;
-
-    }
-
-    users =
-        data || [];
-
-    document.getElementById(
-        "userCount"
-    ).textContent =
-        users.length;
-
-    renderUsers();
-
-}
-
-function renderUsers() {
-
-    const container =
-        document.getElementById(
-            "usersList"
-        );
-
-    if (!container) {
-        return;
-    }
-
-    const search =
-        (
-            document.getElementById(
-                "userSearch"
-            )?.value || ""
-        )
-        .toLowerCase()
-        .trim();
-
-    let list =
-        [...users];
-
-    if (search) {
-
-        list =
-            list.filter(
-                user => {
-
-                    return (
-
-                        String(
-                            user.id || ""
-                        )
-                        .toLowerCase()
-                        .includes(search)
-
-                        ||
-
-                        String(
-                            user.email || ""
-                        )
-                        .toLowerCase()
-                        .includes(search)
-
-                        ||
-
-                        String(
-                            user.username || ""
-                        )
-                        .toLowerCase()
-                        .includes(search)
-
-                        ||
-
-                        String(
-                            user.full_name || ""
-                        )
-                        .toLowerCase()
-                        .includes(search)
-
-                    );
-
-                }
-            );
-
-    }
-
-    if (!list.length) {
-
-        container.innerHTML =
-            '<div class="loading">' +
-            'No users found.' +
-            '</div>';
-
-        return;
-
-    }
-
-    container.innerHTML = "";
-
-    list.forEach(
-        user => {
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-            card.className =
-                "item";
-
-            card.innerHTML = `
-
-                <h3>
-                    👤 ${
-                        escapeHTML(
-                            user.username ||
-                            user.full_name ||
-                            "User"
-                        )
-                    }
-                </h3>
-
-                <p>
-
-                    <strong>
-                        User ID:
-                    </strong>
-
-                    ${escapeHTML(
-                        user.id
-                    )}
-
-                </p>
-
-                                        ${
-                            user.full_name
-                            ?
-                            `
-                            <p>
-
-                                <strong>
-                                    Name:
-                                </strong>
-
-                                ${escapeHTML(
-                                    user.full_name
-                                )}
-
-                            </p>
-                            `
-                            :
-                            ""
-                        }
-
-                    `;
-
-                    container.appendChild(
-                        card
-                    );
-
-                }
-            );
-
-        }
-
-        async function updateStatistics() {
-
-            try {
-
-                const productCount =
-                    products.length;
-
-                const availableInventory =
-                    inventory.filter(
-                        item =>
-                            String(
-                                item.status ||
-                                "available"
-                            ).toLowerCase() !==
-                            "sold"
-                    ).length;
-
-                document.getElementById(
-                    "productCount"
-                ).textContent =
-                    productCount;
-
-                document.getElementById(
-                    "inventoryCount"
-                ).textContent =
-                    availableInventory;
-
-                document.getElementById(
-                    "userCount"
-                ).textContent =
-                    users.length;
-
-                const neverSellOut =
-                    products.filter(
-                        product =>
-                            product.track_stock ===
-                            false
-                    ).length;
-
-                document.getElementById(
-                    "neverSellOutCount"
-                ).textContent =
-                    neverSellOut;
-
-                const pending =
-                    orders.filter(
-                        order =>
-                            String(
-                                order.status ||
-                                ""
-                            ).toLowerCase() ===
-                            "pending"
-                    ).length;
-
-                const completed =
-                    orders.filter(
-                        order =>
-                            String(
-                                order.status ||
-                                ""
-                            ).toLowerCase() ===
-                            "completed"
-                    ).length;
-
-                document.getElementById(
-                    "pendingCount"
-                ).textContent =
-                    pending;
-
-                document.getElementById(
-                    "completedCount"
-                ).textContent =
-                    completed;
-
-            } catch (error) {
-
-                console.error(
-                    "Statistics error:",
-                    error
-                );
-
-            }
-
-        }
-
-        function setupCategorySelect() {
-
-            const select =
-                document.getElementById(
-                    "productCategory"
-                );
-
-            if (!select) {
-                return;
-            }
-
-            select.innerHTML = "";
-
-            CATEGORIES.forEach(
-                category => {
-
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
-
-                    option.value =
-                        category;
-
-                    option.textContent =
-                        getCategorySymbol(
-                            category
-                        ) +
-                        " " +
-                        category;
-
-                    select.appendChild(
-                        option
-                    );
-
-                }
-            );
-
-        }
-
-        function previewProductImage(event) {
-
-            const file =
-                event.target.files?.[0];
-
-            const preview =
-                document.getElementById(
-                    "imagePreview"
-                );
-
-            const name =
-                document.getElementById(
-                    "imageName"
-                );
-
-            if (!file) {
-
-                preview.style.display =
-                    "none";
-
-                name.textContent =
-                    "No image selected";
-
-                return;
-
-            }
-
-            if (
-                !file.type.startsWith(
-                    "image/"
-                )
-            ) {
-
-                alert(
-                    "❌ Please select an image."
-                );
-
-                event.target.value =
-                    "";
-
-                return;
-
-            }
-
-            name.textContent =
-                "Selected: " +
-                file.name;
-
-            const reader =
-                new FileReader();
-
-            reader.onload =
-                function(e) {
-
-                    preview.src =
-                        e.target.result;
-
-                    preview.style.display =
-                        "block";
-
-                    document.getElementById(
-                        "productImage"
-                    ).value =
-                        e.target.result;
-
-                };
-
-            reader.readAsDataURL(
-                file
-            );
-
-        }
-
-        async function refreshEverything() {
-
-            const message =
-                document.getElementById(
-                    "refreshMessage"
-                );
-
-            message.textContent =
-                "Refreshing...";
-
-            await loadProducts();
-
-            await loadInventory();
-
-            await loadOrders();
-
-            await loadUsers();
-
-            loadInventoryProductDropdown();
-
-            await updateStatistics();
-
-            message.textContent =
-                "✅ Everything refreshed.";
-
-            setTimeout(
-                function() {
-
-                    message.textContent =
-                        "";
-
-                },
-                3000
-            );
-
-        }
-
-        async function initializeAdmin() {
-
-            const allowed =
-                await checkAdmin();
-
-            if (!allowed) {
-                return;
-            }
-
-            setupCategorySelect();
-
-            renderCategoryBar();
-
-            await loadProducts();
-
-            await loadInventory();
-
-            await loadOrders();
-
-            await loadUsers();
-
-            loadInventoryProductDropdown();
-
-            await updateStatistics();
-
-        }
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            initializeAdmin
-        );
-
-    </script>
+</script>
 
 </body>
+
 </html>
+    
