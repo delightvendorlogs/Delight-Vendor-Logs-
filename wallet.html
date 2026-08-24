@@ -11,10 +11,8 @@
 
   <title>Fund Wallet - Delight Vendor Logs</title>
 
-  <!-- SUPABASE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- ZEVPAY -->
   <script src="https://js.zevpaycheckout.com/v1/inline.js"></script>
 
   <style>
@@ -163,7 +161,7 @@
       <input
         type="radio"
         name="payment"
-        value="bank"
+        value="bank_transfer"
       >
       Bank Transfer
     </label>
@@ -227,25 +225,26 @@ const ZEVPAY_PUBLIC_KEY =
 
 
 /* =====================================================
-   WEBHOOK / VERIFY FUNCTION
+   EDGE FUNCTION
 ===================================================== */
 
-const ZEVPAY_VERIFY_FUNCTION =
+const ZEVPAY_FUNCTION =
   `${SUPABASE_URL}/functions/v1/zevpay_webhook`;
 
 
 /* =====================================================
-   MESSAGE HELPER
+   MESSAGE
 ===================================================== */
 
-function showMessage(text, color = "#111") {
-
+function showMessage(
+  text,
+  color = "#111"
+) {
   const message =
     document.getElementById("message");
 
   message.style.color = color;
   message.textContent = text;
-
 }
 
 
@@ -265,14 +264,15 @@ async function loadWallet() {
     } =
       await supabaseClient.auth.getUser();
 
-
-    if (userError || !user) {
+    if (
+      userError ||
+      !user
+    ) {
 
       window.location.href =
         "login.html";
 
       return;
-
     }
 
 
@@ -298,7 +298,6 @@ async function loadWallet() {
         "Wallet error";
 
       return;
-
     }
 
 
@@ -330,7 +329,6 @@ async function loadWallet() {
     ).textContent =
       "Unable to load wallet";
   }
-
 }
 
 
@@ -338,7 +336,10 @@ async function loadWallet() {
    VERIFY PAYMENT
 ===================================================== */
 
-async function verifyPayment(reference) {
+async function verifyPayment(
+  reference,
+  sessionId
+) {
 
   try {
 
@@ -361,13 +362,12 @@ async function verifyPayment(reference) {
       throw new Error(
         "Your login session has expired."
       );
-
     }
 
 
     const response =
       await fetch(
-        ZEVPAY_VERIFY_FUNCTION,
+        ZEVPAY_FUNCTION,
         {
           method: "POST",
 
@@ -380,8 +380,14 @@ async function verifyPayment(reference) {
           },
 
           body: JSON.stringify({
-            action: "verify_payment",
-            reference: reference
+            action:
+              "verify_payment",
+
+            reference:
+              reference,
+
+            session_id:
+              sessionId
           })
         }
       );
@@ -403,34 +409,49 @@ async function verifyPayment(reference) {
         result?.error ||
         "Payment verification failed."
       );
-
     }
 
 
     if (
-      !result.success ||
-      !result.credited
+      result.success &&
+      result.credited
     ) {
 
       showMessage(
-        result?.message ||
-        "Payment has not been confirmed yet.",
-        "#cc6600"
+        "Payment confirmed! Your wallet has been credited.",
+        "green"
       );
 
-      return;
 
+      await loadWallet();
+
+      return true;
+    }
+
+
+    if (
+      result.already_processed
+    ) {
+
+      showMessage(
+        "Payment was already credited. Updating wallet...",
+        "green"
+      );
+
+
+      await loadWallet();
+
+      return true;
     }
 
 
     showMessage(
-      "Payment confirmed! Your wallet has been credited.",
-      "green"
+      result?.message ||
+      "Payment has not been confirmed yet.",
+      "#cc6600"
     );
 
-
-    await loadWallet();
-
+    return false;
 
   } catch (error) {
 
@@ -445,8 +466,93 @@ async function verifyPayment(reference) {
       "red"
     );
 
+    return false;
+  }
+}
+
+
+/* =====================================================
+   CREATE PAYMENT RECORD
+===================================================== */
+
+async function createPayment(
+  amount
+) {
+
+  const {
+    data: {
+      session
+    }
+  } =
+    await supabaseClient.auth.getSession();
+
+
+  if (!session) {
+
+    throw new Error(
+      "Your login session has expired."
+    );
   }
 
+
+  const response =
+    await fetch(
+      ZEVPAY_FUNCTION,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+
+          "Authorization":
+            `Bearer ${session.access_token}`
+        },
+
+        body: JSON.stringify({
+          action:
+            "create_payment",
+
+          amount:
+            amount
+        })
+      }
+    );
+
+
+  const result =
+    await response.json();
+
+
+  console.log(
+    "Create payment result:",
+    result
+  );
+
+
+  if (!response.ok) {
+
+    throw new Error(
+      result?.error ||
+      "Could not create payment."
+    );
+  }
+
+
+  if (
+    !result.success ||
+    !result.reference ||
+    !result.session_id
+  ) {
+
+    throw new Error(
+      result?.error ||
+      "ZevPay payment session was not created."
+    );
+  }
+
+
+  return result;
 }
 
 
@@ -549,29 +655,70 @@ async function continuePayment() {
   }
 
 
-  /* NAIRA → KOBO */
-
   const amountKobo =
     Math.round(
       amount * 100
     );
 
 
-  /* BUTTON */
-
   button.disabled = true;
 
   button.textContent =
-    "Opening checkout...";
+    "Preparing payment...";
 
 
   showMessage(
-    "Opening ZevPay checkout...",
+    "Preparing your payment...",
     "#111"
   );
 
 
   try {
+
+    /*
+     * FIRST:
+     * Ask our Edge Function to create
+     * and save the pending payment.
+     */
+
+    const paymentData =
+      await createPayment(
+        amount
+      );
+
+
+    const reference =
+      paymentData.reference;
+
+    const sessionId =
+      paymentData.session_id;
+
+
+    console.log(
+      "Pending payment created:",
+      {
+        reference,
+        sessionId,
+        amountKobo
+      }
+    );
+
+
+    /*
+     * SECOND:
+     * Open ZevPay using the SAME
+     * merchant reference.
+     */
+
+    button.textContent =
+      "Opening checkout...";
+
+
+    showMessage(
+      "Opening ZevPay checkout...",
+      "#111"
+    );
+
 
     const checkout =
       new ZevPay.ZevPayCheckout();
@@ -588,16 +735,21 @@ async function continuePayment() {
       amount:
         amountKobo,
 
+      reference:
+        reference,
+
       paymentMethods: [
-        payment
+        payment.value
       ],
 
       onSuccess:
-        async function(reference) {
+        async function(
+          returnedReference
+        ) {
 
           console.log(
             "ZevPay success:",
-            reference
+            returnedReference
           );
 
 
@@ -605,8 +757,20 @@ async function continuePayment() {
             "Verifying payment...";
 
 
+          /*
+           * Use the reference returned by
+           * ZevPay, but keep the original
+           * session ID from create_payment.
+           */
+
+          const finalReference =
+            returnedReference ||
+            reference;
+
+
           await verifyPayment(
-            reference
+            finalReference,
+            sessionId
           );
 
 
@@ -619,17 +783,17 @@ async function continuePayment() {
 
     });
 
-
   } catch (error) {
 
     console.error(
-      "ZevPay checkout error:",
+      "Payment error:",
       error
     );
 
 
     showMessage(
-      "Unable to open ZevPay checkout. Please try again.",
+      error.message ||
+      "Unable to start payment. Please try again.",
       "red"
     );
 
@@ -640,7 +804,6 @@ async function continuePayment() {
     button.textContent =
       "Continue";
   }
-
 }
 
 
