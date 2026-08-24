@@ -8,7 +8,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{box-sizing:border-box}
+*{
+box-sizing:border-box
+}
 
 body{
 margin:0;
@@ -194,7 +196,10 @@ const SUPABASE_URL =
 "https://hkfhehbhmucymusaytoe.supabase.co";
 
 const SUPABASE_KEY =
-"sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+"sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSF_".replace(
+"QqSF",
+"QqSF"
+);
 
 const supabaseClient =
 window.supabase.createClient(
@@ -205,22 +210,31 @@ SUPABASE_KEY
 const ZEVPAY_FUNCTION =
 `${SUPABASE_URL}/functions/v1/zevpay_webhook`;
 
+
+/* =========================
+   MESSAGE
+========================= */
+
 function showMessage(
 text,
 color="#111"
 ){
 
 const message =
-document.getElementById(
-"message"
-);
+document.getElementById("message");
 
 message.style.color =
 color;
 
 message.textContent =
 text;
+
 }
+
+
+/* =========================
+   LOAD WALLET
+========================= */
 
 async function loadWallet(){
 
@@ -243,6 +257,7 @@ window.location.href =
 "login.html";
 
 return;
+
 }
 
 const {
@@ -266,6 +281,7 @@ document.getElementById(
 "Wallet error";
 
 return;
+
 }
 
 const balance =
@@ -299,6 +315,11 @@ document.getElementById(
 
 }
 
+
+/* =========================
+   GET SESSION
+========================= */
+
 async function getSession(){
 
 const {
@@ -320,6 +341,11 @@ return session;
 
 }
 
+
+/* =========================
+   CREATE PAYMENT
+========================= */
+
 async function createPayment(
 amount
 ){
@@ -332,18 +358,23 @@ await fetch(
 ZEVPAY_FUNCTION,
 {
 method:"POST",
+
 headers:{
 "Content-Type":
 "application/json",
+
 "Authorization":
 `Bearer ${session.access_token}`
 },
+
 body:JSON.stringify({
 action:
 "create_payment",
+
 amount:
 amount
 })
+
 }
 );
 
@@ -383,12 +414,40 @@ return result;
 
 }
 
-async function verifyPayment(){
 
-try{
+/* =========================
+   SAVE PAYMENT
+========================= */
 
-const session =
-await getSession();
+function savePendingPayment(
+payment
+){
+
+localStorage.setItem(
+"pending_zevpay_payment",
+JSON.stringify({
+reference:
+payment.reference,
+
+session_id:
+payment.session_id,
+
+amount:
+payment.amount,
+
+created_at:
+Date.now()
+})
+);
+
+}
+
+
+/* =========================
+   GET SAVED PAYMENT
+========================= */
+
+function getPendingPayment(){
 
 const saved =
 localStorage.getItem(
@@ -397,39 +456,57 @@ localStorage.getItem(
 
 if(!saved){
 
-return false;
-}
+return null;
 
-let payment;
+}
 
 try{
 
-payment =
-JSON.parse(saved);
+return JSON.parse(
+saved
+);
 
-}catch{
+}catch(error){
+
+console.error(
+"Invalid saved payment:",
+error
+);
 
 localStorage.removeItem(
 "pending_zevpay_payment"
 );
 
-return false;
+return null;
 
 }
 
-const reference =
-String(
-payment.reference || ""
-);
+}
 
-const sessionId =
-String(
-payment.session_id || ""
-);
 
-if(!reference){
+/* =========================
+   VERIFY PAYMENT
+========================= */
 
-return false;
+async function verifyPayment(
+payment
+){
+
+try{
+
+const session =
+await getSession();
+
+if(
+!payment ||
+!payment.reference ||
+!payment.session_id
+){
+
+return {
+done:false
+};
+
 }
 
 const response =
@@ -437,20 +514,26 @@ await fetch(
 ZEVPAY_FUNCTION,
 {
 method:"POST",
+
 headers:{
 "Content-Type":
 "application/json",
+
 "Authorization":
 `Bearer ${session.access_token}`
 },
+
 body:JSON.stringify({
 action:
 "verify_payment",
+
 reference:
-reference,
+payment.reference,
+
 session_id:
-sessionId
+payment.session_id
 })
+
 }
 );
 
@@ -461,6 +544,11 @@ console.log(
 "Verify payment:",
 result
 );
+
+
+/*
+Payment successfully credited
+*/
 
 if(
 result.success &&
@@ -481,25 +569,46 @@ showMessage(
 "green"
 );
 
-return true;
+return {
+done:true
+};
 
 }
+
+
+/*
+Payment record not found.
+
+Do NOT get stuck forever.
+*/
 
 if(
-result.error ===
-"Payment record not found."
+result.message ===
+"Payment record not found." ||
+result.retryable === false
 ){
 
-showMessage(
-"Payment record is still being prepared. Checking again...",
-"#cc6600"
+console.log(
+"Payment record not ready:",
+result
 );
 
-return false;
+return {
+done:false,
+notReady:true
+};
 
 }
 
-return false;
+
+/*
+Payment is still processing.
+*/
+
+return {
+done:false,
+pending:true
+};
 
 }catch(error){
 
@@ -508,27 +617,77 @@ console.error(
 error
 );
 
-return false;
+return {
+done:false,
+error:true
+};
 
 }
 
 }
 
-async function waitForPayment(){
 
-let attempts = 0;
+/* =========================
+   VERIFY AFTER RETURN
+========================= */
 
-const maxAttempts = 60;
+async function verifyAfterReturn(){
+
+const payment =
+getPendingPayment();
+
+if(!payment){
+
+return;
+
+}
 
 const button =
 document.getElementById(
 "continueButton"
 );
 
-button.disabled = true;
+showMessage(
+"Checking your payment...",
+"#111"
+);
+
+button.disabled =
+true;
 
 button.textContent =
 "Checking payment...";
+
+let attempts = 0;
+
+const maxAttempts = 60;
+
+
+/*
+Check immediately first.
+*/
+
+let result =
+await verifyPayment(
+payment
+);
+
+if(result.done){
+
+button.disabled =
+false;
+
+button.textContent =
+"Continue";
+
+return;
+
+}
+
+
+/*
+Continue checking every 5 seconds.
+*/
 
 const timer =
 setInterval(
@@ -536,10 +695,29 @@ async()=>{
 
 attempts++;
 
-const done =
-await verifyPayment();
+const currentPayment =
+getPendingPayment();
 
-if(done){
+if(!currentPayment){
+
+clearInterval(timer);
+
+button.disabled =
+false;
+
+button.textContent =
+"Continue";
+
+return;
+
+}
+
+const result =
+await verifyPayment(
+currentPayment
+);
+
+if(result.done){
 
 clearInterval(timer);
 
@@ -567,7 +745,7 @@ button.textContent =
 "Continue";
 
 showMessage(
-"Payment is taking longer than expected. If you already transferred the money, wait a little and refresh this page.",
+"Payment verification is taking longer than expected. If you have completed the transfer, please refresh this page shortly.",
 "#cc6600"
 );
 
@@ -578,6 +756,11 @@ showMessage(
 );
 
 }
+
+
+/* =========================
+   CONTINUE PAYMENT
+========================= */
 
 async function continuePayment(){
 
@@ -598,6 +781,11 @@ document.getElementById(
 "continueButton"
 );
 
+
+/*
+Validate amount
+*/
+
 if(
 !Number.isFinite(amount) ||
 amount < 100
@@ -612,6 +800,11 @@ return;
 
 }
 
+
+/*
+Validate payment method
+*/
+
 if(!payment){
 
 showMessage(
@@ -622,6 +815,7 @@ showMessage(
 return;
 
 }
+
 
 try{
 
@@ -650,7 +844,22 @@ return;
 
 }
 
-button.disabled = true;
+
+/*
+Clear any OLD payment before
+creating a NEW payment.
+
+This prevents an old payment
+from automatically triggering
+checking payment.
+*/
+
+localStorage.removeItem(
+"pending_zevpay_payment"
+);
+
+button.disabled =
+true;
 
 button.textContent =
 "Preparing payment...";
@@ -660,37 +869,28 @@ showMessage(
 "#111"
 );
 
+
+/*
+Create brand-new ZevPay session.
+*/
+
 const paymentData =
 await createPayment(
 amount
 );
 
-const pendingPayment = {
 
-reference:
-paymentData.reference,
+/*
+Save the EXACT new payment.
+*/
 
-session_id:
-paymentData.session_id,
-
-amount:
-paymentData.amount,
-
-created_at:
-Date.now()
-
-};
-
-localStorage.setItem(
-"pending_zevpay_payment",
-JSON.stringify(
-pendingPayment
-)
+savePendingPayment(
+paymentData
 );
 
 console.log(
-"Payment saved locally:",
-pendingPayment
+"New ZevPay payment saved:",
+paymentData
 );
 
 showMessage(
@@ -698,8 +898,19 @@ showMessage(
 "#111"
 );
 
+
+/*
+Open the exact checkout created
+by the Edge Function.
+
+The ZevPay checkout can still
+show its available payment
+methods normally.
+*/
+
 window.location.href =
 paymentData.checkout_url;
+
 
 }catch(error){
 
@@ -724,54 +935,76 @@ button.textContent =
 
 }
 
-async function checkReturnedPayment(){
+
+/* =========================
+   DETECT REAL ZEVPAY RETURN
+========================= */
+
+function isZevPayReturn(){
 
 const params =
 new URLSearchParams(
 window.location.search
 );
 
-const urlReference =
+const reference =
 params.get(
 "reference"
 );
 
-const urlSession =
+const sessionId =
 params.get(
 "session_id"
 );
 
+
+/*
+Only treat this as a payment
+return if ZevPay supplied a
+reference/session.
+
+Normal visits to wallet.html
+will NOT start verification.
+*/
+
 if(
-urlReference
+reference &&
+sessionId
 ){
 
-let saved = {};
+const existing =
+getPendingPayment() || {};
 
-try{
+const updated = {
 
-saved =
-JSON.parse(
-localStorage.getItem(
-"pending_zevpay_payment"
-) || "{}"
-);
+reference:
+reference,
 
-}catch{}
+session_id:
+sessionId,
 
-saved.reference =
-urlReference;
+amount:
+existing.amount || null,
 
-if(urlSession){
+created_at:
+existing.created_at ||
+Date.now()
 
-saved.session_id =
-urlSession;
-
-}
+};
 
 localStorage.setItem(
 "pending_zevpay_payment",
-JSON.stringify(saved)
+JSON.stringify(
+updated
+)
 );
+
+
+/*
+Clean the URL so refreshing
+doesn't repeatedly process the
+same return parameters.
+*/
 
 window.history.replaceState(
 {},
@@ -779,43 +1012,52 @@ document.title,
 "wallet.html"
 );
 
-}
-
-const pending =
-localStorage.getItem(
-"pending_zevpay_payment"
-);
-
-if(!pending){
-
-return;
-}
-
-showMessage(
-"Checking your payment...",
-"#111"
-);
-
-await verifyPayment();
-
-const saved =
-JSON.parse(
-localStorage.getItem(
-"pending_zevpay_payment"
-) || "{}"
-);
-
-if(saved.reference){
-
-await waitForPayment();
+return true;
 
 }
 
+return false;
+
 }
 
-loadWallet();
 
-checkReturnedPayment();
+/* =========================
+   PAGE START
+========================= */
+
+async function startPage(){
+
+await loadWallet();
+
+
+/*
+IMPORTANT:
+
+Do NOT automatically check
+localStorage when simply opening
+wallet.html.
+
+Only verify if this page was
+actually returned to by ZevPay.
+*/
+
+const returned =
+isZevPayReturn();
+
+if(returned){
+
+await verifyAfterReturn();
+
+}
+
+}
+
+
+/*
+Start page.
+*/
+
+startPage();
 
 </script>
 
