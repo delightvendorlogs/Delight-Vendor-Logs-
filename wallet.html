@@ -3,12 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
 <title>Fund Wallet - Delight Vendor Logs</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{box-sizing:border-box}
+
+*{
+box-sizing:border-box
+}
 
 body{
 margin:0;
@@ -117,6 +121,7 @@ font-size:17px;
 font-weight:bold;
 cursor:pointer
 }
+
 </style>
 </head>
 
@@ -148,24 +153,30 @@ placeholder="Enter amount"
 
 <div class="payment-option">
 <label>
+
 <input
 type="radio"
 name="payment"
 value="bank_transfer"
 checked
 >
+
 Bank Transfer
+
 </label>
 </div>
 
 <div class="payment-option">
 <label>
+
 <input
 type="radio"
 name="payment"
 value="payid"
 >
+
 ZevPay ID
+
 </label>
 </div>
 
@@ -190,6 +201,11 @@ onclick="window.location.href='dashboard.html'"
 
 <script>
 
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
 const SUPABASE_URL =
 "https://hkfhehbhmucymusaytoe.supabase.co";
 
@@ -210,13 +226,18 @@ storage:window.localStorage
 }
 );
 
+
+/* =====================================================
+   ZEVPAY FUNCTION
+===================================================== */
+
 const ZEVPAY_FUNCTION =
 `${SUPABASE_URL}/functions/v1/zevpay_webhook`;
 
 
-/* =========================
+/* =====================================================
    MESSAGE
-========================= */
+===================================================== */
 
 function showMessage(
 text,
@@ -226,47 +247,93 @@ color="#111"
 const message =
 document.getElementById("message");
 
-message.style.color = color;
-message.textContent = text;
+message.style.color =
+color;
+
+message.textContent =
+text;
 
 }
 
 
-/* =========================
-   GET SESSION
-========================= */
+/* =====================================================
+   GET CURRENT SESSION
+===================================================== */
 
 async function getValidSession(){
 
-let {
-data:{
-session
-},
+try{
+
+/*
+First ask Supabase for the existing
+session.
+*/
+
+const {
+data,
 error
 } =
 await supabaseClient.auth.getSession();
 
 if(error){
+
 console.error(
-"Session error:",
+"getSession error:",
 error
 );
-}
 
-if(session){
-return session;
 }
 
 
 /*
-If the session has not yet been
-restored, try refreshing it once.
+If the session exists, use it.
 */
 
-try{
+if(
+data &&
+data.session
+){
+
+return data.session;
+
+}
+
+
+/*
+If Supabase has not restored it yet,
+wait briefly and try again.
+*/
+
+await new Promise(
+resolve =>
+setTimeout(
+resolve,
+1000
+)
+);
+
+
+const second =
+await supabaseClient.auth.getSession();
+
+
+if(
+second.data &&
+second.data.session
+){
+
+return second.data.session;
+
+}
+
+
+/*
+Last attempt: refresh the session.
+*/
 
 const refreshed =
 await supabaseClient.auth.refreshSession();
+
 
 if(
 refreshed.data &&
@@ -280,7 +347,7 @@ return refreshed.data.session;
 }catch(error){
 
 console.error(
-"Session refresh error:",
+"Session restore error:",
 error
 );
 
@@ -291,9 +358,9 @@ return null;
 }
 
 
-/* =========================
+/* =====================================================
    LOAD WALLET
-========================= */
+===================================================== */
 
 async function loadWallet(){
 
@@ -308,22 +375,23 @@ balanceElement.textContent =
 
 try{
 
-/*
-Do NOT immediately redirect to
-login.html.
-
-First give Supabase a chance to
-restore the saved session.
-*/
-
 const session =
 await getValidSession();
 
 
+/*
+IMPORTANT:
+
+Do NOT redirect to login.html here.
+
+If the session is unavailable,
+show the problem instead.
+*/
+
 if(!session){
 
 balanceElement.textContent =
-"Please log in";
+"Not logged in";
 
 showMessage(
 "Your login session could not be restored. Please log in again.",
@@ -334,6 +402,11 @@ return;
 
 }
 
+
+/*
+Use the same wallet RPC that was
+already being used by your project.
+*/
 
 const {
 data:wallet,
@@ -347,15 +420,25 @@ await supabaseClient.rpc(
 if(error){
 
 console.error(
-"Wallet error:",
+"Wallet RPC error:",
 error
 );
+
+
+/*
+Show the actual database error
+instead of hiding it.
+*/
 
 balanceElement.textContent =
 "Wallet error";
 
 showMessage(
-"Unable to load wallet.",
+"Wallet error: " +
+(
+error.message ||
+"Unknown Supabase error"
+),
 "red"
 );
 
@@ -387,10 +470,14 @@ error
 );
 
 balanceElement.textContent =
-"Unable to load wallet";
+"Wallet error";
 
 showMessage(
-"Unable to load wallet. Please refresh.",
+"Wallet error: " +
+(
+error.message ||
+"Unable to load wallet."
+),
 "red"
 );
 
@@ -399,14 +486,15 @@ showMessage(
 }
 
 
-/* =========================
+/* =====================================================
    GET SESSION FOR PAYMENT
-========================= */
+===================================================== */
 
 async function getSession(){
 
 const session =
 await getValidSession();
+
 
 if(!session){
 
@@ -416,14 +504,15 @@ throw new Error(
 
 }
 
+
 return session;
 
 }
 
 
-/* =========================
-   CREATE PAYMENT
-========================= */
+/* =====================================================
+   CREATE ZEVPAY PAYMENT
+===================================================== */
 
 async function createPayment(
 amount
@@ -448,11 +537,13 @@ headers:{
 },
 
 body:JSON.stringify({
+
 action:
 "create_payment",
 
 amount:
 amount
+
 })
 }
 );
@@ -488,7 +579,7 @@ if(
 ){
 
 throw new Error(
-"ZevPay did not return complete session information."
+"ZevPay did not return complete payment information."
 );
 
 }
@@ -499,9 +590,9 @@ return result;
 }
 
 
-/* =========================
+/* =====================================================
    VERIFY PAYMENT
-========================= */
+===================================================== */
 
 async function verifyPayment(){
 
@@ -519,6 +610,10 @@ localStorage.getItem(
 
 if(!saved){
 
+console.log(
+"No pending ZevPay payment."
+);
+
 return false;
 
 }
@@ -531,7 +626,12 @@ try{
 payment =
 JSON.parse(saved);
 
-}catch{
+}catch(error){
+
+console.error(
+"Invalid saved payment:",
+error
+);
 
 localStorage.removeItem(
 "pending_zevpay_payment"
@@ -558,6 +658,10 @@ if(
 !sessionId
 ){
 
+console.log(
+"Pending payment is missing reference/session."
+);
+
 return false;
 
 }
@@ -578,6 +682,7 @@ headers:{
 },
 
 body:JSON.stringify({
+
 action:
 "verify_payment",
 
@@ -586,6 +691,7 @@ reference,
 
 session_id:
 sessionId
+
 })
 }
 );
@@ -602,7 +708,7 @@ result
 
 
 /*
-Payment successfully credited.
+SUCCESS
 */
 
 if(
@@ -630,13 +736,28 @@ return true;
 
 
 /*
-Payment record is temporarily
-not available yet.
+Payment record may not have been
+available yet.
+
+DO NOT display an error.
+Just retry.
 */
 
 if(
 result.message ===
-"Payment record not found." ||
+"Payment record not found."
+){
+
+console.log(
+"Payment record not found yet. Retrying..."
+);
+
+return false;
+
+}
+
+
+if(
 result.error ===
 "Payment record not found."
 ){
@@ -650,13 +771,22 @@ return false;
 }
 
 
+/*
+Payment is still pending.
+*/
+
+console.log(
+"Payment still pending:",
+result
+);
+
 return false;
 
 
 }catch(error){
 
 console.error(
-"Verify error:",
+"Verify payment error:",
 error
 );
 
@@ -667,15 +797,17 @@ return false;
 }
 
 
-/* =========================
-   PAYMENT POLLING
-========================= */
+/* =====================================================
+   WAIT FOR PAYMENT
+===================================================== */
 
 async function waitForPayment(){
 
-let attempts = 0;
+let attempts =
+0;
 
-const maxAttempts = 60;
+const maxAttempts =
+60;
 
 const button =
 document.getElementById(
@@ -683,7 +815,8 @@ document.getElementById(
 );
 
 
-button.disabled = true;
+button.disabled =
+true;
 
 button.textContent =
 "Checking payment...";
@@ -691,12 +824,13 @@ button.textContent =
 
 const timer =
 setInterval(
-async()=>{
+async function(){
 
 attempts++;
 
+
 console.log(
-"Checking payment:",
+"Payment verification attempt:",
 attempts
 );
 
@@ -707,9 +841,12 @@ await verifyPayment();
 
 if(done){
 
-clearInterval(timer);
+clearInterval(
+timer
+);
 
-button.disabled = false;
+button.disabled =
+false;
 
 button.textContent =
 "Continue";
@@ -724,9 +861,12 @@ attempts >=
 maxAttempts
 ){
 
-clearInterval(timer);
+clearInterval(
+timer
+);
 
-button.disabled = false;
+button.disabled =
+false;
 
 button.textContent =
 "Continue";
@@ -745,9 +885,9 @@ showMessage(
 }
 
 
-/* =========================
-   CONTINUE PAYMENT
-========================= */
+/* =====================================================
+   CONTINUE BUTTON
+===================================================== */
 
 async function continuePayment(){
 
@@ -800,6 +940,9 @@ return;
 
 try{
 
+/*
+Make sure the user is logged in.
+*/
 
 const session =
 await getSession();
@@ -817,7 +960,8 @@ return;
 }
 
 
-button.disabled = true;
+button.disabled =
+true;
 
 button.textContent =
 "Preparing payment...";
@@ -829,6 +973,10 @@ showMessage(
 );
 
 
+/*
+Create the exact ZevPay session.
+*/
+
 const paymentData =
 await createPayment(
 amount
@@ -836,8 +984,8 @@ amount
 
 
 /*
-Save the exact ZevPay session
-before leaving the page.
+Save the exact session before
+leaving this page.
 */
 
 const pendingPayment = {
@@ -866,7 +1014,7 @@ pendingPayment
 
 
 console.log(
-"Payment saved:",
+"Saved pending ZevPay payment:",
 pendingPayment
 );
 
@@ -878,9 +1026,10 @@ showMessage(
 
 
 /*
-Leave the payment-method
-selection exactly as ZevPay
-provides it.
+Keep ZevPay's normal checkout.
+
+Do NOT replace this with a custom
+payment-method page.
 */
 
 window.location.href =
@@ -890,10 +1039,9 @@ paymentData.checkout_url;
 }catch(error){
 
 console.error(
-"Payment error:",
+"Payment creation error:",
 error
 );
-
 
 showMessage(
 error.message ||
@@ -902,7 +1050,8 @@ error.message ||
 );
 
 
-button.disabled = false;
+button.disabled =
+false;
 
 button.textContent =
 "Continue";
@@ -912,9 +1061,9 @@ button.textContent =
 }
 
 
-/* =========================
+/* =====================================================
    HANDLE RETURN FROM ZEVPAY
-========================= */
+===================================================== */
 
 async function checkReturnedPayment(){
 
@@ -929,7 +1078,6 @@ params.get(
 "reference"
 );
 
-
 const urlSession =
 params.get(
 "session_id"
@@ -937,11 +1085,31 @@ params.get(
 
 
 /*
-If ZevPay returned a reference,
-save it before doing anything else.
+THIS IS THE IMPORTANT FIX.
+
+If there is NO reference in the URL,
+DO NOTHING.
+
+Opening wallet.html normally must
+NOT start payment verification.
 */
 
-if(urlReference){
+if(!urlReference){
+
+console.log(
+"Normal wallet page opened. No ZevPay return detected."
+);
+
+return;
+
+}
+
+
+console.log(
+"ZevPay returned with reference:",
+urlReference
+);
+
 
 let saved = {};
 
@@ -960,6 +1128,11 @@ saved = {};
 
 }
 
+
+/*
+Use the reference ZevPay actually
+returned.
+*/
 
 saved.reference =
 urlReference;
@@ -980,8 +1153,8 @@ JSON.stringify(saved)
 
 
 /*
-Remove query parameters so a
-refresh does not create confusion.
+Remove the query parameters from
+the address bar.
 */
 
 window.history.replaceState(
@@ -990,47 +1163,10 @@ document.title,
 "wallet.html"
 );
 
-}
-
 
 /*
-Check whether there is a pending
-payment.
+Now it is correct to begin checking.
 */
-
-const pending =
-localStorage.getItem(
-"pending_zevpay_payment"
-);
-
-
-if(!pending){
-
-return;
-
-}
-
-
-/*
-Make sure login/session is restored
-before starting verification.
-*/
-
-const session =
-await getValidSession();
-
-
-if(!session){
-
-showMessage(
-"Restoring your login session...",
-"#cc6600"
-);
-
-return;
-
-}
-
 
 showMessage(
 "Checking your payment...",
@@ -1038,11 +1174,11 @@ showMessage(
 );
 
 
-const firstCheck =
+const credited =
 await verifyPayment();
 
 
-if(firstCheck){
+if(credited){
 
 return;
 
@@ -1050,8 +1186,7 @@ return;
 
 
 /*
-Only start polling if there is
-still a pending payment.
+Still pending — continue checking.
 */
 
 const stillPending =
@@ -1069,15 +1204,36 @@ await waitForPayment();
 }
 
 
-/* =========================
-   START APP
-========================= */
+/* =====================================================
+   AUTH LISTENER
+===================================================== */
+
+supabaseClient.auth.onAuthStateChange(
+function(
+event,
+session
+){
+
+console.log(
+"Supabase auth event:",
+event,
+"Session:",
+!!session
+);
+
+}
+);
+
+
+/* =====================================================
+   START
+===================================================== */
 
 async function initializeWallet(){
 
 /*
-Wait for Supabase to restore the
-saved authentication session.
+Give Supabase a moment to restore
+the persisted login session.
 */
 
 await new Promise(
@@ -1089,29 +1245,24 @@ resolve,
 );
 
 
+/*
+Load wallet.
+
+This DOES NOT redirect to login.
+*/
+
 await loadWallet();
+
+
+/*
+Only checks ZevPay if the URL
+actually contains a returned
+reference.
+*/
 
 await checkReturnedPayment();
 
 }
-
-
-/*
-Listen for authentication changes
-without forcing a premature redirect.
-*/
-
-supabaseClient.auth.onAuthStateChange(
-(event,session)=>{
-
-console.log(
-"Auth state:",
-event,
-!!session
-);
-
-}
-);
 
 
 initializeWallet();
@@ -1119,4 +1270,4 @@ initializeWallet();
 </script>
 
 </body>
-   </html>
+</html>
