@@ -1,342 +1,270 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fund Wallet - Delight Vendor Logs</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    *{
-      box-sizing: border-box;
-    }
-    body{
-      margin: 0;
-      background: #f5f5f5;
-      color: #111;
-      font-family: Arial, sans-serif;
-    }
-    header{
-      background: #111;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    header h1{
-      margin: 0;
-      font-size: 25px;
-    }
-    main{
-      width: 100%;
-      max-width: 500px;
-      margin: auto;
-      padding: 25px 20px 40px;
-    }
-    h2{
-      margin-top: 25px;
-      margin-bottom: 12px;
-    }
-    .profile-card{
-      background: white;
-      padding: 22px;
-      border-radius: 14px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.08);
-    }
-    #walletBalance{
-      margin: 0;
-      font-size: 30px;
-      font-weight: bold;
-    }
-    #amount{
-      width: 100%;
-      padding: 16px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      font-size: 18px;
-      outline: none;
-    }
-    #amount:focus{
-      border-color: #111;
-    }
-    .btn{
-      width: 100%;
-      border: none;
-      background: #111;
-      color: white;
-      padding: 16px;
-      margin-top: 10px;
-      border-radius: 10px;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .btn:disabled{
-      opacity: .6;
-      cursor: not-allowed;
-    }
-    #message{
-      min-height: 25px;
-      margin-top: 18px;
-      font-weight: bold;
-      line-height: 1.5;
-    }
-    .back-btn{
-      width: 100%;
-      background: #333;
-      color: white;
-      padding: 16px;
-      margin-top: 15px;
-      border-radius: 10px;
-      text-align: center;
-      font-size: 17px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Fund Wallet - Delight Vendor Logs</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f5f5f5;color:#111;font-family:Arial,sans-serif}
+header{background:#111;color:#fff;padding:20px;text-align:center}
+header h1{margin:0;font-size:25px}
+main{width:100%;max-width:500px;margin:auto;padding:25px 20px 40px}
+h2{margin:25px 0 12px}
+.card{background:#fff;padding:22px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+#walletBalance{margin:0;font-size:30px;font-weight:bold}
+#amount{width:100%;padding:16px;border:1px solid #ccc;border-radius:10px;font-size:18px;outline:none}
+#amount:focus{border-color:#111}
+.btn{width:100%;border:0;background:#111;color:#fff;padding:16px;margin-top:15px;border-radius:10px;font-size:18px;font-weight:bold;cursor:pointer}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+#message{min-height:25px;margin-top:18px;font-weight:bold;line-height:1.5}
+.back-btn{width:100%;background:#333;color:#fff;padding:16px;margin-top:15px;border-radius:10px;text-align:center;font-size:17px;font-weight:bold;cursor:pointer}
+</style>
 </head>
+
 <body>
 
-  <header>
-    <h1>Fund Wallet</h1>
-  </header>
+<header>
+<h1>Fund Wallet</h1>
+</header>
 
-  <main>
-    <h2>Your Balance</h2>
-    <div class="profile-card">
-      <p id="walletBalance">Loading...</p>
-    </div>
+<main>
 
-    <h2>Add Money</h2>
-    <input id="amount" type="number" min="100" step="1" placeholder="Enter amount">
-    <button id="continueButton" class="btn" onclick="continuePayment()">
-      Continue
-    </button>
+<h2>Your Balance</h2>
 
-    <p id="message"></p>
+<div class="card">
+<p id="walletBalance">Loading...</p>
+</div>
 
-    <div class="back-btn" onclick="window.location.href='dashboard.html'">
-      🏠 Back to Dashboard
-    </div>
-  </main>
+<h2>Add Money</h2>
 
-  <script>
-    const SUPABASE_URL = "https://hkfhehbhmucymusaytoe.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
-    const supabaseClient = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
+<div class="card">
+<input
+id="amount"
+type="number"
+min="100"
+step="1"
+placeholder="Enter amount"
+>
 
-    const ZEVPAY_FUNCTION = `${SUPABASE_URL}/functions/v1/zevpay_webhook`;
+<button id="continueButton" class="btn" onclick="continuePayment()">
+Continue
+</button>
 
-    /* ================================ SHOW MESSAGE ================================ */
-    function showMessage(text, color = "#111"){
-      const message = document.getElementById("message");
-      message.style.color = color;
-      message.textContent = text;
+<p id="message"></p>
+</div>
+
+<div class="back-btn" onclick="window.location.href='dashboard.html'">
+🏠 Back to Dashboard
+</div>
+
+</main>
+
+<script>
+const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
+const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+const supabaseClient=window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+const MONNIFY_FUNCTION=
+`${SUPABASE_URL}/functions/v1/monnify_init_payment`;
+
+function showMessage(text,color="#111"){
+  const message=document.getElementById("message");
+  message.style.color=color;
+  message.textContent=text;
+}
+
+async function loadWallet(){
+  try{
+    const {data:{user},error:userError}=
+      await supabaseClient.auth.getUser();
+
+    if(userError||!user){
+      window.location.href="login.html";
+      return;
     }
 
-    /* ================================ LOAD WALLET ================================ */
-    async function loadWallet(){
-      const balanceElement = document.getElementById("walletBalance");
-      try{
-        const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-        if(userError || !user){
-          window.location.href = "login.html";
-          return;
-        }
+    const {data:wallet,error}=
+      await supabaseClient.rpc("ensure_my_wallet");
 
-        const { data: wallet, error } = await supabaseClient.rpc("ensure_my_wallet");
-
-        if(error){
-          console.error("Wallet error:", error);
-          balanceElement.textContent = "₦0.00";
-          return;
-        }
-
-        let balance = 0;
-        if(wallet){
-          if(typeof wallet === "object"){
-            balance = wallet.balance ?? wallet[0]?.balance ?? 0;
-          } else {
-            balance = wallet;
-          }
-        }
-
-        balanceElement.textContent = "₦" + Number(balance || 0).toLocaleString("en-NG", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        });
-      } catch(error){
-        console.error("Load wallet error:", error);
-        balanceElement.textContent = "₦0.00";
-      }
+    if(error){
+      console.error("Wallet error:",error);
+      document.getElementById("walletBalance").textContent=
+        "Unable to load wallet";
+      return;
     }
 
-    /* ================================ GET SESSION ================================ */
-    async function getSession(){
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if(!session){
-        throw new Error("Your login session has expired.");
-      }
-      return session;
-    }
+    const balance=wallet?.balance??0;
 
-    /* ================================ CREATE PAYMENT ================================ */
-    async function createPayment(amount){
-      const session = await getSession();
-
-      const response = await fetch(ZEVPAY_FUNCTION, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${session.access_token}`
-        },
-        body: JSON.stringify({
-          action: "create_payment",
-          amount: amount
-        })
+    document.getElementById("walletBalance").textContent=
+      "₦"+Number(balance).toLocaleString("en-NG",{
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
       });
 
-      const result = await response.json();
-      console.log("Create payment:", result);
+  }catch(error){
+    console.error("Load wallet error:",error);
+    document.getElementById("walletBalance").textContent=
+      "Unable to load wallet";
+  }
+}
 
-      if(!response.ok || !result.success){
-        throw new Error(result?.error || "Could not create payment.");
+async function getSession(){
+  const {data:{session}}=
+    await supabaseClient.auth.getSession();
+
+  if(!session){
+    throw new Error("Your login session has expired.");
+  }
+
+  return session;
+}
+
+async function continuePayment(){
+
+  const amount=Number(
+    document.getElementById("amount").value
+  );
+
+  const button=document.getElementById("continueButton");
+
+  if(!Number.isFinite(amount)||amount<100){
+    showMessage(
+      "Please enter at least ₦100.",
+      "red"
+    );
+    return;
+  }
+
+  try{
+
+    const session=await getSession();
+
+    button.disabled=true;
+    button.textContent="Preparing payment...";
+
+    showMessage(
+      "Preparing your payment...",
+      "#111"
+    );
+
+    const response=await fetch(
+      MONNIFY_FUNCTION,
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "Authorization":
+            `Bearer ${session.access_token}`
+        },
+        body:JSON.stringify({
+          amount:amount
+        })
       }
+    );
 
-      if(!result.reference || !result.session_id || !result.checkout_url){
-        throw new Error("ZevPay did not return complete payment information.");
-      }
+    const result=await response.json();
 
-      return result;
+    console.log(
+      "Monnify initialize:",
+      result
+    );
+
+    if(!response.ok||!result.success){
+      throw new Error(
+        result?.error||
+        "Unable to start payment."
+      );
     }
 
-    /* ================================ VERIFY PAYMENT ================================ */
-    async function verifyPayment(reference, sessionId){
-      try{
-        const session = await getSession();
-
-        const response = await fetch(ZEVPAY_FUNCTION, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${session.access_token}`
-          },
-          body: JSON.stringify({
-            action: "verify_payment",
-            reference: reference,
-            session_id: sessionId
-          })
-        });
-
-        const result = await response.json();
-        console.log("Verify payment:", result);
-
-        if(result.success && (result.credited || result.already_processed)){
-          await loadWallet();
-          showMessage("Payment confirmed! Your wallet has been credited.", "green");
-          return true;
-        }
-
-        return false;
-      } catch(error){
-        console.error("Verify payment error:", error);
-        return false;
-      }
+    if(!result.checkoutUrl){
+      throw new Error(
+        "Monnify did not return a checkout URL."
+      );
     }
 
-    /* ================================ CHECK RETURNED PAYMENT ================================ */
-    async function checkReturnedPayment(){
-      const params = new URLSearchParams(window.location.search);
-      let reference = params.get("reference");
-      let sessionId = params.get("session_id");
+    localStorage.setItem(
+      "pending_monnify_payment",
+      JSON.stringify({
+        reference:
+          result.paymentReference,
+        amount:amount
+      })
+    );
 
-      /* FALLBACK TO LOCALSTORAGE IF QUERY PARAMS ARE MISSING */
-      if(!reference || !sessionId){
-        const saved = localStorage.getItem("pending_zevpay_payment");
-        if(saved){
-          try{
-            const parsed = JSON.parse(saved);
-            reference = reference || parsed.reference;
-            sessionId = sessionId || parsed.session_id;
-          } catch(e){
-            console.error("Error parsing saved pending payment:", e);
-          }
-        }
-      }
+    showMessage(
+      "Opening payment...",
+      "#111"
+    );
 
-      if(!reference){
-        return;
-      }
+    window.location.href=
+      result.checkoutUrl;
 
-      showMessage("Payment received. Verifying...", "#111");
+  }catch(error){
 
-      let confirmed = false;
+    console.error(
+      "Payment error:",
+      error
+    );
 
-      // Poll up to 10 times (3 seconds apart) to ensure verification completes
-      for(let attempt = 1; attempt <= 10; attempt++){
-        confirmed = await verifyPayment(reference, sessionId);
+    showMessage(
+      error.message||
+      "Unable to start payment.",
+      "red"
+    );
 
-        if(confirmed){
-          localStorage.removeItem("pending_zevpay_payment");
-          window.history.replaceState({}, document.title, "wallet.html");
-          return;
-        }
+    button.disabled=false;
+    button.textContent="Continue";
+  }
+}
 
-        await new Promise(resolve => setTimeout(resolve, 3000));
-      }
+function checkPaymentReturn(){
 
-      showMessage("Payment is still being confirmed. Please refresh your wallet shortly.", "#cc6600");
-      localStorage.removeItem("pending_zevpay_payment");
-      window.history.replaceState({}, document.title, "wallet.html");
-    }
+  const params=
+    new URLSearchParams(
+      window.location.search
+    );
 
-    /* ================================ CONTINUE PAYMENT ================================ */
-    async function continuePayment(){
-      const amount = Number(document.getElementById("amount").value);
-      const button = document.getElementById("continueButton");
+  const reference=
+    params.get("paymentReference")||
+    params.get("paymentReferenceId")||
+    params.get("reference");
 
-      if(!Number.isFinite(amount) || amount < 100){
-        showMessage("Please enter at least ₦100.", "red");
-        return;
-      }
+  if(reference){
 
-      try{
-        const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    showMessage(
+      "Payment completed. Your wallet is being updated...",
+      "#111"
+    );
 
-        if(userError || !user){
-          showMessage("Please log in again.", "red");
-          window.location.href = "login.html";
-          return;
-        }
+    localStorage.removeItem(
+      "pending_monnify_payment"
+    );
 
-        button.disabled = true;
-        button.textContent = "Preparing payment...";
-        showMessage("Preparing your payment...", "#111");
+    setTimeout(()=>{
+      loadWallet();
+      showMessage(
+        "Payment received. Your wallet balance will update shortly.",
+        "green"
+      );
 
-        const paymentData = await createPayment(amount);
-        console.log("Payment created:", paymentData);
+      window.history.replaceState(
+        {},
+        document.title,
+        "wallet.html"
+      );
+    },2000);
+  }
+}
 
-        localStorage.setItem("pending_zevpay_payment", JSON.stringify({
-          reference: paymentData.reference,
-          session_id: paymentData.session_id,
-          amount: paymentData.amount
-        }));
+loadWallet();
+checkPaymentReturn();
+</script>
 
-        showMessage("Opening ZevPay checkout...", "#111");
-        window.location.href = paymentData.checkout_url;
-
-      } catch(error){
-        console.error("Payment error:", error);
-        showMessage(error.message || "Unable to start payment.", "red");
-        button.disabled = false;
-        button.textContent = "Continue";
-      }
-    }
-
-    /* ================================ START ================================ */
-    loadWallet();
-    checkReturnedPayment();
-  </script>
 </body>
 </html>
