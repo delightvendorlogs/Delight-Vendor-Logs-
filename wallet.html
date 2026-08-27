@@ -2,67 +2,202 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Fund Wallet</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Fund Wallet - Delight Vendor Logs</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://js.paystack.co/v2/inline.js"></script>
+
 <style>
-body{font-family:Arial;margin:0;background:#f5f5f5;padding:20px}
-.box{max-width:450px;margin:40px auto;background:white;padding:25px;border-radius:15px}
-h2{margin-top:0}
-input,button{width:100%;padding:15px;margin-top:12px;box-sizing:border-box;border-radius:8px}
-input{border:1px solid #ddd}
-button{border:0;background:#111;color:white;font-size:16px}
-#msg{margin-top:15px}
+*{box-sizing:border-box}
+body{margin:0;background:#f5f5f5;color:#111;font-family:Arial,sans-serif}
+header{background:#111;color:#fff;padding:20px;text-align:center}
+header h1{margin:0;font-size:25px}
+main{max-width:500px;margin:auto;padding:25px 20px 40px}
+.card{background:#fff;padding:22px;border-radius:14px;box-shadow:0 2px 10px #00000014;margin-bottom:20px}
+.balance-label{margin:0 0 8px;color:#666}
+#walletBalance{margin:0;font-size:32px;font-weight:bold}
+#amount{width:100%;padding:16px;border:1px solid #ccc;border-radius:10px;font-size:18px;outline:none}
+.btn{width:100%;border:0;background:#111;color:#fff;padding:16px;margin-top:15px;border-radius:10px;font-size:18px;font-weight:bold}
+.btn:disabled{opacity:.6}
+#message{min-height:25px;margin-top:18px;font-weight:bold;line-height:1.5}
+.back{width:100%;background:#333;color:#fff;padding:16px;margin-top:15px;border-radius:10px;text-align:center;font-weight:bold}
 </style>
 </head>
+
 <body>
 
-<div class="box">
-<h2>Fund Wallet</h2>
-<p>Enter amount to add to your wallet.</p>
+<header>
+<h1>Fund Wallet</h1>
+</header>
 
-<input id="amount" type="number" min="100" placeholder="Enter amount">
+<main>
 
-<button onclick="pay()">Fund Wallet</button>
-
-<div id="msg"></div>
+<div class="card">
+<p class="balance-label">Your Balance</p>
+<p id="walletBalance">Loading...</p>
 </div>
 
+<div class="card">
+<h2>Add Money</h2>
+
+<input id="amount" type="number" min="100" step="1" placeholder="Enter amount">
+
+<button id="continueButton" class="btn" onclick="continuePayment()">
+Continue
+</button>
+
+<p id="message"></p>
+</div>
+
+<div class="back" onclick="location.href='dashboard.html'">
+🏠 Back to Dashboard
+</div>
+
+</main>
+
 <script>
+
+const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
+const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
 const PAYSTACK_PUBLIC_KEY="pk_live_404fd9834a0f367328c2fb55a2256e406ed6b43f";
 
-async function pay(){
-  const amount=Number(document.getElementById("amount").value);
-  const msg=document.getElementById("msg");
+const supabaseClient=supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
 
-  if(!amount||amount<100){
-    msg.textContent="Enter at least ₦100";
-    return;
-  }
-
-  const email=prompt("Enter your email:");
-  if(!email)return;
-
-  const reference="WALLET-"+Date.now();
-
-  const popup=new PaystackPop();
-
-  popup.newTransaction({
-    key:PAYSTACK_PUBLIC_KEY,
-    email:email,
-    amount:amount*100,
-    reference:reference,
-
-    onSuccess:function(transaction){
-      msg.textContent="Payment received. Confirming...";
-      window.location.href="wallet.html?payment=success&reference="+transaction.reference;
-    },
-
-    onCancel:function(){
-      msg.textContent="Payment cancelled.";
-    }
-  });
+function message(text,color="#111"){
+const el=document.getElementById("message");
+el.textContent=text;
+el.style.color=color;
 }
+
+async function loadWallet(){
+const {data:{user}}=await supabaseClient.auth.getUser();
+
+if(!user){
+location.href="login.html";
+return;
+}
+
+const {data,error}=await supabaseClient.rpc("ensure_my_wallet");
+
+if(error){
+console.error(error);
+document.getElementById("walletBalance").textContent="Unable to load balance";
+return;
+}
+
+const balance=Number(data?.balance||0);
+
+document.getElementById("walletBalance").textContent=
+"₦"+balance.toLocaleString("en-NG",{
+minimumFractionDigits:2,
+maximumFractionDigits:2
+});
+}
+
+async function continuePayment(){
+
+const amount=Number(document.getElementById("amount").value);
+const button=document.getElementById("continueButton");
+
+if(!Number.isFinite(amount)||amount<100){
+message("Please enter at least ₦100.","red");
+return;
+}
+
+const {data:{user},error}=await supabaseClient.auth.getUser();
+
+if(error||!user){
+message("Please log in again.","red");
+location.href="login.html";
+return;
+}
+
+if(!user.email){
+message("Your account has no email address.","red");
+return;
+}
+
+button.disabled=true;
+button.textContent="Opening payment...";
+message("Opening Paystack...");
+
+try{
+
+const paystack=new PaystackPop();
+
+paystack.newTransaction({
+
+key:PAYSTACK_PUBLIC_KEY,
+
+email:user.email,
+
+amount:Math.round(amount*100),
+
+currency:"NGN",
+
+metadata:{
+user_id:user.id,
+purpose:"wallet_funding"
+},
+
+onSuccess:async(transaction)=>{
+
+message("Payment successful. Updating wallet...","green");
+
+button.textContent="Updating wallet...";
+
+await new Promise(resolve=>setTimeout(resolve,2500));
+
+await loadWallet();
+
+message("Payment successful! Wallet balance updated.","green");
+
+button.disabled=false;
+button.textContent="Continue";
+
+},
+
+onCancel:()=>{
+
+message("Payment cancelled.","#cc6600");
+
+button.disabled=false;
+button.textContent="Continue";
+
+},
+
+onError:(error)=>{
+
+console.error(error);
+
+message(error?.message||"Payment failed.","red");
+
+button.disabled=false;
+button.textContent="Continue";
+
+}
+
+});
+
+}catch(error){
+
+console.error(error);
+
+message("Unable to open Paystack payment.","red");
+
+button.disabled=false;
+button.textContent="Continue";
+
+}
+
+}
+
+loadWallet();
+
 </script>
 
 </body>
