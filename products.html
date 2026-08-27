@@ -1,706 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Service - Delight Vendor Logs</title>
-
-  <link
-    rel="stylesheet"
-    href="style.css"
-  >
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Service - Delight Vendor Logs</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-
-
 <body>
-
-
-<header>
-
-  <h1 id="productName">
-    Loading...
-  </h1>
-
-</header>
-
-
+<header><h1 id="productName">Loading...</h1></header>
 <main>
-
-
-  <div class="profile-card">
-
-
-    <!-- IMAGE -->
-
-    <img
-      id="productImage"
-      src=""
-      alt="Service image"
-      style="
-        width:100%;
-        max-width:500px;
-        max-height:350px;
-        object-fit:cover;
-        border-radius:15px;
-        margin-bottom:20px;
-        display:none;
-      "
-    >
-
-
-    <!-- DESCRIPTION -->
-
-    <p id="productDescription">
-      Loading product...
-    </p>
-
-
-    <!-- PRICE -->
-
-    <h2 id="productPrice">
-      ₦0.00
-    </h2>
-
-
-    <!-- STATUS -->
-
-    <p>
-
-      Status:
-
-      <strong id="productStatus">
-        Loading...
-      </strong>
-
-    </p>
-
-
-    <!-- BUY BUTTON -->
-
-    <button
-      id="buyButton"
-      type="button"
-      onclick="buyProduct()"
-    >
-      Buy Now
-    </button>
-
-
-    <!-- MESSAGE -->
-
-    <p id="message"></p>
-
-
-  </div>
-
-
-  <br>
-
-
-  <button
-    type="button"
-    onclick="window.location.href='dashboard.html'"
-  >
-    🏠 Back to Dashboard
-  </button>
-
-
+<div class="profile-card">
+<img id="productImage" src="" alt="Service image" style="width:100%;max-width:500px;max-height:350px;object-fit:cover;border-radius:15px;margin-bottom:20px;display:none;">
+<p id="productDescription">Loading product...</p>
+<h2 id="productPrice">₦0.00</h2>
+<p>Status: <strong id="productStatus">Loading...</strong></p>
+<button id="buyButton" type="button" onclick="buyProduct()">Buy Now</button>
+<p id="message"></p>
+</div>
+<br>
+<button type="button" onclick="window.location.href='dashboard.html'">🏠 Back to Dashboard</button>
 </main>
-
-
-
 <script>
-
-
-/* ========================================
-   SUPABASE CONNECTION
-======================================== */
-
-
-const SUPABASE_URL =
-  "https://hkfhehbhmucymusaytoe.supabase.co";
-
-
-const SUPABASE_KEY =
-  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
-
-
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
-
-
-/* ========================================
-   GET PRODUCT ID FROM URL
-======================================== */
-
-
-const params =
-  new URLSearchParams(
-    window.location.search
-  );
-
-
-const productId =
-  params.get("id");
-
-
-console.log(
-  "Product ID:",
-  productId
-);
-
-
-
-/* ========================================
-   LOAD PRODUCT
-======================================== */
-
-
-async function loadProduct() {
-
-
-  const name =
-    document.getElementById(
-      "productName"
-    );
-
-
-  const description =
-    document.getElementById(
-      "productDescription"
-    );
-
-
-  const price =
-    document.getElementById(
-      "productPrice"
-    );
-
-
-  const status =
-    document.getElementById(
-      "productStatus"
-    );
-
-
-  const button =
-    document.getElementById(
-      "buyButton"
-    );
-
-
-  const message =
-    document.getElementById(
-      "message"
-    );
-
-
-  const image =
-    document.getElementById(
-      "productImage"
-    );
-
-
-
-  /* ======================================
-     CHECK PRODUCT ID
-  ====================================== */
-
-
-  if (!productId) {
-
-
-    name.textContent =
-      "Product not found";
-
-
-    description.textContent =
-      "No product ID was provided.";
-
-
-    status.textContent =
-      "Unavailable";
-
-
-    button.disabled =
-      true;
-
-
-    return;
-
-  }
-
-
-
-  /* ======================================
-     LOAD FROM SUPABASE
-     
-     IMPORTANT:
-     Your table is "Product"
-  ====================================== */
-
-
-  const {
-    data: product,
-    error
-  } =
-    await supabaseClient
-
-      .from("Product")
-
-      .select("*")
-
-      .eq(
-        "id",
-        productId
-      )
-
-      .single();
-
-
-
-  /* ======================================
-     DATABASE ERROR
-  ====================================== */
-
-
-  if (error || !product) {
-
-
-    console.error(
-      "Product loading error:",
-      error
-    );
-
-
-    name.textContent =
-      "Product not found";
-
-
-    description.textContent =
-      "Unable to load this product.";
-
-
-    price.textContent =
-      "₦0.00";
-
-
-    status.textContent =
-      "Unavailable";
-
-
-    button.disabled =
-      true;
-
-
-    return;
-
-  }
-
-
-
-  console.log(
-    "PRODUCT FOUND:",
-    product
-  );
-
-
-
-  /* ======================================
-     PRODUCT NAME
-  ====================================== */
-
-
-  name.textContent =
-    product.name ||
-    "Unnamed Service";
-
-
-
-  /* ======================================
-     DESCRIPTION
-  ====================================== */
-
-
-  description.textContent =
-    product.description ||
-    "No description available.";
-
-
-
-  /* ======================================
-     PRICE
-  ====================================== */
-
-
-  price.textContent =
-    "₦" +
-
-    Number(
-      product.price || 0
-    ).toLocaleString(
-      "en-NG",
-      {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-      }
-    );
-
-
-
-  /* ======================================
-     STATUS
-  ====================================== */
-
-
-  const productStatus =
-    String(
-      product.status ||
-      "Unavailable"
-    );
-
-
-  status.textContent =
-    productStatus;
-
-
-
-  /* ======================================
-     PRODUCT IMAGE
-  ====================================== */
-
-
-  if (
-    product.image_url &&
-    String(
-      product.image_url
-    ).trim() !== ""
-  ) {
-
-
-    image.src =
-      product.image_url;
-
-
-    image.alt =
-      product.name ||
-      "Service";
-
-
-    image.style.display =
-      "block";
-
-
-    image.onerror =
-      function() {
-
-        console.error(
-          "Image failed to load:",
-          product.image_url
-        );
-
-        image.style.display =
-          "none";
-
-      };
-
-
-  } else {
-
-
-    image.style.display =
-      "none";
-
-  }
-
-
-
-  /* ======================================
-     CHECK AVAILABILITY
-  ====================================== */
-
-
-  if (
-    productStatus
-      .toLowerCase()
-      .trim() !==
-    "available"
-  ) {
-
-
-    button.disabled =
-      true;
-
-
-    button.textContent =
-      "Unavailable";
-
-
-  } else {
-
-
-    button.disabled =
-      false;
-
-
-    button.textContent =
-      "Buy Now";
-
-  }
-
-
+const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
+const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const productId=new URLSearchParams(window.location.search).get("id");
+
+async function loadProduct(){
+const name=document.getElementById("productName");
+const description=document.getElementById("productDescription");
+const price=document.getElementById("productPrice");
+const status=document.getElementById("productStatus");
+const button=document.getElementById("buyButton");
+const image=document.getElementById("productImage");
+if(!productId){
+name.textContent="Product not found";
+description.textContent="No product ID was provided.";
+status.textContent="Unavailable";
+button.disabled=true;
+return;
+}
+const {data:product,error}=await supabaseClient.from("Product").select("*").eq("id",productId).single();
+if(error||!product){
+console.error("Product loading error:",error);
+name.textContent="Product not found";
+description.textContent="Unable to load this product.";
+price.textContent="₦0.00";
+status.textContent="Unavailable";
+button.disabled=true;
+return;
+}
+name.textContent=product.name||"Unnamed Service";
+description.textContent=product.description||"No description available.";
+price.textContent="₦"+Number(product.price||0).toLocaleString("en-NG",{minimumFractionDigits:0,maximumFractionDigits:2});
+const productStatus=String(product.status||"Unavailable");
+status.textContent=productStatus;
+if(product.image_url&&String(product.image_url).trim()!==""){
+image.src=product.image_url;
+image.alt=product.name||"Service";
+image.style.display="block";
+image.onerror=()=>image.style.display="none";
+}else image.style.display="none";
+if(productStatus.toLowerCase().trim()!=="available"){
+button.disabled=true;
+button.textContent="Unavailable";
+}else{
+button.disabled=false;
+button.textContent="Buy Now";
+}
 }
 
-
-
-/* ========================================
-   BUY PRODUCT
-======================================== */
-
-
-async function buyProduct() {
-
-
-  const button =
-    document.getElementById(
-      "buyButton"
-    );
-
-
-  const message =
-    document.getElementById(
-      "message"
-    );
-
-
-
-  /* CHECK ID */
-
-
-  if (!productId) {
-
-
-    message.textContent =
-      "Product ID is missing.";
-
-
-    return;
-
-  }
-
-
-
-  /* DISABLE BUTTON */
-
-
-  button.disabled =
-    true;
-
-
-  button.textContent =
-    "Processing...";
-
-
-  message.textContent =
-    "Checking your wallet...";
-
-
-
-  /* ======================================
-     CHECK LOGIN
-  ====================================== */
-
-
-  const {
-    data: {
-      user
-    },
-    error: userError
-  } =
-    await supabaseClient.auth.getUser();
-
-
-
-  if (
-    userError ||
-    !user
-  ) {
-
-
-    message.textContent =
-      "Please login first.";
-
-
-    button.disabled =
-      false;
-
-
-    button.textContent =
-      "Buy Now";
-
-
-    return;
-
-  }
-
-
-
-  /* ======================================
-     BUY PRODUCT
-  ====================================== */
-
-
-  const {
-    data: order,
-    error
-  } =
-    await supabaseClient.rpc(
-      "buy_product",
-      {
-        p_product_id:
-          Number(productId)
-      }
-    );
-
-
-
-  /* ======================================
-     PURCHASE ERROR
-  ====================================== */
-
-
-  if (error) {
-
-
-    console.error(
-      "Purchase error:",
-      error
-    );
-
-
-    let errorMessage =
-      error.message ||
-      "Purchase failed.";
-
-
-
-    if (
-      errorMessage
-        .toLowerCase()
-        .includes(
-          "insufficient"
-        )
-    ) {
-
-      errorMessage =
-        "Insufficient wallet balance. Please fund your wallet.";
-
-    }
-
-
-
-    if (
-      errorMessage
-        .toLowerCase()
-        .includes(
-          "not authenticated"
-        )
-    ) {
-
-      errorMessage =
-        "Please login first.";
-
-    }
-
-
-
-    if (
-      errorMessage
-        .toLowerCase()
-        .includes(
-          "not available"
-        )
-    ) {
-
-      errorMessage =
-        "Service is currently unavailable. Please choose another service.";
-
-    }
-
-
-
-    message.textContent =
-      errorMessage;
-
-
-    button.disabled =
-      false;
-
-
-    button.textContent =
-      "Buy Now";
-
-
-    return;
-
-  }
-
-
-
-  /* ======================================
-     PURCHASE SUCCESS
-  ====================================== */
-
-
-  message.textContent =
-    "✅ Purchase successful. Your order is now pending.";
-
-
-  button.textContent =
-    "Order Pending";
-
-
-
-  setTimeout(
-    function() {
-
-      window.location.href =
-        "purchase.html";
-
-    },
-    1200
-  );
-
-
+async function buyProduct(){
+const button=document.getElementById("buyButton");
+const message=document.getElementById("message");
+if(!productId){
+message.textContent="Product ID is missing.";
+return;
 }
-
-
-
-/* ========================================
-   START
-======================================== */
-
+button.disabled=true;
+button.textContent="Processing...";
+message.textContent="Checking your wallet...";
+const {data:{user},error:userError}=await supabaseClient.auth.getUser();
+if(userError||!user){
+message.textContent="Please login first.";
+button.disabled=false;
+button.textContent="Buy Now";
+return;
+}
+const {data:order,error}=await supabaseClient.rpc("buy_product",{p_product_id:Number(productId)});
+if(error){
+console.error("Purchase error:",error);
+let errorMessage=error.message||"Purchase failed.";
+if(errorMessage.toLowerCase().includes("insufficient")) errorMessage="Insufficient wallet balance. Please fund your wallet.";
+if(errorMessage.toLowerCase().includes("not authenticated")) errorMessage="Please login first.";
+if(errorMessage.toLowerCase().includes("not available")) errorMessage="Service is currently unavailable. Please choose another service.";
+message.textContent=errorMessage;
+button.disabled=false;
+button.textContent="Buy Now";
+return;
+}
+console.log("Purchase result:",order);
+if(order&&order.status==="completed"){
+message.textContent="✅ Purchase successful!";
+button.textContent="Purchase Complete";
+setTimeout(()=>window.location.href="purchases.html",1200);
+return;
+}
+if(order&&order.status==="pending"){
+message.textContent="⏳ Payment successful. Your order is pending.";
+button.textContent="Order Pending";
+setTimeout(()=>window.location.href="pending.html",1200);
+return;
+}
+message.textContent=order?.message||"Purchase processed successfully.";
+button.disabled=false;
+button.textContent="Buy Now";
+}
 
 loadProduct();
-
-
 </script>
-
-
 </body>
-
-  </html>
+</html>
