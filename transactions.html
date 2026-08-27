@@ -1,180 +1,357 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Transactions - Delight Vendor Logs</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transactions - Delight Vendor Logs</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #f5f5f5;
+      color: #111;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background: #111;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 25px;
+    }
+
+    main {
+      max-width: 600px;
+      margin: auto;
+      padding: 25px 20px 40px;
+    }
+
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 2px 10px #00000014;
+      margin-bottom: 18px;
+    }
+
+    .balance-label {
+      margin: 0 0 6px;
+      color: #666;
+    }
+
+    #walletBalance {
+      margin: 0;
+      font-size: 30px;
+      font-weight: bold;
+    }
+
+    #transactions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .transaction {
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .transaction-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .transaction-type {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .amount {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .positive {
+      color: green;
+    }
+
+    .status {
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .description {
+      margin-top: 6px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .date {
+      margin-top: 8px;
+      color: #888;
+      font-size: 13px;
+    }
+
+    .empty {
+      text-align: center;
+      color: #777;
+      padding: 30px 10px;
+    }
+
+    .error {
+      color: red;
+      text-align: center;
+      padding: 20px 10px;
+    }
+
+    .back {
+      width: 100%;
+      background: #333;
+      color: #fff;
+      padding: 16px;
+      margin-top: 20px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .refresh {
+      width: 100%;
+      border: 0;
+      background: #111;
+      color: #fff;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 18px;
+    }
+  </style>
 </head>
 
 <body>
 
 <header>
-<h1>Transactions</h1>
+  <h1>Transaction History</h1>
 </header>
 
 <main>
-<h2>Transaction History</h2>
 
-<div id="transactions">
-<p>Checking your account...</p>
-</div>
+  <div class="card">
+    <p class="balance-label">Your Balance</p>
+    <p id="walletBalance">Loading...</p>
+  </div>
 
-<br>
+  <button class="refresh" onclick="loadTransactions()">
+    Refresh Transactions
+  </button>
 
-<button type="button" onclick="window.location.href='wallet.html'">
-💰 Fund Wallet
-</button>
+  <div class="card">
+    <div id="transactions">
+      <div class="empty">Loading transactions...</div>
+    </div>
+  </div>
 
-<br><br>
-
-<button type="button" onclick="window.location.href='dashboard.html'">
-🏠 Back to Dashboard
-</button>
+  <div class="back" onclick="location.href='dashboard.html'">
+    🏠 Back to Dashboard
+  </div>
 
 </main>
 
 <script>
-const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
-const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+  const SUPABASE_URL =
+    "https://hkfhehbhmucymusaytoe.supabase.co";
 
-const supabaseClient=supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY,
-{
-auth:{
-persistSession:true,
-autoRefreshToken:true,
-detectSessionInUrl:true
-}
-}
-);
+  const SUPABASE_KEY =
+    "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
-function escapeHTML(value){
-return String(value??"")
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
-}
+  const supabaseClient =
+    supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-async function loadTransactions(){
 
-const container=document.getElementById("transactions");
+  async function getCurrentUser() {
+    const {
+      data: { user },
+      error
+    } = await supabaseClient.auth.getUser();
 
-container.innerHTML="<p>Loading transactions...</p>";
+    if (error || !user) {
+      location.href = "login.html";
+      return null;
+    }
 
-const {data:{user},error:userError}=await supabaseClient.auth.getUser();
+    return user;
+  }
 
-if(userError||!user){
-container.innerHTML=`
-<div style="background:white;padding:20px;border-radius:12px;text-align:center">
-<h3>Login Session Not Found</h3>
-<p>Please log in again to view your transactions.</p>
-<button type="button" onclick="window.location.href='login.html'">
-🔐 Login Again
-</button>
-</div>`;
-return;
-}
 
-const {data:transactions,error}=await supabaseClient
-.from("transactions")
-.select("id,user_id,type,amount,status,description,reference,created_at")
-.eq("user_id",user.id)
-.order("created_at",{ascending:false});
+  async function loadWalletBalance(userId) {
 
-if(error){
-console.error("TRANSACTIONS ERROR:",error);
+    const { data, error } =
+      await supabaseClient.rpc("ensure_my_wallet");
 
-container.innerHTML=`
-<div style="background:white;padding:20px;border-radius:12px;text-align:center">
-<h3>Unable to load transactions</h3>
-<p>${escapeHTML(error.message)}</p>
-</div>`;
-return;
-}
+    if (error) {
+      console.error("Balance error:", error);
+      document.getElementById("walletBalance").textContent =
+        "Unable to load balance";
+      return;
+    }
 
-if(!transactions||transactions.length===0){
-container.innerHTML=`
-<div style="background:white;padding:20px;border-radius:12px;text-align:center">
-<h3>No Transactions Yet</h3>
-<p>Your wallet transactions will appear here.</p>
-</div>`;
-return;
-}
+    const balance = Number(data?.balance || 0);
 
-container.innerHTML="";
+    document.getElementById("walletBalance").textContent =
+      "₦" +
+      balance.toLocaleString("en-NG", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+  }
 
-transactions.forEach(transaction=>{
 
-const box=document.createElement("div");
+  async function loadTransactions() {
 
-box.style.background="white";
-box.style.padding="18px";
-box.style.margin="12px 0";
-box.style.borderRadius="12px";
-box.style.textAlign="left";
-box.style.boxShadow="0 2px 8px rgba(0,0,0,0.08)";
+    const container =
+      document.getElementById("transactions");
 
-const amount=Number(transaction.amount||0).toLocaleString(
-"en-NG",
-{
-minimumFractionDigits:2,
-maximumFractionDigits:2
-}
-);
+    container.innerHTML =
+      '<div class="empty">Loading transactions...</div>';
 
-const date=transaction.created_at
-?new Date(transaction.created_at).toLocaleString("en-NG")
-:"Date unavailable";
+    const user = await getCurrentUser();
 
-const type=transaction.type||"Transaction";
-const status=transaction.status||"Pending";
-const description=transaction.description||"";
-const reference=transaction.reference||"";
+    if (!user) return;
 
-box.innerHTML=`
-<h3>${escapeHTML(type)}</h3>
 
-<p>
-Amount:
-<strong>₦${amount}</strong>
-</p>
+    await loadWalletBalance(user.id);
 
-<p>
-Status:
-<strong>${escapeHTML(status)}</strong>
-</p>
 
-${description?`
-<p>${escapeHTML(description)}</p>
-`:""}
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("transactions")
+      .select(
+        "id, user_id, type, amount, status, description, created_at"
+      )
+      .eq("user_id", user.id)
+      .order("created_at", {
+        ascending: false
+      });
 
-${reference?`
-<p>
-Reference:
-<small>${escapeHTML(reference)}</small>
-</p>
-`:""}
 
-<small>${escapeHTML(date)}</small>
-`;
+    if (error) {
 
-container.appendChild(box);
+      console.error("Transaction error:", error);
 
-});
+      container.innerHTML =
+        '<div class="error">Unable to load transactions.</div>';
 
-}
+      return;
+    }
 
-loadTransactions();
 
-document.addEventListener("visibilitychange",()=>{
-if(!document.hidden)loadTransactions();
-});
+    if (!data || data.length === 0) {
+
+      container.innerHTML =
+        '<div class="empty">No transactions yet.</div>';
+
+      return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    data.forEach(transaction => {
+
+      const amount =
+        Number(transaction.amount || 0);
+
+      const date =
+        transaction.created_at
+          ? new Date(transaction.created_at)
+              .toLocaleString("en-NG", {
+                dateStyle: "medium",
+                timeStyle: "short"
+              })
+          : "";
+
+
+      const item =
+        document.createElement("div");
+
+      item.className = "transaction";
+
+
+      item.innerHTML = `
+        <div class="transaction-top">
+
+          <div class="transaction-type">
+            ${escapeHTML(
+              transaction.type || "Transaction"
+            )}
+          </div>
+
+          <div class="amount positive">
+            +₦${amount.toLocaleString("en-NG", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            })}
+          </div>
+
+        </div>
+
+        <div class="status">
+          ${escapeHTML(
+            transaction.status || "completed"
+          )}
+        </div>
+
+        <div class="description">
+          ${escapeHTML(
+            transaction.description || ""
+          )}
+        </div>
+
+        <div class="date">
+          ${escapeHTML(date)}
+        </div>
+      `;
+
+
+      container.appendChild(item);
+    });
+  }
+
+
+  function escapeHTML(value) {
+
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+
+  loadTransactions();
 </script>
 
 </body>
-</html>
+  </html>
