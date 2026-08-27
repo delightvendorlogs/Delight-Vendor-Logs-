@@ -6,7 +6,6 @@
 <title>Fund Wallet - Delight Vendor Logs</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://js.paystack.co/v2/inline.js"></script>
-
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f5;color:#111;font-family:Arial,sans-serif}
@@ -17,21 +16,18 @@ main{max-width:500px;margin:auto;padding:25px 20px 40px}
 .balance-label{margin:0 0 8px;color:#666}
 #walletBalance{margin:0;font-size:32px;font-weight:bold}
 #amount{width:100%;padding:16px;border:1px solid #ccc;border-radius:10px;font-size:18px;outline:none}
-.btn{width:100%;border:0;background:#111;color:#fff;padding:16px;margin-top:15px;border-radius:10px;font-size:18px;font-weight:bold}
+.btn{width:100%;border:0;background:#111;color:#fff;padding:16px;margin-top:15px;border-radius:10px;font-size:18px;font-weight:bold;cursor:pointer}
 .btn:disabled{opacity:.6}
 #message{min-height:25px;margin-top:18px;font-weight:bold;line-height:1.5}
-.back{width:100%;background:#333;color:#fff;padding:16px;margin-top:15px;border-radius:10px;text-align:center;font-weight:bold}
+.back{width:100%;background:#333;color:#fff;padding:16px;margin-top:15px;border-radius:10px;text-align:center;font-weight:bold;cursor:pointer}
 </style>
 </head>
-
 <body>
-
 <header>
 <h1>Fund Wallet</h1>
 </header>
 
 <main>
-
 <div class="card">
 <p class="balance-label">Your Balance</p>
 <p id="walletBalance">Loading...</p>
@@ -39,33 +35,22 @@ main{max-width:500px;margin:auto;padding:25px 20px 40px}
 
 <div class="card">
 <h2>Add Money</h2>
-
 <input id="amount" type="number" min="100" step="1" placeholder="Enter amount">
-
-<button id="continueButton" class="btn" onclick="continuePayment()">
-Continue
-</button>
-
+<button id="continueButton" class="btn" onclick="continuePayment()">Continue</button>
 <p id="message"></p>
 </div>
 
 <div class="back" onclick="location.href='dashboard.html'">
 🏠 Back to Dashboard
 </div>
-
 </main>
 
 <script>
-
 const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
 const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
-
 const PAYSTACK_PUBLIC_KEY="pk_live_404fd9834a0f367328c2fb55a2256e406ed6b43f";
 
-const supabaseClient=supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-);
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 function message(text,color="#111"){
 const el=document.getElementById("message");
@@ -73,12 +58,12 @@ el.textContent=text;
 el.style.color=color;
 }
 
-async function loadWallet(){
+async function getWalletBalance(){
 const {data:{user}}=await supabaseClient.auth.getUser();
 
 if(!user){
 location.href="login.html";
-return;
+return null;
 }
 
 const {data,error}=await supabaseClient.rpc("ensure_my_wallet");
@@ -86,20 +71,27 @@ const {data,error}=await supabaseClient.rpc("ensure_my_wallet");
 if(error){
 console.error(error);
 document.getElementById("walletBalance").textContent="Unable to load balance";
-return;
+return null;
 }
 
-const balance=Number(data?.balance||0);
+return Number(data?.balance||0);
+}
+
+async function loadWallet(){
+const balance=await getWalletBalance();
+
+if(balance===null)return null;
 
 document.getElementById("walletBalance").textContent=
 "₦"+balance.toLocaleString("en-NG",{
 minimumFractionDigits:2,
 maximumFractionDigits:2
 });
+
+return balance;
 }
 
 async function continuePayment(){
-
 const amount=Number(document.getElementById("amount").value);
 const button=document.getElementById("continueButton");
 
@@ -111,7 +103,6 @@ return;
 const {data:{user},error}=await supabaseClient.auth.getUser();
 
 if(error||!user){
-message("Please log in again.","red");
 location.href="login.html";
 return;
 }
@@ -126,79 +117,72 @@ button.textContent="Opening payment...";
 message("Opening Paystack...");
 
 try{
+const oldBalance=await getWalletBalance();
+
+if(oldBalance===null){
+button.disabled=false;
+button.textContent="Continue";
+return;
+}
 
 const paystack=new PaystackPop();
 
 paystack.newTransaction({
-
 key:PAYSTACK_PUBLIC_KEY,
-
 email:user.email,
-
 amount:Math.round(amount*100),
-
 currency:"NGN",
-
 metadata:{
 user_id:user.id,
 purpose:"wallet_funding"
 },
 
 onSuccess:async(transaction)=>{
+message("Payment successful. Waiting for wallet confirmation...","green");
+button.textContent="Confirming...";
 
-message("Payment successful. Updating wallet...","green");
+for(let i=0;i<10;i++){
+await new Promise(resolve=>setTimeout(resolve,3000));
 
-button.textContent="Updating wallet...";
+const newBalance=await loadWallet();
 
-await new Promise(resolve=>setTimeout(resolve,2500));
-
-await loadWallet();
-
+if(newBalance!==null&&newBalance>oldBalance){
 message("Payment successful! Wallet balance updated.","green");
-
+document.getElementById("amount").value="";
 button.disabled=false;
 button.textContent="Continue";
+return;
+}
+}
 
+message("Payment was successful, but wallet balance has not updated yet. Please wait and refresh.","#cc6600");
+button.disabled=false;
+button.textContent="Continue";
 },
 
 onCancel:()=>{
-
 message("Payment cancelled.","#cc6600");
-
 button.disabled=false;
 button.textContent="Continue";
-
 },
 
 onError:(error)=>{
-
 console.error(error);
-
 message(error?.message||"Payment failed.","red");
-
 button.disabled=false;
 button.textContent="Continue";
-
 }
-
 });
 
 }catch(error){
-
 console.error(error);
-
 message("Unable to open Paystack payment.","red");
-
 button.disabled=false;
 button.textContent="Continue";
-
 }
-
 }
 
 loadWallet();
-
 </script>
-
 </body>
 </html>
