@@ -1,1279 +1,476 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delight Vendor Logs</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Delight Vendor Logs</title>
-
-  <link
-    rel="stylesheet"
-    href="style.css"
-  >
-
-  <script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-  ></script>
-
-  <style>
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      color: #111;
-    }
-
-    header {
-      background: #111;
-      color: white;
-      padding: 18px 15px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 21px;
-    }
-
-    header button {
-      background: white;
-      color: #111;
-      border: none;
-      border-radius: 9px;
-      padding: 9px 12px;
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    main {
-      padding: 15px;
-      max-width: 800px;
-      margin: auto;
-    }
-
-    /* =========================
-       CATEGORY BAR
-    ========================= */
-
-    .category-wrapper {
-      margin: 0 -15px;
-      padding: 12px 15px;
-      background: white;
-      border-bottom: 1px solid #ddd;
-      position: sticky;
-      top: 0;
-      z-index: 20;
-    }
-
-    .category-bar {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      white-space: nowrap;
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .category-bar::-webkit-scrollbar {
-      display: none;
-    }
-
-    .category-btn {
-      flex: 0 0 auto;
-      border: none;
-      background: #eeeeee;
-      color: #111;
-      padding: 11px 16px;
-      border-radius: 25px;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .category-btn.active {
-      background: #111;
-      color: white;
-    }
-
-    /* =========================
-       WALLET
-    ========================= */
-
-    .wallet-card {
-      background: white;
-      padding: 20px;
-      margin-top: 18px;
-      border-radius: 15px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-    }
-
-    .wallet-card h2 {
-      margin-top: 0;
-    }
-
-    #walletBalance {
-      font-size: 27px;
-      font-weight: bold;
-      margin: 10px 0 18px;
-    }
-
-    .main-button {
-      border: none;
-      background: #111;
-      color: white;
-      padding: 13px 18px;
-      border-radius: 10px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 15px;
-    }
-
-    /* =========================
-       SERVICES
-    ========================= */
-
-    .services-section {
-      margin-top: 20px;
-    }
-
-    .services-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .services-header h2 {
-      margin: 0;
-    }
-
-    .search-box {
-      width: 100%;
-      margin: 15px 0;
-      padding: 14px 15px;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      font-size: 16px;
-      outline: none;
-      background: white;
-    }
-
-    .search-box:focus {
-      border-color: #111;
-    }
-
-    #categoryDescription {
-      color: #666;
-      font-size: 14px;
-      margin-top: 7px;
-    }
-
-    /* =========================
-       PRODUCT CARD
-    ========================= */
-
-    .products-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
-    }
-
-    .product-card {
-      background: white;
-      border-radius: 14px;
-      padding: 15px;
-      box-shadow: 0 2px 9px rgba(0,0,0,0.07);
-      overflow: hidden;
-    }
-
-    .product-image {
-      width: 100%;
-      height: 190px;
-      object-fit: cover;
-      border-radius: 10px;
-      background: #eee;
-      display: block;
-    }
-
-    .no-image {
-      width: 100%;
-      height: 190px;
-      border-radius: 10px;
-      background: #eeeeee;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 45px;
-    }
-
-    .product-card h3 {
-      margin: 13px 0 7px;
-      font-size: 18px;
-    }
-
-    .product-description {
-      color: #666;
-      font-size: 14px;
-      line-height: 1.5;
-      white-space: pre-wrap;
-    }
-
-    .product-price {
-      font-size: 19px;
-      font-weight: bold;
-      margin: 12px 0;
-    }
-
-    .product-category {
-      display: inline-block;
-      background: #eeeeee;
-      padding: 6px 9px;
-      border-radius: 7px;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .stock-text {
-      font-size: 13px;
-      color: #555;
-      margin: 8px 0;
-    }
-
-    .buy-button {
-      width: 100%;
-      border: none;
-      background: #111;
-      color: white;
-      padding: 13px;
-      border-radius: 9px;
-      font-weight: bold;
-      font-size: 15px;
-      cursor: pointer;
-      margin-top: 8px;
-    }
-
-    .buy-button:disabled {
-      background: #999;
-      cursor: not-allowed;
-    }
-
-    /* =========================
-       MENU
-    ========================= */
-
-    #menu {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 280px;
-      max-width: 85%;
-      height: 100vh;
-      background: white;
-      z-index: 100;
-      box-shadow: -3px 0 15px rgba(0,0,0,0.2);
-      padding: 22px;
-      overflow-y: auto;
-    }
-
-    #menu h3 {
-      margin-top: 0;
-      font-size: 22px;
-    }
-
-    .menu-item {
-      padding: 14px 5px;
-      border-bottom: 1px solid #eee;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .menu-item:hover {
-      background: #f5f5f5;
-    }
-
-    .menu-close {
-      color: #b00020;
-    }
-
-    /* =========================
-       EMPTY / ERROR
-    ========================= */
-
-    .message-box {
-      background: white;
-      padding: 22px;
-      border-radius: 13px;
-      text-align: center;
-      color: #666;
-    }
-
-    .error-box {
-      background: #ffe5e5;
-      color: #9b0000;
-      padding: 15px;
-      border-radius: 10px;
-    }
-
-  </style>
-
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#111}
+header{background:#111;color:white;padding:18px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+header h1{margin:0;font-size:21px}
+header button{background:white;color:#111;border:none;border-radius:9px;padding:9px 12px;font-size:20px;cursor:pointer}
+main{padding:15px;max-width:800px;margin:auto}
+.category-wrapper{margin:0 -15px;padding:12px 15px;background:white;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:20}
+.category-bar{display:flex;gap:10px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.category-bar::-webkit-scrollbar{display:none}
+.category-btn{flex:0 0 auto;border:none;background:#eee;color:#111;padding:11px 16px;border-radius:25px;font-size:14px;font-weight:bold;cursor:pointer}
+.category-btn.active{background:#111;color:white}
+.wallet-card{background:white;padding:20px;margin-top:18px;border-radius:15px;box-shadow:0 2px 10px rgba(0,0,0,.07)}
+.wallet-card h2{margin-top:0}
+#walletBalance{font-size:27px;font-weight:bold;margin:10px 0 18px}
+.main-button{border:none;background:#111;color:white;padding:13px 18px;border-radius:10px;font-weight:bold;cursor:pointer;font-size:15px}
+.services-section{margin-top:20px}
+.services-header{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.services-header h2{margin:0}
+.search-box{width:100%;margin:15px 0;padding:14px 15px;border:1px solid #ddd;border-radius:12px;font-size:16px;outline:none;background:white}
+.search-box:focus{border-color:#111}
+#categoryDescription{color:#666;font-size:14px;margin-top:7px}
+.products-grid{display:grid;grid-template-columns:1fr;gap:14px}
+.product-card{background:white;border-radius:14px;padding:15px;box-shadow:0 2px 9px rgba(0,0,0,.07);overflow:hidden}
+.product-image{width:100%;height:190px;object-fit:cover;border-radius:10px;background:#eee;display:block}
+.no-image{width:100%;height:190px;border-radius:10px;background:#eee;display:flex;align-items:center;justify-content:center;font-size:45px}
+.product-card h3{margin:13px 0 7px;font-size:18px}
+.product-description{color:#666;font-size:14px;line-height:1.5;white-space:pre-wrap}
+.product-price{font-size:19px;font-weight:bold;margin:12px 0}
+.product-category{display:inline-block;background:#eee;padding:6px 9px;border-radius:7px;font-size:12px;font-weight:bold}
+.stock-text{font-size:13px;color:#555;margin:8px 0}
+.buy-button{width:100%;border:none;background:#111;color:white;padding:13px;border-radius:9px;font-weight:bold;font-size:15px;cursor:pointer;margin-top:8px}
+.buy-button:disabled{background:#999;cursor:not-allowed}
+#menu{position:fixed;top:0;right:0;width:280px;max-width:85%;height:100vh;background:white;z-index:100;box-shadow:-3px 0 15px rgba(0,0,0,.2);padding:22px;overflow-y:auto}
+#menu h3{margin-top:0;font-size:22px}
+.menu-item{padding:14px 5px;border-bottom:1px solid #eee;cursor:pointer;font-weight:bold}
+.menu-item:hover{background:#f5f5f5}
+.menu-close{color:#b00020}
+.message-box{background:white;padding:22px;border-radius:13px;text-align:center;color:#666}
+.error-box{background:#ffe5e5;color:#9b0000;padding:15px;border-radius:10px}
+</style>
 </head>
-
 
 <body>
 
-
 <header>
-
-  <h1>
-    Delight Vendor Logs
-  </h1>
-
-  <button
-    type="button"
-    onclick="openMenu()"
-  >
-    ☰
-  </button>
-
+<h1>Delight Vendor Logs</h1>
+<button type="button" onclick="openMenu()">☰</button>
 </header>
 
-
-
-<!-- =========================
-     SWIPEABLE CATEGORY BAR
-========================= -->
-
 <div class="category-wrapper">
+<div id="categoryBar" class="category-bar">
 
-  <div
-    id="categoryBar"
-    class="category-bar"
-  >
+<button class="category-btn active" data-category="Home" onclick="selectCategory('Home',this)">🏠 Home</button>
 
-    <button
-      class="category-btn active"
-      data-category="Home"
-      onclick="selectCategory('Home', this)"
-    >
-      🏠 Home
-    </button>
+<button class="category-btn" data-category="All Social Logs" onclick="selectCategory('All Social Logs',this)">📱 All Social Logs</button>
 
-    <button
-      class="category-btn"
-      data-category="All Social Logs"
-      onclick="selectCategory('All Social Logs', this)"
-    >
-      📱 All Social Logs
-    </button>
+<button class="category-btn" data-category="Working Pictures" onclick="selectCategory('Working Pictures',this)">🖼️ Working Pictures</button>
 
-    <button
-      class="category-btn"
-      data-category="Working Pictures"
-      onclick="selectCategory('Working Pictures', this)"
-    >
-      🖼️ Working Pictures
-    </button>
+<button class="category-btn" data-category="Formats" onclick="selectCategory('Formats',this)">📄 Formats</button>
 
-    <button
-      class="category-btn"
-      data-category="Formats"
-      onclick="selectCategory('Formats', this)"
-    >
-      📄 Formats
-    </button>
+<button class="category-btn" data-category="Working Links" onclick="selectCategory('Working Links',this)">🔗 Working Links</button>
 
-    <button
-      class="category-btn"
-      data-category="Working Links"
-      onclick="selectCategory('Working Links', this)"
-    >
-      🔗 Working Links
-    </button>
+<button class="category-btn" data-category="Voice Cloner/Fake Video Call" onclick="selectCategory('Voice Cloner/Fake Video Call',this)">🎙️ Voice Cloner/Fake Video Call</button>
 
-    <button
-      class="category-btn"
-      data-category="Voice Cloner/Fake Video Call"
-      onclick="selectCategory('Voice Cloner/Fake Video Call', this)"
-    >
-      🎙️ Voice Cloner/Fake Video Call
-    </button>
-
-    <button
-      class="category-btn"
-      data-category="All Countries Number"
-      onclick="selectCategory('All Countries Number', this)"
-    >
-      📞 All Countries Number
-    </button>
-
-  </div>
+<button class="category-btn" data-category="All Countries Number" onclick="selectCategory('All Countries Number',this)">📞 All Countries Number</button>
 
 </div>
-
-
+</div>
 
 <main>
 
-
-<!-- =========================
-     WALLET
-========================= -->
-
 <section class="wallet-card">
+<h2>Wallet Balance</h2>
+<p id="walletBalance">Loading...</p>
 
-  <h2>
-    Wallet Balance
-  </h2>
-
-  <p id="walletBalance">
-    Loading...
-  </p>
-
-  <button
-    type="button"
-    class="main-button"
-    onclick="window.location.href='wallet.html'"
-  >
-    💰 Fund Wallet
-  </button>
-
+<button type="button" class="main-button" onclick="window.location.href='wallet.html'">
+💰 Fund Wallet
+</button>
 </section>
-
-
-
-<!-- =========================
-     SERVICES
-========================= -->
 
 <section class="services-section">
 
-  <div class="services-header">
+<div class="services-header">
+<div>
+<h2 id="categoryTitle">Latest Services</h2>
+<p id="categoryDescription">Browse all available services.</p>
+</div>
+</div>
 
-    <div>
+<input id="serviceSearch" class="search-box" type="search" placeholder="🔍 Search service..." oninput="filterServices()">
 
-      <h2 id="categoryTitle">
-        Latest Services
-      </h2>
-
-      <p id="categoryDescription">
-        Browse all available services.
-      </p>
-
-    </div>
-
-  </div>
-
-
-  <input
-    id="serviceSearch"
-    class="search-box"
-    type="search"
-    placeholder="🔍 Search service..."
-    oninput="filterServices()"
-  >
-
-
-  <div
-    id="products"
-    class="products-grid"
-  >
-
-    <div class="message-box">
-      Loading services...
-    </div>
-
-  </div>
+<div id="products" class="products-grid">
+<div class="message-box">Loading services...</div>
+</div>
 
 </section>
-
-
 </main>
 
+<div id="menu" style="display:none;">
 
+<h3>Menu</h3>
 
-<!-- =========================
-     MENU
-========================= -->
+<div class="menu-item" onclick="window.location.href='profile.html'">
+👤 Profile
+</div>
 
-<div
-  id="menu"
-  style="display:none;"
->
+<div class="menu-item" onclick="window.location.href='wallet.html'">
+💰 Fund Wallet
+</div>
 
-  <h3>
-    Menu
-  </h3>
+<div class="menu-item" onclick="window.location.href='transactions.html'">
+📜 Transactions
+</div>
 
+<div class="menu-item" onclick="window.location.href='purchases.html'">
+🛒 My Purchases
+</div>
 
-  <div
-    class="menu-item"
-    onclick="window.location.href='profile.html'"
-  >
-    👤 Profile
-  </div>
+<div class="menu-item" onclick="window.location.href='pending.html'">
+⏳ Pending Orders
+</div>
 
+<div class="menu-item" onclick="window.location.href='settings.html'">
+⚙️ Settings
+</div>
 
-  <div
-    class="menu-item"
-    onclick="window.location.href='wallet.html'"
-  >
-    💰 Fund Wallet
-  </div>
+<div class="menu-item">
+<a href="https://wa.me/2347015908401" target="_blank" style="color:inherit;text-decoration:none;display:block;">
+💬 WhatsApp Support
+</a>
+</div>
 
-
-  <div
-    class="menu-item"
-    onclick="window.location.href='transactions.html'"
-  >
-    📜 Transactions
-  </div>
-
-
-  <div
-    class="menu-item"
-    onclick="window.location.href='purchases.html'"
-  >
-    🛒 My Purchases
-  </div>
-
-
-  <div
-    class="menu-item"
-    onclick="window.location.href='pending.html'"
-  >
-    ⏳ Pending Orders
-  </div>
-
-
-  <div
-    class="menu-item"
-    onclick="window.location.href='settings.html'"
-  >
-    ⚙️ Settings
-  </div>
-
-
-  <div class="menu-item">
-
-    <a
-      href="https://wa.me/2347015908401"
-      target="_blank"
-      style="
-        color:inherit;
-        text-decoration:none;
-        display:block;
-      "
-    >
-      💬 WhatsApp Support
-    </a>
-
-  </div>
-
-
-  <div
-    class="menu-item menu-close"
-    onclick="closeMenu()"
-  >
-    ✖ Close
-  </div>
+<div class="menu-item menu-close" onclick="closeMenu()">
+✖ Close
+</div>
 
 </div>
 
-
-
 <script>
 
+const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
 
-/* =========================
-   SUPABASE
-========================= */
+const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
-const SUPABASE_URL =
-  "https://hkfhehbhmucymusaytoe.supabase.co";
+const supabaseClient=window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
 
+let allServices=[];
+let selectedCategory="Home";
 
-const SUPABASE_KEY =
-  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+function openMenu(){
+document.getElementById("menu").style.display="block";
+}
 
+function closeMenu(){
+document.getElementById("menu").style.display="none";
+}
 
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+function escapeHTML(value){
+return String(value??"")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+}
 
+async function loadWallet(){
 
+const {data:{user},error:userError}=await supabaseClient.auth.getUser();
 
-/* =========================
-   GLOBAL SERVICES
-========================= */
+if(userError||!user){
+window.location.href="login.html";
+return;
+}
 
-let allServices = [];
+const {data:wallet,error}=await supabaseClient.rpc("ensure_my_wallet");
 
-let selectedCategory = "Home";
+if(error){
+console.error(error);
+document.getElementById("walletBalance").textContent="Unable to load balance.";
+return;
+}
 
+const balance=wallet?.balance??0;
 
-
-/* =========================
-   MENU
-========================= */
-
-function openMenu() {
-
-  document.getElementById(
-    "menu"
-  ).style.display = "block";
+document.getElementById("walletBalance").textContent=
+"₦"+Number(balance).toLocaleString("en-NG",{
+minimumFractionDigits:2,
+maximumFractionDigits:2
+});
 
 }
 
+function selectCategory(category,button){
 
-function closeMenu() {
+selectedCategory=category;
 
-  document.getElementById(
-    "menu"
-  ).style.display = "none";
+document.querySelectorAll(".category-btn").forEach(function(btn){
+btn.classList.remove("active");
+});
 
-}
+button.classList.add("active");
 
+const title=document.getElementById("categoryTitle");
+const description=document.getElementById("categoryDescription");
+const search=document.getElementById("serviceSearch");
 
+search.value="";
 
-/* =========================
-   ESCAPE HTML
-========================= */
+if(category==="Home"){
 
-function escapeHTML(value) {
+title.textContent="Latest Services";
+description.textContent="Browse all available services.";
 
-  return String(value ?? "")
+}else{
 
-    .replace(/&/g, "&amp;")
-
-    .replace(/</g, "&lt;")
-
-    .replace(/>/g, "&gt;")
-
-    .replace(/"/g, "&quot;")
-
-    .replace(/'/g, "&#039;");
+title.textContent=category;
+description.textContent="Services available under "+category+".";
 
 }
 
-
-
-/* =========================
-   LOAD / CREATE WALLET
-========================= */
-
-async function loadWallet() {
-
-  const {
-    data: {
-      user
-    },
-    error: userError
-  } =
-    await supabaseClient.auth.getUser();
-
-
-  if (userError || !user) {
-
-    window.location.href =
-      "login.html";
-
-    return;
-
-  }
-
-
-  const {
-    data: wallet,
-    error
-  } =
-    await supabaseClient.rpc(
-      "ensure_my_wallet"
-    );
-
-
-  if (error) {
-
-    console.error(error);
-
-    document.getElementById(
-      "walletBalance"
-    ).textContent =
-      "Unable to load balance.";
-
-    return;
-
-  }
-
-
-  const balance =
-    wallet?.balance ?? 0;
-
-
-  document.getElementById(
-    "walletBalance"
-  ).textContent =
-    "₦" +
-    Number(balance).toLocaleString(
-      "en-NG",
-      {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }
-    );
+renderServices();
 
 }
 
+async function loadProducts(){
 
+const container=document.getElementById("products");
 
-/* =========================
-   SELECT CATEGORY
-========================= */
+container.innerHTML='<div class="message-box">Loading services...</div>';
 
-function selectCategory(
-  category,
-  button
-) {
+try{
 
-  selectedCategory =
-    category;
+const {data,error}=await supabaseClient
+.from("Product")
+.select("*")
+.order("id",{ascending:false});
 
+if(error){
 
-  document
-    .querySelectorAll(
-      ".category-btn"
-    )
-    .forEach(
-      function(btn) {
+console.error("Product loading error:",error);
 
-        btn.classList.remove(
-          "active"
-        );
+container.innerHTML=
+'<div class="error-box">❌ Unable to load services.<br><br>'+
+escapeHTML(error.message)+
+'</div>';
 
-      }
-    );
+return;
+}
 
+allServices=data||[];
 
-  button.classList.add(
-    "active"
-  );
+renderServices();
 
+}catch(error){
 
-  const title =
-    document.getElementById(
-      "categoryTitle"
-    );
+console.error(error);
 
-
-  const description =
-    document.getElementById(
-      "categoryDescription"
-    );
-
-
-  const search =
-    document.getElementById(
-      "serviceSearch"
-    );
-
-
-  search.value = "";
-
-
-  if (category === "Home") {
-
-    title.textContent =
-      "Latest Services";
-
-    description.textContent =
-      "Browse all available services.";
-
-  }
-
-  else {
-
-    title.textContent =
-      category;
-
-    description.textContent =
-      "Services available under " +
-      category +
-      ".";
-
-  }
-
-
-  renderServices();
+container.innerHTML=
+'<div class="error-box">❌ '+
+escapeHTML(error.message)+
+'</div>';
 
 }
 
+}
 
+function filterServices(){
+renderServices();
+}
 
-/* =========================
-   LOAD PRODUCTS
-========================= */
+function renderServices(){
 
-async function loadProducts() {
+const container=document.getElementById("products");
 
-  const container =
-    document.getElementById(
-      "products"
-    );
+const search=document.getElementById("serviceSearch")
+.value
+.trim()
+.toLowerCase();
 
+let services=[...allServices];
 
-  container.innerHTML = `
+if(selectedCategory!=="Home"){
 
-    <div class="message-box">
-      Loading services...
-    </div>
+services=services.filter(function(product){
 
-  `;
+return String(product.category||"").toLowerCase()===
+selectedCategory.toLowerCase();
 
-
-  try {
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("Product")
-        .select("*")
-        .order(
-          "id",
-          {
-            ascending: false
-          }
-        );
-
-
-    if (error) {
-
-      console.error(
-        "Product loading error:",
-        error
-      );
-
-
-      container.innerHTML = `
-
-        <div class="error-box">
-
-          ❌ Unable to load services.
-
-          <br><br>
-
-          ${escapeHTML(
-            error.message
-          )}
-
-        </div>
-
-      `;
-
-      return;
-
-    }
-
-
-    allServices =
-      data || [];
-
-
-    renderServices();
-
-  }
-
-  catch (error) {
-
-    console.error(error);
-
-
-    container.innerHTML = `
-
-      <div class="error-box">
-
-        ❌ ${escapeHTML(
-          error.message
-        )}
-
-      </div>
-
-    `;
-
-  }
+});
 
 }
 
+if(search){
 
+services=services.filter(function(product){
 
-/* =========================
-   FILTER SERVICES
-========================= */
+const name=String(product.name||"").toLowerCase();
 
-function filterServices() {
+const description=String(product.description||"").toLowerCase();
 
-  renderServices();
+const category=String(product.category||"").toLowerCase();
+
+return name.includes(search)||
+description.includes(search)||
+category.includes(search);
+
+});
 
 }
 
-
-
-/* =========================
-   RENDER SERVICES
-========================= */
-
-function renderServices() {
-
-  const container =
-    document.getElementById(
-      "products"
-    );
-
-
-  const search =
-    document.getElementById(
-      "serviceSearch"
-    )
-    .value
-    .trim()
-    .toLowerCase();
-
-
-  let services =
-    [...allServices];
-
-
-  /* CATEGORY FILTER */
-
-  if (
-    selectedCategory !==
-    "Home"
-  ) {
-
-    services =
-      services.filter(
-        function(product) {
-
-          return String(
-            product.category || ""
-          ).toLowerCase() ===
-          selectedCategory.toLowerCase();
-
-        }
-      );
-
-  }
-
-
-  /* SEARCH FILTER */
-
-  if (search) {
-
-    services =
-      services.filter(
-        function(product) {
-
-          const name =
-            String(
-              product.name || ""
-            ).toLowerCase();
-
-
-          const description =
-            String(
-              product.description || ""
-            ).toLowerCase();
-
-
-          const category =
-            String(
-              product.category || ""
-            ).toLowerCase();
-
-
-          return (
-            name.includes(search) ||
-            description.includes(search) ||
-            category.includes(search)
-          );
-
-        }
-      );
-
-  }
-
-
-  if (
-    !services ||
-    services.length === 0
-  ) {
-
-    container.innerHTML = `
-
-      <div class="message-box">
-
-        <div style="
-          font-size:40px;
-          margin-bottom:10px;
-        ">
-          🔍
-        </div>
-
-        <strong>
-          No services found
-        </strong>
-
-        <p>
-          Try another search or category.
-        </p>
-
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-
-  container.innerHTML = "";
-
-
-  services.forEach(
-    function(product) {
-
-      const card =
-        document.createElement(
-          "div"
-        );
-
-
-      card.className =
-        "product-card";
-
-
-      const price =
-        Number(
-          product.price || 0
-        ).toLocaleString(
-          "en-NG",
-          {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }
-        );
-
-
-      const stock =
-        Number(
-          product.stock || 0
-        );
-
-
-      const status =
-        String(
-          product.status ||
-          "Available"
-        );
-
-
-      let soldOut =
-        stock <= 0 ||
-        status.toLowerCase() ===
-        "unavailable";
-
-
-      let imageHTML =
-        "";
-
-
-      if (
-        product.image_url &&
-        String(
-          product.image_url
-        ).trim()
-      ) {
-
-        imageHTML = `
-
-          <img
-            class="product-image"
-            src="${escapeHTML(
-              product.image_url
-            )}"
-            alt="${escapeHTML(
-              product.name
-            )}"
-            onerror="
-              this.style.display='none';
-              this.nextElementSibling.style.display='flex';
-            "
-          >
-
-          <div
-            class="no-image"
-            style="display:none;"
-          >
-            🛍️
-          </div>
-
-        `;
-
-      }
-
-      else {
-
-        imageHTML = `
-
-          <div class="no-image">
-            🛍️
-          </div>
-
-        `;
-
-      }
-
-
-      card.innerHTML = `
-
-        ${imageHTML}
-
-
-        <h3>
-          ${escapeHTML(
-            product.name ||
-            "Unnamed Service"
-          )}
-        </h3>
-
-
-        <span class="product-category">
-          ${escapeHTML(
-            product.category ||
-            "Service"
-          )}
-        </span>
-
-
-        <p class="product-description">
-          ${escapeHTML(
-            product.description ||
-            ""
-          )}
-        </p>
-
-
-        <p class="product-price">
-          ₦${price}
-        </p>
-
-
-        <p class="stock-text">
-
-          ${
-            soldOut
-              ? "❌ Sold Out / Unavailable"
-              : "✅ Available"
-          }
-
-        </p>
-
-
-        <button
-          class="buy-button"
-          type="button"
-          ${
-            soldOut
-              ? "disabled"
-              : ""
-          }
-          onclick="buyProduct(${Number(
-            product.id
-          )})"
-        >
-
-          ${
-            soldOut
-              ? "Sold Out"
-              : "Buy Now"
-          }
-
-        </button>
-
-      `;
-
-
-      container.appendChild(
-        card
-      );
-
-    }
-  );
+if(!services||services.length===0){
+
+container.innerHTML=
+'<div class="message-box">'+
+'<div style="font-size:40px;margin-bottom:10px;">🔍</div>'+
+'<strong>No services found</strong>'+
+'<p>Try another search or category.</p>'+
+'</div>';
+
+return;
 
 }
 
+container.innerHTML="";
 
+services.forEach(function(product){
+
+const card=document.createElement("div");
+
+card.className="product-card";
+
+const price=Number(product.price||0).toLocaleString(
+"en-NG",
+{
+minimumFractionDigits:2,
+maximumFractionDigits:2
+}
+);
+
+const stock=Number(product.stock||0);
+
+const status=String(product.status||"Available");
+
+const soldOut=
+stock<=0||
+status.toLowerCase()==="unavailable";
+
+let imageHTML="";
+
+if(product.image_url&&String(product.image_url).trim()){
+
+imageHTML=
+'<img class="product-image" src="'+
+escapeHTML(product.image_url)+
+'" alt="'+
+escapeHTML(product.name)+
+'" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'+
+'<div class="no-image" style="display:none;">🛍️</div>';
+
+}else{
+
+imageHTML='<div class="no-image">🛍️</div>';
+
+}
+
+card.innerHTML=
+
+imageHTML+
+
+'<h3>'+
+escapeHTML(product.name||"Unnamed Service")+
+'</h3>'+
+
+'<span class="product-category">'+
+escapeHTML(product.category||"Service")+
+'</span>'+
+
+'<p class="product-description">'+
+escapeHTML(product.description||"")+
+'</p>'+
+
+'<p class="product-price">₦'+
+price+
+'</p>'+
+
+'<p class="stock-text">'+
+(
+soldOut
+?"❌ Sold Out / Unavailable"
+:"✅ Available"
+)+
+'</p>'+
+
+'<button class="buy-button" type="button" '+
+(
+soldOut
+?"disabled"
+:""
+)+
+' onclick="buyProduct(\''+
+String(product.id).replace(/'/g,"\\'")+
+'\')">'+
+(
+soldOut
+?"Sold Out"
+:"Buy Now"
+)+
+'</button>';
+
+container.appendChild(card);
+
+});
+
+}
 
 /* =========================
    BUY PRODUCT
-========================= */
+   ========================= */
 
-function buyProduct(
-  productId
-) {
+function buyProduct(productId){
 
-  /*
-    Purchase system will be
-    connected to wallet/orders
-    after the admin system is
-    completed.
-  */
+if(!productId||
+productId==="undefined"||
+productId==="null"){
 
-  window.location.href =
-    "product.html?id=" +
-    encodeURIComponent(
-      productId
-    );
+alert("Product ID is missing.");
+return;
 
 }
 
+/*
+IMPORTANT:
+The correct file is PRODUCTS.HTML
+NOT PRODUCT.HTML.
 
+The customer does not type this.
+The website automatically creates the link.
+*/
 
-/* =========================
-   START
-========================= */
+const url=
+"products.html?id="+
+encodeURIComponent(productId);
 
-async function startDashboard() {
+console.log("Opening product:",url);
 
-  await loadWallet();
-
-  await loadProducts();
+window.location.href=url;
 
 }
 
+async function startDashboard(){
+
+await loadWallet();
+await loadProducts();
+
+}
 
 startDashboard();
 
-
 </script>
 
-
 </body>
-
-  </html>
+                                              </html>
