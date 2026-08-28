@@ -418,26 +418,27 @@ await updateStats();
 }
 
 async function deleteProduct(id){
+    const confirmed = confirm("Are you sure you want to delete this service?");
+    
+    if(!confirmed) return;
 
-if(!confirm("Delete this service?"))return;
+    const { error } = await supabaseClient
+        .from("Product")
+        .update({ is_active: false })
+        .eq("id", id);
 
-const {error}=await supabaseClient
-.from("Product")
-.delete()
-.eq("id",id);
+    if(error){
+        alert("❌ Could not delete service: " + error.message);
+        return;
+    }
 
-if(error){
-alert("❌ "+error.message);
-return;
-}
+    alert("🗑️ Service deleted successfully.");
+    
+    await loadProducts();
+    await updateStats();
+  }
 
-alert("✅ Service deleted.");
 
-await loadProducts();
-await loadInventory();
-await updateStats();
-
-}
 
 async function loadInventoryProductDropdown(){
 
