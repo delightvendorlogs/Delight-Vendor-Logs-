@@ -418,27 +418,48 @@ await updateStats();
 }
 
 async function deleteProduct(id){
-    const confirmed = confirm("Are you sure you want to delete this service?");
-    
+
+    const confirmed = confirm(
+        "Are you sure you want to delete this service?\n\n" +
+        "It will be removed from the store but old orders will be kept."
+    );
+
     if(!confirmed) return;
 
-    const { error } = await supabaseClient
+    console.log("Trying to deactivate product:", id);
+
+    const { data, error } = await supabaseClient
         .from("Product")
         .update({ is_active: false })
-        .eq("id", id);
+        .eq("id", id)
+        .select("id, name, is_active");
 
     if(error){
-        alert("❌ Could not delete service: " + error.message);
+        console.error("Delete/deactivate error:", error);
+        alert("❌ Could not delete service:\n" + error.message);
+        return;
+    }
+
+    console.log("Delete result:", data);
+
+    if(!data || data.length === 0){
+        alert(
+            "❌ Service was NOT deleted.\n\n" +
+            "The database did not allow this product to be updated."
+        );
+        return;
+    }
+
+    if(data[0].is_active !== false){
+        alert("❌ Service was NOT deleted. Please try again.");
         return;
     }
 
     alert("🗑️ Service deleted successfully.");
-    
+
     await loadProducts();
     await updateStats();
   }
-
-
 
 async function loadInventoryProductDropdown(){
 
@@ -1123,32 +1144,107 @@ container.appendChild(box);
 }
 
 async function updateStats(){
-const q=async(table,filter)=>{
-let r=supabaseClient.from(table).select("*",{count:"exact",head:true});
-if(filter)r=filter(r);
-const {count,error}=await r;
-if(error){
-console.error("Stats error for "+table+":",error.message);
-return 0;
-}
-return count??0;
-};
+async function updateStats(){
 
-const [productsCount,inventoryCount,pendingCount,completedCount,usersCount,neverSellOutCount]=await Promise.all([
-q("Product",r=>r.eq("is_active",true)),
-q("product_inventory",r=>r.ilike("status","available")),
-q("pending_orders",r=>r.ilike("status","pending")),
-q("purchases",r=>r.ilike("status","completed")),
-q("profiles"),
-q("Product",r=>r.eq("is_active",true).eq("track_stock",false))
-]);
+    const getCount = async (table, filter = null) => {
+        let query = supabaseClient
+            .from(table)
+            .select("*", { count: "exact", head: true });
 
-document.getElementById("productsCount").textContent=productsCount;
-document.getElementById("inventoryCount").textContent=inventoryCount;
-document.getElementById("pendingCount").textContent=pendingCount;
-document.getElementById("completedCount").textContent=completedCount;
-document.getElementById("usersCount").textContent=usersCount;
-document.getElementById("neverSellOutCount").textContent=neverSellOutCount;
+        if(filter){
+            query = filter(query);
+        }
+
+        const { count, error } = await query;
+
+        if(error){
+            console.error("❌ " + table + " stats error:", error);
+            throw new Error(table + ": " + error.message);
+        }
+
+        console.log("✅ " + table + " count:", count);
+        return count ?? 0;
+    };
+
+    try{
+
+        const [
+            productsCount,
+            inventoryCount,
+            pendingCount,
+            completedCount,
+            usersCount,
+            neverSellOutCount
+        ] = await Promise.all([
+
+            getCount("Product"),
+
+            getCount(
+                "product_inventory",
+                query => query.ilike("status", "available")
+            ),
+
+            getCount(
+                "pending_orders",
+                query => query.ilike("status", "pending")
+            ),
+
+            getCount(
+                "purchases",
+                query => query.ilike("status", "completed")
+            ),
+
+            getCount("profiles"),
+
+            getCount(
+                "Product",
+                query => query.eq("track_stock", false)
+            )
+
+        ]);
+
+        const productsBox = document.getElementById("productsCount");
+        const inventoryBox = document.getElementById("inventoryCount");
+        const pendingBox = document.getElementById("pendingCount");
+        const completedBox = document.getElementById("completedCount");
+        const usersBox = document.getElementById("usersCount");
+        const neverSellOutBox = document.getElementById("neverSellOutCount");
+
+        if(productsBox) productsBox.textContent = productsCount;
+        if(inventoryBox) inventoryBox.textContent = inventoryCount;
+        if(pendingBox) pendingBox.textContent = pendingCount;
+        if(completedBox) completedBox.textContent = completedCount;
+        if(usersBox) usersBox.textContent = usersCount;
+        if(neverSellOutBox) neverSellOutBox.textContent = neverSellOutCount;
+
+        console.log("🎉 Stats updated successfully:", {
+            productsCount,
+            inventoryCount,
+            pendingCount,
+            completedCount,
+            usersCount,
+            neverSellOutCount
+        });
+
+    }catch(error){
+
+        console.error("❌ UPDATE STATS FAILED:", error);
+
+        const ids = [
+            "productsCount",
+            "inventoryCount",
+            "pendingCount",
+            "completedCount",
+            "usersCount",
+            "neverSellOutCount"
+        ];
+
+        ids.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.textContent = "!";
+        });
+
+    }
 }
   async function loadWatermark(){
 
