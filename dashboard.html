@@ -7,7 +7,43 @@
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#111}header{background:#111;color:white;padding:18px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px}header h1{margin:0;font-size:21px}header button{background:white;color:#111;border:none;border-radius:9px;padding:9px 12px;font-size:20px;cursor:pointer}main{padding:15px;max-width:800px;margin:auto}.category-wrapper{margin:0 -15px;padding:12px 15px;background:white;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:20}.category-bar{display:flex;gap:10px;overflow-x:auto;white-space:nowrap;scrollbar-width:none}.category-bar::-webkit-scrollbar{display:none}.category-btn{flex:0 0 auto;border:none;background:#eee;color:#111;padding:11px 16px;border-radius:25px;font-size:14px;font-weight:bold;cursor:pointer}.category-btn.active{background:#111;color:white}.watermark{display:none;background:white;margin:12px 0 0;padding:11px 13px;border-radius:9px;color:#555;font-size:13px;line-height:1.5;border-left:3px solid #111}.wallet-card{background:white;padding:20px;margin-top:18px;border-radius:15px;box-shadow:0 2px 10px #00000012}.wallet-card h2{margin-top:0}#walletBalance{font-size:27px;font-weight:bold;margin:10px 0 18px}.main-button{border:none;background:#111;color:white;padding:13px 18px;border-radius:10px;font-weight:bold;cursor:pointer;font-size:15px}.services-section{margin-top:20px}.services-header{display:flex;justify-content:space-between;align-items:center}.services-header h2{margin:0}.search-box{width:100%;margin:15px 0;padding:14px 15px;border:1px solid #ddd;border-radius:12px;font-size:16px;outline:none;background:white}.products-grid{display:grid;grid-template-columns:1fr;gap:14px}.product-card{background:white;border-radius:14px;padding:15px;box-shadow:0 2px 9px #00000012;overflow:hidden}.product-image{width:100%;height:190px;object-fit:cover;border-radius:10px;background:#eee;display:block}.no-image{width:100%;height:190px;border-radius:10px;background:#eee;display:flex;align-items:center;justify-content:center;font-size:45px}.product-card h3{margin:13px 0 7px;font-size:18px}.product-description{color:#666;font-size:14px;line-height:1.5;white-space:pre-wrap}.product-price{font-size:19px;font-weight:bold;margin:12px 0}.product-category{display:inline-block;background:#eee;padding:6px 9px;border-radius:7px;font-size:12px;font-weight:bold}.stock-text{font-size:13px;color:#555;margin:8px 0}.buy-button{width:100%;border:none;background:#111;color:white;padding:13px;border-radius:9px;font-weight:bold;font-size:15px;cursor:pointer;margin-top:8px}.buy-button:disabled{background:#999;cursor:not-allowed}#menu{position:fixed;top:0;right:0;width:280px;max-width:85%;height:100vh;background:white;z-index:100;box-shadow:-3px 0 15px #0003;padding:22px;overflow-y:auto}.menu-item{padding:14px 5px;border-bottom:1px solid #eee;cursor:pointer;font-weight:bold}.menu-close{color:#b00020}.message-box{background:white;padding:22px;border-radius:13px;text-align:center;color:#666}.error-box{background:#ffe5e5;color:#9b0000;padding:15px;border-radius:10px}.whatsapp-float{position:fixed;right:18px;bottom:18px;width:54px;height:54px;border-radius:50%;background:#25d366;color:white;text-decoration:none;display:flex;align-items:center;justify-content:center;font-size:27px;box-shadow:0 3px 12px #0003;z-index:90}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#111}
+header{background:#111;color:white;padding:18px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+header h1{margin:0;font-size:21px}
+header button{background:white;color:#111;border:none;border-radius:9px;padding:9px 12px;font-size:20px;cursor:pointer}
+main{padding:15px;max-width:800px;margin:auto}
+.category-wrapper{margin:0 -15px;padding:12px 15px;background:white;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:20}
+.category-bar{display:flex;gap:10px;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.category-bar::-webkit-scrollbar{display:none}
+.category-btn{flex:0 0 auto;border:none;background:#eee;color:#111;padding:11px 16px;border-radius:25px;font-size:14px;font-weight:bold;cursor:pointer}
+.category-btn.active{background:#111;color:white}
+.watermark{display:none;background:white;margin:12px 0 0;padding:11px 13px;border-radius:9px;color:#555;font-size:13px;line-height:1.5;border-left:3px solid #111}
+.wallet-card{background:white;padding:20px;margin-top:18px;border-radius:15px;box-shadow:0 2px 10px #00000012}
+.wallet-card h2{margin-top:0}
+#walletBalance{font-size:27px;font-weight:bold;margin:10px 0 18px}
+.main-button{border:none;background:#111;color:white;padding:13px 18px;border-radius:10px;font-weight:bold;cursor:pointer;font-size:15px}
+.services-section{margin-top:20px}
+.services-header{display:flex;justify-content:space-between;align-items:center}
+.services-header h2{margin:0}
+.search-box{width:100%;margin:15px 0;padding:14px 15px;border:1px solid #ddd;border-radius:12px;font-size:16px;outline:none;background:white}
+.products-grid{display:grid;grid-template-columns:1fr;gap:14px}
+.product-card{background:white;border-radius:14px;padding:15px;box-shadow:0 2px 9px #00000012;overflow:hidden}
+.product-image{width:100%;height:190px;object-fit:cover;border-radius:10px;background:#eee;display:block}
+.no-image{width:100%;height:190px;border-radius:10px;background:#eee;display:flex;align-items:center;justify-content:center;font-size:45px}
+.product-card h3{margin:13px 0 7px;font-size:18px}
+.product-description{color:#666;font-size:14px;line-height:1.5;white-space:pre-wrap}
+.product-price{font-size:19px;font-weight:bold;margin:12px 0}
+.product-category{display:inline-block;background:#eee;padding:6px 9px;border-radius:7px;font-size:12px;font-weight:bold}
+.stock-text{font-size:13px;color:#555;margin:8px 0}
+.buy-button{width:100%;border:none;background:#111;color:white;padding:13px;border-radius:9px;font-weight:bold;font-size:15px;cursor:pointer;margin-top:8px}
+.buy-button:disabled{background:#999;cursor:not-allowed}
+#menu{position:fixed;top:0;right:0;width:280px;max-width:85%;height:100vh;background:white;z-index:100;box-shadow:-3px 0 15px #0003;padding:22px;overflow-y:auto}
+.menu-item{padding:14px 5px;border-bottom:1px solid #eee;cursor:pointer;font-weight:bold}
+.menu-close{color:#b00020}
+.message-box{background:white;padding:22px;border-radius:13px;text-align:center;color:#666}
+.error-box{background:#ffe5e5;color:#9b0000;padding:15px;border-radius:10px}
+.whatsapp-float{position:fixed;right:18px;bottom:18px;width:54px;height:54px;border-radius:50%;background:#25d366;color:white;text-decoration:none;display:flex;align-items:center;justify-content:center;font-size:27px;box-shadow:0 3px 12px #0003;z-index:90}
 </style>
 </head>
 <body>
@@ -42,9 +78,18 @@
 </section>
 
 <section class="services-section">
-<div class="services-header"><div><h2 id="categoryTitle">Latest Services</h2><p id="categoryDescription">Browse all available services.</p></div></div>
+<div class="services-header">
+<div>
+<h2 id="categoryTitle">Latest Services</h2>
+<p id="categoryDescription">Browse all available services.</p>
+</div>
+</div>
+
 <input id="serviceSearch" class="search-box" type="search" placeholder="🔍 Search service..." oninput="filterServices()">
-<div id="products" class="products-grid"><div class="message-box">Loading services...</div></div>
+
+<div id="products" class="products-grid">
+<div class="message-box">Loading services...</div>
+</div>
 </section>
 
 </main>
@@ -59,7 +104,9 @@
 <div class="menu-item" onclick="location.href='purchases.html'">🛒 My Purchases</div>
 <div class="menu-item" onclick="location.href='pending.html'">⏳ Pending Orders</div>
 <div class="menu-item" onclick="location.href='settings.html'">⚙️ Settings</div>
-<div class="menu-item"><a href="https://wa.me/2347015908401" target="_blank" style="color:inherit;text-decoration:none;display:block">💬 WhatsApp Support</a></div>
+<div class="menu-item">
+<a href="https://wa.me/2347015908401" target="_blank" style="color:inherit;text-decoration:none;display:block">💬 WhatsApp Support</a>
+</div>
 <div class="menu-item menu-close" onclick="closeMenu()">✖ Close</div>
 </div>
 
@@ -68,8 +115,29 @@ const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
 const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-  async function loadWatermark(){
-const box=document.getElementById("watermarkBox");
+let allServices=[];
+let selectedCategory="Home";
+
+function openMenu(){
+document.getElementById("menu").style.display="block";
+}
+
+function closeMenu(){
+document.getElementById("menu").style.display="none";
+}
+
+function escapeHTML(v){
+return String(v??"")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+}
+
+async function loadWatermark(){
+const box=document.getElementById("watermark");
+
 if(!box)return;
 
 try{
@@ -81,13 +149,14 @@ const {data,error}=await supabaseClient
 
 if(error){
 console.error("Watermark error:",error);
+box.textContent="";
 box.style.display="none";
 return;
 }
 
-const text=data?.value||"";
+const text=String(data?.value||"").trim();
 
-if(String(text).trim()!==""){
+if(text){
 box.textContent=text;
 box.style.display="block";
 }else{
@@ -97,96 +166,197 @@ box.style.display="none";
 
 }catch(error){
 console.error("Watermark loading error:",error);
+box.textContent="";
 box.style.display="none";
 }
 }
-let allServices=[],selectedCategory="Home";
-
-function openMenu(){document.getElementById("menu").style.display="block"}
-function closeMenu(){document.getElementById("menu").style.display="none"}
-function escapeHTML(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
 
 async function loadWallet(){
 const {data:{user},error}=await supabaseClient.auth.getUser();
-if(error||!user){location.href="login.html";return}
-const {data:wallet,error:e}=await supabaseClient.rpc("ensure_my_wallet");
-if(e){document.getElementById("walletBalance").textContent="Unable to load balance.";return}
-document.getElementById("walletBalance").textContent="₦"+Number(wallet?.balance??0).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2})
+
+if(error||!user){
+location.href="login.html";
+return;
 }
 
-async function loadWatermark(){
-const {data,error}=await supabaseClient.rpc("get_watermark");
-const box=document.getElementById("watermark");
-if(error||!data||!data.is_active||!String(data.message||"").trim()){box.style.display="none";return}
-box.textContent=data.message;
-box.style.display="block";
+const {data:wallet,error:e}=await supabaseClient.rpc("ensure_my_wallet");
+
+if(e){
+console.error("Wallet error:",e);
+document.getElementById("walletBalance").textContent="Unable to load balance.";
+return;
+}
+
+document.getElementById("walletBalance").textContent=
+"₦"+Number(wallet?.balance??0).toLocaleString("en-NG",{
+minimumFractionDigits:2,
+maximumFractionDigits:2
+});
 }
 
 function selectCategory(category,button){
 selectedCategory=category;
-document.querySelectorAll(".category-btn").forEach(b=>b.classList.remove("active"));
+
+document.querySelectorAll(".category-btn").forEach(b=>{
+b.classList.remove("active");
+});
+
 button.classList.add("active");
+
 document.getElementById("serviceSearch").value="";
-document.getElementById("categoryTitle").textContent=category==="Home"?"Latest Services":category;
-document.getElementById("categoryDescription").textContent=category==="Home"?"Browse all available services.":"Services available under "+category+".";
+
+document.getElementById("categoryTitle").textContent=
+category==="Home"?"Latest Services":category;
+
+document.getElementById("categoryDescription").textContent=
+category==="Home"
+?"Browse all available services."
+:"Services available under "+category+".";
+
 renderServices();
 }
 
 async function loadProducts(){
 const container=document.getElementById("products");
-const {data,error}=await supabaseClient.from("Product").select("*").eq("is_active",true).order("id",{ascending:false});
-if(error){container.innerHTML='<div class="error-box">❌ Unable to load services.<br><br>'+escapeHTML(error.message)+'</div>';return}
+
+const {data,error}=await supabaseClient
+.from("Product")
+.select("*")
+.eq("is_active",true)
+.order("id",{ascending:false});
+
+if(error){
+console.error("Product loading error:",error);
+
+container.innerHTML=
+'<div class="error-box">❌ Unable to load services.<br><br>'+
+escapeHTML(error.message)+
+'</div>';
+
+return;
+}
+
 allServices=data||[];
+
 renderServices();
 }
 
-function filterServices(){renderServices()}
+function filterServices(){
+renderServices();
+}
 
 function renderServices(){
 const container=document.getElementById("products");
-const search=document.getElementById("serviceSearch").value.trim().toLowerCase();
+
+const search=document
+.getElementById("serviceSearch")
+.value
+.trim()
+.toLowerCase();
+
 let services=[...allServices];
 
-if(selectedCategory!=="Home")services=services.filter(p=>String(p.category||"").toLowerCase()===selectedCategory.toLowerCase());
+if(selectedCategory!=="Home"){
+services=services.filter(p=>
+String(p.category||"").toLowerCase()===
+selectedCategory.toLowerCase()
+);
+}
 
-if(search)services=services.filter(p=>String(p.name||"").toLowerCase().includes(search)||String(p.description||"").toLowerCase().includes(search));
+if(search){
+services=services.filter(p=>
+String(p.name||"").toLowerCase().includes(search)||
+String(p.description||"").toLowerCase().includes(search)
+);
+}
 
-if(!services.length){container.innerHTML='<div class="message-box">🔍<br><br><strong>No services found</strong><p>Try another search or category.</p></div>';return}
+if(!services.length){
+container.innerHTML=
+'<div class="message-box">🔍<br><br><strong>No services found</strong><p>Try another search or category.</p></div>';
+return;
+}
 
 container.innerHTML="";
 
 services.forEach(product=>{
+
 const card=document.createElement("div");
+
 card.className="product-card";
-const price=Number(product.price||0).toLocaleString("en-NG",{minimumFractionDigits:0,maximumFractionDigits:2});
+
+const price=Number(product.price||0).toLocaleString("en-NG",{
+minimumFractionDigits:0,
+maximumFractionDigits:2
+});
+
 const stock=Number(product.stock||0);
+
 const track=product.track_stock!==false;
-const status=String(product.status||"Available").toLowerCase();
-const soldOut=track&&(stock<=0||status==="sold"||status==="sold out"||status==="unavailable")||(!track&&status==="unavailable");
 
-let image=product.image_url&&String(product.image_url).trim()?'<img class="product-image" src="'+escapeHTML(product.image_url)+'" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"><div class="no-image" style="display:none">🛍️</div>':'<div class="no-image">🛍️</div>';
+const status=String(
+product.status||"Available"
+).toLowerCase().trim();
 
-card.innerHTML=image+
+const soldOut=
+(track&&(stock<=0||
+status==="sold"||
+status==="sold out"||
+status==="unavailable"))
+||
+(!track&&status==="unavailable");
+
+let image;
+
+if(product.image_url&&String(product.image_url).trim()){
+
+image=
+'<img class="product-image" src="'+
+escapeHTML(product.image_url)+
+'" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'+
+'<div class="no-image" style="display:none">🛍️</div>';
+
+}else{
+
+image='<div class="no-image">🛍️</div>';
+
+}
+
+card.innerHTML=
+image+
 '<h3>'+escapeHTML(product.name||"Unnamed Service")+'</h3>'+
 '<span class="product-category">'+escapeHTML(product.category||"Service")+'</span>'+
 '<p class="product-description">'+escapeHTML(product.description||"")+'</p>'+
 '<p class="product-price">₦'+price+'</p>'+
-'<p class="stock-text">'+(soldOut?"❌ Sold Out / Unavailable":"✅ Available")+'</p>'+
-'<button class="buy-button" '+(soldOut?"disabled":"")+' onclick="buyProduct('+Number(product.id)+')">'+(soldOut?"Sold Out":"Buy Now")+'</button>';
+'<p class="stock-text">'+
+(soldOut?"❌ Sold Out / Unavailable":"✅ Available")+
+'</p>'+
+'<button class="buy-button" '+
+(soldOut?"disabled":"")+
+' onclick="buyProduct('+Number(product.id)+')">'+
+(soldOut?"Sold Out":"Buy Now")+
+'</button>';
 
 container.appendChild(card);
+
 });
 }
 
-function buyProduct(id){location.href="products.html?id="+encodeURIComponent(id)}
+function buyProduct(id){
+location.href="products.html?id="+encodeURIComponent(id);
+}
 
 async function startDashboard(){
+
 await loadWallet();
+
 await loadWatermark();
+
 await loadProducts();
+
 }
 
 startDashboard();
 </script>
+
 </body>
-</html>
+                                                                                                           </html>
