@@ -1261,38 +1261,61 @@ await loadWatermark();
 }
 
 async function refreshEverything(){
-
 const message=document.getElementById("refreshMessage");
 
-if(message)
-message.textContent="🔄 Refreshing everything...";
+if(message) message.textContent="🔄 Refreshing everything...";
 
 try{
-
 await loadProducts();
-await loadInventoryProductDropdown();
-await loadInventory();
-await loadOrders();
-await loadUsers();
-await loadWatermark();
-await updateStats();
 
-if(message)
-message.textContent=
-"✅ Everything refreshed successfully.";
+try{
+await loadInventoryProductDropdown();
+}catch(error){
+console.error("Dropdown refresh error:",error);
+}
+
+try{
+await loadInventory();
+}catch(error){
+console.error("Inventory refresh error:",error);
+}
+
+try{
+await loadOrders();
+}catch(error){
+console.error("Orders refresh error:",error);
+}
+
+try{
+await loadUsers();
+}catch(error){
+console.error("Users refresh error:",error);
+}
+
+try{
+await loadWatermark();
+}catch(error){
+console.error("Watermark refresh error:",error);
+}
+
+try{
+await updateStats();
+}catch(error){
+console.error("Stats refresh error:",error);
+}
+
+if(message) message.textContent="✅ Everything refreshed successfully.";
 
 }catch(error){
+console.error("Refresh failed:",error);
 
-console.error(error);
-
-if(message)
-message.textContent=
-"❌ Refresh failed: "+error.message;
-
+if(message){
+message.textContent="❌ Refresh failed: "+error.message;
+}else{
+alert("❌ Refresh failed: "+error.message);
 }
-
 }
-
+  }
 async function startAdmin(){
 
 buildCategoryUI();
