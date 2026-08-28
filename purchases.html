@@ -4,49 +4,415 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>My Purchases - Delight Vendor Logs</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f5f5f5;color:#111;font-family:Arial,sans-serif}header{background:#111;color:#fff;padding:20px;text-align:center}header h1{margin:0;font-size:25px}main{max-width:600px;margin:auto;padding:25px 20px 40px}.card{background:#fff;padding:20px;border-radius:14px;box-shadow:0 2px 10px #00000014;margin-bottom:18px}.purchase{border:1px solid #eee;border-radius:12px;padding:16px;margin-bottom:12px}.top{display:flex;justify-content:space-between;gap:10px}.name{font-weight:bold;font-size:17px}.amount{font-weight:bold}.content{margin-top:12px;background:#f5f5f5;padding:12px;border-radius:8px;white-space:pre-wrap;word-break:break-word}.status{margin-top:8px;font-weight:bold;color:green}.date{margin-top:8px;color:#888;font-size:13px}.empty{text-align:center;color:#777;padding:30px 10px}.error{text-align:center;color:red;padding:20px}.back{background:#333;color:#fff;padding:16px;border-radius:10px;text-align:center;font-weight:bold;cursor:pointer}
+*{
+    box-sizing:border-box
+}
+
+body{
+    margin:0;
+    background:#f5f5f5;
+    color:#111;
+    font-family:Arial,sans-serif
+}
+
+header{
+    background:#111;
+    color:#fff;
+    padding:20px;
+    text-align:center
+}
+
+header h1{
+    margin:0;
+    font-size:25px
+}
+
+main{
+    max-width:600px;
+    margin:auto;
+    padding:25px 20px 40px
+}
+
+.card{
+    background:#fff;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 2px 10px #00000014;
+    margin-bottom:18px
+}
+
+.purchase{
+    border:1px solid #eee;
+    border-radius:12px;
+    padding:16px;
+    margin-bottom:12px
+}
+
+.top{
+    display:flex;
+    justify-content:space-between;
+    gap:10px
+}
+
+.name{
+    font-weight:bold;
+    font-size:17px
+}
+
+.amount{
+    font-weight:bold
+}
+
+.content{
+    margin-top:12px;
+    background:#f5f5f5;
+    padding:12px;
+    border-radius:8px;
+    white-space:pre-wrap;
+    word-break:break-word
+}
+
+.status{
+    margin-top:8px;
+    font-weight:bold;
+    color:green
+}
+
+.date{
+    margin-top:8px;
+    color:#888;
+    font-size:13px
+}
+
+.empty{
+    text-align:center;
+    color:#777;
+    padding:30px 10px
+}
+
+.error{
+    text-align:center;
+    color:red;
+    padding:20px
+}
+
+.back{
+    background:#333;
+    color:#fff;
+    padding:16px;
+    border-radius:10px;
+    text-align:center;
+    font-weight:bold;
+    cursor:pointer
+}
+
+.open-link{
+    display:block;
+    background:#111;
+    color:#fff;
+    text-decoration:none;
+    text-align:center;
+    padding:13px;
+    border-radius:9px;
+    font-weight:bold
+}
+
+.open-link:hover{
+    opacity:.9
+}
 </style>
 </head>
-<body>
-<header><h1>My Purchases</h1></header>
-<main>
-<div class="card">
-<div id="purchases"><div class="empty">Loading purchases...</div></div>
-</div>
-<div class="back" onclick="location.href='dashboard.html'">🏠 Back to Dashboard</div>
-</main>
-<script>
-const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
-const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
-const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
+<body>
+
+<header>
+    <h1>My Purchases</h1>
+</header>
+
+<main>
+
+<div class="card">
+    <div id="purchases">
+        <div class="empty">Loading purchases...</div>
+    </div>
+</div>
+
+<div class="back" onclick="location.href='dashboard.html'">
+    🏠 Back to Dashboard
+</div>
+
+</main>
+
+<script>
+
+const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
+
+const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+const supabaseClient=supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function esc(v){
+
+    return String(v ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================
+   RENDER DELIVERY
+========================= */
+
+function renderDelivery(content){
+
+    const text=String(content ?? "").trim();
+
+    if(!text){
+        return "";
+    }
+
+
+    /*
+       If the whole inventory content
+       is a normal HTTP/HTTPS link,
+       show an Open Link button.
+    */
+
+    if(/^https?:\/\/\S+$/i.test(text)){
+
+        return `
+            <a
+                class="open-link"
+                href="${esc(text)}"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                🔗 Open Link
+            </a>
+        `;
+
+    }
+
+
+    /*
+       Everything else remains normal text.
+    */
+
+    return esc(text);
+
+}
+
+
+/* =========================
+   LOAD PURCHASES
+========================= */
 
 async function loadPurchases(){
-const box=document.getElementById("purchases");
-const {data:{user},error:authError}=await supabaseClient.auth.getUser();
-if(authError||!user){location.href="login.html";return}
 
-const {data,error}=await supabaseClient.from("purchases").select("id,product_id,product_name,amount,content,status,created_at").eq("user_id",user.id).order("created_at",{ascending:false});
+    const box=document.getElementById("purchases");
 
-if(error){console.error(error);box.innerHTML='<div class="error">Unable to load purchases.</div>';return}
+    if(!box){
+        return;
+    }
 
-if(!data||data.length===0){box.innerHTML='<div class="empty">You haven’t purchased anything yet.</div>';return}
 
-box.innerHTML="";
-data.forEach(p=>{
-const d=p.created_at?new Date(p.created_at).toLocaleString("en-NG",{dateStyle:"medium",timeStyle:"short"}):"";
-box.innerHTML+=`<div class="purchase">
-<div class="top"><div class="name">${esc(p.product_name)}</div><div class="amount">₦${Number(p.amount||0).toLocaleString("en-NG",{minimumFractionDigits:2})}</div></div>
-<div class="status">${esc(p.status||"completed")}</div>
-${p.content?`<div class="content">${esc(p.content)}</div>`:""}
-<div class="date">${esc(d)}</div>
-</div>`;
-});
+    /*
+       Check logged-in user
+    */
+
+    const {
+        data:{user},
+        error:authError
+    }=await supabaseClient.auth.getUser();
+
+
+    if(authError){
+
+        console.error(
+            "Authentication error:",
+            authError
+        );
+
+        location.href="login.html";
+
+        return;
+    }
+
+
+    if(!user){
+
+        location.href="login.html";
+
+        return;
+    }
+
+
+    /*
+       Get this user's purchases only.
+    */
+
+    const {
+        data,
+        error
+    }=await supabaseClient
+        .from("purchases")
+        .select(
+            "id,product_id,product_name,amount,content,status,created_at"
+        )
+        .eq("user_id",user.id)
+        .order(
+            "created_at",
+            {ascending:false}
+        );
+
+
+    if(error){
+
+        console.error(
+            "Purchase loading error:",
+            error
+        );
+
+        box.innerHTML=`
+            <div class="error">
+                ❌ Unable to load purchases.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    /*
+       No purchases
+    */
+
+    if(!data || data.length===0){
+
+        box.innerHTML=`
+            <div class="empty">
+                You haven’t purchased anything yet.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    /*
+       Render purchases
+    */
+
+    box.innerHTML="";
+
+
+    data.forEach(p=>{
+
+        const d=p.created_at
+            ?new Date(
+                p.created_at
+            ).toLocaleString(
+                "en-NG",
+                {
+                    dateStyle:"medium",
+                    timeStyle:"short"
+                }
+            )
+            :"";
+
+
+        const delivery=p.content
+            ?renderDelivery(p.content)
+            :"";
+
+
+        const purchase=document.createElement("div");
+
+        purchase.className="purchase";
+
+
+        purchase.innerHTML=`
+
+            <div class="top">
+
+                <div class="name">
+                    ${esc(
+                        p.product_name ||
+                        "Unnamed Product"
+                    )}
+                </div>
+
+                <div class="amount">
+                    ₦${Number(
+                        p.amount || 0
+                    ).toLocaleString(
+                        "en-NG",
+                        {
+                            minimumFractionDigits:2,
+                            maximumFractionDigits:2
+                        }
+                    )}
+                </div>
+
+            </div>
+
+
+            <div class="status">
+                ${esc(
+                    p.status ||
+                    "completed"
+                )}
+            </div>
+
+
+            ${
+                delivery
+                ?`
+                    <div class="content">
+                        ${delivery}
+                    </div>
+                `
+                :""
+            }
+
+
+            <div class="date">
+                ${esc(d)}
+            </div>
+
+        `;
+
+
+        box.appendChild(purchase);
+
+    });
+
 }
+
+
+/* =========================
+   START
+========================= */
+
 loadPurchases();
+
 </script>
+
 </body>
   </html>
