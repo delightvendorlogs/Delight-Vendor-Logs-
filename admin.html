@@ -292,6 +292,38 @@ async function checkAdmin(){
             if(statusBox){
                 statusBox.textContent = "❌ Access denied. Administrator account required.";
             }
+async function checkAdmin(){
+
+    const statusBox = document.getElementById("adminStatus");
+
+    try{
+
+        const { data: { user }, error: userError } =
+            await supabaseClient.auth.getUser();
+
+        if(userError){
+            throw new Error(userError.message);
+        }
+
+        if(!user){
+            location.href = "login.html";
+            return false;
+        }
+
+        const { data, error } = await supabaseClient
+            .from("admin_users")
+            .select("user_id")
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+        if(error){
+            throw new Error(error.message);
+        }
+
+        if(!data){
+            if(statusBox){
+                statusBox.textContent = "❌ Administrator access denied.";
+            }
 
             return false;
         }
@@ -304,16 +336,16 @@ async function checkAdmin(){
 
     }catch(error){
 
-        console.error("Administrator access error:", error);
+        console.error("ADMIN CHECK FAILED:", error);
 
         if(statusBox){
             statusBox.textContent =
-                "❌ Administrator check failed: " + error.message;
+                "❌ Unable to verify administrator access: " + error.message;
         }
 
         return false;
     }
-  }
+}
   async function loadProducts(){
 
 const {data,error}=await supabaseClient
@@ -1470,10 +1502,30 @@ async function startAdmin(){
         return;
     }
 
-    await updateStats();
+    try{
 
-    // the rest of your loading functions here
-  }
+        await updateStats();
+
+        if(typeof loadWatermark === "function"){
+            await loadWatermark();
+        }
+
+        if(typeof loadProducts === "function"){
+            await loadProducts();
+        }
+
+        if(typeof loadInventory === "function"){
+            await loadInventory();
+        }
+
+        console.log("✅ Admin dashboard loaded successfully.");
+
+    }catch(error){
+
+        console.error("❌ ADMIN DASHBOARD LOAD FAILED:", error);
+
+    }
+}
 startAdmin();
 
 </script>
