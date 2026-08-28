@@ -67,6 +67,39 @@
 const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
 const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+  async function loadWatermark(){
+const box=document.getElementById("watermarkBox");
+if(!box)return;
+
+try{
+const {data,error}=await supabaseClient
+.from("site_settings")
+.select("value")
+.eq("key","watermark")
+.maybeSingle();
+
+if(error){
+console.error("Watermark error:",error);
+box.style.display="none";
+return;
+}
+
+const text=data?.value||"";
+
+if(String(text).trim()!==""){
+box.textContent=text;
+box.style.display="block";
+}else{
+box.textContent="";
+box.style.display="none";
+}
+
+}catch(error){
+console.error("Watermark loading error:",error);
+box.style.display="none";
+}
+}
 let allServices=[],selectedCategory="Home";
 
 function openMenu(){document.getElementById("menu").style.display="block"}
