@@ -4,41 +4,235 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Delight Vendor Logs — Admin</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#f5f5f5;color:#111;font-family:Arial,sans-serif}
-header{background:#111;color:#fff;padding:18px 15px;display:flex;justify-content:space-between;align-items:center}
-header h1{margin:0;font-size:20px}
-main{max-width:850px;margin:auto;padding:15px}
-.card{background:#fff;border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 2px 10px #00000012}
-h2{margin:0 0 14px;font-size:19px}
-input,textarea,select{width:100%;padding:13px;border:1px solid #ddd;border-radius:9px;font-size:15px;margin:6px 0 12px;background:#fff}
-textarea{min-height:110px;resize:vertical}
-button{border:0;border-radius:9px;padding:12px 15px;background:#111;color:#fff;font-weight:bold;cursor:pointer}
-button.danger{background:#b00020}
-button.gray{background:#555}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.stat{background:#f5f5f5;padding:15px;border-radius:10px}
-.stat strong{display:block;font-size:23px;margin-top:6px}
-.item{border:1px solid #eee;border-radius:11px;padding:14px;margin-bottom:10px;background:#fff}
-.item b{font-size:16px}
-.small{font-size:13px;color:#666;line-height:1.5}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.category-list{display:flex;gap:8px;flex-wrap:wrap}
-.category-tag{background:#eee;padding:8px 11px;border-radius:20px;font-size:13px;font-weight:bold}
-.message{font-size:14px;margin-top:8px}
-.success{color:green}
-.error{color:#b00020}
-.user-details{background:#f7f7f7;padding:12px;border-radius:9px;margin-top:10px}
-details{margin-top:10px}
-summary{cursor:pointer;font-weight:bold;padding:7px 0}
-.floating{position:fixed;right:18px;bottom:18px;width:55px;height:55px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#25D366;color:white;font-size:27px;text-decoration:none;box-shadow:0 3px 12px #0004}
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    background:#f5f5f5;
+    color:#111;
+    font-family:Arial,sans-serif;
+}
+
+header{
+    background:#111;
+    color:#fff;
+    padding:18px 15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+header h1{
+    margin:0;
+    font-size:20px;
+}
+
+header button{
+    border:0;
+    border-radius:9px;
+    padding:10px 13px;
+    background:#fff;
+    color:#111;
+    font-size:20px;
+    cursor:pointer;
+}
+
+main{
+    max-width:850px;
+    margin:auto;
+    padding:15px;
+}
+
+.card{
+    background:#fff;
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:16px;
+    box-shadow:0 2px 10px #00000012;
+}
+
+h2{
+    margin:0 0 14px;
+    font-size:19px;
+}
+
+input,
+textarea,
+select{
+    width:100%;
+    padding:13px;
+    border:1px solid #ddd;
+    border-radius:9px;
+    font-size:15px;
+    margin:6px 0 12px;
+    background:#fff;
+}
+
+textarea{
+    min-height:110px;
+    resize:vertical;
+}
+
+button{
+    border:0;
+    border-radius:9px;
+    padding:12px 15px;
+    background:#111;
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button.danger{
+    background:#b00020;
+}
+
+button.gray{
+    background:#555;
+}
+
+button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
+
+.row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+}
+
+.stat{
+    background:#f5f5f5;
+    padding:15px;
+    border-radius:10px;
+}
+
+.stat strong{
+    display:block;
+    font-size:23px;
+    margin-top:6px;
+}
+
+.item{
+    border:1px solid #eee;
+    border-radius:11px;
+    padding:14px;
+    margin-bottom:10px;
+    background:#fff;
+}
+
+.item b{
+    font-size:16px;
+}
+
+.small{
+    font-size:13px;
+    color:#666;
+    line-height:1.5;
+}
+
+.actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:10px;
+}
+
+.category-list{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.category-tag{
+    background:#eee;
+    padding:8px 11px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:bold;
+}
+
+.message{
+    font-size:14px;
+    margin-top:8px;
+}
+
+.success{
+    color:green;
+}
+
+.error{
+    color:#b00020;
+}
+
+.user-details{
+    background:#f7f7f7;
+    padding:12px;
+    border-radius:9px;
+    margin-top:10px;
+    overflow-wrap:anywhere;
+}
+
+details{
+    margin-top:10px;
+}
+
+summary{
+    cursor:pointer;
+    font-weight:bold;
+    padding:7px 0;
+}
+
+.floating{
+    position:fixed;
+    right:18px;
+    bottom:18px;
+    width:55px;
+    height:55px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#25D366;
+    color:white;
+    font-size:27px;
+    text-decoration:none;
+    box-shadow:0 3px 12px #0004;
+    z-index:100;
+}
+
+.loading{
+    text-align:center;
+    padding:15px;
+    color:#666;
+}
+
 @media(max-width:600px){
-.row{grid-template-columns:1fr}
-.stats{grid-template-columns:1fr 1fr}
+
+    .row{
+        grid-template-columns:1fr;
+    }
+
+    .stats{
+        grid-template-columns:1fr 1fr;
+    }
+
+    header h1{
+        font-size:18px;
+    }
 }
 </style>
 </head>
@@ -46,1456 +240,2613 @@ summary{cursor:pointer;font-weight:bold;padding:7px 0}
 <body>
 
 <header>
-<h1>⚡ Delight Vendor Logs — Admin</h1>
-<button onclick="refreshEverything()">🔄</button>
+    <h1>⚡ Delight Vendor Logs — Admin</h1>
+    <button type="button" onclick="refreshEverything()">🔄</button>
 </header>
 
 <main>
 
 <div id="adminStatus" class="card">
-Checking administrator access...
+    Checking administrator access...
 </div>
 
 <div class="card">
-<div class="actions">
-<button onclick="refreshEverything()">🔄 Refresh Everything</button>
-<button class="gray" onclick="location.href='dashboard.html'">🏠 Customer Dashboard</button>
-</div>
-<div id="refreshMessage" class="message"></div>
-</div>
 
-<div class="card">
-<h2>📊 Store Overview</h2>
-<div class="stats">
-<div class="stat">Products<strong id="statProducts">0</strong></div>
-<div class="stat">Available Inventory<strong id="statInventory">0</strong></div>
-<div class="stat">Pending Orders<strong id="statPending">0</strong></div>
-<div class="stat">Completed Orders<strong id="statCompleted">0</strong></div>
-<div class="stat">Users<strong id="statUsers">0</strong></div>
-<div class="stat">Never Sell Out<strong id="statNeverSell">0</strong></div>
-</div>
+    <div class="actions">
+        <button type="button" onclick="refreshEverything()">
+            🔄 Refresh Everything
+        </button>
+
+        <button type="button"
+                class="gray"
+                onclick="location.href='dashboard.html'">
+            🏠 Customer Dashboard
+        </button>
+    </div>
+
+    <div id="refreshMessage" class="message"></div>
+
 </div>
 
 <div class="card">
-<h2>📢 Dashboard Watermark</h2>
-<p class="small">Send a small readable message that will appear at the top of the customer dashboard.</p>
-<textarea id="watermarkInput" placeholder="Example: 📢 New services have been added. Contact support if you need help."></textarea>
-<div id="watermarkMessage" class="message">Watermark preview will appear here.</div>
-<div class="actions">
-<button onclick="saveWatermark()">📢 Send Watermark</button>
-<button class="danger" onclick="clearWatermark()">🗑️ Clear Watermark</button>
+
+    <h2>📊 Store Overview</h2>
+
+    <div class="stats">
+
+        <div class="stat">
+            Products
+            <strong id="statProducts">0</strong>
+        </div>
+
+        <div class="stat">
+            Available Inventory
+            <strong id="statInventory">0</strong>
+        </div>
+
+        <div class="stat">
+            Pending Orders
+            <strong id="statPending">0</strong>
+        </div>
+
+        <div class="stat">
+            Completed Orders
+            <strong id="statCompleted">0</strong>
+        </div>
+
+        <div class="stat">
+            Users
+            <strong id="statUsers">0</strong>
+        </div>
+
+        <div class="stat">
+            Never Sell Out
+            <strong id="statNeverSell">0</strong>
+        </div>
+
+    </div>
+
 </div>
+<div class="card">
+
+    <h2>📢 Dashboard Watermark</h2>
+
+    <p class="small">
+        Send a small readable message that will appear at the top
+        of the customer dashboard.
+    </p>
+
+    <textarea
+        id="watermarkInput"
+        placeholder="Example: 📢 New services have been added. Contact support if you need help."
+    ></textarea>
+
+    <div id="watermarkMessage" class="message">
+        Watermark preview will appear here.
+    </div>
+
+    <div class="actions">
+
+        <button type="button" onclick="saveWatermark()">
+            📢 Send Watermark
+        </button>
+
+        <button type="button"
+                class="danger"
+                onclick="clearWatermark()">
+            🗑️ Clear Watermark
+        </button>
+
+    </div>
+
 </div>
 
 <div class="card">
-<h2>📂 Service Categories</h2>
-<p class="small">These are the categories shown at the top of the customer dashboard.</p>
-<div id="categoryList" class="category-list"></div>
+
+    <h2>📂 Service Categories</h2>
+
+    <p class="small">
+        These are the categories shown at the top of the customer dashboard.
+    </p>
+
+    <div id="categoryList" class="category-list"></div>
+
 </div>
 
 <div class="card">
-<h2>➕ Add Product / Service</h2>
 
-<label>Service Name</label>
-<input id="productName" placeholder="Example: Facebook Working Log">
+    <h2>➕ Add Product / Service</h2>
 
-<label>Price</label>
-<input id="productPrice" type="number" step="0.01" placeholder="Enter price">
+    <label>Service Name</label>
 
-<label>Category</label>
-<select id="productCategory"></select>
+    <input
+        id="productName"
+        placeholder="Example: Facebook Working Log"
+    >
 
-<label>Description</label>
-<textarea id="productDescription" placeholder="Describe this service..."></textarea>
+    <label>Price</label>
 
-<label>Product Image</label>
-<input id="productImage" type="file" accept="image/*">
-<div id="imageName" class="small">No image selected</div>
+    <input
+        id="productPrice"
+        type="number"
+        step="0.01"
+        min="0"
+        placeholder="Enter price"
+    >
 
-<div class="row">
-<div>
-<label>Stock</label>
-<input id="productStock" type="number" value="0">
-</div>
-<div>
-<label>Status</label>
-<select id="productStatus">
-<option value="Available">Available</option>
-<option value="Unavailable">Unavailable</option>
-</select>
-</div>
-</div>
+    <label>Category</label>
 
-<label>
-<input id="trackStock" type="checkbox" checked style="width:auto">
-Track stock / allow this service to become Sold Out
-</label>
+    <select id="productCategory"></select>
 
-<button onclick="addProduct()">➕ Add Service</button>
-<div id="productMessage" class="message"></div>
+    <label>Description</label>
+
+    <textarea
+        id="productDescription"
+        placeholder="Describe this service..."
+    ></textarea>
+
+    <label>Product Image</label>
+
+    <input
+        id="productImage"
+        type="file"
+        accept="image/*"
+    >
+
+    <div id="imageName" class="small">
+        No image selected
+    </div>
+
+    <div class="row">
+
+        <div>
+
+            <label>Stock</label>
+
+            <input
+                id="productStock"
+                type="number"
+                value="0"
+                min="0"
+            >
+
+        </div>
+
+        <div>
+
+            <label>Status</label>
+
+            <select id="productStatus">
+
+                <option value="Available">
+                    Available
+                </option>
+
+                <option value="Unavailable">
+                    Unavailable
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+    <label>
+        <input
+            id="trackStock"
+            type="checkbox"
+            checked
+            style="width:auto"
+        >
+
+        Track stock / allow this service to become Sold Out
+    </label>
+
+    <button type="button" onclick="addProduct()">
+        ➕ Add Service
+    </button>
+
+    <div id="productMessage" class="message"></div>
+
 </div>
 
 <div class="card">
-<h2>📦 Add Inventory</h2>
 
-<label>Select Service</label>
-<select id="inventoryProduct"></select>
+    <h2>📦 Add Inventory</h2>
 
-<label>Delivery Information</label>
-<textarea id="inventoryContent" placeholder="Enter the legitimate digital item/details to be delivered after purchase"></textarea>
+    <label>Select Service</label>
 
-<button onclick="addInventory()">➕ Add Inventory</button>
-<div id="inventoryMessage" class="message"></div>
+    <select id="inventoryProduct"></select>
+
+    <label>Delivery Information</label>
+
+    <textarea
+        id="inventoryContent"
+        placeholder="Enter the legitimate digital item/details to be delivered after purchase"
+    ></textarea>
+
+    <button type="button" onclick="addInventory()">
+        ➕ Add Inventory
+    </button>
+
+    <div id="inventoryMessage" class="message"></div>
+
 </div>
 
 <div class="card">
-<h2>🛍️ Product Management</h2>
-<input id="productSearch" placeholder="🔍 Search service..." oninput="renderProducts()">
-<div id="productList">Loading products...</div>
+
+    <h2>🛍️ Product Management</h2>
+
+    <input
+        id="productSearch"
+        placeholder="🔍 Search service..."
+        oninput="renderProducts()"
+    >
+
+    <div id="productList">
+        Loading products...
+    </div>
+
 </div>
 
 <div class="card">
-<h2>📦 Inventory Management</h2>
-<input id="inventorySearch" placeholder="🔍 Search inventory..." oninput="renderInventory()">
-<div id="inventoryList">Loading inventory...</div>
+
+    <h2>📦 Inventory Management</h2>
+
+    <input
+        id="inventorySearch"
+        placeholder="🔍 Search inventory..."
+        oninput="renderInventory()"
+    >
+
+    <div id="inventoryList">
+        Loading inventory...
+    </div>
+
 </div>
 
 <div class="card">
-<h2>🧾 Orders Management</h2>
-<input id="orderSearch" placeholder="🔍 Search orders..." oninput="renderOrders()">
-<div id="ordersList">Loading orders...</div>
+
+    <h2>🧾 Orders Management</h2>
+
+    <input
+        id="orderSearch"
+        placeholder="🔍 Search orders..."
+        oninput="renderOrders()"
+    >
+
+    <div id="ordersList">
+        Loading orders...
+    </div>
+
 </div>
 
 <div class="card">
-<h2>👥 Users & Wallets</h2>
-<input id="userSearch" placeholder="🔍 Search name, email or ID..." oninput="renderUsers()">
-<div id="usersList">Loading users...</div>
+
+    <h2>👥 Users & Wallets</h2>
+
+    <input
+        id="userSearch"
+        placeholder="🔍 Search name, email or ID..."
+        oninput="renderUsers()"
+    >
+
+    <div id="usersList">
+        Loading users...
+    </div>
+
 </div>
 
 </main>
 
-<a class="floating" href="https://wa.me/2347015908401" target="_blank">💬</a>
+<a
+    class="floating"
+    href="https://wa.me/2347015908401"
+    target="_blank"
+    aria-label="WhatsApp"
+>
+    💬
+</a>
 
 <script>
-const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
-const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
-const supabaseClient=window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+const SUPABASE_URL =
+"https://hkfhehbhmucymusaytoe.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
 );
 
-let products=[];
-let inventory=[];
-let orders=[];
-let users=[];
+let products = [];
+let inventory = [];
+let orders = [];
+let users = [];
 
-let categories=[
-"All Social Logs",
-"Working Pictures",
-"Formats",
-"Working Links",
-"Voice Cloner/Fake Video Call",
-"All Countries Number",
-"Streaming & More",
-"ESIMS"
+let categories = [
+    "All Social Logs",
+    "Working Pictures",
+    "Formats",
+    "Working Links",
+    "Voice Cloner/Fake Video Call",
+    "All Countries Number",
+    "Streaming & More",
+    "ESIMS"
 ];
 
 function escapeHTML(value){
-return String(value??"")
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
 }
 
 function money(value){
-return Number(value||0).toLocaleString("en-NG",{
-minimumFractionDigits:2,
-maximumFractionDigits:2
-});
+
+    return Number(value || 0).toLocaleString(
+        "en-NG",
+        {
+            minimumFractionDigits:2,
+            maximumFractionDigits:2
+        }
+    );
+
 }
 
-document.getElementById("productImage")?.addEventListener("change",function(){
-document.getElementById("imageName").textContent=
-this.files?.[0]?.name||"No image selected";
-});
+document
+.getElementById("productImage")
+?.addEventListener(
+    "change",
+    function(){
+
+        document.getElementById("imageName").textContent =
+            this.files?.[0]?.name ||
+            "No image selected";
+
+    }
+);
 
 function buildCategoryUI(){
 
-const list=document.getElementById("categoryList");
-const select=document.getElementById("productCategory");
+    const list =
+        document.getElementById("categoryList");
 
-if(!list||!select)return;
+    const select =
+        document.getElementById("productCategory");
 
-list.innerHTML="";
-select.innerHTML="";
+    if(!list || !select) return;
 
-categories.forEach(category=>{
+    list.innerHTML = "";
+    select.innerHTML = "";
 
-const tag=document.createElement("span");
-tag.className="category-tag";
-tag.textContent=category;
-list.appendChild(tag);
+    categories.forEach(category => {
 
-const option=document.createElement("option");
-option.value=category;
-option.textContent=category;
-select.appendChild(option);
+        const tag =
+            document.createElement("span");
 
-});
+        tag.className = "category-tag";
+        tag.textContent = category;
+
+        list.appendChild(tag);
+
+        const option =
+            document.createElement("option");
+
+        option.value = category;
+        option.textContent = category;
+
+        select.appendChild(option);
+
+    });
 
 }
+    async function checkAdmin(){
 
-async function checkAdmin(){
-
-    const statusBox = document.getElementById("adminStatus");
+    const statusBox =
+        document.getElementById("adminStatus");
 
     try{
 
         const {
-            data: { session },
-            error: sessionError
+            data,
+            error
         } = await supabaseClient.auth.getSession();
-
-        if(sessionError){
-            throw sessionError;
-        }
-
-        if(!session || !session.user){
-            if(statusBox){
-                statusBox.textContent = "❌ Please log in again.";
-            }
-            location.href = "login.html";
-            return false;
-        }
-
-        const { data, error } = await supabaseClient
-            .from("admin_users")
-            .select("user_id")
-            .eq("user_id", session.user.id)
-            .maybeSingle();
-
-        if(error){
-            console.error("Admin check error:", error);
-
-            if(statusBox){
-                statusBox.textContent =
-                    "❌ Administrator check failed: " + error.message;
-            }
-
-            return false;
-        }
-
-        if(!data){
-            if(statusBox){
-                statusBox.textContent = "❌ Access denied. Administrator account required.";
-            }
-async function checkAdmin(){
-
-    const statusBox = document.getElementById("adminStatus");
-
-    try{
-
-        const { data: { user }, error: userError } =
-            await supabaseClient.auth.getUser();
-
-        if(userError){
-            throw new Error(userError.message);
-        }
-
-        if(!user){
-            location.href = "login.html";
-            return false;
-        }
-
-        const { data, error } = await supabaseClient
-            .from("admin_users")
-            .select("user_id")
-            .eq("user_id", user.id)
-            .maybeSingle();
 
         if(error){
             throw new Error(error.message);
         }
 
-        if(!data){
+        const session = data?.session;
+
+        if(!session?.user){
+
             if(statusBox){
-                statusBox.textContent = "❌ Administrator access denied.";
+                statusBox.textContent =
+                    "❌ Please log in again.";
+            }
+
+            setTimeout(() => {
+                location.href = "login.html";
+            }, 500);
+
+            return false;
+        }
+
+        const {
+            data: admin,
+            error: adminError
+        } = await supabaseClient
+            .from("admin_users")
+            .select("user_id")
+            .eq("user_id", session.user.id)
+            .maybeSingle();
+
+        if(adminError){
+
+            console.error(
+                "Admin check error:",
+                adminError
+            );
+
+            if(statusBox){
+                statusBox.textContent =
+                    "❌ Administrator check failed: " +
+                    adminError.message;
+            }
+
+            return false;
+        }
+
+        if(!admin){
+
+            if(statusBox){
+                statusBox.textContent =
+                    "❌ Administrator access denied.";
             }
 
             return false;
         }
 
         if(statusBox){
-            statusBox.textContent = "✅ Administrator access confirmed.";
+
+            statusBox.textContent =
+                "✅ Administrator access confirmed.";
+
         }
 
         return true;
 
     }catch(error){
 
-        console.error("ADMIN CHECK FAILED:", error);
+        console.error(
+            "❌ ADMIN CHECK FAILED:",
+            error
+        );
 
         if(statusBox){
+
             statusBox.textContent =
-                "❌ Unable to verify administrator access: " + error.message;
+                "❌ Unable to verify administrator access: " +
+                error.message;
+
         }
 
         return false;
     }
-}
-  async function loadProducts(){
 
-const {data,error}=await supabaseClient
-.from("Product")
-.select("*")
-.order("id",{ascending:false});
-
-if(error){
-console.error(error);
-products=[];
-return;
 }
 
-products=data||[];
+async function loadProducts(){
 
-renderProducts();
-await loadInventoryProductDropdown();
+    const container =
+        document.getElementById("productList");
+
+    if(container){
+        container.innerHTML =
+            '<div class="loading">Loading products...</div>';
+    }
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("Product")
+        .select("*")
+        .eq("is_active", true)
+        .order("id", {
+            ascending:false
+        });
+
+    if(error){
+
+        console.error(
+            "Load products error:",
+            error
+        );
+
+        products = [];
+
+        if(container){
+
+            container.innerHTML =
+                '<div class="item error">❌ ' +
+                escapeHTML(error.message) +
+                '</div>';
+
+        }
+
+        return;
+    }
+
+    products = data || [];
+
+    renderProducts();
+
+    await loadInventoryProductDropdown();
+
 }
 
 function renderProducts(){
 
-const container=document.getElementById("productList");
-if(!container)return;
+    const container =
+        document.getElementById("productList");
 
-const search=(document.getElementById("productSearch")?.value||"")
-.toLowerCase().trim();
+    if(!container) return;
 
-const list=products.filter(product=>{
+    const search =
+        (
+            document
+            .getElementById("productSearch")
+            ?.value || ""
+        )
+        .toLowerCase()
+        .trim();
 
-return !search||
-String(product.name||"").toLowerCase().includes(search)||
-String(product.category||"").toLowerCase().includes(search)||
-String(product.description||"").toLowerCase().includes(search);
+    const list =
+        products.filter(product => {
 
-});
+            return !search ||
+                String(product.name || "")
+                    .toLowerCase()
+                    .includes(search) ||
 
-if(!list.length){
-container.innerHTML='<div class="item">No products found.</div>';
-return;
-}
+                String(product.category || "")
+                    .toLowerCase()
+                    .includes(search) ||
 
-container.innerHTML="";
+                String(product.description || "")
+                    .toLowerCase()
+                    .includes(search);
 
-list.forEach(product=>{
+        });
 
-const box=document.createElement("div");
-box.className="item";
+    if(!list.length){
 
-const stock=Number(product.stock||0);
-const status=String(product.status||"Available");
+        container.innerHTML =
+            '<div class="item">No active products found.</div>';
 
-box.innerHTML=`
-<b>${escapeHTML(product.name||"Unnamed Service")}</b>
-<div class="small">
-Category: ${escapeHTML(product.category||"Service")}<br>
-Price: ₦${money(product.price)}<br>
-Stock: ${stock}<br>
-Status: ${escapeHTML(status)}
-</div>
-<div class="actions">
-<button onclick="deleteProduct(${Number(product.id)})">🗑️ Delete</button>
-</div>
-`;
+        return;
+    }
 
-container.appendChild(box);
+    container.innerHTML = "";
 
-});
+    list.forEach(product => {
+
+        const box =
+            document.createElement("div");
+
+        box.className = "item";
+
+        const stock =
+            Number(product.stock || 0);
+
+        const status =
+            String(
+                product.status ||
+                "Available"
+            );
+
+        box.innerHTML = `
+
+            <b>
+                ${escapeHTML(
+                    product.name ||
+                    "Unnamed Service"
+                )}
+            </b>
+
+            <div class="small">
+
+                Category:
+                ${escapeHTML(
+                    product.category ||
+                    "Service"
+                )}
+                <br>
+
+                Price:
+                ₦${money(product.price)}
+                <br>
+
+                Stock:
+                ${stock}
+                <br>
+
+                Status:
+                ${escapeHTML(status)}
+
+            </div>
+
+            <div class="actions">
+
+                <button
+                    type="button"
+                    class="danger"
+                    onclick="deleteProduct(${Number(product.id)})"
+                >
+                    🗑️ Delete
+                </button>
+
+            </div>
+
+        `;
+
+        container.appendChild(box);
+
+    });
 
 }
 
 async function addProduct(){
 
-const message=document.getElementById("productMessage");
+    const message =
+        document.getElementById(
+            "productMessage"
+        );
 
-const name=document.getElementById("productName").value.trim();
-const price=Number(document.getElementById("productPrice").value||0);
-const category=document.getElementById("productCategory").value;
-const description=document.getElementById("productDescription").value.trim();
-const stock=Number(document.getElementById("productStock").value||0);
-const status=document.getElementById("productStatus").value;
-const trackStock=document.getElementById("trackStock").checked;
+    const name =
+        document.getElementById(
+            "productName"
+        ).value.trim();
 
-if(!name){
-message.textContent="❌ Enter a service name.";
-return;
-}
+    const price =
+        Number(
+            document.getElementById(
+                "productPrice"
+            ).value || 0
+        );
 
-if(price<0){
-message.textContent="❌ Price cannot be negative.";
-return;
-}
+    const category =
+        document.getElementById(
+            "productCategory"
+        ).value;
 
-message.textContent="Adding service...";
+    const description =
+        document.getElementById(
+            "productDescription"
+        ).value.trim();
 
-let image_url=null;
+    const stock =
+        Number(
+            document.getElementById(
+                "productStock"
+            ).value || 0
+        );
 
-const file=document.getElementById("productImage").files?.[0];
+    const status =
+        document.getElementById(
+            "productStatus"
+        ).value;
 
-if(file){
+    const trackStock =
+        document.getElementById(
+            "trackStock"
+        ).checked;
 
-/*
-If your Product table already accepts image_url,
-you can put your existing image-upload logic here.
-For now the product itself is created without forcing
-a storage bucket that may not exist.
-*/
+    if(!name){
 
-console.log("Selected image:",file.name);
+        message.textContent =
+            "❌ Enter a service name.";
 
-}
+        return;
+    }
 
-const {data,error}=await supabaseClient
-.from("Product")
-.insert([{
-name,
-price,
-category,
-description,
-stock:trackStock?stock:0,
-status,
-is_active:true
-}])
-.select()
-.single();
+    if(price < 0){
 
-if(error){
+        message.textContent =
+            "❌ Price cannot be negative.";
 
-console.error(error);
-message.textContent="❌ "+error.message;
-return;
+        return;
+    }
 
-}
+    if(stock < 0){
 
-message.textContent="✅ Service added successfully.";
+        message.textContent =
+            "❌ Stock cannot be negative.";
 
-document.getElementById("productName").value="";
-document.getElementById("productPrice").value="";
-document.getElementById("productDescription").value="";
-document.getElementById("productStock").value="0";
-document.getElementById("productImage").value="";
-document.getElementById("imageName").textContent="No image selected";
+        return;
+    }
 
-await loadProducts();
-await updateStats();
+    message.textContent =
+        "Adding service...";
+
+    const file =
+        document.getElementById(
+            "productImage"
+        ).files?.[0];
+
+    if(file){
+
+        console.log(
+            "Selected image:",
+            file.name
+        );
+
+    }
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("Product")
+        .insert([{
+
+            name,
+            price,
+            category,
+            description,
+
+            stock:
+                trackStock
+                ? stock
+                : 0,
+
+            status,
+
+            track_stock:
+                trackStock,
+
+            is_active:true
+
+        }])
+        .select()
+        .single();
+
+    if(error){
+
+        console.error(
+            "Add product error:",
+            error
+        );
+
+        message.textContent =
+            "❌ " +
+            error.message;
+
+        return;
+    }
+
+    console.log(
+        "Product created:",
+        data
+    );
+
+    message.textContent =
+        "✅ Service added successfully.";
+
+    document.getElementById(
+        "productName"
+    ).value = "";
+
+    document.getElementById(
+        "productPrice"
+    ).value = "";
+
+    document.getElementById(
+        "productDescription"
+    ).value = "";
+
+    document.getElementById(
+        "productStock"
+    ).value = "0";
+
+    document.getElementById(
+        "productImage"
+    ).value = "";
+
+    document.getElementById(
+        "imageName"
+    ).textContent =
+        "No image selected";
+
+    await loadProducts();
+    await updateStats();
 
 }
 
 async function deleteProduct(id){
 
-    const confirmed = confirm(
+    if(!confirm(
         "Are you sure you want to delete this service?\n\n" +
-        "It will be removed from the store but old orders will be kept."
-    );
+        "It will disappear from the store. " +
+        "Old orders and purchases will be kept."
+    )){
 
-    if(!confirmed) return;
-
-    console.log("Trying to deactivate product:", id);
-
-    const { data, error } = await supabaseClient
-        .from("Product")
-        .update({ is_active: false })
-        .eq("id", id)
-        .select("id, name, is_active");
-
-    if(error){
-        console.error("Delete/deactivate error:", error);
-        alert("❌ Could not delete service:\n" + error.message);
         return;
     }
 
-    console.log("Delete result:", data);
+    console.log(
+        "Deactivating product:",
+        id
+    );
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("Product")
+        .update({
+            is_active:false
+        })
+        .eq("id", id)
+        .select("id,name,is_active");
+
+    if(error){
+
+        console.error(
+            "Delete product error:",
+            error
+        );
+
+        alert(
+            "❌ Could not delete service:\n\n" +
+            error.message
+        );
+
+        return;
+    }
+
+    console.log(
+        "Delete result:",
+        data
+    );
 
     if(!data || data.length === 0){
+
         alert(
             "❌ Service was NOT deleted.\n\n" +
-            "The database did not allow this product to be updated."
+            "The database did not allow the update."
         );
+
         return;
     }
 
     if(data[0].is_active !== false){
-        alert("❌ Service was NOT deleted. Please try again.");
+
+        alert(
+            "❌ Service was NOT deleted."
+        );
+
         return;
     }
 
-    alert("🗑️ Service deleted successfully.");
+    alert(
+        "🗑️ Service deleted successfully."
+    );
 
     await loadProducts();
     await updateStats();
-  }
-
-async function loadInventoryProductDropdown(){
-
-const select=document.getElementById("inventoryProduct");
-if(!select)return;
-
-select.innerHTML="";
-
-if(!products.length){
-
-select.innerHTML='<option value="">No services available</option>';
-return;
 
 }
 
-products.forEach(product=>{
+async function loadInventoryProductDropdown(){
 
-const option=document.createElement("option");
+    const select =
+        document.getElementById(
+            "inventoryProduct"
+        );
 
-option.value=product.id;
-option.textContent=
-(product.name||"Unnamed Service")+
-" — ₦"+money(product.price);
+    if(!select) return;
 
-select.appendChild(option);
+    select.innerHTML = "";
 
-});
+    if(!products.length){
+
+        select.innerHTML =
+            '<option value="">No active services available</option>';
+
+        return;
+    }
+
+    products.forEach(product => {
+
+        const option =
+            document.createElement("option");
+
+        option.value =
+            product.id;
+
+        option.textContent =
+            (product.name ||
+            "Unnamed Service") +
+            " — ₦" +
+            money(product.price);
+
+        select.appendChild(option);
+
+    });
 
 }
 
 async function addInventory(){
 
-const message=document.getElementById("inventoryMessage");
+    const message =
+        document.getElementById(
+            "inventoryMessage"
+        );
 
-const productId=document.getElementById("inventoryProduct").value;
-const content=document.getElementById("inventoryContent").value.trim();
+    const productId =
+        document.getElementById(
+            "inventoryProduct"
+        ).value;
 
-if(!productId){
-message.textContent="❌ Select a service.";
-return;
-}
+    const content =
+        document.getElementById(
+            "inventoryContent"
+        ).value.trim();
 
-if(!content){
-message.textContent="❌ Enter the delivery information.";
-return;
-}
+    if(!productId){
 
-message.textContent="Adding inventory...";
+        message.textContent =
+            "❌ Select a service.";
 
-const {error}=await supabaseClient
-.from("product_inventory")
-.insert([{
-product_id:Number(productId),
-content,
-status:"available"
-}]);
+        return;
+    }
 
-if(error){
+    if(!content){
 
-console.error(error);
-message.textContent="❌ "+error.message;
-return;
+        message.textContent =
+            "❌ Enter the delivery information.";
 
-}
+        return;
+    }
 
-message.textContent="✅ Inventory added successfully.";
-document.getElementById("inventoryContent").value="";
+    message.textContent =
+        "Adding inventory...";
 
-await loadInventory();
-await loadProducts();
-await updateStats();
+    const {
+        error
+    } = await supabaseClient
+        .from("product_inventory")
+        .insert([{
 
-}
+            product_id:
+                Number(productId),
 
-async function loadInventory(){
+            content,
 
-const container=document.getElementById("inventoryList");
-if(!container)return;
+            status:"available"
 
-container.innerHTML='<div class="item">Loading inventory...</div>';
+        }]);
 
-const {data,error}=await supabaseClient
-.from("product_inventory")
-.select("*")
-.order("id",{ascending:false});
+    if(error){
 
-if(error){
+        console.error(
+            "Add inventory error:",
+            error
+        );
 
-container.innerHTML=
-'<div class="item error">❌ '+
-escapeHTML(error.message)+
-'</div>';
+        message.textContent =
+            "❌ " +
+            error.message;
 
-inventory=[];
-return;
+        return;
+    }
 
-}
+    message.textContent =
+        "✅ Inventory added successfully.";
 
-inventory=data||[];
+    document.getElementById(
+        "inventoryContent"
+    ).value = "";
 
-renderInventory();
+    await loadInventory();
+    await loadProducts();
+    await updateStats();
+
+    }
+    async function loadInventory(){
+
+    const container =
+        document.getElementById(
+            "inventoryList"
+        );
+
+    if(!container) return;
+
+    container.innerHTML =
+        '<div class="item">Loading inventory...</div>';
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("product_inventory")
+        .select("*")
+        .order("id", {
+            ascending:false
+        });
+
+    if(error){
+
+        console.error(
+            "Inventory load error:",
+            error
+        );
+
+        inventory = [];
+
+        container.innerHTML =
+            '<div class="item error">❌ ' +
+            escapeHTML(error.message) +
+            '</div>';
+
+        return;
+    }
+
+    inventory = data || [];
+
+    renderInventory();
 
 }
 
 function renderInventory(){
 
-const container=document.getElementById("inventoryList");
-if(!container)return;
+    const container =
+        document.getElementById(
+            "inventoryList"
+        );
 
-const search=(document.getElementById("inventorySearch")?.value||"")
-.toLowerCase().trim();
+    if(!container) return;
 
-const list=inventory.filter(item=>{
+    const search =
+        (
+            document
+            .getElementById(
+                "inventorySearch"
+            )
+            ?.value || ""
+        )
+        .toLowerCase()
+        .trim();
 
-const product=products.find(
-p=>Number(p.id)===Number(item.product_id)
-);
+    const list =
+        inventory.filter(item => {
 
-const productName=product?.name||"";
+            const product =
+                products.find(
+                    p =>
+                        Number(p.id) ===
+                        Number(item.product_id)
+                );
 
-return !search||
-productName.toLowerCase().includes(search)||
-String(item.content||"").toLowerCase().includes(search)||
-String(item.status||"").toLowerCase().includes(search);
+            const productName =
+                product?.name || "";
 
-});
+            return !search ||
 
-if(!list.length){
+                productName
+                    .toLowerCase()
+                    .includes(search) ||
 
-container.innerHTML=
-'<div class="item">No inventory found.</div>';
+                String(item.content || "")
+                    .toLowerCase()
+                    .includes(search) ||
 
-return;
+                String(item.status || "")
+                    .toLowerCase()
+                    .includes(search);
 
-}
+        });
 
-container.innerHTML="";
+    if(!list.length){
 
-list.forEach(item=>{
+        container.innerHTML =
+            '<div class="item">No inventory found.</div>';
 
-const product=products.find(
-p=>Number(p.id)===Number(item.product_id)
-);
+        return;
+    }
 
-const box=document.createElement("div");
-box.className="item";
+    container.innerHTML = "";
 
-box.innerHTML=`
-<b>Inventory #${escapeHTML(item.id)}</b>
-<div class="small">
-Service: ${escapeHTML(product?.name||"Unknown Service")}<br>
-Product ID: ${escapeHTML(item.product_id)}<br>
-Status: ${escapeHTML(item.status||"unknown")}
-</div>
+    list.forEach(item => {
 
-<details>
-<summary>Delivery Information</summary>
-<div class="user-details">${escapeHTML(item.content)}</div>
-</details>
+        const product =
+            products.find(
+                p =>
+                    Number(p.id) ===
+                    Number(item.product_id)
+            );
 
-<div class="actions">
-<button class="danger" onclick="deleteInventory(${Number(item.id)})">🗑️ Delete</button>
-</div>
-`;
+        const box =
+            document.createElement("div");
 
-container.appendChild(box);
+        box.className = "item";
 
-});
+        box.innerHTML = `
+
+            <b>
+                Inventory #${escapeHTML(item.id)}
+            </b>
+
+            <div class="small">
+
+                Service:
+                ${escapeHTML(
+                    product?.name ||
+                    "Unknown Service"
+                )}
+                <br>
+
+                Product ID:
+                ${escapeHTML(item.product_id)}
+                <br>
+
+                Status:
+                ${escapeHTML(
+                    item.status ||
+                    "unknown"
+                )}
+
+            </div>
+
+            <details>
+
+                <summary>
+                    Delivery Information
+                </summary>
+
+                <div class="user-details">
+                    ${escapeHTML(
+                        item.content
+                    )}
+                </div>
+
+            </details>
+
+            <div class="actions">
+
+                <button
+                    type="button"
+                    class="danger"
+                    onclick="deleteInventory(${Number(item.id)})"
+                >
+                    🗑️ Delete
+                </button>
+
+            </div>
+        `;
+
+        container.appendChild(box);
+
+    });
 
 }
 
 async function deleteInventory(id){
 
-if(!confirm("Delete this inventory item?"))return;
+    if(!confirm(
+        "Delete this inventory item?"
+    )) return;
 
-const {error}=await supabaseClient
-.from("product_inventory")
-.delete()
-.eq("id",id);
+    const {
+        error
+    } = await supabaseClient
+        .from("product_inventory")
+        .delete()
+        .eq("id", id);
 
-if(error){
+    if(error){
 
-alert("❌ "+error.message);
-return;
+        alert(
+            "❌ " +
+            error.message
+        );
 
-}
+        return;
+    }
 
-alert("✅ Inventory deleted.");
+    alert(
+        "✅ Inventory deleted."
+    );
 
-await loadInventory();
-await loadProducts();
-await updateStats();
-
-  }
-  async function loadOrders(){
-
-const container=document.getElementById("ordersList");
-if(!container)return;
-
-container.innerHTML=
-'<div class="item">Loading orders...</div>';
-
-const {data,error}=await supabaseClient
-.from("pending_orders")
-.select("*")
-.order("created_at",{ascending:false});
-
-if(error){
-
-container.innerHTML=
-'<div class="item error">❌ Orders could not be loaded.<br><br>'+
-escapeHTML(error.message)+
-'</div>';
-
-orders=[];
-return;
+    await loadInventory();
+    await loadProducts();
+    await updateStats();
 
 }
 
-orders=data||[];
+async function loadOrders(){
 
-renderOrders();
+    const container =
+        document.getElementById(
+            "ordersList"
+        );
+
+    if(!container) return;
+
+    container.innerHTML =
+        '<div class="item">Loading orders...</div>';
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("pending_orders")
+        .select("*")
+        .order("created_at", {
+            ascending:false
+        });
+
+    if(error){
+
+        console.error(
+            "Orders load error:",
+            error
+        );
+
+        orders = [];
+
+        container.innerHTML =
+            '<div class="item error">❌ Orders could not be loaded.<br><br>' +
+            escapeHTML(error.message) +
+            '</div>';
+
+        return;
+    }
+
+    orders = data || [];
+
+    renderOrders();
 
 }
 
 function renderOrders(){
 
-const container=document.getElementById("ordersList");
-if(!container)return;
+    const container =
+        document.getElementById(
+            "ordersList"
+        );
 
-const search=(document.getElementById("orderSearch")?.value||"")
-.toLowerCase().trim();
+    if(!container) return;
 
-const list=orders.filter(order=>{
+    const search =
+        (
+            document
+            .getElementById(
+                "orderSearch"
+            )
+            ?.value || ""
+        )
+        .toLowerCase()
+        .trim();
 
-return !search||
-String(order.id||"").toLowerCase().includes(search)||
-String(order.user_id||"").toLowerCase().includes(search)||
-String(order.product_id||"").toLowerCase().includes(search)||
-String(order.product_name||"").toLowerCase().includes(search)||
-String(order.status||"").toLowerCase().includes(search);
+    const list =
+        orders.filter(order => {
 
-});
+            return !search ||
 
-if(!list.length){
+                String(order.id || "")
+                    .toLowerCase()
+                    .includes(search) ||
 
-container.innerHTML=
-'<div class="item">No pending orders found.</div>';
+                String(order.user_id || "")
+                    .toLowerCase()
+                    .includes(search) ||
 
-return;
+                String(order.product_id || "")
+                    .toLowerCase()
+                    .includes(search) ||
 
-}
+                String(order.product_name || "")
+                    .toLowerCase()
+                    .includes(search) ||
 
-container.innerHTML="";
+                String(order.status || "")
+                    .toLowerCase()
+                    .includes(search);
 
-list.forEach(order=>{
+        });
 
-const box=document.createElement("div");
-box.className="item";
+    if(!list.length){
 
-const status=
-String(order.status||"pending").toLowerCase();
+        container.innerHTML =
+            '<div class="item">No orders found.</div>';
 
-box.innerHTML=`
-<b>Pending Order #${escapeHTML(order.id)}</b>
+        return;
+    }
 
-<div class="small">
-Customer ID: ${escapeHTML(order.user_id)}<br>
-Service: ${escapeHTML(order.product_name||order.product_id)}<br>
-Product ID: ${escapeHTML(order.product_id)}<br>
-Amount: ₦${money(order.amount)}<br>
-Status: ${escapeHTML(status)}<br>
-Created:
-${
-order.created_at
-?escapeHTML(new Date(order.created_at).toLocaleString("en-NG"))
-:"Unknown"
-}
-</div>
+    container.innerHTML = "";
 
-<div class="actions">
+    list.forEach(order => {
 
-${
-status==="pending"
-?`<button onclick="completePendingOrder(${Number(order.id)})">✅ Complete Order</button>`
-:""
-}
+        const box =
+            document.createElement("div");
 
-${
-status!=="cancelled"&&status!=="completed"
-?`<button class="danger" onclick="cancelPendingOrder(${Number(order.id)})">❌ Cancel</button>`
-:""
-}
+        box.className = "item";
 
-</div>
-`;
+        const status =
+            String(
+                order.status ||
+                "pending"
+            ).toLowerCase();
 
-container.appendChild(box);
+        box.innerHTML = `
 
-});
+            <b>
+                Order #${escapeHTML(order.id)}
+            </b>
+
+            <div class="small">
+
+                Customer ID:
+                ${escapeHTML(order.user_id)}
+                <br>
+
+                Service:
+                ${escapeHTML(
+                    order.product_name ||
+                    order.product_id
+                )}
+                <br>
+
+                Product ID:
+                ${escapeHTML(order.product_id)}
+                <br>
+
+                Amount:
+                ₦${money(order.amount)}
+                <br>
+
+                Status:
+                ${escapeHTML(status)}
+                <br>
+
+                Created:
+                ${
+                    order.created_at
+                    ? escapeHTML(
+                        new Date(
+                            order.created_at
+                        ).toLocaleString("en-NG")
+                    )
+                    : "Unknown"
+                }
+
+            </div>
+
+            <div class="actions">
+
+                ${
+                    status === "pending"
+                    ?
+                    `
+                    <button
+                        type="button"
+                        onclick="completePendingOrder(${Number(order.id)})"
+                    >
+                        ✅ Complete Order
+                    </button>
+                    `
+                    :
+                    ""
+                }
+
+                ${
+                    status !== "cancelled" &&
+                    status !== "completed"
+                    ?
+                    `
+                    <button
+                        type="button"
+                        class="danger"
+                        onclick="cancelPendingOrder(${Number(order.id)})"
+                    >
+                        ❌ Cancel
+                    </button>
+                    `
+                    :
+                    ""
+                }
+
+            </div>
+        `;
+
+        container.appendChild(box);
+
+    });
 
 }
 
 async function completePendingOrder(id){
 
-const order=orders.find(
-o=>Number(o.id)===Number(id)
-);
+    const order =
+        orders.find(
+            o =>
+                Number(o.id) ===
+                Number(id)
+        );
 
-if(!order){
+    if(!order){
 
-alert("❌ Order not found.");
-return;
+        alert(
+            "❌ Order not found."
+        );
 
-}
+        return;
+    }
 
-const {data:selectedInventory,error:inventoryError}=await supabaseClient
-.from("product_inventory")
-.select("*")
-.eq("product_id",order.product_id)
-.eq("status","available")
-.order("id",{ascending:true})
-.limit(1)
-.maybeSingle();
+    const {
+        data:selectedInventory,
+        error:inventoryError
+    } = await supabaseClient
+        .from("product_inventory")
+        .select("*")
+        .eq(
+            "product_id",
+            order.product_id
+        )
+        .eq(
+            "status",
+            "available"
+        )
+        .order("id", {
+            ascending:true
+        })
+        .limit(1)
+        .maybeSingle();
 
-if(inventoryError){
+    if(inventoryError){
 
-alert("❌ "+inventoryError.message);
-return;
+        alert(
+            "❌ " +
+            inventoryError.message
+        );
 
-}
+        return;
+    }
 
-if(!selectedInventory){
+    if(!selectedInventory){
 
-alert("❌ No available inventory for this service.");
-return;
+        alert(
+            "❌ No available inventory for this service."
+        );
 
-}
+        return;
+    }
 
-if(!confirm(
-"Complete this order and deliver the available inventory?"
-))return;
+    if(!confirm(
+        "Complete this order and deliver the available inventory?"
+    )) return;
 
-const {data:{user}}=await supabaseClient.auth.getUser();
+    const {
+        data:{user}
+    } =
+        await supabaseClient.auth.getUser();
 
-if(!user){
+    if(!user){
 
-alert("❌ Admin session expired.");
-return;
+        alert(
+            "❌ Admin session expired."
+        );
 
-}
+        return;
+    }
 
-/*
-Create the purchase first.
-*/
+    const {
+        error:purchaseError
+    } =
+        await supabaseClient
+            .from("purchases")
+            .insert([{
 
-const {error:purchaseError}=await supabaseClient
-.from("purchases")
-.insert([{
-user_id:order.user_id,
-product_id:order.product_id,
-product_name:order.product_name,
-amount:order.amount,
-content:selectedInventory.content,
-status:"completed"
-}]);
+                user_id:
+                    order.user_id,
 
-if(purchaseError){
+                product_id:
+                    order.product_id,
 
-alert(
-"❌ Could not create purchase:\n\n"+
-purchaseError.message
-);
+                product_name:
+                    order.product_name,
 
-return;
+                amount:
+                    order.amount,
 
-}
+                content:
+                    selectedInventory.content,
 
-/*
-Remove the inventory only after purchase creation succeeds.
-*/
+                status:
+                    "completed"
 
-const {error:deleteError}=await supabaseClient
-.from("product_inventory")
-.delete()
-.eq("id",selectedInventory.id);
+            }]);
 
-if(deleteError){
+    if(purchaseError){
 
-alert(
-"⚠️ Purchase was created but inventory could not be removed:\n\n"+
-deleteError.message
-);
+        alert(
+            "❌ Could not create purchase:\n\n" +
+            purchaseError.message
+        );
 
-return;
+        return;
+    }
 
-}
+    const {
+        error:deleteError
+    } =
+        await supabaseClient
+            .from("product_inventory")
+            .delete()
+            .eq(
+                "id",
+                selectedInventory.id
+            );
 
-/*
-Mark pending order completed.
-*/
+    if(deleteError){
 
-const {error:orderError}=await supabaseClient
-.from("pending_orders")
-.update({status:"completed"})
-.eq("id",id);
+        alert(
+            "⚠️ Purchase was created but inventory could not be removed:\n\n" +
+            deleteError.message
+        );
 
-if(orderError){
+        return;
+    }
 
-alert(
-"⚠️ Purchase was created but order status failed:\n\n"+
-orderError.message
-);
+    const {
+        error:orderError
+    } =
+        await supabaseClient
+            .from("pending_orders")
+            .update({
+                status:"completed"
+            })
+            .eq(
+                "id",
+                id
+            );
 
-return;
+    if(orderError){
 
-}
+        alert(
+            "⚠️ Purchase was created but order status failed:\n\n" +
+            orderError.message
+        );
 
-/*
-Add a completed transaction record for the admin-created delivery.
-*/
+        return;
+    }
 
-await supabaseClient
-.from("transactions")
-.insert([{
-user_id:order.user_id,
-type:"purchase",
-amount:order.amount,
-status:"completed",
-description:"Completed pending order for "+order.product_name
-}]);
+    await supabaseClient
+        .from("transactions")
+        .insert([{
 
-alert("✅ Order completed and inventory delivered.");
+            user_id:
+                order.user_id,
 
-await loadInventory();
-await loadOrders();
-await loadProducts();
-await updateStats();
-await loadUsers();
+            type:
+                "purchase",
+
+            amount:
+                order.amount,
+
+            status:
+                "completed",
+
+            description:
+                "Completed pending order for " +
+                order.product_name
+
+        }]);
+
+    alert(
+        "✅ Order completed and inventory delivered."
+    );
+
+    await loadInventory();
+    await loadOrders();
+    await loadProducts();
+    await updateStats();
+    await loadUsers();
 
 }
 
 async function cancelPendingOrder(id){
 
-if(!confirm("Cancel this pending order?"))return;
+    if(!confirm(
+        "Cancel this pending order?"
+    )) return;
 
-const {error}=await supabaseClient
-.from("pending_orders")
-.update({status:"cancelled"})
-.eq("id",id);
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("pending_orders")
+            .update({
+                status:"cancelled"
+            })
+            .eq(
+                "id",
+                id
+            );
 
-if(error){
+    if(error){
 
-alert("❌ "+error.message);
-return;
+        alert(
+            "❌ " +
+            error.message
+        );
 
-}
+        return;
+    }
 
-alert("✅ Order cancelled.");
+    alert(
+        "✅ Order cancelled."
+    );
 
-await loadOrders();
-await updateStats();
-await loadUsers();
+    await loadOrders();
+    await updateStats();
+    await loadUsers();
 
-  }
-  async function loadUsers(){
+    }
+    async function loadUsers(){
 
-const container=document.getElementById("usersList");
-if(!container)return;
+    const container =
+        document.getElementById(
+            "usersList"
+        );
 
-container.innerHTML=
-'<div class="item">Loading users...</div>';
+    if(!container) return;
 
-const {data,error}=await supabaseClient
-.from("profiles")
-.select("*")
-.order("created_at",{ascending:false});
+    container.innerHTML =
+        '<div class="item">Loading users...</div>';
 
-if(error){
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("profiles")
+        .select("*")
+        .order("created_at", {
+            ascending:false
+        });
 
-container.innerHTML=
-'<div class="item error">❌ User records could not be loaded.<br><br>'+
-escapeHTML(error.message)+
-'</div>';
+    if(error){
 
-users=[];
-return;
+        console.error(
+            "Users load error:",
+            error
+        );
 
-}
+        users = [];
 
-users=data||[];
+        container.innerHTML =
+            '<div class="item error">❌ User records could not be loaded.<br><br>' +
+            escapeHTML(error.message) +
+            '</div>';
 
-await loadUserDetails();
+        return;
+    }
 
-renderUsers();
+    users = data || [];
+
+    await loadUserDetails();
+
+    renderUsers();
 
 }
 
 async function loadUserDetails(){
 
-for(const user of users){
+    for(const user of users){
 
-const {data:wallet}=await supabaseClient
-.from("wallet")
-.select("balance")
-.eq("user-id",user.id)
-.maybeSingle();
+        const {
+            data:wallet
+        } =
+            await supabaseClient
+                .from("wallet")
+                .select("balance")
+                .eq(
+                    "user-id",
+                    user.id
+                )
+                .maybeSingle();
 
-user.wallet_balance=wallet?.balance??0;
+        user.wallet_balance =
+            wallet?.balance ?? 0;
 
-const {data:purchases}=await supabaseClient
-.from("purchases")
-.select("id,product_name,amount,status,content,created_at")
-.eq("user_id",user.id)
-.order("created_at",{ascending:false});
+        const {
+            data:purchases
+        } =
+            await supabaseClient
+                .from("purchases")
+                .select(
+                    "id,product_name,amount,status,content,created_at"
+                )
+                .eq(
+                    "user_id",
+                    user.id
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending:false
+                    }
+                );
 
-user.purchases=purchases||[];
+        user.purchases =
+            purchases || [];
 
-const {data:transactions}=await supabaseClient
-.from("transactions")
-.select("id,type,amount,status,description,reference,zevpay_reference,created_at")
-.eq("user_id",user.id)
-.order("created_at",{ascending:false});
+        const {
+            data:transactions
+        } =
+            await supabaseClient
+                .from("transactions")
+                .select(
+                    "id,type,amount,status,description,reference,zevpay_reference,created_at"
+                )
+                .eq(
+                    "user_id",
+                    user.id
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending:false
+                    }
+                );
 
-user.transactions=transactions||[];
+        user.transactions =
+            transactions || [];
 
-const {data:pending}=await supabaseClient
-.from("pending_orders")
-.select("id,product_name,amount,status,created_at")
-.eq("user_id",user.id)
-.order("created_at",{ascending:false});
+        const {
+            data:pending
+        } =
+            await supabaseClient
+                .from("pending_orders")
+                .select(
+                    "id,product_name,amount,status,created_at"
+                )
+                .eq(
+                    "user_id",
+                    user.id
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending:false
+                    }
+                );
 
-user.pending_orders=pending||[];
+        user.pending_orders =
+            pending || [];
 
-}
+    }
 
 }
 
 function renderUsers(){
 
-const container=document.getElementById("usersList");
-if(!container)return;
+    const container =
+        document.getElementById(
+            "usersList"
+        );
 
-const search=(document.getElementById("userSearch")?.value||"")
-.toLowerCase().trim();
+    if(!container) return;
 
-const list=users.filter(user=>{
+    const search =
+        (
+            document
+            .getElementById(
+                "userSearch"
+            )
+            ?.value || ""
+        )
+        .toLowerCase()
+        .trim();
 
-return !search||
-String(user.email||"").toLowerCase().includes(search)||
-String(user.full_name||"").toLowerCase().includes(search)||
-String(user.id||"").toLowerCase().includes(search);
+    const list =
+        users.filter(user => {
 
-});
+            return !search ||
 
-if(!list.length){
+                String(user.email || "")
+                    .toLowerCase()
+                    .includes(search) ||
 
-container.innerHTML=
-'<div class="item">No users found.</div>';
+                String(user.full_name || "")
+                    .toLowerCase()
+                    .includes(search) ||
 
-return;
+                String(user.id || "")
+                    .toLowerCase()
+                    .includes(search);
+
+        });
+
+    if(!list.length){
+
+        container.innerHTML =
+            '<div class="item">No users found.</div>';
+
+        return;
+    }
+
+    container.innerHTML = "";
+
+    list.forEach(user => {
+
+        const box =
+            document.createElement("div");
+
+        box.className = "item";
+
+        const purchases =
+            user.purchases || [];
+
+        const transactions =
+            user.transactions || [];
+
+        const pending =
+            user.pending_orders || [];
+
+        box.innerHTML = `
+
+            <b>
+                👤 ${escapeHTML(
+                    user.full_name ||
+                    "User"
+                )}
+            </b>
+
+            <div class="small">
+
+                Email:
+                ${escapeHTML(
+                    user.email ||
+                    "Not available"
+                )}
+                <br>
+
+                User ID:
+                ${escapeHTML(user.id)}
+                <br>
+
+                Wallet Balance:
+                ₦${money(
+                    user.wallet_balance
+                )}
+                <br>
+
+                Joined:
+                ${
+                    user.created_at
+                    ? escapeHTML(
+                        new Date(
+                            user.created_at
+                        ).toLocaleString(
+                            "en-NG"
+                        )
+                    )
+                    : "Unknown"
+                }
+
+            </div>
+
+            <div class="user-details">
+
+                🛒 Purchases:
+                <b>${purchases.length}</b>
+                <br>
+
+                📜 Transactions:
+                <b>${transactions.length}</b>
+                <br>
+
+                ⏳ Pending Orders:
+                <b>${pending.length}</b>
+
+            </div>
+
+            <details>
+
+                <summary>
+                    🛒 View Purchases
+                </summary>
+
+                ${
+                    purchases.length
+                    ?
+                    purchases.map(p => `
+
+                        <div class="user-details">
+
+                            <b>
+                                ${escapeHTML(
+                                    p.product_name
+                                )}
+                            </b>
+                            <br>
+
+                            Amount:
+                            ₦${money(p.amount)}
+                            <br>
+
+                            Status:
+                            ${escapeHTML(
+                                p.status
+                            )}
+                            <br>
+
+                            Date:
+                            ${
+                                p.created_at
+                                ? escapeHTML(
+                                    new Date(
+                                        p.created_at
+                                    ).toLocaleString(
+                                        "en-NG"
+                                    )
+                                )
+                                : "Unknown"
+                            }
+
+                            <details>
+
+                                <summary>
+                                    Delivery Information
+                                </summary>
+
+                                ${escapeHTML(
+                                    p.content ||
+                                    ""
+                                )}
+
+                            </details>
+
+                        </div>
+
+                    `).join("")
+                    :
+                    '<p class="small">No purchases.</p>'
+                }
+
+            </details>
+
+            <details>
+
+                <summary>
+                    📜 View Transactions
+                </summary>
+
+                ${
+                    transactions.length
+                    ?
+                    transactions.map(t => `
+
+                        <div class="user-details">
+
+                            Type:
+                            ${escapeHTML(t.type)}
+                            <br>
+
+                            Amount:
+                            ₦${money(t.amount)}
+                            <br>
+
+                            Status:
+                            ${escapeHTML(t.status)}
+                            <br>
+
+                            Description:
+                            ${escapeHTML(
+                                t.description ||
+                                ""
+                            )}
+                            <br>
+
+                            Reference:
+                            ${escapeHTML(
+                                t.reference ||
+                                ""
+                            )}
+                            <br>
+
+                            ZevPay Reference:
+                            ${escapeHTML(
+                                t.zevpay_reference ||
+                                ""
+                            )}
+                            <br>
+
+                            Date:
+                            ${
+                                t.created_at
+                                ? escapeHTML(
+                                    new Date(
+                                        t.created_at
+                                    ).toLocaleString(
+                                        "en-NG"
+                                    )
+                                )
+                                : "Unknown"
+                            }
+
+                        </div>
+
+                    `).join("")
+                    :
+                    '<p class="small">No transactions.</p>'
+                }
+
+            </details>
+
+            <details>
+
+                <summary>
+                    ⏳ View Pending Orders
+                </summary>
+
+                ${
+                    pending.length
+                    ?
+                    pending.map(p => `
+
+                        <div class="user-details">
+
+                            Order #${escapeHTML(p.id)}
+                            <br>
+
+                            Service:
+                            ${escapeHTML(
+                                p.product_name
+                            )}
+                            <br>
+
+                            Amount:
+                            ₦${money(p.amount)}
+                            <br>
+
+                            Status:
+                            ${escapeHTML(p.status)}
+                            <br>
+
+                            Date:
+                            ${
+                                p.created_at
+                                ? escapeHTML(
+                                    new Date(
+                                        p.created_at
+                                    ).toLocaleString(
+                                        "en-NG"
+                                    )
+                                )
+                                : "Unknown"
+                            }
+
+                        </div>
+
+                    `).join("")
+                    :
+                    '<p class="small">No pending orders.</p>'
+                }
+
+            </details>
+
+        `;
+
+        container.appendChild(box);
+
+    });
 
 }
 
-container.innerHTML="";
 
-list.forEach(user=>{
-
-const box=document.createElement("div");
-box.className="item";
-
-const purchases=user.purchases||[];
-const transactions=user.transactions||[];
-const pending=user.pending_orders||[];
-
-box.innerHTML=`
-<b>👤 ${escapeHTML(user.full_name||"User")}</b>
-
-<div class="small">
-Email: ${escapeHTML(user.email||"Not available")}<br>
-User ID: ${escapeHTML(user.id)}<br>
-Wallet Balance: ₦${money(user.wallet_balance)}<br>
-Joined:
-${
-user.created_at
-?escapeHTML(new Date(user.created_at).toLocaleString("en-NG"))
-:"Unknown"
-}
-</div>
-
-<div class="user-details">
-🛒 Purchases: <b>${purchases.length}</b><br>
-📜 Transactions: <b>${transactions.length}</b><br>
-⏳ Pending Orders: <b>${pending.length}</b>
-</div>
-
-<details>
-<summary>🛒 View Purchases</summary>
-
-${
-purchases.length
-?
-purchases.map(p=>`
-<div class="user-details">
-<b>${escapeHTML(p.product_name)}</b><br>
-Amount: ₦${money(p.amount)}<br>
-Status: ${escapeHTML(p.status)}<br>
-Date: ${
-p.created_at
-?escapeHTML(new Date(p.created_at).toLocaleString("en-NG"))
-:"Unknown"
-}
-<details>
-<summary>Delivery Information</summary>
-${escapeHTML(p.content||"")}
-</details>
-</div>
-`).join("")
-:
-'<p class="small">No purchases.</p>'
-}
-
-</details>
-
-<details>
-<summary>📜 View Transactions</summary>
-
-${
-transactions.length
-?
-transactions.map(t=>`
-<div class="user-details">
-Type: ${escapeHTML(t.type)}<br>
-Amount: ₦${money(t.amount)}<br>
-Status: ${escapeHTML(t.status)}<br>
-Description: ${escapeHTML(t.description||"")}<br>
-Reference: ${escapeHTML(t.reference||"")}<br>
-ZevPay Reference: ${escapeHTML(t.zevpay_reference||"")}<br>
-Date: ${
-t.created_at
-?escapeHTML(new Date(t.created_at).toLocaleString("en-NG"))
-:"Unknown"
-}
-</div>
-`).join("")
-:
-'<p class="small">No transactions.</p>'
-}
-
-</details>
-
-<details>
-<summary>⏳ View Pending Orders</summary>
-
-${
-pending.length
-?
-pending.map(p=>`
-<div class="user-details">
-Order #${escapeHTML(p.id)}<br>
-Service: ${escapeHTML(p.product_name)}<br>
-Amount: ₦${money(p.amount)}<br>
-Status: ${escapeHTML(p.status)}<br>
-Date: ${
-p.created_at
-?escapeHTML(new Date(p.created_at).toLocaleString("en-NG"))
-:"Unknown"
-}
-</div>
-`).join("")
-:
-'<p class="small">No pending orders.</p>'
-}
-
-</details>
-`;
-
-container.appendChild(box);
-
-});
-
-}
+/* =========================
+   FIXED STORE STATISTICS
+========================= */
 
 async function updateStats(){
-async function updateStats(){
 
-    const getCount = async (table, filter = null) => {
-        let query = supabaseClient
-            .from(table)
-            .select("*", { count: "exact", head: true });
+    const getCount =
+        async (
+            table,
+            filter = null
+        ) => {
 
-        if(filter){
-            query = filter(query);
-        }
+            let query =
+                supabaseClient
+                    .from(table)
+                    .select("*", {
+                        count:"exact",
+                        head:true
+                    });
 
-        const { count, error } = await query;
+            if(filter){
+                query = filter(query);
+            }
 
-        if(error){
-            console.error("❌ " + table + " stats error:", error);
-            throw new Error(table + ": " + error.message);
-        }
+            const {
+                count,
+                error
+            } = await query;
 
-        console.log("✅ " + table + " count:", count);
-        return count ?? 0;
-    };
+            if(error){
+
+                console.error(
+                    "❌ " +
+                    table +
+                    " stats error:",
+                    error
+                );
+
+                throw new Error(
+                    table +
+                    ": " +
+                    error.message
+                );
+            }
+
+            console.log(
+                "✅ " +
+                table +
+                " count:",
+                count
+            );
+
+            return count ?? 0;
+        };
 
     try{
 
         const [
+
             productsCount,
+
             inventoryCount,
+
             pendingCount,
+
             completedCount,
+
             usersCount,
+
             neverSellOutCount
+
         ] = await Promise.all([
 
-            getCount("Product"),
+            getCount(
+                "Product",
+                q =>
+                    q.eq(
+                        "is_active",
+                        true
+                    )
+            ),
 
             getCount(
                 "product_inventory",
-                query => query.ilike("status", "available")
+                q =>
+                    q.ilike(
+                        "status",
+                        "available"
+                    )
             ),
 
             getCount(
                 "pending_orders",
-                query => query.ilike("status", "pending")
+                q =>
+                    q.ilike(
+                        "status",
+                        "pending"
+                    )
             ),
 
             getCount(
                 "purchases",
-                query => query.ilike("status", "completed")
+                q =>
+                    q.ilike(
+                        "status",
+                        "completed"
+                    )
             ),
 
-            getCount("profiles"),
+            getCount(
+                "profiles"
+            ),
 
             getCount(
                 "Product",
-                query => query.eq("track_stock", false)
+                q =>
+                    q
+                    .eq(
+                        "track_stock",
+                        false
+                    )
+                    .eq(
+                        "is_active",
+                        true
+                    )
             )
 
         ]);
 
-        const productsBox = document.getElementById("productsCount");
-        const inventoryBox = document.getElementById("inventoryCount");
-        const pendingBox = document.getElementById("pendingCount");
-        const completedBox = document.getElementById("completedCount");
-        const usersBox = document.getElementById("usersCount");
-        const neverSellOutBox = document.getElementById("neverSellOutCount");
 
-        if(productsBox) productsBox.textContent = productsCount;
-        if(inventoryBox) inventoryBox.textContent = inventoryCount;
-        if(pendingBox) pendingBox.textContent = pendingCount;
-        if(completedBox) completedBox.textContent = completedCount;
-        if(usersBox) usersBox.textContent = usersCount;
-        if(neverSellOutBox) neverSellOutBox.textContent = neverSellOutCount;
+        const productsBox =
+            document.getElementById(
+                "statProducts"
+            );
 
-        console.log("🎉 Stats updated successfully:", {
-            productsCount,
-            inventoryCount,
-            pendingCount,
-            completedCount,
-            usersCount,
-            neverSellOutCount
-        });
+        const inventoryBox =
+            document.getElementById(
+                "statInventory"
+            );
+
+        const pendingBox =
+            document.getElementById(
+                "statPending"
+            );
+
+        const completedBox =
+            document.getElementById(
+                "statCompleted"
+            );
+
+        const usersBox =
+            document.getElementById(
+                "statUsers"
+            );
+
+        const neverSellBox =
+            document.getElementById(
+                "statNeverSell"
+            );
+
+
+        if(productsBox)
+            productsBox.textContent =
+                productsCount;
+
+        if(inventoryBox)
+            inventoryBox.textContent =
+                inventoryCount;
+
+        if(pendingBox)
+            pendingBox.textContent =
+                pendingCount;
+
+        if(completedBox)
+            completedBox.textContent =
+                completedCount;
+
+        if(usersBox)
+            usersBox.textContent =
+                usersCount;
+
+        if(neverSellBox)
+            neverSellBox.textContent =
+                neverSellOutCount;
+
+
+        console.log(
+            "🎉 STATS UPDATED:",
+            {
+                productsCount,
+                inventoryCount,
+                pendingCount,
+                completedCount,
+                usersCount,
+                neverSellOutCount
+            }
+        );
 
     }catch(error){
 
-        console.error("❌ UPDATE STATS FAILED:", error);
+        console.error(
+            "❌ UPDATE STATS FAILED:",
+            error
+        );
 
         const ids = [
-            "productsCount",
-            "inventoryCount",
-            "pendingCount",
-            "completedCount",
-            "usersCount",
-            "neverSellOutCount"
+
+            "statProducts",
+            "statInventory",
+            "statPending",
+            "statCompleted",
+            "statUsers",
+            "statNeverSell"
+
         ];
 
         ids.forEach(id => {
-            const el = document.getElementById(id);
-            if(el) el.textContent = "!";
+
+            const el =
+                document.getElementById(id);
+
+            if(el){
+                el.textContent = "!";
+            }
+
         });
 
     }
-}
-  async function loadWatermark(){
-
-const box=document.getElementById("watermarkMessage");
-
-if(!box)return;
-
-const {data,error}=await supabaseClient
-.from("site_settings")
-.select("value")
-.eq("key","watermark")
-.maybeSingle();
-
-if(error){
-
-console.error("Watermark error:",error);
-box.textContent="Unable to load watermark.";
-return;
 
 }
 
-const message=data?.value;
 
-if(message&&String(message).trim()){
+/* =========================
+   WATERMARK
+========================= */
 
-box.textContent="Preview: "+message;
+async function loadWatermark(){
 
-}else{
+    const box =
+        document.getElementById(
+            "watermarkMessage"
+        );
 
-box.textContent="Watermark preview will appear here.";
+    if(!box) return;
 
-}
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("site_settings")
+            .select("value")
+            .eq(
+                "key",
+                "watermark"
+            )
+            .maybeSingle();
+
+    if(error){
+
+        console.error(
+            "Watermark error:",
+            error
+        );
+
+        box.textContent =
+            "Unable to load watermark.";
+
+        return;
+    }
+
+    const message =
+        data?.value;
+
+    if(
+        message &&
+        String(message).trim()
+    ){
+
+        box.textContent =
+            "Preview: " +
+            message;
+
+    }else{
+
+        box.textContent =
+            "Watermark preview will appear here.";
+
+    }
 
 }
 
 async function saveWatermark(){
 
-const input=document.getElementById("watermarkInput");
-const message=document.getElementById("watermarkMessage");
+    const input =
+        document.getElementById(
+            "watermarkInput"
+        );
 
-const text=input.value.trim();
+    const message =
+        document.getElementById(
+            "watermarkMessage"
+        );
 
-if(!text){
+    const text =
+        input.value.trim();
 
-message.textContent="❌ Enter a watermark message.";
-message.className="message error";
-return;
+    if(!text){
 
-}
+        message.textContent =
+            "❌ Enter a watermark message.";
 
-message.textContent="Saving...";
-message.className="message";
+        message.className =
+            "message error";
 
-const {error}=await supabaseClient
-.from("site_settings")
-.upsert(
-{
-key:"watermark",
-value:text
-},
-{
-onConflict:"key"
-}
-);
+        return;
+    }
 
-if(error){
+    message.textContent =
+        "Saving...";
 
-console.error(error);
+    message.className =
+        "message";
 
-message.textContent="❌ "+error.message;
-message.className="message error";
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("site_settings")
+            .upsert(
+                {
+                    key:"watermark",
+                    value:text
+                },
+                {
+                    onConflict:"key"
+                }
+            );
 
-return;
+    if(error){
 
-}
+        console.error(
+            "Save watermark error:",
+            error
+        );
 
-message.textContent="✅ Watermark updated.";
-message.className="message success";
+        message.textContent =
+            "❌ " +
+            error.message;
 
-await loadWatermark();
+        message.className =
+            "message error";
+
+        return;
+    }
+
+    message.textContent =
+        "✅ Watermark updated.";
+
+    message.className =
+        "message success";
+
+    await loadWatermark();
 
 }
 
 async function clearWatermark(){
 
-if(!confirm(
-"Remove the watermark message from the dashboard?"
-))return;
+    if(!confirm(
+        "Remove the watermark message from the dashboard?"
+    )) return;
 
-const {error}=await supabaseClient
-.from("site_settings")
-.upsert(
-{
-key:"watermark",
-value:""
-},
-{
-onConflict:"key"
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("site_settings")
+            .upsert(
+                {
+                    key:"watermark",
+                    value:""
+                },
+                {
+                    onConflict:"key"
+                }
+            );
+
+    if(error){
+
+        alert(
+            "❌ " +
+            error.message
+        );
+
+        return;
+    }
+
+    document.getElementById(
+        "watermarkInput"
+    ).value = "";
+
+    document.getElementById(
+        "watermarkMessage"
+    ).textContent =
+        "✅ Watermark removed.";
+
+    await loadWatermark();
+
 }
-);
 
-if(error){
 
-alert("❌ "+error.message);
-return;
-
-}
-
-document.getElementById("watermarkInput").value="";
-
-document.getElementById("watermarkMessage").textContent=
-"✅ Watermark removed.";
-
-await loadWatermark();
-
-}
+/* =========================
+   REFRESH EVERYTHING
+========================= */
 
 async function refreshEverything(){
-const message=document.getElementById("refreshMessage");
 
-if(message) message.textContent="🔄 Refreshing everything...";
+    const message =
+        document.getElementById(
+            "refreshMessage"
+        );
 
-try{
-await loadProducts();
+    if(message){
 
-try{
-await loadInventoryProductDropdown();
-}catch(error){
-console.error("Dropdown refresh error:",error);
+        message.textContent =
+            "🔄 Refreshing everything...";
+
+        message.className =
+            "message";
+
+    }
+
+    try{
+
+        await loadProducts();
+
+        await loadInventory();
+
+        await loadOrders();
+
+        await loadUsers();
+
+        await loadWatermark();
+
+        await updateStats();
+
+        if(message){
+
+            message.textContent =
+                "✅ Everything refreshed successfully.";
+
+            message.className =
+                "message success";
+
+        }
+
+    }catch(error){
+
+        console.error(
+            "❌ Refresh failed:",
+            error
+        );
+
+        if(message){
+
+            message.textContent =
+                "❌ Refresh failed: " +
+                error.message;
+
+            message.className =
+                "message error";
+
+        }
+
+    }
+
 }
 
-try{
-await loadInventory();
-}catch(error){
-console.error("Inventory refresh error:",error);
-}
 
-try{
-await loadOrders();
-}catch(error){
-console.error("Orders refresh error:",error);
-}
+/* =========================
+   START ADMIN
+========================= */
 
-try{
-await loadUsers();
-}catch(error){
-console.error("Users refresh error:",error);
-}
-
-try{
-await loadWatermark();
-}catch(error){
-console.error("Watermark refresh error:",error);
-}
-
-try{
-await updateStats();
-}catch(error){
-console.error("Stats refresh error:",error);
-}
-
-if(message) message.textContent="✅ Everything refreshed successfully.";
-
-}catch(error){
-console.error("Refresh failed:",error);
-
-if(message){
-message.textContent="❌ Refresh failed: "+error.message;
-}else{
-alert("❌ Refresh failed: "+error.message);
-}
-}
-  }
 async function startAdmin(){
 
+    /* Build the category dropdown/list first */
+    buildCategoryUI();
+
+    /* Check whether the logged-in user is an administrator */
     const isAdmin = await checkAdmin();
 
     if(!isAdmin){
@@ -1504,31 +2855,66 @@ async function startAdmin(){
 
     try{
 
-        await updateStats();
+        /*
+         * Load everything together.
+         * Promise.all makes the dashboard load faster.
+         */
+        await Promise.all([
 
-        if(typeof loadWatermark === "function"){
-            await loadWatermark();
+            loadProducts(),
+
+            loadInventory(),
+
+            loadOrders(),
+
+            loadUsers(),
+
+            loadWatermark(),
+
+            updateStats()
+
+        ]);
+
+        const message =
+            document.getElementById("refreshMessage");
+
+        if(message){
+            message.textContent =
+                "✅ Admin dashboard loaded successfully.";
+            message.className = "message success";
         }
 
-        if(typeof loadProducts === "function"){
-            await loadProducts();
-        }
-
-        if(typeof loadInventory === "function"){
-            await loadInventory();
-        }
-
-        console.log("✅ Admin dashboard loaded successfully.");
+        console.log(
+            "✅ Admin dashboard loaded successfully."
+        );
 
     }catch(error){
 
-        console.error("❌ ADMIN DASHBOARD LOAD FAILED:", error);
+        console.error(
+            "❌ ADMIN DASHBOARD LOAD FAILED:",
+            error
+        );
+
+        const message =
+            document.getElementById("refreshMessage");
+
+                if(message){
+            message.textContent =
+                "❌ Dashboard loading failed: " +
+                error.message;
+
+            message.className =
+                "message error";
+        }
 
     }
+
 }
+
+/* Start the admin dashboard */
 startAdmin();
 
-</script>
-
+    </script>
 </body>
 </html>
+               
