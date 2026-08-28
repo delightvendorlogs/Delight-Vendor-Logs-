@@ -1127,17 +1127,22 @@ const q=async(table,filter)=>{
 let r=supabaseClient.from(table).select("*",{count:"exact",head:true});
 if(filter)r=filter(r);
 const {count,error}=await r;
-if(error)console.error(table,error);
-return count||0;
+if(error){
+console.error("Stats error for "+table+":",error.message);
+return 0;
+}
+return count??0;
 };
+
 const [productsCount,inventoryCount,pendingCount,completedCount,usersCount,neverSellOutCount]=await Promise.all([
-q("Product"),
-q("product_inventory",r=>r.eq("status","available")),
-q("pending_orders",r=>r.eq("status","pending")),
-q("purchases",r=>r.eq("status","completed")),
+q("Product",r=>r.eq("is_active",true)),
+q("product_inventory",r=>r.ilike("status","available")),
+q("pending_orders",r=>r.ilike("status","pending")),
+q("purchases",r=>r.ilike("status","completed")),
 q("profiles"),
-q("Product",r=>r.eq("track_stock",false))
+q("Product",r=>r.eq("is_active",true).eq("track_stock",false))
 ]);
+
 document.getElementById("productsCount").textContent=productsCount;
 document.getElementById("inventoryCount").textContent=inventoryCount;
 document.getElementById("pendingCount").textContent=pendingCount;
