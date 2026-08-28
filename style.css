@@ -412,3 +412,17 @@ li {
   }
 
 }
+
+
+#watermarkBox{
+display:none;
+background:#fff3cd;
+color:#333;
+padding:12px 15px;
+margin:0 0 15px 0;
+border-radius:10px;
+font-weight:bold;
+text-align:center;
+word-break:break-word;
+line-height:1.5;
+}
