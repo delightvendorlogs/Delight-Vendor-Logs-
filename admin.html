@@ -250,26 +250,70 @@ select.appendChild(option);
 
 async function checkAdmin(){
 
-const status=document.getElementById("adminStatus");
+    const statusBox = document.getElementById("adminStatus");
 
-const {data:{user},error}=await supabaseClient.auth.getUser();
+    try{
 
-if(error||!user){
-status.innerHTML="❌ Please login first.";
-location.href="login.html";
-return false;
-}
+        const {
+            data: { session },
+            error: sessionError
+        } = await supabaseClient.auth.getSession();
 
-/*
-Keep your existing administrator protection here.
-The admin page must only be accessible to your administrator account.
-*/
+        if(sessionError){
+            throw sessionError;
+        }
 
-status.innerHTML="✅ Administrator access confirmed.";
-status.className="card success";
+        if(!session || !session.user){
+            if(statusBox){
+                statusBox.textContent = "❌ Please log in again.";
+            }
+            location.href = "login.html";
+            return false;
+        }
 
-return true;
-}
+        const { data, error } = await supabaseClient
+            .from("admin_users")
+            .select("user_id")
+            .eq("user_id", session.user.id)
+            .maybeSingle();
+
+        if(error){
+            console.error("Admin check error:", error);
+
+            if(statusBox){
+                statusBox.textContent =
+                    "❌ Administrator check failed: " + error.message;
+            }
+
+            return false;
+        }
+
+        if(!data){
+            if(statusBox){
+                statusBox.textContent = "❌ Access denied. Administrator account required.";
+            }
+
+            return false;
+        }
+
+        if(statusBox){
+            statusBox.textContent = "✅ Administrator access confirmed.";
+        }
+
+        return true;
+
+    }catch(error){
+
+        console.error("Administrator access error:", error);
+
+        if(statusBox){
+            statusBox.textContent =
+                "❌ Administrator check failed: " + error.message;
+        }
+
+        return false;
+    }
+  }
   async function loadProducts(){
 
 const {data,error}=await supabaseClient
@@ -1420,16 +1464,16 @@ alert("❌ Refresh failed: "+error.message);
   }
 async function startAdmin(){
 
-buildCategoryUI();
+    const isAdmin = await checkAdmin();
 
-const allowed=await checkAdmin();
+    if(!isAdmin){
+        return;
+    }
 
-if(!allowed)return;
+    await updateStats();
 
-await refreshEverything();
-
-}
-
+    // the rest of your loading functions here
+  }
 startAdmin();
 
 </script>
