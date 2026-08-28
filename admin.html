@@ -1122,56 +1122,28 @@ container.appendChild(box);
 }
 
 async function updateStats(){
-
-const count=async(table,filter)=>{
-
-let r=supabaseClient
-.from(table)
-.select("*",{count:"exact",head:true});
-
+const q=async(table,filter)=>{
+let r=supabaseClient.from(table).select("*",{count:"exact",head:true});
 if(filter)r=filter(r);
-
 const {count,error}=await r;
-
-if(error){
-
-console.error(table,error);
-return 0;
-
-}
-
+if(error)console.error(table,error);
 return count||0;
-
 };
-
-document.getElementById("statProducts").textContent=
-await count("Product");
-
-document.getElementById("statInventory").textContent=
-await count("product_inventory",q=>
-q.eq("status","available")
-);
-
-document.getElementById("statPending").textContent=
-await count("pending_orders",q=>
-q.eq("status","pending")
-);
-
-document.getElementById("statCompleted").textContent=
-await count("purchases",q=>
-q.eq("status","completed")
-);
-
-document.getElementById("statUsers").textContent=
-await count("profiles");
-
-document.getElementById("statNeverSell").textContent=
-await count("Product",q=>
-q.eq("is_active",true)
-.eq("stock",0)
-);
-
-  }
+const [productsCount,inventoryCount,pendingCount,completedCount,usersCount,neverSellOutCount]=await Promise.all([
+q("Product"),
+q("product_inventory",r=>r.eq("status","available")),
+q("pending_orders",r=>r.eq("status","pending")),
+q("purchases",r=>r.eq("status","completed")),
+q("profiles"),
+q("Product",r=>r.eq("track_stock",false))
+]);
+document.getElementById("productsCount").textContent=productsCount;
+document.getElementById("inventoryCount").textContent=inventoryCount;
+document.getElementById("pendingCount").textContent=pendingCount;
+document.getElementById("completedCount").textContent=completedCount;
+document.getElementById("usersCount").textContent=usersCount;
+document.getElementById("neverSellOutCount").textContent=neverSellOutCount;
+}
   async function loadWatermark(){
 
 const box=document.getElementById("watermarkMessage");
