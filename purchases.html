@@ -46,6 +46,35 @@ main{
     margin-bottom:18px;
 }
 
+/* =========================
+   TOTAL SPENT
+========================= */
+
+.total-card{
+    background:#fff;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 2px 10px #00000014;
+    margin-bottom:18px;
+    text-align:center;
+}
+
+.total-title{
+    font-size:17px;
+    color:#555;
+    font-weight:bold;
+}
+
+.total-amount{
+    font-size:30px;
+    font-weight:bold;
+    margin-top:8px;
+}
+
+/* =========================
+   PURCHASE
+========================= */
+
 .purchase{
     border:1px solid #eee;
     border-radius:12px;
@@ -147,20 +176,56 @@ main{
 
 <main>
 
+<!-- =========================
+     TOTAL SPENT
+========================= -->
+
+<div class="total-card">
+
+    <div class="total-title">
+        💰 Total Spent
+    </div>
+
+    <div
+        id="totalSpent"
+        class="total-amount"
+    >
+        ₦0.00
+    </div>
+
+</div>
+
+
+<!-- =========================
+     PURCHASES
+========================= -->
+
 <div class="card">
+
     <div id="purchases">
+
         <div class="empty">
             Loading purchases...
         </div>
+
     </div>
+
 </div>
 
-<div class="back"
-     onclick="location.href='dashboard.html'">
+
+<!-- =========================
+     BACK
+========================= -->
+
+<div
+    class="back"
+    onclick="location.href='dashboard.html'"
+>
     🏠 Back to Dashboard
 </div>
 
 </main>
+
 
 <script>
 
@@ -194,7 +259,26 @@ function esc(value){
 
 
 /* =========================
-   TURN URLS INTO CLICKABLE LINKS
+   FORMAT MONEY
+========================= */
+
+function formatMoney(value){
+
+    return Number(value || 0)
+        .toLocaleString(
+            "en-NG",
+            {
+                minimumFractionDigits:2,
+                maximumFractionDigits:2
+            }
+        );
+
+}
+
+
+/* =========================
+   TURN URLS INTO
+   CLICKABLE LINKS
 ========================= */
 
 function formatContent(value){
@@ -207,7 +291,14 @@ function formatContent(value){
 
     /*
        Detect http:// and https:// links.
-       The visible text remains the EXACT URL.
+
+       The exact URL remains visible.
+
+       Example:
+
+       https://wa.me/+2347015908401
+
+       can be clicked and opened.
     */
 
     return escaped.replace(
@@ -232,11 +323,16 @@ function formatContent(value){
    COPY CONTENT
 ========================= */
 
-async function copyContent(button,content){
+async function copyContent(
+    button,
+    content
+){
 
     try{
 
-        await navigator.clipboard.writeText(content);
+        await navigator.clipboard.writeText(
+            content
+        );
 
         const oldText =
             button.textContent;
@@ -274,12 +370,19 @@ async function copyContent(button,content){
 async function loadPurchases(){
 
     const box =
-        document.getElementById("purchases");
+        document.getElementById(
+            "purchases"
+        );
+
+    const totalBox =
+        document.getElementById(
+            "totalSpent"
+        );
 
     try{
 
         /*
-           Check logged-in user.
+           Get logged-in user.
         */
 
         const {
@@ -350,17 +453,71 @@ async function loadPurchases(){
                 error
             );
 
+            totalBox.textContent =
+                "₦0.00";
+
             box.innerHTML = `
                 <div class="error">
+
                     ❌ Unable to load purchases.
+
                     <br><br>
+
                     ${esc(error.message)}
+
                 </div>
             `;
 
             return;
 
         }
+
+
+        /*
+           =========================
+           CALCULATE TOTAL SPENT
+           =========================
+
+           Only completed purchases
+           are included.
+        */
+
+        let totalSpent = 0;
+
+
+        if(data && data.length){
+
+            data.forEach(purchase=>{
+
+                const status =
+                    String(
+                        purchase.status || ""
+                    ).toLowerCase().trim();
+
+
+                if(status === "completed"){
+
+                    totalSpent +=
+                        Number(
+                            purchase.amount || 0
+                        );
+
+                }
+
+            });
+
+        }
+
+
+        /*
+           Display total spent.
+        */
+
+        totalBox.textContent =
+            "₦" +
+            formatMoney(
+                totalSpent
+            );
 
 
         /*
@@ -374,7 +531,9 @@ async function loadPurchases(){
 
             box.innerHTML = `
                 <div class="empty">
+
                     You haven’t purchased anything yet.
+
                 </div>
             `;
 
@@ -418,6 +577,11 @@ async function loadPurchases(){
                 );
 
 
+            /*
+               Convert URLs into
+               clickable links.
+            */
+
             const safeContent =
                 formatContent(
                     content
@@ -425,8 +589,7 @@ async function loadPurchases(){
 
 
             /*
-               Only show copy button
-               when there is actual content.
+               Copy button.
             */
 
             const copyButton =
@@ -447,6 +610,10 @@ async function loadPurchases(){
                 : "";
 
 
+            /*
+               Create purchase box.
+            */
+
             const purchase =
                 document.createElement(
                     "div"
@@ -461,24 +628,23 @@ async function loadPurchases(){
                 <div class="top">
 
                     <div class="name">
+
                         ${esc(
                             p.product_name ||
                             "Unnamed Product"
                         )}
+
                     </div>
 
+
                     <div class="amount">
+
                         ₦${
-                            Number(
-                                p.amount || 0
-                            ).toLocaleString(
-                                "en-NG",
-                                {
-                                    minimumFractionDigits:2,
-                                    maximumFractionDigits:2
-                                }
+                            formatMoney(
+                                p.amount
                             )
                         }
+
                     </div>
 
                 </div>
@@ -498,11 +664,15 @@ async function loadPurchases(){
                     content.trim()
 
                     ? `
+
                         <div class="content">
+
                             ${safeContent}
+
                         </div>
 
                         ${copyButton}
+
                     `
 
                     : ""
@@ -510,7 +680,9 @@ async function loadPurchases(){
 
 
                 <div class="date">
+
                     ${esc(date)}
+
                 </div>
 
             `;
@@ -529,12 +701,25 @@ async function loadPurchases(){
             error
         );
 
+
+        totalBox.textContent =
+            "₦0.00";
+
+
         box.innerHTML = `
+
             <div class="error">
+
                 ❌ Something went wrong.
+
                 <br><br>
-                ${esc(error.message)}
+
+                ${esc(
+                    error.message
+                )}
+
             </div>
+
         `;
 
     }
