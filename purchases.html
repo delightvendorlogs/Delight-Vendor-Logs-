@@ -175,6 +175,9 @@ main{
 </header>
 
 <main>
+    <h2>Virtual Number Purchases</h2>
+
+<div id="virtualNumberPurchases"></div>
 
 <!-- =========================
      TOTAL SPENT
@@ -471,6 +474,122 @@ async function loadPurchases(){
             return;
 
         }
+
+        async function loadVirtualNumberPurchases(){
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from(
+                "virtual_number_orders"
+            )
+            .select("*")
+            .eq(
+                "status",
+                "received"
+            )
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
+
+
+    if(error){
+
+        console.error(
+            "Virtual purchases error:",
+            error
+        );
+
+        return;
+
+    }
+
+
+    const container =
+        document.getElementById(
+            "virtualNumberPurchases"
+        );
+
+
+    if(!container){
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    data.forEach(
+        order => {
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "purchase-card";
+
+
+            card.innerHTML = `
+
+                <h3>
+                    ${order.service_name}
+                    - ${order.country_name}
+                </h3>
+
+                <p>
+                    Number:
+                    <strong>
+                        ${order.number || ""}
+                    </strong>
+                </p>
+
+                <p>
+                    OTP:
+                    <strong>
+                        ${order.otp_code || ""}
+                    </strong>
+                </p>
+
+                <p>
+                    ₦${Number(
+                        order.customer_price_ngn
+                    ).toLocaleString()}
+                </p>
+
+                <p>
+                    ✅ Completed
+                </p>
+
+                <small>
+                    ${new Date(
+                        order.created_at
+                    ).toLocaleString()}
+                </small>
+
+            `;
+
+
+            container.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+loadVirtualNumberPurchases();
 
 
         /*
