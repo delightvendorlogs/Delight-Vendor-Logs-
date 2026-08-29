@@ -1652,6 +1652,7 @@ async function loadOrders(){
     } = await supabaseClient
         .from("pending_orders")
         .select("*")
+        .eq("status","pending")
         .order("created_at", {
             ascending:false
         });
