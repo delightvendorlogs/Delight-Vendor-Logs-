@@ -195,26 +195,34 @@ maximumFractionDigits:2
 }
 
 function selectCategory(category,button){
-selectedCategory=category;
 
-document.querySelectorAll(".category-btn").forEach(b=>{
-b.classList.remove("active");
-});
+    if(category==="All Countries Number"){
 
-button.classList.add("active");
+        location.href="virtualnumber.html";
 
-document.getElementById("serviceSearch").value="";
+        return;
+    }
 
-document.getElementById("categoryTitle").textContent=
-category==="Home"?"Latest Services":category;
+    selectedCategory=category;
 
-document.getElementById("categoryDescription").textContent=
-category==="Home"
-?"Browse all available services."
-:"Services available under "+category+".";
+    document.querySelectorAll(".category-btn").forEach(b=>{
+        b.classList.remove("active");
+    });
 
-renderServices();
-}
+    button.classList.add("active");
+
+    document.getElementById("serviceSearch").value="";
+
+    document.getElementById("categoryTitle").textContent=
+    category==="Home"?"Latest Services":category;
+
+    document.getElementById("categoryDescription").textContent=
+    category==="Home"
+    ?"Browse all available services."
+    :"Services available under "+category+".";
+
+    renderServices();
+  }
 
 async function loadProducts(){
 const container=document.getElementById("products");
