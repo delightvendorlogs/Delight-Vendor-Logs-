@@ -905,7 +905,6 @@ function renderProducts(){
     });
 
 }
-
 async function addProduct(){
 
     const message =
@@ -952,6 +951,19 @@ async function addProduct(){
             "trackStock"
         ).checked;
 
+    const imageInput =
+        document.getElementById(
+            "productImage"
+        );
+
+    const file =
+        imageInput.files?.[0];
+
+
+    /* =========================
+       VALIDATION
+    ========================= */
+
     if(!name){
 
         message.textContent =
@@ -976,102 +988,239 @@ async function addProduct(){
         return;
     }
 
+
     message.textContent =
         "Adding service...";
 
-    const file =
-        document.getElementById(
-            "productImage"
-        ).files?.[0];
 
-    if(file){
+    try{
+
+        /* =========================
+           UPLOAD IMAGE
+        ========================= */
+
+        let imageUrl = null;
+
+
+        if(file){
+
+            message.textContent =
+                "Uploading product image...";
+
+
+            /*
+               Create a unique filename
+               so existing images are not
+               overwritten.
+            */
+
+            const fileExtension =
+                file.name.includes(".")
+                ? file.name.split(".").pop()
+                : "jpg";
+
+
+            const fileName =
+                "product_" +
+                Date.now() +
+                "_" +
+                Math.random()
+                    .toString(36)
+                    .substring(2,8) +
+                "." +
+                fileExtension;
+
+
+            const filePath =
+                fileName;
+
+
+            const {
+                error:uploadError
+            } =
+            await supabaseClient
+                .storage
+                .from("product-images")
+                .upload(
+                    filePath,
+                    file,
+                    {
+                        cacheControl:"3600",
+                        upsert:false
+                    }
+                );
+
+
+            if(uploadError){
+
+                console.error(
+                    "Image upload error:",
+                    uploadError
+                );
+
+                message.textContent =
+                    "❌ Image upload failed: " +
+                    uploadError.message;
+
+                return;
+            }
+
+
+            /*
+               Get the public URL of
+               the uploaded image.
+            */
+
+            const {
+                data:publicUrlData
+            } =
+            supabaseClient
+                .storage
+                .from("product-images")
+                .getPublicUrl(
+                    filePath
+                );
+
+
+            imageUrl =
+                publicUrlData.publicUrl;
+
+
+            console.log(
+                "Image uploaded:",
+                imageUrl
+            );
+
+        }
+
+
+        /* =========================
+           CREATE PRODUCT
+        ========================= */
+
+        message.textContent =
+            "Saving service...";
+
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+
+            .from("Product")
+
+            .insert([{
+
+                name,
+
+                price,
+
+                category,
+
+                description,
+
+                stock:
+                    trackStock
+                    ? stock
+                    : 0,
+
+                status,
+
+                track_stock:
+                    trackStock,
+
+                is_active:true,
+
+                image_url:
+                    imageUrl
+
+            }])
+
+            .select()
+            .single();
+
+
+        if(error){
+
+            console.error(
+                "Add product error:",
+                error
+            );
+
+            message.textContent =
+                "❌ " +
+                error.message;
+
+            return;
+        }
+
 
         console.log(
-            "Selected image:",
-            file.name
+            "Product created:",
+            data
         );
 
-    }
 
-    const {
-        data,
-        error
-    } = await supabaseClient
-        .from("Product")
-        .insert([{
+        /* =========================
+           SUCCESS
+        ========================= */
 
-            name,
-            price,
-            category,
-            description,
+        message.textContent =
+            "✅ Service added successfully.";
 
-            stock:
-                trackStock
-                ? stock
-                : 0,
 
-            status,
+        document.getElementById(
+            "productName"
+        ).value = "";
 
-            track_stock:
-                trackStock,
 
-            is_active:true
+        document.getElementById(
+            "productPrice"
+        ).value = "";
 
-        }])
-        .select()
-        .single();
 
-    if(error){
+        document.getElementById(
+            "productDescription"
+        ).value = "";
+
+
+        document.getElementById(
+            "productStock"
+        ).value = "0";
+
+
+        document.getElementById(
+            "productImage"
+        ).value = "";
+
+
+        document.getElementById(
+            "imageName"
+        ).textContent =
+            "No image selected";
+
+
+        await loadProducts();
+
+        await updateStats();
+
+
+    }catch(error){
 
         console.error(
-            "Add product error:",
+            "Unexpected add product error:",
             error
         );
 
         message.textContent =
             "❌ " +
-            error.message;
+            (error.message ||
+            "Something went wrong.");
 
-        return;
     }
 
-    console.log(
-        "Product created:",
-        data
-    );
-
-    message.textContent =
-        "✅ Service added successfully.";
-
-    document.getElementById(
-        "productName"
-    ).value = "";
-
-    document.getElementById(
-        "productPrice"
-    ).value = "";
-
-    document.getElementById(
-        "productDescription"
-    ).value = "";
-
-    document.getElementById(
-        "productStock"
-    ).value = "0";
-
-    document.getElementById(
-        "productImage"
-    ).value = "";
-
-    document.getElementById(
-        "imageName"
-    ).textContent =
-        "No image selected";
-
-    await loadProducts();
-    await updateStats();
-
-}
+        }
 
 async function deleteProduct(id){
 
