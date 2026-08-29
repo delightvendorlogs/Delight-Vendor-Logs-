@@ -1000,6 +1000,16 @@ async function addProduct(){
         ========================= */
 
         let imageUrl = null;
+        const {
+    data: { user },
+    error: authCheckError
+} = await supabaseClient.auth.getUser();
+
+console.log("AUTH USER:", user);
+console.log(
+    "AUTH CHECK ERROR:",
+    authCheckError
+);
 
 
         if(file){
