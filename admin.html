@@ -2019,41 +2019,103 @@ async function completePendingOrder(id){
 async function cancelPendingOrder(id){
 
     if(!confirm(
-        "Cancel this pending order?"
-    )) return;
-
-    const {
-        error
-    } =
-        await supabaseClient
-            .from("pending_orders")
-            .update({
-                status:"cancelled"
-            })
-            .eq(
-                "id",
-                id
-            );
-
-    if(error){
-
-        alert(
-            "❌ " +
-            error.message
-        );
-
+        "Cancel this pending order and refund the customer?"
+    )){
         return;
     }
 
-    alert(
-        "✅ Order cancelled."
-    );
+    try{
 
-    await loadOrders();
-    await updateStats();
-    await loadUsers();
+        const {
+            data,
+            error
+        } =
+        await supabaseClient.rpc(
+            "cancel_pending_order",
+            {
+                p_order_id:id
+            }
+        );
+
+
+        if(error){
+
+            console.error(
+                "Cancel order error:",
+                error
+            );
+
+            alert(
+                "❌ " +
+                error.message
+            );
+
+            return;
+        }
+
+
+        console.log(
+            "Cancel result:",
+            data
+        );
+
+
+        if(data?.success){
+
+            const amount =
+                Number(
+                    data.amount || 0
+                ).toLocaleString(
+                    "en-NG",
+                    {
+                        minimumFractionDigits:2
+                    }
+                );
+
+
+            alert(
+                "✅ Order cancelled.\n\n" +
+                "💰 Customer refunded: ₦" +
+                amount
+            );
+
+
+            /*
+               Reload everything.
+               The pending order should disappear
+               because its status is now cancelled.
+            */
+
+            await loadOrders();
+
+            await updateStats();
+
+            await loadUsers();
+
+        }else{
+
+            alert(
+                "❌ Unable to cancel order."
+            );
+
+        }
+
+    }catch(error){
+
+        console.error(
+            "Unexpected cancel error:",
+            error
+        );
+
+        alert(
+            "❌ " +
+            (error.message ||
+            "Something went wrong.")
+        );
 
     }
+
+              }
     async function loadUsers(){
 
     const container =
