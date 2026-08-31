@@ -1,1496 +1,1861 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+<title>All Country Numbers</title>
 
-  <title>All Country Numbers</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{
+  box-sizing:border-box;
+}
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f4f6fb;
+  color:#111827;
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f7fb;
-      color: #111827;
-    }
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:#101827;
+  color:white;
+  padding:16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow:0 4px 15px rgba(0,0,0,.12);
+}
 
-    .container {
-      max-width: 700px;
-      margin: auto;
-      padding: 18px;
-    }
+.back{
+  border:0;
+  background:#263248;
+  color:white;
+  width:45px;
+  height:42px;
+  border-radius:12px;
+  font-size:21px;
+}
 
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
-    }
+.top-title{
+  font-size:18px;
+  font-weight:800;
+}
 
-    .back {
-      border: 0;
-      background: #111827;
-      color: white;
-      border-radius: 10px;
-      padding: 10px 14px;
-      cursor: pointer;
-    }
+.wallet-top{
+  background:#1d2939;
+  padding:9px 12px;
+  border-radius:12px;
+  font-size:13px;
+}
 
-    h1 {
-      margin: 0;
-      font-size: 24px;
-    }
+.container{
+  width:min(720px,100%);
+  margin:auto;
+  padding:18px 14px 45px;
+}
 
-    .subtitle {
-      color: #6b7280;
-      margin-top: 5px;
-      font-size: 14px;
-    }
+.hero{
+  background:linear-gradient(
+    135deg,
+    #111827,
+    #273449
+  );
+  color:white;
+  padding:22px;
+  border-radius:22px;
+  margin-bottom:16px;
+  box-shadow:0 10px 30px rgba(17,24,39,.18);
+}
 
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 14px;
-      box-shadow: 0 4px 18px rgba(0,0,0,.05);
-    }
+.hero h1{
+  margin:0 0 7px;
+  font-size:27px;
+}
 
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 7px;
-    }
+.hero p{
+  margin:0;
+  color:#cbd5e1;
+  line-height:1.45;
+}
 
-    select,
-    button {
-      width: 100%;
-      min-height: 46px;
-      border-radius: 10px;
-      border: 1px solid #d1d5db;
-      padding: 0 12px;
-      font-size: 15px;
-    }
+.card{
+  background:white;
+  border-radius:20px;
+  padding:18px;
+  margin-bottom:15px;
+  box-shadow:0 5px 20px rgba(15,23,42,.06);
+}
 
-    select {
-      background: white;
-    }
+.step{
+  font-weight:800;
+  font-size:17px;
+  margin-bottom:12px;
+}
 
-    button {
-      border: 0;
-      background: #111827;
-      color: white;
-      cursor: pointer;
-      font-weight: 700;
-    }
+select,
+input{
+  width:100%;
+  border:1px solid #d6dbe5;
+  border-radius:14px;
+  padding:14px;
+  background:white;
+  font-size:16px;
+  outline:none;
+}
 
-    button:disabled {
-      opacity: .5;
-      cursor: not-allowed;
-    }
+select:focus,
+input:focus{
+  border-color:#111827;
+}
 
-    .primary {
-      background: #2563eb;
-    }
+.search{
+  margin-bottom:12px;
+}
 
-    .danger {
-      background: #dc2626;
-    }
+.status{
+  padding:13px 14px;
+  border-radius:13px;
+  background:#f1f5f9;
+  color:#475569;
+  margin-bottom:15px;
+  font-size:14px;
+}
 
-    .success {
-      background: #16a34a;
-    }
+.status.error{
+  background:#fee2e2;
+  color:#991b1b;
+}
 
-    .hidden {
-      display: none !important;
-    }
+.status.success{
+  background:#dcfce7;
+  color:#166534;
+}
 
-    .loading {
-      text-align: center;
-      padding: 20px;
-      color: #6b7280;
-    }
+.service-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
 
-    .price-grid {
-      display: grid;
-      gap: 10px;
-    }
+.service{
+  border:1px solid #e5e7eb;
+  background:#fff;
+  border-radius:16px;
+  padding:14px;
+  cursor:pointer;
+  transition:.15s;
+}
 
-    .price-card {
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 14px;
-      background: #fff;
-    }
+.service:active{
+  transform:scale(.98);
+}
 
-    .price-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-    }
+.service.selected{
+  border:2px solid #111827;
+  background:#f8fafc;
+}
 
-    .service-name {
-      font-weight: 800;
-      font-size: 17px;
-    }
+.service-name{
+  font-weight:800;
+  font-size:15px;
+  margin-bottom:8px;
+}
 
-    .operator {
-      color: #6b7280;
-      font-size: 13px;
-      margin-top: 4px;
-    }
+.service-price{
+  font-size:17px;
+  font-weight:900;
+}
 
-    .price {
-      font-size: 20px;
-      font-weight: 900;
-      margin-top: 10px;
-    }
+.stock{
+  color:#64748b;
+  font-size:12px;
+  margin-top:5px;
+}
 
-    .stock {
-      font-size: 13px;
-      margin-top: 4px;
-      color: #16a34a;
-    }
+.operator-list{
+  display:grid;
+  gap:10px;
+}
 
-    .out {
-      color: #dc2626;
-    }
+.operator{
+  border:1px solid #e5e7eb;
+  border-radius:16px;
+  padding:14px;
+  background:white;
+  cursor:pointer;
+}
 
-    .order-box {
-      background: #eef6ff;
-      border: 1px solid #bfdbfe;
-      border-radius: 14px;
-      padding: 15px;
-    }
+.operator.selected{
+  border:2px solid #111827;
+}
 
-    .number {
-      font-size: 24px;
-      font-weight: 900;
-      word-break: break-all;
-      margin: 8px 0;
-    }
+.operator-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
 
-    .otp {
-      font-size: 30px;
-      font-weight: 900;
-      letter-spacing: 3px;
-      margin: 8px 0;
-    }
+.operator-name{
+  font-weight:800;
+}
 
-    .sms {
-      background: white;
-      border-radius: 10px;
-      padding: 12px;
-      margin-top: 10px;
-      word-break: break-word;
-      white-space: pre-wrap;
-    }
+.operator-price{
+  font-weight:900;
+  font-size:17px;
+}
 
-    .message {
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 12px;
-      font-size: 14px;
-    }
+.operator-meta{
+  color:#64748b;
+  font-size:12px;
+  margin-top:7px;
+}
 
-    .message.error {
-      background: #fee2e2;
-      color: #991b1b;
-    }
+.buy{
+  width:100%;
+  border:0;
+  background:#111827;
+  color:white;
+  padding:16px;
+  border-radius:15px;
+  font-size:16px;
+  font-weight:800;
+  cursor:pointer;
+  margin-top:14px;
+}
 
-    .message.success {
-      background: #dcfce7;
-      color: #166534;
-    }
+.buy:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
 
-    .wallet {
-      font-weight: 800;
-      margin-bottom: 10px;
-    }
+.order{
+  border-radius:20px;
+  background:#101827;
+  color:white;
+  padding:20px;
+}
 
-    .small {
-      font-size: 12px;
-      color: #6b7280;
-    }
-  </style>
+.order-label{
+  color:#94a3b8;
+  font-size:12px;
+  margin-top:12px;
+}
+
+.number{
+  font-size:28px;
+  font-weight:900;
+  letter-spacing:1px;
+  margin-top:5px;
+}
+
+.otp{
+  font-size:34px;
+  font-weight:900;
+  letter-spacing:7px;
+  margin-top:5px;
+}
+
+.order-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:17px;
+}
+
+.action{
+  border:0;
+  padding:13px;
+  border-radius:13px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.check{
+  background:#fff;
+  color:#111827;
+}
+
+.cancel{
+  background:#ef4444;
+  color:white;
+}
+
+.finish{
+  grid-column:1/-1;
+  background:#22c55e;
+  color:white;
+}
+
+.hidden{
+  display:none!important;
+}
+
+.small{
+  color:#64748b;
+  font-size:12px;
+  line-height:1.5;
+}
+
+.loading{
+  text-align:center;
+  padding:22px;
+  color:#64748b;
+}
+
+.empty{
+  text-align:center;
+  padding:25px 10px;
+  color:#64748b;
+}
+
+.rate{
+  display:inline-block;
+  margin-top:9px;
+  padding:6px 9px;
+  background:#e0f2fe;
+  color:#075985;
+  border-radius:9px;
+  font-size:12px;
+  font-weight:700;
+}
+
+@media(max-width:430px){
+  .service-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .hero h1{
+    font-size:24px;
+  }
+
+  .number{
+    font-size:24px;
+  }
+}
+</style>
 </head>
 
 <body>
 
-<div class="container">
+<header class="topbar">
 
-  <div class="header">
-    <button
-      class="back"
-      type="button"
-      onclick="history.back()"
-    >
-      ←
-    </button>
+  <button
+    class="back"
+    onclick="history.back()">
+    ←
+  </button>
 
-    <div>
-      <h1>All Country Numbers</h1>
-      <div class="subtitle">
-        Choose a country, service and available number.
-      </div>
-    </div>
+  <div class="top-title">
+    Virtual Numbers
   </div>
 
-  <div id="messageArea"></div>
+  <div
+    id="topWallet"
+    class="wallet-top">
+    ₦0.00
+  </div>
 
-  <div class="card">
-    <div class="wallet">
-      Wallet: <span id="walletBalance">Loading...</span>
+</header>
+
+<main class="container">
+
+  <section class="hero">
+    <h1>All Country Numbers</h1>
+    <p>
+      Choose your country, select a service,
+      see live stock and your selling price,
+      then purchase instantly from your wallet.
+    </p>
+  </section>
+
+  <div
+    id="message"
+    class="status">
+    Connecting securely...
+  </div>
+
+  <!-- WALLET -->
+
+  <section class="card">
+
+    <div class="step">
+      💰 Wallet Balance
+    </div>
+
+    <div
+      id="wallet"
+      style="
+        font-size:28px;
+        font-weight:900;
+      ">
+      ₦0.00
     </div>
 
     <div class="small">
-      Prices are calculated using the current provider price
-      and live USD/NGN exchange rate.
+      Prices use the current provider price
+      and current USD/NGN exchange rate.
     </div>
-  </div>
+
+  </section>
 
   <!-- COUNTRY -->
 
-  <div class="card">
-    <label for="country">
+  <section class="card">
+
+    <div class="step">
       1. Choose Country
-    </label>
+    </div>
 
     <select id="country">
       <option value="">
         Loading countries...
       </option>
     </select>
-  </div>
+
+  </section>
 
   <!-- SERVICE -->
 
-  <div
+  <section
     id="serviceCard"
-    class="card hidden"
-  >
-    <label for="service">
+    class="card hidden">
+
+    <div class="step">
       2. Choose Service
-    </label>
+    </div>
 
-    <select id="service">
-      <option value="">
-        Select service
-      </option>
-    </select>
-  </div>
-
-  <!-- PRICES -->
-
-  <div
-    id="pricesCard"
-    class="card hidden"
-  >
-    <label>
-      3. Available Numbers
-    </label>
+    <input
+      id="serviceSearch"
+      class="search"
+      placeholder="Search service...">
 
     <div
-      id="prices"
-      class="price-grid"
-    ></div>
-  </div>
+      id="services"
+      class="service-grid">
+    </div>
 
-  <!-- CURRENT ORDER -->
+  </section>
 
-  <div
+  <!-- PROVIDER -->
+
+  <section
+    id="operatorCard"
+    class="card hidden">
+
+    <div class="step">
+      3. Choose Number Provider
+    </div>
+
+    <div
+      id="selectedServiceText"
+      class="small"
+      style="margin-bottom:12px;">
+    </div>
+
+    <div
+      id="operators"
+      class="operator-list">
+    </div>
+
+    <button
+      id="buyButton"
+      class="buy"
+      disabled>
+      Buy Number
+    </button>
+
+  </section>
+
+  <!-- ACTIVE ORDER -->
+
+  <section
     id="orderCard"
-    class="card hidden"
-  >
-    <label>
-      Current Number
-    </label>
+    class="card hidden">
 
-    <div class="order-box">
+    <div class="step">
+      📱 Your Number
+    </div>
 
-      <div class="small">
-        Service
+    <div class="order">
+
+      <div class="order-label">
+        PHONE NUMBER
+      </div>
+
+      <div
+        id="number"
+        class="number">
+        —
+      </div>
+
+      <div class="order-label">
+        SERVICE
       </div>
 
       <div id="orderService">
-        -
+        —
       </div>
 
-      <div class="small" style="margin-top:8px;">
-        Country
-      </div>
-
-      <div id="orderCountry">
-        -
-      </div>
-
-      <div class="small" style="margin-top:8px;">
-        Number
-      </div>
-
-      <div
-        id="orderNumber"
-        class="number"
-      >
-        -
-      </div>
-
-      <div class="small">
-        Status
+      <div class="order-label">
+        STATUS
       </div>
 
       <div id="orderStatus">
-        Waiting for SMS
+        Waiting for SMS...
+      </div>
+
+      <div class="order-label">
+        OTP CODE
       </div>
 
       <div
-        id="otpArea"
-        class="hidden"
-        style="margin-top:15px;"
-      >
-        <div class="small">
-          OTP Code
-        </div>
-
-        <div
-          id="otp"
-          class="otp"
-        >
-          -
-        </div>
-
-        <div class="small">
-          SMS
-        </div>
-
-        <div
-          id="sms"
-          class="sms"
-        >
-          -
-        </div>
+        id="otp"
+        class="otp">
+        —
       </div>
 
-      <div style="margin-top:15px; display:grid; gap:10px;">
+      <div
+        id="smsText"
+        class="small"
+        style="
+          margin-top:10px;
+          color:#cbd5e1;
+        ">
+      </div>
+
+      <div class="order-actions">
 
         <button
-          id="checkBtn"
-          class="primary"
-          type="button"
-        >
-          Check SMS
+          id="checkButton"
+          class="action check">
+          🔄 Check SMS
         </button>
 
         <button
-          id="finishBtn"
-          class="success"
-          type="button"
-        >
-          Finish Order
+          id="cancelButton"
+          class="action cancel">
+          ✖ Cancel & Refund
         </button>
 
         <button
-          id="cancelBtn"
-          class="danger"
-          type="button"
-        >
-          Cancel & Refund
+          id="finishButton"
+          class="action finish hidden">
+          ✓ Finish Number
         </button>
 
       </div>
 
     </div>
-  </div>
 
-</div>
+  </section>
+
+</main>
 
 <script>
-  /*
-   ============================================================
-   SUPABASE CONFIG
-   ============================================================
 
-   This page first checks whether your existing project already
-   created a Supabase client globally.
+/* ========================================================
+   SUPABASE
+   Same project configuration already used by your site.
+======================================================== */
 
-   If not, put your EXISTING project URL + anon key here.
+const SUPABASE_URL =
+  "https://hkfhehbhmucymusaytoe.supabase.co";
 
-   NEVER put:
-   - FIVESIM_API_KEY
-   - SUPABASE_SERVICE_ROLE_KEY
+const SUPABASE_KEY =
+  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
-   in this HTML.
-  */
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
-  let supabaseClient = null;
+
+/* ========================================================
+   EDGE FUNCTION
+======================================================== */
+
+const EDGE_FUNCTION =
+  "numpool-api";
+
+
+/* ========================================================
+   STATE
+======================================================== */
+
+let countries = [];
+
+let services = [];
+
+let selectedService = null;
+
+let selectedOperator = null;
+
+let selectedOrder = null;
+
+let polling = null;
+
+
+/* ========================================================
+   ELEMENTS
+======================================================== */
+
+const countryEl =
+  document.getElementById(
+    "country"
+  );
+
+const servicesEl =
+  document.getElementById(
+    "services"
+  );
+
+const operatorsEl =
+  document.getElementById(
+    "operators"
+  );
+
+const serviceCard =
+  document.getElementById(
+    "serviceCard"
+  );
+
+const operatorCard =
+  document.getElementById(
+    "operatorCard"
+  );
+
+const orderCard =
+  document.getElementById(
+    "orderCard"
+  );
+
+const buyButton =
+  document.getElementById(
+    "buyButton"
+  );
+
+const message =
+  document.getElementById(
+    "message"
+  );
+
+const serviceSearch =
+  document.getElementById(
+    "serviceSearch"
+  );
+
+
+/* ========================================================
+   HELPERS
+======================================================== */
+
+function money(value) {
+
+  return Number(
+    value || 0
+  ).toLocaleString(
+    "en-NG",
+    {
+      minimumFractionDigits:0,
+      maximumFractionDigits:0
+    }
+  );
+}
+
+
+function setMessage(
+  text,
+  type = ""
+) {
+
+  message.textContent =
+    text;
+
+  message.className =
+    "status " +
+    type;
+}
+
+
+function escapeHTML(value) {
+
+  return String(
+    value ?? ""
+  )
+  .replace(
+    /&/g,
+    "&amp;"
+  )
+  .replace(
+    /</g,
+    "&lt;"
+  )
+  .replace(
+    />/g,
+    "&gt;"
+  )
+  .replace(
+    /"/g,
+    "&quot;"
+  )
+  .replace(
+    /'/g,
+    "&#039;"
+  );
+}
+
+
+/* ========================================================
+   CALL EDGE FUNCTION
+======================================================== */
+
+async function api(
+  body
+) {
+
+  const {
+    data: {
+      session
+    }
+  } =
+    await supabaseClient
+      .auth
+      .getSession();
+
+  if (!session) {
+
+    throw new Error(
+      "You are not logged in."
+    );
+  }
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .functions
+      .invoke(
+        EDGE_FUNCTION,
+        {
+          body
+        }
+      );
+
+  if (error) {
+    throw error;
+  }
 
   if (
-    typeof window.supabaseClient !== "undefined"
+    !data?.success
   ) {
-    supabaseClient =
-      window.supabaseClient;
+
+    throw new Error(
+      data?.error ||
+      "Request failed"
+    );
   }
 
-  /*
-    If your dashboard already has:
+  return data;
+}
 
-      window.supabaseClient = ...
 
-    this page uses it automatically.
-  */
+/* ========================================================
+   WALLET
+======================================================== */
 
-  const EDGE_FUNCTION =
-    "numpool-api";
+async function loadWallet() {
 
-  let currentPrices = [];
-  let currentOrderId = null;
-  let pollingTimer = null;
-
-  const countrySelect =
-    document.getElementById(
-      "country",
-    );
-
-  const serviceSelect =
-    document.getElementById(
-      "service",
-    );
-
-  const serviceCard =
-    document.getElementById(
-      "serviceCard",
-    );
-
-  const pricesCard =
-    document.getElementById(
-      "pricesCard",
-    );
-
-  const pricesContainer =
-    document.getElementById(
-      "prices",
-    );
-
-  const orderCard =
-    document.getElementById(
-      "orderCard",
-    );
-
-  const messageArea =
-    document.getElementById(
-      "messageArea",
-    );
-
-  const walletBalance =
-    document.getElementById(
-      "walletBalance",
-    );
-
-  function showMessage(
-    message,
-    type = "error",
-  ) {
-    messageArea.innerHTML =
-      `<div class="message ${type}">
-        ${escapeHtml(message)}
-      </div>`;
-
-    setTimeout(() => {
-      messageArea.innerHTML = "";
-    }, 6000);
-  }
-
-  function escapeHtml(value) {
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  function naira(value) {
-    return "₦" +
-      Number(value || 0)
-        .toLocaleString(
-          "en-NG",
-        );
-  }
-
-  async function requireClient() {
-    if (!supabaseClient) {
-      throw new Error(
-        "Supabase client is not initialized on this page.",
-      );
-    }
+  try {
 
     const {
       data: {
-        session,
-      },
+        user
+      }
     } =
-      await supabaseClient.auth.getSession();
+      await supabaseClient
+        .auth
+        .getUser();
 
-    if (!session) {
-      throw new Error(
-        "Please sign in first.",
-      );
+    if (!user) {
+
+      location.href =
+        "login.html";
+
+      return;
     }
 
-    return session;
-  }
+    /* Make sure wallet exists */
 
-  async function callApi(
-    body,
-  ) {
-    const session =
-      await requireClient();
+    await supabaseClient
+      .rpc(
+        "ensure_my_wallet"
+      );
 
     const {
       data,
-      error,
+      error
     } =
-      await supabaseClient.functions.invoke(
-        EDGE_FUNCTION,
-        {
-          body,
-        },
-      );
+      await supabaseClient
+        .from("wallet")
+        .select(
+          "balance"
+        )
+        .eq(
+          "user-id",
+          user.id
+        )
+        .maybeSingle();
 
     if (error) {
-      throw new Error(
-        error.message ||
-          "Request failed",
-      );
+      throw error;
     }
 
-    if (
-      !data ||
-      data.success === false
-    ) {
-      throw new Error(
-        data?.error ||
-          "Request failed",
-      );
-    }
-
-    return data;
-  }
-
-  /* ==========================================================
-     LOAD COUNTRIES
-     ========================================================== */
-
-  async function loadCountries() {
-    try {
-      const data =
-        await callApi({
-          action:
-            "countries",
-        });
-
-      const raw =
-        data.countries;
-
-      countrySelect.innerHTML =
-        `<option value="">
-          Choose country
-        </option>`;
-
-      let countries = [];
-
-      /*
-        Handle array responses.
-      */
-
-      if (
-        Array.isArray(raw)
-      ) {
-        countries = raw;
-      }
-
-      /*
-        Handle object responses.
-      */
-
-      else if (
-        raw &&
-        typeof raw ===
-          "object"
-      ) {
-        countries =
-          Object.entries(
-            raw,
-          ).map(
-            ([
-              key,
-              value,
-            ]) => ({
-              id:
-                value?.id ||
-                value?.country_id ||
-                key,
-
-              name:
-                value?.name ||
-                value?.title ||
-                key,
-            }),
-          );
-      }
-
-      countries.sort(
-        (a, b) =>
-          String(
-            a.name ||
-              a.country ||
-              a,
-          ).localeCompare(
-            String(
-              b.name ||
-                b.country ||
-                b,
-            ),
-          ),
+    const balance =
+      Number(
+        data?.balance || 0
       );
 
-      for (
-        const item of countries
-      ) {
-        const value =
-          typeof item ===
-          "string"
-            ? item
-            : (
-                item.name ||
-                item.country ||
-                item.code ||
-                ""
-              );
+    document.getElementById(
+      "wallet"
+    ).textContent =
+      "₦" + money(balance);
 
-        if (!value)
-          continue;
+    document.getElementById(
+      "topWallet"
+    ).textContent =
+      "₦" + money(balance);
 
-        const option =
-          document.createElement(
-            "option",
-          );
+  } catch (err) {
 
-        option.value =
-          String(
-            value,
-          ).toLowerCase();
-
-        option.textContent =
-          String(
-            value,
-          );
-
-        countrySelect.appendChild(
-          option,
-        );
-      }
-
-    } catch (
+    console.error(
+      "Wallet error:",
       err
-    ) {
-      showMessage(
-        err.message ||
-          "Unable to load countries.",
-      );
+    );
 
-      countrySelect.innerHTML =
-        `<option value="">
-          Unable to load countries
-        </option>`;
-    }
+    setMessage(
+      "Unable to load wallet.",
+      "error"
+    );
   }
+}
 
-  /* ==========================================================
-     LOAD SERVICES FOR COUNTRY
-     ========================================================== */
 
-  async function loadServices() {
-    const country =
-      countrySelect.value;
+/* ========================================================
+   COUNTRIES
+======================================================== */
 
-    serviceSelect.innerHTML =
+async function loadCountries() {
+
+  countryEl.innerHTML =
+    `<option value="">
+      Loading countries...
+    </option>`;
+
+  try {
+
+    const data =
+      await api({
+        action:
+          "countries"
+      });
+
+    countries =
+      data.countries ||
+      [];
+
+    countryEl.innerHTML =
       `<option value="">
-        Loading services...
+        Select a country
       </option>`;
 
-    pricesCard.classList.add(
-      "hidden",
-    );
+    for (
+      const country of countries
+    ) {
 
-    if (!country) {
-      serviceCard.classList.add(
-        "hidden",
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value =
+        country.code;
+
+      option.textContent =
+        country.name;
+
+      countryEl.appendChild(
+        option
       );
-
-      return;
     }
 
-    try {
-      const data =
-        await callApi({
-          action:
-            "prices",
+    setMessage(
+      "Ready. Select a country.",
+      "success"
+    );
 
-          country,
-        });
+  } catch (err) {
 
-      currentPrices =
-        Array.isArray(
-          data.prices,
-        )
-          ? data.prices
-          : [];
+    console.error(
+      err
+    );
 
-      const serviceMap =
-        new Map();
+    countryEl.innerHTML =
+      `<option value="">
+        Unable to load countries
+      </option>`;
 
-      for (
-        const item of currentPrices
-      ) {
-        const code =
-          item.service_code;
+    setMessage(
+      err.message ||
+      "Unable to load countries.",
+      "error"
+    );
+  }
+}
 
-        if (!code)
-          continue;
 
-        if (
-          !serviceMap.has(
-            code,
-          )
-        ) {
-          serviceMap.set(
-            code,
-            item.service_name ||
-              code,
-          );
+/* ========================================================
+   LOAD SERVICES
+======================================================== */
+
+async function loadServices() {
+
+  const country =
+    countryEl.value;
+
+  if (!country) {
+
+    serviceCard.classList.add(
+      "hidden"
+    );
+
+    operatorCard.classList.add(
+      "hidden"
+    );
+
+    return;
+  }
+
+  selectedService = null;
+  selectedOperator = null;
+
+  operatorCard.classList.add(
+    "hidden"
+  );
+
+  servicesEl.innerHTML =
+    `<div
+       class="loading"
+       style="grid-column:1/-1;">
+       Loading live services...
+     </div>`;
+
+  serviceCard.classList.remove(
+    "hidden"
+  );
+
+  try {
+
+    const data =
+      await api({
+        action:
+          "prices",
+
+        country
+      });
+
+    services =
+      data.services ||
+      [];
+
+    services =
+      services.filter(
+        service =>
+          service.stock > 0
+      );
+
+    renderServices();
+
+    const rate =
+      Number(
+        data.exchange_rate ||
+        0
+      );
+
+    setMessage(
+      `Live prices loaded • $1 = ₦${money(rate)}`,
+      "success"
+    );
+
+  } catch (err) {
+
+    console.error(
+      err
+    );
+
+    servicesEl.innerHTML =
+      `<div
+        class="empty"
+        style="grid-column:1/-1;">
+        ${escapeHTML(
+          err.message ||
+          "Unable to load services."
+        )}
+      </div>`;
+
+    setMessage(
+      err.message ||
+      "Unable to load prices.",
+      "error"
+    );
+  }
+}
+
+
+/* ========================================================
+   RENDER SERVICES
+======================================================== */
+
+function renderServices() {
+
+  const search =
+    serviceSearch
+      .value
+      .trim()
+      .toLowerCase();
+
+  const filtered =
+    services.filter(
+      service =>
+        service.service_name
+          .toLowerCase()
+          .includes(search)
+    );
+
+  if (!filtered.length) {
+
+    servicesEl.innerHTML =
+      `<div
+        class="empty"
+        style="grid-column:1/-1;">
+        No service found.
+      </div>`;
+
+    return;
+  }
+
+  servicesEl.innerHTML =
+    filtered
+      .map(
+        service => {
+
+          const selected =
+            selectedService &&
+            selectedService.service_code ===
+              service.service_code;
+
+          return `
+            <div
+              class="service ${
+                selected
+                  ? "selected"
+                  : ""
+              }"
+              data-service="${escapeHTML(
+                service.service_code
+              )}">
+
+              <div
+                class="service-name">
+                ${escapeHTML(
+                  service.service_name
+                )}
+              </div>
+
+              <div
+                class="service-price">
+                ₦${money(
+                  service.best_price_ngn
+                )}
+              </div>
+
+              <div
+                class="stock">
+                ${money(
+                  service.stock
+                )}
+                numbers available
+              </div>
+
+            </div>
+          `;
         }
-      }
-
-      serviceSelect.innerHTML =
-        `<option value="">
-          Choose service
-        </option>`;
-
-      Array.from(
-        serviceMap.entries(),
       )
-        .sort(
-          (a, b) =>
-            a[1].localeCompare(
-              b[1],
-            ),
-        )
-        .forEach(
-          ([
-            code,
-            name,
-          ]) => {
-            const option =
-              document.createElement(
-                "option",
+      .join("");
+
+  document
+    .querySelectorAll(
+      ".service"
+    )
+    .forEach(
+      element => {
+
+        element.addEventListener(
+          "click",
+          () => {
+
+            const code =
+              element.dataset.service;
+
+            selectedService =
+              services.find(
+                x =>
+                  x.service_code ===
+                  code
               );
 
-            option.value =
-              code;
-
-            option.textContent =
-              name;
-
-            serviceSelect.appendChild(
-              option,
-            );
-          },
+            loadOperators();
+          }
         );
+      }
+    );
+}
 
-      serviceCard.classList.remove(
-        "hidden",
-      );
 
-    } catch (
-      err
-    ) {
-      serviceCard.classList.add(
-        "hidden",
-      );
+/* ========================================================
+   OPERATORS / PROVIDERS
+======================================================== */
 
-      showMessage(
-        err.message ||
-          "Unable to load services.",
-      );
-    }
+async function loadOperators() {
+
+  if (!selectedService) {
+    return;
   }
 
-  /* ==========================================================
-     DISPLAY PRICES
-     ========================================================== */
+  operatorCard.classList.remove(
+    "hidden"
+  );
 
-  function displayPrices() {
-    const service =
-      serviceSelect.value;
+  operatorsEl.innerHTML =
+    `<div class="loading">
+       Loading live provider prices...
+     </div>`;
 
-    pricesContainer.innerHTML =
-      "";
+  document.getElementById(
+    "selectedServiceText"
+  ).textContent =
+    selectedService.service_name;
 
-    if (!service) {
-      pricesCard.classList.add(
-        "hidden",
-      );
+  buyButton.disabled =
+    true;
 
-      return;
-    }
+  selectedOperator =
+    null;
 
-    const servicePrices =
-      currentPrices
+  try {
+
+    const data =
+      await api({
+        action:
+          "prices",
+
+        country:
+          countryEl.value,
+
+        service:
+          selectedService.service_code
+      });
+
+    const options =
+      (data.options || [])
         .filter(
-          (item) =>
-            item.service_code ===
-            service,
+          x =>
+            Number(x.stock) > 0
         )
         .sort(
-          (a, b) =>
-            Number(
-              a.customer_price_ngn,
-            ) -
-            Number(
-              b.customer_price_ngn,
-            ),
+          (a,b) =>
+            a.customer_price_ngn -
+            b.customer_price_ngn
         );
 
-    if (
-      !servicePrices.length
-    ) {
-      pricesContainer.innerHTML =
-        `<div class="small">
-          No numbers currently available for this service.
+    if (!options.length) {
+
+      operatorsEl.innerHTML =
+        `<div class="empty">
+          No number currently available
         </div>`;
 
-      pricesCard.classList.remove(
-        "hidden",
-      );
-
       return;
     }
 
-    for (
-      const item of servicePrices
-    ) {
-      const available =
-        Number(
-          item.stock || 0,
-        ) > 0;
+    operatorsEl.innerHTML =
+      options
+        .map(
+          (option,index) => {
 
-      const card =
-        document.createElement(
-          "div",
-        );
+            const whatsapp =
+              selectedService
+                .service_code
+                .toLowerCase() ===
+              "whatsapp";
 
-      card.className =
-        "price-card";
+            return `
+              <div
+                class="operator"
+                data-index="${index}">
 
-      card.innerHTML = `
-        <div class="price-top">
-          <div>
-            <div class="service-name">
-              ${escapeHtml(
-                item.service_name,
-              )}
-            </div>
+                <div
+                  class="operator-row">
 
-            <div class="operator">
-              Operator:
-              ${escapeHtml(
-                item.operator,
-              )}
-            </div>
-          </div>
+                  <div>
 
-          <div class="price">
-            ${naira(
-              item.customer_price_ngn,
-            )}
-          </div>
-        </div>
+                    <div
+                      class="operator-name">
+                      ${
+                        index === 0
+                          ? "⭐ Best available"
+                          : escapeHTML(
+                              option.operator
+                            )
+                      }
+                    </div>
 
-        <div class="stock ${
-          available
-            ? ""
-            : "out"
-        }">
-          ${
-            available
-              ? `${Number(
-                  item.stock,
-                ).toLocaleString()} in stock`
-              : "Out of stock"
+                    <div
+                      class="operator-meta">
+                      Provider:
+                      ${escapeHTML(
+                        option.operator
+                      )}
+                      • Stock:
+                      ${money(
+                        option.stock
+                      )}
+                    </div>
+
+                  </div>
+
+                  <div
+                    class="operator-price">
+                    ₦${money(
+                      option.customer_price_ngn
+                    )}
+                  </div>
+
+                </div>
+
+                ${
+                  whatsapp &&
+                  Number(
+                    option.provider_cost_ngn
+                  ) < 1200
+                    ? `<div class="rate">
+                         WhatsApp special price
+                       </div>`
+                    : ""
+                }
+
+              </div>
+            `;
           }
-        </div>
+        )
+        .join("");
 
-        <div class="small">
-          Provider:
-          $${Number(
-            item.provider_cost_usd,
-          ).toFixed(2)}
-        </div>
-
-        <button
-          type="button"
-          class="primary buy-button"
-          style="margin-top:12px;"
-          ${
-            available
-              ? ""
-              : "disabled"
-          }
-        >
-          ${
-            available
-              ? "Buy Number"
-              : "Out of Stock"
-          }
-        </button>
-      `;
-
-      if (available) {
-        card
-          .querySelector(
-            ".buy-button",
-          )
-          .addEventListener(
-            "click",
-            () =>
-              buyNumber(
-                item,
-              ),
-          );
-      }
-
-      pricesContainer.appendChild(
-        card,
-      );
-    }
-
-    pricesCard.classList.remove(
-      "hidden",
-    );
-  }
-
-  /* ==========================================================
-     BUY
-     ========================================================== */
-
-  async function buyNumber(
-    item,
-  ) {
-    if (
-      !confirm(
-        `Buy ${item.service_name} number for ${naira(
-          item.customer_price_ngn,
-        )}?`,
+    document
+      .querySelectorAll(
+        ".operator"
       )
+      .forEach(
+        element => {
+
+          element.addEventListener(
+            "click",
+            () => {
+
+              document
+                .querySelectorAll(
+                  ".operator"
+                )
+                .forEach(
+                  x =>
+                    x.classList.remove(
+                      "selected"
+                    )
+                );
+
+              element.classList.add(
+                "selected"
+              );
+
+              selectedOperator =
+                options[
+                  Number(
+                    element.dataset
+                      .index
+                  )
+                ];
+
+              buyButton.disabled =
+                false;
+
+              buyButton.textContent =
+                `Buy for ₦${money(
+                  selectedOperator
+                    .customer_price_ngn
+                )}`;
+            }
+          );
+        }
+      );
+
+  } catch (err) {
+
+    console.error(
+      err
+    );
+
+    operatorsEl.innerHTML =
+      `<div class="empty">
+        ${escapeHTML(
+          err.message ||
+          "Unable to load providers."
+        )}
+      </div>`;
+  }
+}
+
+
+/* ========================================================
+   BUY
+======================================================== */
+
+buyButton.addEventListener(
+  "click",
+  async () => {
+
+    if (
+      !selectedService ||
+      !selectedOperator
     ) {
       return;
     }
+
+    const confirmed =
+      confirm(
+        `Buy ${
+          selectedService.service_name
+        } number for ₦${money(
+          selectedOperator
+            .customer_price_ngn
+        )}?`
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    buyButton.disabled =
+      true;
+
+    buyButton.textContent =
+      "Buying number...";
+
+    setMessage(
+      "Checking live price, debiting wallet and requesting number...",
+    );
 
     try {
-      document
-        .querySelectorAll(
-          ".buy-button",
-        )
-        .forEach(
-          (button) => {
-            button.disabled =
-              true;
-          },
-        );
-
-      /*
-        IMPORTANT:
-        We send country/service/operator only.
-
-        We do NOT send price.
-
-        The Edge Function fetches the CURRENT
-        5SIM price itself and calculates the
-        real customer price.
-      */
 
       const data =
-        await callApi({
+        await api({
           action:
             "buy",
 
           country:
-            countrySelect.value,
+            countryEl.value,
 
           service:
-            item.service_code,
+            selectedService
+              .service_code,
 
           operator:
-            item.operator,
+            selectedOperator
+              .operator
         });
 
-      currentOrderId =
-        data.order.id;
+      selectedOrder =
+        data.order;
 
-      displayOrder(
-        data.order,
-      );
-
-      showMessage(
-        `Number purchased successfully for ${naira(
-          data.order.customer_price_ngn,
-        )}.`,
-        "success",
-      );
+      showOrder();
 
       await loadWallet();
 
+      setMessage(
+        "Number purchased successfully. Waiting for SMS.",
+        "success"
+      );
+
       startPolling();
 
-    } catch (
-      err
-    ) {
-      showMessage(
+    } catch (err) {
+
+      console.error(
+        err
+      );
+
+      setMessage(
         err.message ||
-          "Purchase failed.",
+        "Purchase failed.",
+        "error"
       );
 
-      document
-        .querySelectorAll(
-          ".buy-button",
-        )
-        .forEach(
-          (button) => {
-            button.disabled =
-              false;
-          },
-        );
+      buyButton.disabled =
+        false;
+
+      buyButton.textContent =
+        `Buy for ₦${money(
+          selectedOperator
+            .customer_price_ngn
+        )}`;
     }
   }
+);
 
-  /* ==========================================================
-     DISPLAY ORDER
-     ========================================================== */
 
-  function displayOrder(
-    order,
-  ) {
-    orderCard.classList.remove(
-      "hidden",
-    );
+/* ========================================================
+   SHOW ORDER
+======================================================== */
 
-    document.getElementById(
-      "orderService",
-    ).textContent =
-      order.service ||
-      "-";
+function showOrder() {
 
-    document.getElementById(
-      "orderCountry",
-    ).textContent =
-      order.country ||
-      "-";
+  orderCard.classList.remove(
+    "hidden"
+  );
 
-    document.getElementById(
-      "orderNumber",
-    ).textContent =
-      order.number ||
-      "Number pending...";
+  document.getElementById(
+    "number"
+  ).textContent =
+    selectedOrder.number ||
+    "Waiting...";
 
-    document.getElementById(
-      "orderStatus",
-    ).textContent =
-      order.status ||
-      "waiting";
+  document.getElementById(
+    "orderService"
+  ).textContent =
+    selectedOrder.service;
 
-    document.getElementById(
-      "otpArea",
-    ).classList.add(
-      "hidden",
-    );
+  document.getElementById(
+    "orderStatus"
+  ).textContent =
+    "Waiting for SMS...";
 
-    window.scrollTo({
-      top:
-        document.body
-          .scrollHeight,
+  document.getElementById(
+    "otp"
+  ).textContent =
+    "—";
 
-      behavior:
-        "smooth",
-    });
+  document.getElementById(
+    "smsText"
+  ).textContent =
+    "";
+
+  document.getElementById(
+    "finishButton"
+  ).classList.add(
+    "hidden"
+  );
+
+  orderCard.scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+}
+
+
+/* ========================================================
+   CHECK ORDER
+======================================================== */
+
+async function checkOrder() {
+
+  if (!selectedOrder) {
+    return;
   }
 
-  /* ==========================================================
-     CHECK SMS
-     ========================================================== */
+  try {
 
-  async function checkOrder(
-    silent = false,
-  ) {
-    if (
-      !currentOrderId
-    ) {
-      return;
-    }
+    const data =
+      await api({
+        action:
+          "check",
 
-    try {
-      const data =
-        await callApi({
-          action:
-            "check",
+        order_id:
+          selectedOrder.id
+      });
 
-          order_id:
-            currentOrderId,
-        });
+    document.getElementById(
+      "orderStatus"
+    ).textContent =
+      data.status ||
+      data.provider_status;
+
+    const sms =
+      data.sms;
+
+    if (sms) {
 
       document.getElementById(
-        "orderStatus",
+        "otp"
       ).textContent =
-        data.status ||
-        data.provider_status ||
-        "waiting";
+        sms.code ||
+        "Received";
 
-      if (
-        data.number
-      ) {
-        document.getElementById(
-          "orderNumber",
-        ).textContent =
-          data.number;
-      }
+      document.getElementById(
+        "smsText"
+      ).textContent =
+        sms.text ||
+        "";
 
-      if (
-        data.sms
-      ) {
-        document.getElementById(
-          "otpArea",
-        ).classList.remove(
-          "hidden",
-        );
+      document.getElementById(
+        "finishButton"
+      ).classList.remove(
+        "hidden"
+      );
 
-        document.getElementById(
-          "otp",
-        ).textContent =
-          data.sms.code ||
-          "-";
+      stopPolling();
 
-        document.getElementById(
-          "sms",
-        ).textContent =
-          data.sms.text ||
-          "-";
-      }
+      setMessage(
+        "SMS received successfully.",
+        "success"
+      );
+    }
 
-      if (
-        !silent
-      ) {
-        showMessage(
-          data.sms
-            ? "SMS received."
-            : "No SMS yet. Try again.",
-          data.sms
-            ? "success"
-            : "error",
-        );
-      }
+    if (
+      data.refunded
+    ) {
 
-      if (
-        [
-          "finished",
-          "cancelled",
-          "timeout",
-          "banned",
-        ].includes(
-          String(
-            data.status,
-          ).toLowerCase(),
-        )
-      ) {
-        stopPolling();
-      }
+      stopPolling();
 
-    } catch (
+      await loadWallet();
+
+      document.getElementById(
+        "orderStatus"
+      ).textContent =
+        "Cancelled • Refunded";
+
+      setMessage(
+        `5SIM cancelled the number. ₦${money(
+          data.refund_amount_ngn
+        )} has been refunded.`,
+        "success"
+      );
+    }
+
+    if (
+      data.status ===
+        "cancelled" ||
+      data.status ===
+        "timeout"
+    ) {
+
+      stopPolling();
+
+      await loadWallet();
+    }
+
+  } catch (err) {
+
+    console.error(
+      "Check error:",
       err
-    ) {
-      if (!silent) {
-        showMessage(
-          err.message ||
-            "Unable to check SMS.",
-        );
-      }
-    }
+    );
   }
+}
 
-  /* ==========================================================
-     POLLING
-     ========================================================== */
 
-  function startPolling() {
-    stopPolling();
+/* ========================================================
+   POLLING
+======================================================== */
 
-    pollingTimer =
-      setInterval(
-        () => {
-          checkOrder(
-            true,
-          );
-        },
-        5000,
-      );
+function startPolling() {
+
+  stopPolling();
+
+  polling =
+    setInterval(
+      checkOrder,
+      5000
+    );
+
+  checkOrder();
+}
+
+
+function stopPolling() {
+
+  if (polling) {
+
+    clearInterval(
+      polling
+    );
+
+    polling =
+      null;
   }
+}
 
-  function stopPolling() {
-    if (
-      pollingTimer
-    ) {
-      clearInterval(
-        pollingTimer,
-      );
 
-      pollingTimer =
-        null;
-    }
+/* ========================================================
+   MANUAL CHECK
+======================================================== */
+
+document.getElementById(
+  "checkButton"
+).addEventListener(
+  "click",
+  async () => {
+
+    await checkOrder();
   }
+);
 
-  /* ==========================================================
-     CANCEL
-     ========================================================== */
 
-  async function cancelOrder() {
-    if (
-      !currentOrderId
-    ) {
+/* ========================================================
+   CANCEL + REFUND
+======================================================== */
+
+document.getElementById(
+  "cancelButton"
+).addEventListener(
+  "click",
+  async () => {
+
+    if (!selectedOrder) {
       return;
     }
 
-    if (
-      !confirm(
-        "Cancel this number and refund the exact amount you paid to your wallet?",
-      )
-    ) {
+    const confirmed =
+      confirm(
+        "Cancel this number and refund the exact amount to your wallet?"
+      );
+
+    if (!confirmed) {
       return;
     }
+
+    const button =
+      document.getElementById(
+        "cancelButton"
+      );
+
+    button.disabled =
+      true;
+
+    button.textContent =
+      "Cancelling...";
 
     try {
-      document.getElementById(
-        "cancelBtn",
-      ).disabled = true;
 
       const data =
-        await callApi({
+        await api({
           action:
             "cancel",
 
           order_id:
-            currentOrderId,
+            selectedOrder.id
         });
 
       stopPolling();
 
-      showMessage(
-        data.message ||
-          `₦${Number(
-            data.refund_amount_ngn ||
-              0,
-          ).toLocaleString()} refunded.`,
-        "success",
-      );
-
       await loadWallet();
 
       document.getElementById(
-        "orderStatus",
+        "orderStatus"
       ).textContent =
-        "cancelled / refunded";
+        "Cancelled • Refunded";
+
+      button.textContent =
+        "✓ Refunded";
 
       document.getElementById(
-        "cancelBtn",
-      ).disabled = true;
+        "checkButton"
+      ).disabled =
+        true;
 
-    } catch (
-      err
-    ) {
-      document.getElementById(
-        "cancelBtn",
-      ).disabled = false;
+      setMessage(
+        `Cancelled successfully. ₦${money(
+          data.refund_amount_ngn
+        )} refunded to your wallet.`,
+        "success"
+      );
 
-      showMessage(
+    } catch (err) {
+
+      console.error(
+        err
+      );
+
+      button.disabled =
+        false;
+
+      button.textContent =
+        "✖ Cancel & Refund";
+
+      setMessage(
         err.message ||
-          "Cancellation failed.",
+        "Cancellation failed.",
+        "error"
       );
     }
   }
+);
 
-  /* ==========================================================
-     FINISH
-     ========================================================== */
 
-  async function finishOrder() {
-    if (
-      !currentOrderId
-    ) {
+/* ========================================================
+   FINISH
+======================================================== */
+
+document.getElementById(
+  "finishButton"
+).addEventListener(
+  "click",
+  async () => {
+
+    if (!selectedOrder) {
       return;
     }
 
-    try {
+    const button =
       document.getElementById(
-        "finishBtn",
-      ).disabled = true;
+        "finishButton"
+      );
 
-      const data =
-        await callApi({
-          action:
-            "finish",
+    button.disabled =
+      true;
 
-          order_id:
-            currentOrderId,
-        });
+    button.textContent =
+      "Finishing...";
+
+    try {
+
+      await api({
+        action:
+          "finish",
+
+        order_id:
+          selectedOrder.id
+      });
 
       stopPolling();
 
       document.getElementById(
-        "orderStatus",
+        "orderStatus"
       ).textContent =
-        "finished";
+        "Finished";
 
-      showMessage(
-        data.message ||
-          "Order finished successfully.",
-        "success",
+      button.textContent =
+        "✓ Finished";
+
+      setMessage(
+        "Number order finished successfully.",
+        "success"
       );
 
-    } catch (
-      err
-    ) {
-      document.getElementById(
-        "finishBtn",
-      ).disabled = false;
+    } catch (err) {
 
-      showMessage(
+      console.error(
+        err
+      );
+
+      button.disabled =
+        false;
+
+      button.textContent =
+        "✓ Finish Number";
+
+      setMessage(
         err.message ||
-          "Unable to finish order.",
+        "Unable to finish order.",
+        "error"
       );
     }
   }
+);
 
-  /* ==========================================================
-     WALLET
-     ========================================================== */
 
-  async function loadWallet() {
-    try {
-      const session =
-        await requireClient();
+/* ========================================================
+   COUNTRY CHANGE
+======================================================== */
 
-      const {
-        data,
-        error,
-      } =
-        await supabaseClient
-          .from("wallet")
-          .select(
-            'balance',
-          )
-          .eq(
-            "user-id",
-            session.user.id,
-          )
-          .maybeSingle();
+countryEl.addEventListener(
+  "change",
+  loadServices
+);
 
-      if (
-        error
-      ) {
-        throw error;
+
+/* ========================================================
+   SEARCH
+======================================================== */
+
+serviceSearch.addEventListener(
+  "input",
+  renderServices
+);
+
+
+/* ========================================================
+   INITIALIZE
+======================================================== */
+
+(async function init() {
+
+  try {
+
+    const {
+      data: {
+        user
       }
+    } =
+      await supabaseClient
+        .auth
+        .getUser();
 
-      walletBalance.textContent =
-        naira(
-          data?.balance ||
-            0,
-        );
+    if (!user) {
 
-    } catch (
-      err
-    ) {
-      walletBalance.textContent =
-        "Unavailable";
+      location.href =
+        "login.html";
+
+      return;
     }
+
+    await loadWallet();
+
+    await loadCountries();
+
+  } catch (err) {
+
+    console.error(
+      "INITIALIZATION ERROR:",
+      err
+    );
+
+    setMessage(
+      err.message ||
+      "Unable to initialize page.",
+      "error"
+    );
   }
 
-  /* ==========================================================
-     EVENTS
-     ========================================================== */
+})();
 
-  countrySelect.addEventListener(
-    "change",
-    loadServices,
-  );
-
-  serviceSelect.addEventListener(
-    "change",
-    displayPrices,
-  );
-
-  document.getElementById(
-    "checkBtn",
-  ).addEventListener(
-    "click",
-    () =>
-      checkOrder(
-        false,
-      ),
-  );
-
-  document.getElementById(
-    "cancelBtn",
-  ).addEventListener(
-    "click",
-    cancelOrder,
-  );
-
-  document.getElementById(
-    "finishBtn",
-  ).addEventListener(
-    "click",
-    finishOrder,
-  );
-
-  /* ==========================================================
-     START
-     ========================================================== */
-
-  (async function () {
-    try {
-      await requireClient();
-
-      await loadWallet();
-
-      await loadCountries();
-
-    } catch (
-      err
-    ) {
-      showMessage(
-        err.message ||
-          "Please log in first.",
-      );
-    }
-  })();
 </script>
 
 </body>
