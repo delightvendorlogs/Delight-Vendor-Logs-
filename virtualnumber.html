@@ -121,23 +121,40 @@ main {
 }
 
 /* ======================================
-   MESSAGE
+   FLOATING MESSAGE
 ====================================== */
 
 .message {
   display: none;
 
-  padding: 18px 22px;
+  position: fixed;
 
-  border-radius: 18px;
+  top: 18px;
+  left: 50%;
 
-  margin-bottom: 25px;
+  transform: translateX(-50%);
 
-  font-size: 18px;
+  width: calc(100% - 32px);
+  max-width: 700px;
+
+  z-index: 99999;
+
+  padding: 17px 48px 17px 20px;
+
+  border-radius: 16px;
+
+  font-size: 17px;
 
   line-height: 1.4;
 
   font-weight: 600;
+
+  box-shadow:
+    0 8px 30px
+    rgba(0,0,0,.18);
+
+  animation:
+    messageSlide .2s ease;
 }
 
 .message.show {
@@ -157,6 +174,52 @@ main {
 .message.info {
   background: #e5efff;
   color: #1856a8;
+}
+
+.message-close {
+  position: absolute;
+
+  right: 10px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  width: 32px;
+  height: 32px;
+
+  border: none;
+
+  background: transparent;
+
+  color: inherit;
+
+  font-size: 24px;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  border-radius: 8px;
+}
+
+.message-close:hover {
+  background: rgba(0,0,0,.08);
+}
+
+@keyframes messageSlide {
+
+  from {
+    opacity: 0;
+    transform:
+      translate(-50%, -12px);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translate(-50%, 0);
+  }
+
 }
 
 /* ======================================
@@ -576,6 +639,17 @@ main {
     padding: 28px;
   }
 
+  .message {
+    top: 12px;
+
+    width: calc(100% - 24px);
+
+    padding:
+      15px 45px 15px 17px;
+
+    font-size: 16px;
+  }
+
 }
 
 </style>
@@ -629,13 +703,27 @@ main {
 
 
 <!-- ======================================
-     MESSAGE
+     FLOATING MESSAGE
 ====================================== -->
 
 <div
   id="message"
   class="message"
-></div>
+  role="alert"
+>
+
+  <span id="messageText"></span>
+
+  <button
+    type="button"
+    class="message-close"
+    onclick="hideMessage()"
+    aria-label="Close message"
+  >
+    ×
+  </button>
+
+</div>
 
 
 <!-- ======================================
@@ -881,12 +969,33 @@ function showMessage(
       "message"
     );
 
-  box.textContent = text;
+  const textBox =
+    document.getElementById(
+      "messageText"
+    );
+
+  textBox.textContent =
+    text;
 
   box.className =
     `message show ${type}`;
+
+  /*
+   * Always bring the message
+   * to the user's visible screen.
+   */
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
 }
 
+
+/* =====================================================
+   HIDE MESSAGE
+===================================================== */
 
 function hideMessage() {
 
@@ -898,7 +1007,14 @@ function hideMessage() {
   box.className =
     "message";
 
-  box.textContent = "";
+  const textBox =
+    document.getElementById(
+      "messageText"
+    );
+
+  textBox.textContent =
+    "";
+
 }
 
 
@@ -1057,6 +1173,7 @@ async function apiRequest(
     clearTimeout(timer);
 
   }
+
 }
 
 
@@ -1131,7 +1248,6 @@ async function loadWallet() {
 
 /* =====================================================
    LOAD COUNTRIES
-   ONLY ONE NETWORK REQUEST
 ===================================================== */
 
 async function loadCountries() {
@@ -1171,12 +1287,6 @@ async function loadCountries() {
       err
     );
 
-    /*
-     * Keep the common countries
-     * available even if the
-     * provider request fails.
-     */
-
     countries = [
       {
         code: "england",
@@ -1213,12 +1323,6 @@ async function loadCountries() {
 
   }
 
-  /*
-   * IMPORTANT:
-   * Do not automatically make
-   * another request here.
-   */
-
   renderCountries("");
 
 }
@@ -1226,7 +1330,6 @@ async function loadCountries() {
 
 /* =====================================================
    COUNTRY SEARCH
-   LOCAL ONLY
 ===================================================== */
 
 function renderCountries(
@@ -1264,6 +1367,36 @@ function renderCountries(
             country.iso || ""
           ).toLowerCase();
 
+        /*
+         * UK / United Kingdom /
+         * England should all find
+         * the UK entry.
+         */
+
+        const isUK =
+          code === "england" ||
+          code === "uk" ||
+          iso === "gb" ||
+          name.includes(
+            "united kingdom"
+          ) ||
+          name.includes(
+            "england"
+          );
+
+        if (
+          isUK &&
+          (
+            term === "uk" ||
+            term === "england" ||
+            term === "united kingdom" ||
+            term === "britain" ||
+            term === "gb"
+          )
+        ) {
+          return true;
+        }
+
         return (
           !term ||
           name.includes(term) ||
@@ -1273,11 +1406,6 @@ function renderCountries(
 
       }
     );
-
-  /*
-   * Only show exact matching
-   * search results when searching.
-   */
 
   if (!filtered.length) {
 
@@ -1326,6 +1454,7 @@ function renderCountries(
   results.classList.add(
     "show"
   );
+
 }
 
 
@@ -1486,7 +1615,6 @@ async function loadServices() {
 
 /* =====================================================
    SERVICE SEARCH
-   LOCAL ONLY
 ===================================================== */
 
 function renderServices(
@@ -1682,11 +1810,6 @@ function selectService(
         `
       )
       .join("");
-
-  /*
-   * Automatically choose the cheapest
-   * available operator.
-   */
 
   const first =
     available[0];
@@ -2165,7 +2288,6 @@ async function cancelOrder() {
 
 /* =====================================================
    COUNTRY INPUT
-   NO API REQUEST HERE
 ===================================================== */
 
 document
@@ -2186,7 +2308,6 @@ document
 
 /* =====================================================
    SERVICE INPUT
-   NO API REQUEST HERE
 ===================================================== */
 
 document
