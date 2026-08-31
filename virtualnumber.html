@@ -1,20 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Virtual Numbers - Delight Vendor Logs</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
 *{
     box-sizing:border-box;
 }
@@ -96,7 +89,9 @@ main{
     text-decoration:none;
 }
 
-.card{
+.card,
+.history-card,
+.number-card{
     background:#fff;
     border-radius:15px;
     padding:18px;
@@ -104,7 +99,9 @@ main{
     box-shadow:0 2px 10px #00000012;
 }
 
-.card h2{
+.card h2,
+.history-card h2,
+.number-card h2{
     margin:0 0 15px;
     font-size:20px;
 }
@@ -146,7 +143,6 @@ select:focus{
     border-radius:10px;
     padding:14px;
     line-height:1.5;
-    word-break:break-word;
 }
 
 .success{
@@ -155,10 +151,6 @@ select:focus{
     border-radius:10px;
     padding:14px;
     line-height:1.5;
-}
-
-#products{
-    margin-top:5px;
 }
 
 .product{
@@ -213,17 +205,7 @@ select:focus{
 }
 
 .number-card{
-    background:#fff;
-    border-radius:15px;
-    padding:18px;
-    margin-bottom:18px;
-    box-shadow:0 2px 10px #00000012;
     display:none;
-}
-
-.number-card h2{
-    margin:0 0 14px;
-    font-size:20px;
 }
 
 .number-box{
@@ -232,7 +214,8 @@ select:focus{
     padding:15px;
 }
 
-.number-label{
+.number-label,
+.otp-label{
     color:#777;
     font-size:13px;
 }
@@ -282,11 +265,6 @@ select:focus{
     background:#f5f5f5;
     border-radius:11px;
     padding:15px;
-}
-
-.otp-label{
-    color:#777;
-    font-size:13px;
 }
 
 .otp{
@@ -340,19 +318,6 @@ select:focus{
     cursor:pointer;
 }
 
-.history-card{
-    background:#fff;
-    border-radius:15px;
-    padding:18px;
-    margin-top:18px;
-    box-shadow:0 2px 10px #00000012;
-}
-
-.history-card h2{
-    margin:0 0 14px;
-    font-size:20px;
-}
-
 .history-item{
     border:1px solid #eee;
     border-radius:11px;
@@ -388,7 +353,6 @@ select:focus{
 }
 
 @media(max-width:430px){
-
     main{
         padding-left:13px;
         padding-right:13px;
@@ -402,322 +366,231 @@ select:focus{
         align-self:flex-start;
     }
 
+    .actions{
+        grid-template-columns:1fr;
+    }
 }
-
 </style>
-
 </head>
 
 <body>
 
 <header>
-
 <div class="header-row">
+    <h1>Virtual Numbers</h1>
 
-<h1>Virtual Numbers</h1>
-
-<button
-    class="back-btn"
-    type="button"
-    onclick="location.href='dashboard.html'"
->
-← Back
-</button>
-
+    <button
+        class="back-btn"
+        type="button"
+        onclick="location.href='dashboard.html'"
+    >
+        ← Back
+    </button>
 </div>
-
 </header>
 
 <main>
 
 <div class="wallet-card">
+    <div class="wallet-label">Wallet Balance</div>
 
-<div class="wallet-label">
-Wallet Balance
+    <div id="walletBalance" class="wallet-balance">
+        ₦0.00
+    </div>
+
+    <a href="wallet.html" class="fund-link">
+        + Fund Wallet
+    </a>
 </div>
-
-<div
-    id="walletBalance"
-    class="wallet-balance"
->
-₦0.00
-</div>
-
-<a
-    href="wallet.html"
-    class="fund-link"
->
-+ Fund Wallet
-</a>
-
-</div>
-
 
 <div class="card">
 
-<h2>Get a Virtual Number</h2>
+    <h2>Get a Virtual Number</h2>
 
-<div class="field">
+    <div class="field">
+        <label for="country">Country</label>
 
-<label for="country">
-Country
-</label>
+        <select id="country">
+            <option value="">
+                Loading countries...
+            </option>
+        </select>
+    </div>
 
-<select id="country">
+    <div class="field">
+        <label for="service">Service</label>
 
-<option value="">
-Loading countries...
-</option>
+        <select id="service">
+            <option value="">
+                Select a country first
+            </option>
+        </select>
+    </div>
 
-</select>
+    <div class="field">
+        <label for="operator">Operator</label>
 
-</div>
-
-
-<div class="field">
-
-<label for="service">
-Service
-</label>
-
-<select id="service">
-
-<option value="">
-Select a country first
-</option>
-
-</select>
-
-</div>
-
-
-<div class="field">
-
-<label for="operator">
-Operator
-</label>
-
-<select id="operator">
-
-<option value="any">
-Any operator
-</option>
-
-</select>
+        <select id="operator">
+            <option value="any">
+                Any operator
+            </option>
+        </select>
+    </div>
 
 </div>
-
-</div>
-
 
 <div class="card">
 
-<h2>Available Numbers</h2>
+    <h2>Available Numbers</h2>
 
-<div id="products">
-
-<div class="loading">
-Select a country to load numbers.
-</div>
-
-</div>
+    <div id="products">
+        <div class="loading">
+            Select a country to load numbers.
+        </div>
+    </div>
 
 </div>
 
+<div id="numberCard" class="number-card">
 
-<div
-    id="numberCard"
-    class="number-card"
->
+    <h2>Your Virtual Number</h2>
 
-<h2>Your Virtual Number</h2>
+    <div class="number-box">
 
-<div class="number-box">
+        <div class="number-label">
+            Phone Number
+        </div>
 
-<div class="number-label">
-Phone Number
+        <div id="number" class="number">
+            —
+        </div>
+
+        <button
+            id="copyNumberBtn"
+            class="copy-btn"
+            type="button"
+            onclick="copyNumber()"
+        >
+            📋 Copy Number
+        </button>
+
+        <div style="margin-top:15px">
+
+            <div class="info-row">
+                <span class="info-label">Country</span>
+                <span id="activeCountry" class="info-value">—</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Service</span>
+                <span id="activeService" class="info-value">—</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Price</span>
+                <span id="activePrice" class="info-value">—</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Status</span>
+                <span id="activeStatus" class="info-value">
+                    Waiting for SMS
+                </span>
+            </div>
+
+        </div>
+
+        <div class="otp-box">
+
+            <div class="otp-label">
+                OTP / SMS
+            </div>
+
+            <div id="otp" class="otp">
+                Waiting...
+            </div>
+
+            <div id="sms" class="sms">
+                Waiting for verification SMS...
+            </div>
+
+        </div>
+
+        <div class="actions">
+
+            <button
+                id="refreshBtn"
+                class="action-btn refresh-btn"
+                type="button"
+                onclick="checkStatus()"
+            >
+                🔄 Check OTP
+            </button>
+
+            <button
+                id="cancelBtn"
+                class="action-btn cancel-btn"
+                type="button"
+                onclick="cancelNumber()"
+            >
+                ❌ Cancel & Refund
+            </button>
+
+        </div>
+
+        <button
+            class="support-btn"
+            type="button"
+            onclick="contactSupport()"
+        >
+            💬 Contact Support
+        </button>
+
+    </div>
 </div>
-
-<div
-    id="number"
-    class="number"
->
-—
-</div>
-
-<button
-    id="copyNumberBtn"
-    class="copy-btn"
-    type="button"
-    onclick="copyNumber()"
->
-📋 Copy Number
-</button>
-
-
-<div style="margin-top:15px">
-
-<div class="info-row">
-
-<span class="info-label">
-Country
-</span>
-
-<span
-    id="activeCountry"
-    class="info-value"
->
-—
-</span>
-
-</div>
-
-
-<div class="info-row">
-
-<span class="info-label">
-Service
-</span>
-
-<span
-    id="activeService"
-    class="info-value"
->
-—
-</span>
-
-</div>
-
-
-<div class="info-row">
-
-<span class="info-label">
-Price
-</span>
-
-<span
-    id="activePrice"
-    class="info-value"
->
-—
-</span>
-
-</div>
-
-
-<div class="info-row">
-
-<span class="info-label">
-Status
-</span>
-
-<span
-    id="activeStatus"
-    class="info-value"
->
-Waiting for SMS
-</span>
-
-</div>
-
-</div>
-
-
-<div class="otp-box">
-
-<div class="otp-label">
-OTP / SMS
-</div>
-
-<div
-    id="otp"
-    class="otp"
->
-Waiting...
-</div>
-
-<div
-    id="sms"
-    class="sms"
->
-Waiting for verification SMS...
-</div>
-
-</div>
-
-
-<div class="actions">
-
-<button
-    id="refreshBtn"
-    class="action-btn refresh-btn"
-    type="button"
-    onclick="checkStatus()"
->
-🔄 Check OTP
-</button>
-
-<button
-    id="cancelBtn"
-    class="action-btn cancel-btn"
-    type="button"
-    onclick="cancelNumber()"
->
-❌ Cancel & Refund
-</button>
-
-</div>
-
-
-<button
-    class="support-btn"
-    type="button"
-    onclick="contactSupport()"
->
-💬 Contact Support
-</button>
-
-</div>
-
-</div>
-
 
 <div class="history-card">
 
-<h2>Virtual Number History</h2>
+    <h2>Virtual Number History</h2>
 
-<div id="history">
-
-<div class="loading">
-Loading history...
-</div>
-
-</div>
+    <div id="history">
+        <div class="loading">
+            Loading history...
+        </div>
+    </div>
 
 </div>
 
 </main>
 
-
 <script>
 
+/* =====================================================
+   SUPABASE
+===================================================== */
+
 const SUPABASE_URL =
-"https://hkfhehbhmucymusaytoe.supabase.co";
+    "https://hkfhehbhmucymusaytoe.supabase.co";
 
 const SUPABASE_KEY =
-"sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+    "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
 const supabaseClient =
-window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+/* =====================================================
+   IMPORTANT:
+   EDGE FUNCTION NAME = fivesim
+===================================================== */
 
 const EDGE_FUNCTION_URL =
-`${SUPABASE_URL}/functions/v1/numpool-api`;
+    `${SUPABASE_URL}/functions/v1/fivesim`;
 
 const WHATSAPP_SUPPORT =
-"2347015908401";
+    "2347015908401";
 
 let currentUser = null;
 let countries = [];
@@ -726,198 +599,161 @@ let activeOrder = null;
 let statusTimer = null;
 
 const countrySelect =
-document.getElementById("country");
+    document.getElementById("country");
 
 const serviceSelect =
-document.getElementById("service");
+    document.getElementById("service");
 
 const operatorSelect =
-document.getElementById("operator");
+    document.getElementById("operator");
 
 const productsBox =
-document.getElementById("products");
+    document.getElementById("products");
 
 const walletBalance =
-document.getElementById("walletBalance");
+    document.getElementById("walletBalance");
 
 const numberCard =
-document.getElementById("numberCard");
+    document.getElementById("numberCard");
 
+/* =====================================================
+   MONEY
+===================================================== */
 
 function formatMoney(value){
-
-return Number(value || 0).toLocaleString(
-    "en-NG",
-    {
-        minimumFractionDigits:2,
-        maximumFractionDigits:2
-    }
-);
-
+    return Number(value || 0).toLocaleString(
+        "en-NG",
+        {
+            minimumFractionDigits:2,
+            maximumFractionDigits:2
+        }
+    );
 }
 
+/* =====================================================
+   ESCAPE
+===================================================== */
 
 function esc(value){
-
-return String(value ?? "")
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
-
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 }
-
 
 /* =====================================================
    EDGE REQUEST
 ===================================================== */
 
-async function edgeRequest(
-    action,
-    options = {}
-){
+async function edgeRequest(action, options = {}){
 
-const {
-    method = "GET",
-    query = {},
-    body = null
-} = options;
+    const {
+        method = "GET",
+        query = {},
+        body = null
+    } = options;
 
-const {
-    data:{
-        session
-    }
-} =
-await supabaseClient
-    .auth
-    .getSession();
-
-if(
-    !session ||
-    !session.access_token
-){
-
-throw new Error(
-    "Your session has expired. Please login again."
-);
-
-}
-
-const params =
-new URLSearchParams();
-
-params.set(
-    "action",
-    action
-);
-
-Object.entries(query).forEach(
-([key,value])=>{
+    const {
+        data:{
+            session
+        }
+    } =
+        await supabaseClient
+            .auth
+            .getSession();
 
     if(
-        value !== undefined &&
-        value !== null &&
-        String(value) !== ""
+        !session ||
+        !session.access_token
     ){
-
-        params.set(
-            key,
-            String(value)
+        throw new Error(
+            "Your session has expired. Please login again."
         );
-
     }
 
+    const params =
+        new URLSearchParams();
+
+    params.set("action",action);
+
+    Object.entries(query).forEach(
+        ([key,value])=>{
+            if(
+                value !== undefined &&
+                value !== null &&
+                String(value) !== ""
+            ){
+                params.set(
+                    key,
+                    String(value)
+                );
+            }
+        }
+    );
+
+    const requestOptions = {
+        method,
+        headers:{
+            Authorization:
+                `Bearer ${session.access_token}`,
+
+            apikey:
+                SUPABASE_KEY,
+
+            "Content-Type":
+                "application/json"
+        }
+    };
+
+    if(body !== null){
+        requestOptions.body =
+            JSON.stringify(body);
+    }
+
+    const response =
+        await fetch(
+            `${EDGE_FUNCTION_URL}?${params.toString()}`,
+            requestOptions
+        );
+
+    const text =
+        await response.text();
+
+    let data;
+
+    try{
+        data = JSON.parse(text);
+    }catch{
+        data = {
+            success:false,
+            error:text
+        };
+    }
+
+    if(
+        !response.ok ||
+        data?.success === false
+    ){
+
+        let message =
+            data?.error;
+
+        if(typeof message === "object"){
+            message =
+                message?.message ||
+                JSON.stringify(message);
+        }
+
+        throw new Error(
+            message ||
+            `Request failed (${response.status})`
+        );
+    }
+
+    return data;
 }
-);
-
-const headers = {
-
-    Authorization:
-        `Bearer ${session.access_token}`,
-
-    apikey:
-        SUPABASE_KEY,
-
-    Accept:
-        "application/json"
-
-};
-
-const requestOptions = {
-
-    method,
-
-    headers
-
-};
-
-if(body !== null){
-
-requestOptions.body =
-JSON.stringify(body);
-
-requestOptions.headers[
-    "Content-Type"
-] =
-"application/json";
-
-}
-
-const response =
-await fetch(
-    `${EDGE_FUNCTION_URL}?${params.toString()}`,
-    requestOptions
-);
-
-const text =
-await response.text();
-
-let data;
-
-try{
-
-data =
-JSON.parse(text);
-
-}catch{
-
-data = {
-    success:false,
-    error:text
-};
-
-}
-
-if(
-!response.ok ||
-data?.success === false
-){
-
-let message =
-data?.error;
-
-if(
-typeof message === "object"
-){
-
-message =
-message?.message ||
-JSON.stringify(message);
-
-}
-
-throw new Error(
-message ||
-`Request failed (${response.status})`
-);
-
-}
-
-return data;
-
-}
-
 
 /* =====================================================
    LOGIN
@@ -925,35 +761,27 @@ return data;
 
 async function checkLogin(){
 
-const {
-    data:{
-        user
-    },
-    error
-} =
-await supabaseClient
-    .auth
-    .getUser();
+    const {
+        data:{
+            user
+        },
+        error
+    } =
+        await supabaseClient
+            .auth
+            .getUser();
 
-if(
-error ||
-!user
-){
+    if(error || !user){
+        location.href =
+            "login.html";
 
-location.href =
-"login.html";
+        return false;
+    }
 
-return false;
+    currentUser = user;
 
+    return true;
 }
-
-currentUser =
-user;
-
-return true;
-
-}
-
 
 /* =====================================================
    WALLET
@@ -961,53 +789,62 @@ return true;
 
 async function loadWallet(){
 
-if(!currentUser){
-    return;
+    if(!currentUser) return;
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .rpc("ensure_my_wallet");
+
+        if(error){
+            console.error(
+                "Wallet error:",
+                error
+            );
+
+            walletBalance.textContent =
+                "Unable to load balance.";
+
+            return;
+        }
+
+        let balance = 0;
+
+        if(
+            data &&
+            typeof data === "object" &&
+            !Array.isArray(data)
+        ){
+            balance =
+                Number(
+                    data.balance ??
+                    data.wallet_balance ??
+                    0
+                );
+        }else{
+            balance =
+                Number(data || 0);
+        }
+
+        walletBalance.textContent =
+            "₦" +
+            formatMoney(balance);
+
+    }catch(error){
+
+        console.error(
+            "Wallet loading error:",
+            error
+        );
+
+        walletBalance.textContent =
+            "Unable to load balance.";
+    }
 }
-
-try{
-
-const {
-    data,
-    error
-} =
-await supabaseClient
-    .rpc("ensure_my_wallet");
-
-if(error){
-
-console.error(
-    "Wallet error:",
-    error
-);
-
-walletBalance.textContent =
-"Unable to load balance.";
-
-return;
-
-}
-
-walletBalance.textContent =
-"₦" +
-formatMoney(
-    data?.balance || 0
-);
-
-}catch(error){
-
-console.error(
-    "Wallet loading error:",
-    error
-);
-
-walletBalance.textContent =
-"Unable to load balance.";
-
-}
-
-}
-
 
 /* =====================================================
    COUNTRIES
@@ -1015,340 +852,192 @@ walletBalance.textContent =
 
 async function loadCountries(){
 
-countrySelect.innerHTML = `
-<option value="">
-Loading countries...
-</option>
-`;
+    countrySelect.innerHTML = `
+        <option value="">
+            Loading countries...
+        </option>
+    `;
 
-productsBox.innerHTML = `
-<div class="loading">
-Loading countries...
-</div>
-`;
+    try{
 
-try{
+        const data =
+            await edgeRequest(
+                "countries"
+            );
 
-const data =
-await edgeRequest(
-    "countries"
-);
+        countries =
+            Array.isArray(data?.countries)
+                ? data.countries
+                : [];
 
-countries =
-normalizeCountries(
-    data?.countries
-);
+        countrySelect.innerHTML = `
+            <option value="">
+                Select country
+            </option>
+        `;
 
-countrySelect.innerHTML = `
-<option value="">
-Select country
-</option>
-`;
+        countries.forEach(
+            country=>{
 
-countries.forEach(
-country=>{
+                if(!country?.code){
+                    return;
+                }
 
-const option =
-document.createElement(
-    "option"
-);
+                const option =
+                    document.createElement(
+                        "option"
+                    );
 
-option.value =
-country.code;
+                option.value =
+                    String(country.code);
 
-option.textContent =
-country.name ||
-country.code;
+                option.textContent =
+                    country.name ||
+                    country.code;
 
-option.dataset.countryId =
-country.id ?? "";
+                option.dataset.countryId =
+                    String(country.id ?? 0);
 
-countrySelect.appendChild(
-    option
-);
+                countrySelect.appendChild(
+                    option
+                );
+            }
+        );
 
+        if(countries.length === 0){
+
+            countrySelect.innerHTML = `
+                <option value="">
+                    No countries available
+                </option>
+            `;
+
+            productsBox.innerHTML = `
+                <div class="error">
+                    ❌ 5SIM returned no countries.
+                </div>
+            `;
+        }
+
+    }catch(error){
+
+        console.error(
+            "Countries error:",
+            error
+        );
+
+        countrySelect.innerHTML = `
+            <option value="">
+                Unable to load countries
+            </option>
+        `;
+
+        productsBox.innerHTML = `
+            <div class="error">
+                ❌ ${esc(error.message)}
+            </div>
+        `;
+    }
 }
-);
-
-if(
-countries.length === 0
-){
-
-countrySelect.innerHTML = `
-<option value="">
-No countries available
-</option>
-`;
-
-productsBox.innerHTML = `
-<div class="error">
-❌ 5SIM returned no countries.
-</div>
-`;
-
-}else{
-
-productsBox.innerHTML = `
-<div class="loading">
-Select a country to load numbers.
-</div>
-`;
-
-}
-
-}catch(error){
-
-console.error(
-    "Countries error:",
-    error
-);
-
-countrySelect.innerHTML = `
-<option value="">
-Unable to load countries
-</option>
-`;
-
-productsBox.innerHTML = `
-<div class="error">
-❌ ${esc(error.message)}
-</div>
-`;
-
-}
-
-}
-
-
-/* =====================================================
-   NORMALIZE COUNTRIES
-===================================================== */
-
-function normalizeCountries(raw){
-
-const result = [];
-
-if(
-!raw ||
-typeof raw !== "object"
-){
-
-return result;
-
-}
-
-if(
-Array.isArray(raw)
-){
-
-raw.forEach(
-item=>{
-
-if(
-item &&
-typeof item === "object"
-){
-
-const code =
-String(
-    item.code ??
-    item.short_name ??
-    item.iso ??
-    ""
-).trim();
-
-if(code){
-
-result.push({
-
-code,
-
-id:
-item.id ??
-item.country_id ??
-"",
-
-name:
-item.name ??
-item.title ??
-code
-
-});
-
-}
-
-}
-
-}
-);
-
-}else{
-
-Object.entries(raw).forEach(
-([code,item])=>{
-
-if(
-item &&
-typeof item === "object"
-){
-
-result.push({
-
-code,
-
-id:
-item.id ??
-item.country_id ??
-"",
-
-name:
-item.name ??
-item.title ??
-code
-
-});
-
-}else{
-
-result.push({
-
-code,
-
-id:"",
-name:code
-
-});
-
-}
-
-}
-);
-
-}
-
-result.sort(
-(a,b)=>
-String(a.name).localeCompare(
-    String(b.name)
-)
-);
-
-return result;
-
-}
-
 
 /* =====================================================
    COUNTRY CHANGE
 ===================================================== */
 
 countrySelect.addEventListener(
-"change",
-async function(){
+    "change",
+    async function(){
 
-const country =
-this.value;
+        const country =
+            this.value;
 
-serviceSelect.innerHTML = `
-<option value="">
-Loading services...
-</option>
-`;
+        serviceSelect.innerHTML = `
+            <option value="">
+                Loading services...
+            </option>
+        `;
 
-operatorSelect.innerHTML = `
-<option value="any">
-Any operator
-</option>
-`;
+        operatorSelect.innerHTML = `
+            <option value="any">
+                Any operator
+            </option>
+        `;
 
-productsBox.innerHTML = `
-<div class="loading">
-Loading available numbers...
-</div>
-`;
+        productsBox.innerHTML = `
+            <div class="loading">
+                Loading available numbers...
+            </div>
+        `;
 
-if(!country){
+        if(!country){
 
-serviceSelect.innerHTML = `
-<option value="">
-Select a country first
-</option>
-`;
+            serviceSelect.innerHTML = `
+                <option value="">
+                    Select a country first
+                </option>
+            `;
 
-productsBox.innerHTML = `
-<div class="loading">
-Select a country to load numbers.
-</div>
-`;
+            productsBox.innerHTML = `
+                <div class="loading">
+                    Select a country to load numbers.
+                </div>
+            `;
 
-return;
+            return;
+        }
 
-}
-
-await loadProducts(
-    country
+        await loadProducts(country);
+    }
 );
-
-}
-);
-
 
 /* =====================================================
    PRODUCTS
 ===================================================== */
 
-async function loadProducts(
-country
-){
+async function loadProducts(country){
 
-try{
+    try{
 
-const data =
-await edgeRequest(
-    "products",
-    {
-        query:{
-            country
-        }
+        const data =
+            await edgeRequest(
+                "products",
+                {
+                    query:{
+                        country
+                    }
+                }
+            );
+
+        products =
+            Array.isArray(data?.products)
+                ? data.products
+                : [];
+
+        populateServices();
+        renderProducts();
+
+    }catch(error){
+
+        console.error(
+            "Products error:",
+            error
+        );
+
+        products = [];
+
+        serviceSelect.innerHTML = `
+            <option value="">
+                Unable to load services
+            </option>
+        `;
+
+        productsBox.innerHTML = `
+            <div class="error">
+                ❌ ${esc(error.message)}
+            </div>
+        `;
     }
-);
-
-products =
-Array.isArray(
-    data?.products
-)
-? data.products
-: [];
-
-populateServices();
-
-renderProducts();
-
-}catch(error){
-
-console.error(
-    "Products error:",
-    error
-);
-
-products = [];
-
-serviceSelect.innerHTML = `
-<option value="">
-Unable to load services
-</option>
-`;
-
-productsBox.innerHTML = `
-<div class="error">
-❌ ${esc(error.message)}
-</div>
-`;
-
 }
-
-}
-
 
 /* =====================================================
    SERVICES
@@ -1356,76 +1045,70 @@ productsBox.innerHTML = `
 
 function populateServices(){
 
-const names =
-[
-    ...new Set(
-        products.map(
-            item =>
-                String(
-                    item.product ||
-                    ""
-                ).trim()
-        )
-    )
-]
-.filter(Boolean)
-.sort(
-    (a,b)=>
-        a.localeCompare(b)
-);
+    const names =
+        [
+            ...new Set(
+                products.map(
+                    item =>
+                        String(
+                            item.product || ""
+                        ).trim()
+                )
+            )
+        ]
+        .filter(Boolean)
+        .sort(
+            (a,b)=>
+                a.localeCompare(b)
+        );
 
-serviceSelect.innerHTML = `
-<option value="">
-All services
-</option>
-`;
+    serviceSelect.innerHTML = `
+        <option value="">
+            All services
+        </option>
+    `;
 
-names.forEach(
-name=>{
+    names.forEach(name=>{
 
-const option =
-document.createElement(
-    "option"
-);
+        const option =
+            document.createElement(
+                "option"
+            );
 
-option.value =
-name;
+        option.value = name;
+        option.textContent = name;
 
-option.textContent =
-name;
+        serviceSelect.appendChild(
+            option
+        );
+    });
 
-serviceSelect.appendChild(
-    option
-);
-
-}
-);
-
-populateOperators();
-
+    populateOperators();
 }
 
+/* =====================================================
+   SERVICE CHANGE
+===================================================== */
 
 serviceSelect.addEventListener(
-"change",
-function(){
+    "change",
+    function(){
 
-populateOperators();
-renderProducts();
-
-}
+        populateOperators();
+        renderProducts();
+    }
 );
 
+/* =====================================================
+   OPERATOR CHANGE
+===================================================== */
 
 operatorSelect.addEventListener(
-"change",
-function(){
-
-renderProducts();
-
-}
+    "change",
+    function(){
+        renderProducts();
+    }
 );
-
 
 /* =====================================================
    OPERATORS
@@ -1433,68 +1116,60 @@ renderProducts();
 
 function populateOperators(){
 
-const selectedService =
-serviceSelect.value;
+    const selectedService =
+        serviceSelect.value;
 
-const matching =
-products.filter(
-item =>
-!selectedService ||
-String(item.product) ===
-selectedService
-);
-
-const operators =
-[
-    ...new Set(
-        matching.map(
+    const matching =
+        products.filter(
             item =>
-                String(
-                    item.operator ||
-                    "any"
-                ).trim()
+                !selectedService ||
+                String(item.product) ===
+                selectedService
+        );
+
+    const operators =
+        [
+            ...new Set(
+                matching.map(
+                    item =>
+                        String(
+                            item.operator ||
+                            "any"
+                        ).trim()
+                )
+            )
+        ]
+        .filter(
+            value =>
+                value &&
+                value !== "any"
         )
-    )
-]
-.filter(
-value =>
-value &&
-value !== "any"
-)
-.sort(
-(a,b)=>
-a.localeCompare(b)
-);
+        .sort(
+            (a,b)=>
+                a.localeCompare(b)
+        );
 
-operatorSelect.innerHTML = `
-<option value="any">
-Any operator
-</option>
-`;
+    operatorSelect.innerHTML = `
+        <option value="any">
+            Any operator
+        </option>
+    `;
 
-operators.forEach(
-operator=>{
+    operators.forEach(operator=>{
 
-const option =
-document.createElement(
-    "option"
-);
+        const option =
+            document.createElement(
+                "option"
+            );
 
-option.value =
-operator;
+        option.value = operator;
+        option.textContent = operator;
 
-option.textContent =
-operator;
-
-operatorSelect.appendChild(
-    option
-);
-
+        operatorSelect.appendChild(
+            option
+        );
+    });
 }
-);
-
-}
-
 
 /* =====================================================
    RENDER PRODUCTS
@@ -1502,369 +1177,316 @@ operatorSelect.appendChild(
 
 function renderProducts(){
 
-const selectedService =
-serviceSelect.value;
+    const selectedService =
+        serviceSelect.value;
 
-const selectedOperator =
-operatorSelect.value;
+    const selectedOperator =
+        operatorSelect.value;
 
-const filtered =
-products.filter(
-item=>{
+    const filtered =
+        products.filter(item=>{
 
-const serviceMatch =
-!selectedService ||
-String(item.product) ===
-selectedService;
+            const serviceMatch =
+                !selectedService ||
+                String(item.product) ===
+                selectedService;
 
-const operatorMatch =
-selectedOperator === "any" ||
-String(
-    item.operator ||
-    "any"
-) === selectedOperator;
+            const operatorMatch =
+                selectedOperator === "any" ||
+                String(
+                    item.operator ||
+                    "any"
+                ) === selectedOperator;
 
-return (
-    serviceMatch &&
-    operatorMatch
-);
+            return serviceMatch &&
+                   operatorMatch;
+        });
 
+    if(filtered.length === 0){
+
+        productsBox.innerHTML = `
+            <div class="loading">
+                No virtual numbers are available for this selection.
+            </div>
+        `;
+
+        return;
+    }
+
+    productsBox.innerHTML = "";
+
+    filtered.forEach(item=>{
+
+        const card =
+            document.createElement("div");
+
+        card.className = "product";
+
+        const product =
+            String(
+                item.product || ""
+            );
+
+        const operator =
+            String(
+                item.operator ||
+                "any"
+            );
+
+        const price =
+            Number(
+                item.selling_price_ngn ||
+                0
+            );
+
+        card.innerHTML = `
+            <div class="product-top">
+
+                <div>
+                    <div class="product-name">
+                        ${esc(product)}
+                    </div>
+
+                    <div class="product-operator">
+                        Operator:
+                        ${esc(operator)}
+                    </div>
+                </div>
+
+                <div class="product-price">
+                    ₦${formatMoney(price)}
+                </div>
+
+            </div>
+
+            <button
+                class="buy-btn"
+                type="button"
+            >
+                Buy Number
+            </button>
+        `;
+
+        const button =
+            card.querySelector(
+                ".buy-btn"
+            );
+
+        button.addEventListener(
+            "click",
+            ()=>{
+                buyNumber(
+                    item,
+                    button
+                );
+            }
+        );
+
+        productsBox.appendChild(
+            card
+        );
+    });
 }
-);
-
-if(
-filtered.length === 0
-){
-
-productsBox.innerHTML = `
-<div class="loading">
-No virtual numbers are available for this selection.
-</div>
-`;
-
-return;
-
-}
-
-productsBox.innerHTML = "";
-
-filtered.forEach(
-item=>{
-
-const card =
-document.createElement(
-    "div"
-);
-
-card.className =
-"product";
-
-const product =
-String(
-    item.product ||
-    ""
-);
-
-const operator =
-String(
-    item.operator ||
-    "any"
-);
-
-const price =
-Number(
-    item.selling_price_ngn ||
-    0
-);
-
-card.innerHTML = `
-
-<div class="product-top">
-
-<div>
-
-<div class="product-name">
-${esc(product)}
-</div>
-
-<div class="product-operator">
-Operator:
-${esc(operator)}
-</div>
-
-</div>
-
-<div class="product-price">
-₦${formatMoney(price)}
-</div>
-
-</div>
-
-<button
-class="buy-btn"
-type="button"
->
-Buy Number
-</button>
-
-`;
-
-const button =
-card.querySelector(
-".buy-btn"
-);
-
-button.addEventListener(
-"click",
-()=>{
-buyNumber(
-    item,
-    button
-);
-}
-);
-
-productsBox.appendChild(
-card
-);
-
-}
-);
-
-}
-
 
 /* =====================================================
    BUY
 ===================================================== */
 
-async function buyNumber(
-item,
-button
-){
+async function buyNumber(item,button){
 
-if(!currentUser){
+    if(!currentUser){
 
-location.href =
-"login.html";
+        location.href =
+            "login.html";
 
-return;
+        return;
+    }
 
-}
+    const country =
+        countrySelect.value;
 
-const country =
-countrySelect.value;
+    if(!country){
 
-if(!country){
+        alert(
+            "Please select a country."
+        );
 
-alert(
-"Please select a country."
-);
+        return;
+    }
 
-return;
+    const countryOption =
+        countrySelect.options[
+            countrySelect.selectedIndex
+        ];
 
-}
+    const countryId =
+        Number(
+            countryOption?.dataset?.countryId ||
+            0
+        );
 
-const countryOption =
-countrySelect.options[
-countrySelect.selectedIndex
-];
+    const product =
+        String(
+            item.product || ""
+        ).trim();
 
-const countryId =
-Number(
-countryOption?.dataset?.countryId ||
-0
-);
+    const operator =
+        String(
+            item.operator ||
+            "any"
+        ).trim() ||
+        "any";
 
-const product =
-String(
-item.product ||
-""
-).trim();
+    const displayedPrice =
+        Number(
+            item.selling_price_ngn ||
+            0
+        );
 
-const operator =
-String(
-item.operator ||
-"any"
-).trim() ||
-"any";
+    if(
+        !product ||
+        displayedPrice <= 0
+    ){
 
-const displayedPrice =
-Number(
-item.selling_price_ngn ||
-0
-);
+        alert(
+            "Invalid number information."
+        );
 
-if(
-!product ||
-displayedPrice <= 0
-){
+        return;
+    }
 
-alert(
-"Invalid number information."
-);
+    const confirmed =
+        confirm(
+            `Buy ${product} number for ₦${formatMoney(displayedPrice)}?`
+        );
 
-return;
+    if(!confirmed){
+        return;
+    }
 
-}
+    button.disabled = true;
+    button.textContent = "Purchasing...";
 
-const confirmed =
-confirm(
-`Buy ${product} number for ₦${formatMoney(displayedPrice)}?`
-);
+    try{
 
-if(!confirmed){
-    return;
-}
+        const data =
+            await edgeRequest(
+                "buy",
+                {
+                    method:"POST",
 
-button.disabled =
-true;
+                    body:{
+                        country,
 
-button.textContent =
-"Purchasing...";
+                        country_id:
+                            countryId,
 
-try{
+                        operator,
 
-const data =
-await edgeRequest(
-"buy",
-{
-    method:"POST",
+                        product
+                    }
+                }
+            );
 
-    body:{
-        country,
+        if(
+            !data ||
+            data.success === false
+        ){
+            throw new Error(
+                data?.error ||
+                "Purchase failed."
+            );
+        }
 
-        country_id:
-            countryId,
+        activeOrder =
+            data.order;
 
-        operator,
+        if(!activeOrder){
+            throw new Error(
+                "The number was not returned by the server."
+            );
+        }
 
-        product
+        showActiveOrder(
+            activeOrder
+        );
+
+        await loadWallet();
+        await loadHistory();
+
+        startStatusPolling();
+
+    }catch(error){
+
+        console.error(
+            "Buy error:",
+            error
+        );
+
+        alert(
+            "❌ " +
+            error.message
+        );
+
+    }finally{
+
+        button.disabled = false;
+        button.textContent = "Buy Number";
     }
 }
-);
-
-if(
-!data ||
-data.success === false
-){
-
-throw new Error(
-    data?.error ||
-    "Purchase failed."
-);
-
-}
-
-activeOrder =
-data.order;
-
-if(!activeOrder){
-
-throw new Error(
-    "The number was not returned by the server."
-);
-
-}
-
-showActiveOrder(
-activeOrder
-);
-
-await loadWallet();
-
-await loadHistory();
-
-startStatusPolling();
-
-}catch(error){
-
-console.error(
-"Buy error:",
-error
-);
-
-alert(
-"❌ " +
-error.message
-);
-
-}finally{
-
-button.disabled =
-false;
-
-button.textContent =
-"Buy Number";
-
-}
-
-}
-
 
 /* =====================================================
    ACTIVE ORDER
 ===================================================== */
 
-function showActiveOrder(
-order
-){
+function showActiveOrder(order){
 
-if(!order){
-    return;
+    numberCard.style.display =
+        "block";
+
+    document.getElementById(
+        "number"
+    ).textContent =
+        order.number || "—";
+
+    document.getElementById(
+        "activeCountry"
+    ).textContent =
+        order.country || "—";
+
+    document.getElementById(
+        "activeService"
+    ).textContent =
+        order.product || "—";
+
+    document.getElementById(
+        "activePrice"
+    ).textContent =
+        "₦" +
+        formatMoney(
+            order.customer_price_ngn
+        );
+
+    document.getElementById(
+        "activeStatus"
+    ).textContent =
+        "Waiting for SMS";
+
+    document.getElementById(
+        "otp"
+    ).textContent =
+        "Waiting...";
+
+    document.getElementById(
+        "sms"
+    ).textContent =
+        "Waiting for verification SMS...";
+
+    numberCard.scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+    });
 }
-
-numberCard.style.display =
-"block";
-
-document.getElementById(
-"number"
-).textContent =
-order.number ||
-"—";
-
-document.getElementById(
-"activeCountry"
-).textContent =
-order.country ||
-"—";
-
-document.getElementById(
-"activeService"
-).textContent =
-order.product ||
-"—";
-
-document.getElementById(
-"activePrice"
-).textContent =
-"₦" +
-formatMoney(
-order.customer_price_ngn
-);
-
-document.getElementById(
-"activeStatus"
-).textContent =
-"Waiting for SMS";
-
-document.getElementById(
-"otp"
-).textContent =
-"Waiting...";
-
-document.getElementById(
-"sms"
-).textContent =
-"Waiting for verification SMS...";
-
-numberCard.scrollIntoView({
-behavior:"smooth",
-block:"start"
-});
-
-}
-
 
 /* =====================================================
    STATUS
@@ -1872,131 +1494,115 @@ block:"start"
 
 async function checkStatus(){
 
-if(!activeOrder){
-    return;
-}
+    if(!activeOrder){
+        return;
+    }
 
-const providerId =
-String(
-activeOrder.five_sim_order_id ||
-activeOrder.numpool_order_id ||
-""
-).trim();
+    const providerId =
+        String(
+            activeOrder.five_sim_order_id ||
+            activeOrder.numpool_order_id ||
+            ""
+        ).trim();
 
-if(!providerId){
+    if(!providerId){
+        return;
+    }
 
-console.error(
-"Provider order ID is missing."
-);
+    const refreshBtn =
+        document.getElementById(
+            "refreshBtn"
+        );
 
-return;
+    refreshBtn.disabled = true;
+    refreshBtn.textContent =
+        "Checking...";
 
-}
+    try{
 
-const refreshBtn =
-document.getElementById(
-"refreshBtn"
-);
+        const data =
+            await edgeRequest(
+                "status",
+                {
+                    query:{
+                        id:providerId
+                    }
+                }
+            );
 
-refreshBtn.disabled =
-true;
+        const otp =
+            data?.otp_code;
 
-refreshBtn.textContent =
-"Checking...";
+        const sms =
+            data?.full_sms;
 
-try{
+        const providerStatus =
+            String(
+                data?.status || ""
+            ).toLowerCase();
 
-const data =
-await edgeRequest(
-"status",
-{
-    query:{
-        id:providerId
+        if(otp){
+
+            document.getElementById(
+                "otp"
+            ).textContent = otp;
+
+            document.getElementById(
+                "sms"
+            ).textContent =
+                sms ||
+                "Verification SMS received.";
+
+            document.getElementById(
+                "activeStatus"
+            ).textContent =
+                "OTP Received";
+
+            stopStatusPolling();
+
+            await loadHistory();
+
+        }else{
+
+            document.getElementById(
+                "otp"
+            ).textContent =
+                "Waiting...";
+
+            document.getElementById(
+                "sms"
+            ).textContent =
+                "No verification SMS yet.";
+
+            if(
+                providerStatus === "cancel" ||
+                providerStatus === "cancelled"
+            ){
+
+                document.getElementById(
+                    "activeStatus"
+                ).textContent =
+                    "Cancelled";
+
+                stopStatusPolling();
+            }
+        }
+
+    }catch(error){
+
+        console.error(
+            "Status error:",
+            error
+        );
+
+    }finally{
+
+        refreshBtn.disabled = false;
+
+        refreshBtn.textContent =
+            "🔄 Check OTP";
     }
 }
-);
-
-const otp =
-data?.otp_code;
-
-const sms =
-data?.full_sms;
-
-const providerStatus =
-String(
-data?.status ||
-""
-).toLowerCase();
-
-if(otp){
-
-document.getElementById(
-"otp"
-).textContent =
-otp;
-
-document.getElementById(
-"sms"
-).textContent =
-sms ||
-"Verification SMS received.";
-
-document.getElementById(
-"activeStatus"
-).textContent =
-"OTP Received";
-
-stopStatusPolling();
-
-await loadHistory();
-
-}else{
-
-document.getElementById(
-"otp"
-).textContent =
-"Waiting...";
-
-document.getElementById(
-"sms"
-).textContent =
-"No verification SMS yet.";
-
-if(
-providerStatus === "cancel" ||
-providerStatus === "cancelled"
-){
-
-document.getElementById(
-"activeStatus"
-).textContent =
-"Cancelled";
-
-stopStatusPolling();
-
-}
-
-}
-
-}catch(error){
-
-console.error(
-"Status error:",
-error
-);
-
-}finally{
-
-refreshBtn.disabled =
-false;
-
-refreshBtn.textContent =
-"🔄 Check OTP";
-
-}
-
-}
-
 
 /* =====================================================
    POLLING
@@ -2004,36 +1610,28 @@ refreshBtn.textContent =
 
 function startStatusPolling(){
 
-stopStatusPolling();
+    stopStatusPolling();
 
-statusTimer =
-setInterval(
-()=>{
-checkStatus();
-},
-7000
-);
+    statusTimer =
+        setInterval(
+            checkStatus,
+            7000
+        );
 
-checkStatus();
-
+    checkStatus();
 }
-
 
 function stopStatusPolling(){
 
-if(statusTimer){
+    if(statusTimer){
 
-clearInterval(
-statusTimer
-);
+        clearInterval(
+            statusTimer
+        );
 
-statusTimer =
-null;
-
+        statusTimer = null;
+    }
 }
-
-}
-
 
 /* =====================================================
    CANCEL
@@ -2041,114 +1639,105 @@ null;
 
 async function cancelNumber(){
 
-if(!activeOrder){
-    return;
-}
+    if(!activeOrder){
+        return;
+    }
 
-const providerId =
-String(
-activeOrder.five_sim_order_id ||
-activeOrder.numpool_order_id ||
-""
-).trim();
+    const providerId =
+        String(
+            activeOrder.five_sim_order_id ||
+            activeOrder.numpool_order_id ||
+            ""
+        ).trim();
 
-if(!providerId){
+    if(!providerId){
 
-alert(
-"Provider order ID is missing."
-);
+        alert(
+            "Provider order ID is missing."
+        );
 
-return;
+        return;
+    }
 
-}
+    const confirmed =
+        confirm(
+            "Cancel this number?\n\n" +
+            "If 5SIM confirms cancellation, " +
+            "your wallet will be refunded."
+        );
 
-const confirmed =
-confirm(
-"Cancel this number?\n\n" +
-"If the provider confirms the cancellation, " +
-"your wallet will be refunded."
-);
+    if(!confirmed){
+        return;
+    }
 
-if(!confirmed){
-    return;
-}
+    const cancelBtn =
+        document.getElementById(
+            "cancelBtn"
+        );
 
-const cancelBtn =
-document.getElementById(
-"cancelBtn"
-);
+    cancelBtn.disabled = true;
+    cancelBtn.textContent =
+        "Cancelling...";
 
-cancelBtn.disabled =
-true;
+    try{
 
-cancelBtn.textContent =
-"Cancelling...";
+        const data =
+            await edgeRequest(
+                "cancel",
+                {
+                    method:"POST",
 
-try{
+                    body:{
+                        id:providerId
+                    }
+                }
+            );
 
-const data =
-await edgeRequest(
-"cancel",
-{
-    method:"POST",
+        if(
+            !data ||
+            data.success === false
+        ){
 
-    body:{
-        id:providerId
+            throw new Error(
+                data?.error ||
+                "Cancellation failed."
+            );
+        }
+
+        stopStatusPolling();
+
+        document.getElementById(
+            "activeStatus"
+        ).textContent =
+            "Cancelled & Refunded";
+
+        alert(
+            `✅ Number cancelled.\n\n₦${formatMoney(data.amount)} has been refunded to your wallet.`
+        );
+
+        await loadWallet();
+        await loadHistory();
+
+    }catch(error){
+
+        console.error(
+            "Cancel error:",
+            error
+        );
+
+        alert(
+            "❌ " +
+            error.message
+        );
+
+    }finally{
+
+        cancelBtn.disabled = false;
+
+        cancelBtn.textContent =
+            "❌ Cancel & Refund";
     }
 }
-);
-
-if(
-!data ||
-data.success === false
-){
-
-throw new Error(
-data?.error ||
-"Cancellation failed."
-);
-
-}
-
-stopStatusPolling();
-
-document.getElementById(
-"activeStatus"
-).textContent =
-"Cancelled & Refunded";
-
-alert(
-`✅ Number cancelled.\n\n₦${formatMoney(data.amount)} has been refunded to your wallet.`
-);
-
-await loadWallet();
-
-await loadHistory();
-
-}catch(error){
-
-console.error(
-"Cancel error:",
-error
-);
-
-alert(
-"❌ " +
-error.message
-);
-
-}finally{
-
-cancelBtn.disabled =
-false;
-
-cancelBtn.textContent =
-"❌ Cancel & Refund";
-
-}
-
-}
-
 
 /* =====================================================
    COPY
@@ -2156,58 +1745,52 @@ cancelBtn.textContent =
 
 async function copyNumber(){
 
-const number =
-document.getElementById(
-"number"
-).textContent;
+    const number =
+        document.getElementById(
+            "number"
+        ).textContent;
 
-if(
-!number ||
-number === "—"
-){
-return;
+    if(!number || number === "—"){
+        return;
+    }
+
+    try{
+
+        await navigator.clipboard.writeText(
+            number
+        );
+
+        const button =
+            document.getElementById(
+                "copyNumberBtn"
+            );
+
+        const old =
+            button.textContent;
+
+        button.textContent =
+            "✅ Copied";
+
+        setTimeout(
+            ()=>{
+                button.textContent =
+                    old;
+            },
+            1500
+        );
+
+    }catch(error){
+
+        console.error(
+            "Copy error:",
+            error
+        );
+
+        alert(
+            "Could not copy number."
+        );
+    }
 }
-
-try{
-
-await navigator.clipboard.writeText(
-number
-);
-
-const button =
-document.getElementById(
-"copyNumberBtn"
-);
-
-const old =
-button.textContent;
-
-button.textContent =
-"✅ Copied";
-
-setTimeout(
-()=>{
-button.textContent =
-old;
-},
-1500
-);
-
-}catch(error){
-
-console.error(
-"Copy number error:",
-error
-);
-
-alert(
-"Could not copy number."
-);
-
-}
-
-}
-
 
 /* =====================================================
    SUPPORT
@@ -2215,13 +1798,11 @@ alert(
 
 function contactSupport(){
 
-window.open(
-`https://wa.me/${WHATSAPP_SUPPORT}`,
-"_blank"
-);
-
+    window.open(
+        `https://wa.me/${WHATSAPP_SUPPORT}`,
+        "_blank"
+    );
 }
-
 
 /* =====================================================
    HISTORY
@@ -2229,234 +1810,203 @@ window.open(
 
 async function loadHistory(){
 
-const history =
-document.getElementById(
-"history"
-);
+    const history =
+        document.getElementById(
+            "history"
+        );
 
-if(!currentUser){
-    return;
-}
-
-try{
-
-const {
-    data,
-    error
-} =
-await supabaseClient
-
-.from(
-    "virtual_number_orders"
-)
-
-.select(
-    "id,numpool_order_id,service_name,country_name,number,customer_price_ngn,status,otp_code,purchased_at,created_at,refunded_at,cancelled_at"
-)
-
-.eq(
-    "user_id",
-    currentUser.id
-)
-
-.order(
-    "created_at",
-    {
-        ascending:false
+    if(!currentUser){
+        return;
     }
-);
 
-if(error){
+    try{
 
-console.error(
-"History error:",
-error
-);
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from(
+                    "virtual_number_orders"
+                )
+                .select(
+                    "id,numpool_order_id,service_name,country_name,number,customer_price_ngn,status,otp_code,purchased_at,created_at,refunded_at,cancelled_at"
+                )
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending:false
+                    }
+                );
 
-history.innerHTML = `
-<div class="error">
-❌ Unable to load virtual number history.
-</div>
-`;
+        if(error){
 
-return;
+            console.error(
+                "History error:",
+                error
+            );
 
+            history.innerHTML = `
+                <div class="error">
+                    ❌ Unable to load virtual number history.
+                </div>
+            `;
+
+            return;
+        }
+
+        if(
+            !data ||
+            data.length === 0
+        ){
+
+            history.innerHTML = `
+                <div class="loading">
+                    No virtual number purchases yet.
+                </div>
+            `;
+
+            return;
+        }
+
+        history.innerHTML = "";
+
+        data.forEach(order=>{
+
+            const status =
+                String(
+                    order.status || ""
+                ).toLowerCase();
+
+            let statusClass =
+                "status-waiting";
+
+            let statusText =
+                "Waiting for SMS";
+
+            if(status === "received"){
+
+                statusClass =
+                    "status-received";
+
+                statusText =
+                    "OTP Received";
+            }
+
+            if(status === "cancelled"){
+
+                statusClass =
+                    "status-cancelled";
+
+                statusText =
+                    order.refunded_at
+                        ? "Cancelled & Refunded"
+                        : "Cancelled";
+            }
+
+            const date =
+                order.created_at
+                    ? new Date(
+                        order.created_at
+                    ).toLocaleString(
+                        "en-NG",
+                        {
+                            dateStyle:"medium",
+                            timeStyle:"short"
+                        }
+                    )
+                    : "";
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "history-item";
+
+            item.innerHTML = `
+
+                <div class="history-title">
+                    ${esc(
+                        order.service_name ||
+                        "Virtual Number"
+                    )}
+                    -
+                    ${esc(
+                        order.country_name ||
+                        ""
+                    )}
+                </div>
+
+                <div class="history-meta">
+
+                    Number:
+                    ${esc(
+                        order.number || "—"
+                    )}
+
+                    <br>
+
+                    Price:
+                    ₦${formatMoney(
+                        order.customer_price_ngn
+                    )}
+
+                    <br>
+
+                    ${esc(date)}
+
+                </div>
+
+                ${
+                    order.otp_code
+                        ? `
+                            <div
+                                class="history-meta"
+                                style="margin-top:8px"
+                            >
+                                OTP:
+                                <strong>
+                                    ${esc(
+                                        order.otp_code
+                                    )}
+                                </strong>
+                            </div>
+                          `
+                        : ""
+                }
+
+                <div
+                    class="history-status ${statusClass}"
+                >
+                    ${esc(statusText)}
+                </div>
+            `;
+
+            history.appendChild(
+                item
+            );
+        });
+
+    }catch(error){
+
+        console.error(
+            "Unexpected history error:",
+            error
+        );
+
+        history.innerHTML = `
+            <div class="error">
+                ❌ Unable to load virtual number history.
+            </div>
+        `;
+    }
 }
-
-if(
-!data ||
-data.length === 0
-){
-
-history.innerHTML = `
-<div class="loading">
-No virtual number purchases yet.
-</div>
-`;
-
-return;
-
-}
-
-history.innerHTML = "";
-
-data.forEach(
-order=>{
-
-const status =
-String(
-order.status ||
-""
-).toLowerCase();
-
-let statusClass =
-"status-waiting";
-
-if(
-status === "received"
-){
-statusClass =
-"status-received";
-}
-
-if(
-status === "cancelled"
-){
-statusClass =
-"status-cancelled";
-}
-
-let statusText =
-"Waiting for SMS";
-
-if(
-status === "received"
-){
-
-statusText =
-"OTP Received";
-
-}else if(
-status === "cancelled"
-){
-
-statusText =
-order.refunded_at
-? "Cancelled & Refunded"
-: "Cancelled";
-
-}
-
-const date =
-order.created_at
-? new Date(
-order.created_at
-).toLocaleString(
-"en-NG",
-{
-    dateStyle:"medium",
-    timeStyle:"short"
-}
-)
-: "";
-
-const item =
-document.createElement(
-"div"
-);
-
-item.className =
-"history-item";
-
-item.innerHTML = `
-
-<div class="history-title">
-
-${esc(
-order.service_name ||
-"Virtual Number"
-)}
-
--
-
-${esc(
-order.country_name ||
-""
-)}
-
-</div>
-
-<div class="history-meta">
-
-Number:
-${esc(
-order.number ||
-"—"
-)}
-
-<br>
-
-Price:
-₦${formatMoney(
-order.customer_price_ngn
-)}
-
-<br>
-
-${esc(date)}
-
-</div>
-
-${
-order.otp_code
-?
-`
-<div
-class="history-meta"
-style="margin-top:8px"
->
-OTP:
-<strong>
-${esc(order.otp_code)}
-</strong>
-</div>
-`
-:
-""
-}
-
-<div
-class="history-status ${statusClass}"
->
-${esc(statusText)}
-</div>
-
-`;
-
-history.appendChild(
-item
-);
-
-}
-);
-
-}catch(error){
-
-console.error(
-"Unexpected history error:",
-error
-);
-
-history.innerHTML = `
-<div class="error">
-❌ Unable to load virtual number history.
-</div>
-`;
-
-}
-
-}
-
 
 /* =====================================================
    INITIALIZE
@@ -2464,19 +2014,18 @@ history.innerHTML = `
 
 async function initialize(){
 
-const loggedIn =
-await checkLogin();
+    const loggedIn =
+        await checkLogin();
 
-if(!loggedIn){
-    return;
-}
+    if(!loggedIn){
+        return;
+    }
 
-await Promise.all([
-    loadWallet(),
-    loadCountries(),
-    loadHistory()
-]);
-
+    await Promise.all([
+        loadWallet(),
+        loadCountries(),
+        loadHistory()
+    ]);
 }
 
 initialize();
