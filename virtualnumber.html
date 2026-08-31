@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -50,13 +51,19 @@ header h2{
     box-shadow:0 2px 10px rgba(0,0,0,.06);
 }
 
+.hidden{
+    display:none !important;
+}
+
 label{
     display:block;
     margin-bottom:7px;
     font-weight:bold;
 }
 
-input,select,button{
+input,
+select,
+button{
     width:100%;
     padding:13px;
     border-radius:9px;
@@ -64,7 +71,8 @@ input,select,button{
     font-size:15px;
 }
 
-input,select{
+input,
+select{
     background:white;
 }
 
@@ -77,51 +85,69 @@ button{
     margin-top:10px;
 }
 
-button.cancel{
-    background:#c62828;
-}
-
 button.secondary{
     background:#666;
 }
 
-.hidden{
-    display:none;
+button.cancel{
+    background:#c62828;
 }
 
-.country{
+button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
+
+.country,
+.product{
     border:1px solid #ddd;
     border-radius:10px;
-    padding:13px;
-    margin-top:8px;
+    padding:14px;
+    margin-top:9px;
     cursor:pointer;
 }
 
-.country:hover{
+.country:hover,
+.product:hover{
     background:#f2f2f2;
 }
 
-.country strong{
+.country strong,
+.product strong{
     display:block;
+    margin-bottom:5px;
+}
+
+.product .operator{
+    font-size:13px;
+    color:#666;
+}
+
+.product .productPrice{
+    font-size:20px;
+    font-weight:bold;
+    margin-top:8px;
 }
 
 .price{
-    font-size:25px;
+    font-size:28px;
     font-weight:bold;
-    margin:12px 0;
+    margin:15px 0;
 }
 
 .number{
-    font-size:23px;
+    font-size:24px;
     font-weight:bold;
     letter-spacing:1px;
+    word-break:break-word;
 }
 
 .code{
-    font-size:35px;
+    font-size:36px;
     font-weight:bold;
     text-align:center;
-    padding:20px;
+    padding:20px 5px;
+    letter-spacing:4px;
 }
 
 .status{
@@ -141,6 +167,25 @@ button.secondary{
     font-weight:bold;
 }
 
+.muted{
+    color:#666;
+    font-size:14px;
+}
+
+.sms{
+    margin-top:12px;
+    padding:12px;
+    background:#fafafa;
+    border-radius:9px;
+    white-space:pre-wrap;
+    word-break:break-word;
+}
+
+.spinner{
+    text-align:center;
+    padding:20px;
+}
+
 </style>
 
 </head>
@@ -157,48 +202,26 @@ button.secondary{
 <div class="container">
 
 
-<!-- =====================================
-     STEP 1
-===================================== -->
+<!-- =====================================================
+     MESSAGE
+===================================================== -->
+
+<div
+    id="message"
+    class="card hidden"
+></div>
+
+
+<!-- =====================================================
+     STEP 1 - COUNTRY
+===================================================== -->
 
 <div
     class="card"
-    id="step1"
+    id="stepCountry"
 >
 
-<h3>Choose Service</h3>
-
-<label>
-    What do you want the number for?
-</label>
-
-<select id="service">
-
-<option value="">
-    Select service
-</option>
-
-</select>
-
-<button
-    onclick="loadCountries()"
->
-    Continue
-</button>
-
-</div>
-
-
-<!-- =====================================
-     STEP 2
-===================================== -->
-
-<div
-    class="card hidden"
-    id="step2"
->
-
-<h3>Select Country</h3>
+<h3>Choose Country</h3>
 
 <input
     id="countrySearch"
@@ -206,49 +229,53 @@ button.secondary{
     oninput="filterCountries()"
 >
 
-<div id="countries"></div>
+<div id="countries">
+
+<div class="spinner">
+    Loading countries...
+</div>
+
+</div>
 
 <button
     class="secondary"
-    onclick="backToService()"
+    onclick="goDashboard()"
 >
-    Back
+    Back to Dashboard
 </button>
 
 </div>
 
 
-<!-- =====================================
-     STEP 3
-===================================== -->
+<!-- =====================================================
+     STEP 2 - SERVICE
+===================================================== -->
 
 <div
     class="card hidden"
-    id="step3"
+    id="stepProduct"
 >
 
-<h3>Number Available</h3>
-
-<div id="selectedCountry"></div>
+<h3>Select Service</h3>
 
 <div
-    class="price"
-    id="selectedPrice"
+    id="chosenCountry"
+    class="muted"
+></div>
+
+<input
+    id="productSearch"
+    placeholder="Search service..."
+    oninput="filterProducts()"
 >
-    ₦0
+
+<div id="products">
+
+<div class="spinner">
+    Loading services...
 </div>
 
-<div
-    id="selectedStock"
->
-    0 available
 </div>
-
-<button
-    onclick="buyNumber()"
->
-    Buy Number
-</button>
 
 <button
     class="secondary"
@@ -260,13 +287,60 @@ button.secondary{
 </div>
 
 
-<!-- =====================================
-     STEP 4
-===================================== -->
+<!-- =====================================================
+     STEP 3 - OPERATOR / NUMBER
+===================================================== -->
 
 <div
     class="card hidden"
-    id="step4"
+    id="stepBuy"
+>
+
+<h3>Confirm Number</h3>
+
+<div id="buyCountry"></div>
+
+<div id="buyService"></div>
+
+<div id="buyOperator"></div>
+
+<div
+    class="price"
+    id="buyPrice"
+>
+    ₦0
+</div>
+
+<div
+    class="muted"
+    id="buyStock"
+>
+</div>
+
+<button
+    id="buyButton"
+    onclick="buyNumber()"
+>
+    Buy Number
+</button>
+
+<button
+    class="secondary"
+    onclick="backToProducts()"
+>
+    Back
+</button>
+
+</div>
+
+
+<!-- =====================================================
+     STEP 4 - NUMBER / OTP
+===================================================== -->
+
+<div
+    class="card hidden"
+    id="stepNumber"
 >
 
 <h3>Your Number</h3>
@@ -285,14 +359,13 @@ button.secondary{
     Waiting for verification code...
 </div>
 
+
 <div
     class="status hidden"
     id="receivedStatus"
 >
 
-<div
-    class="success"
->
+<div class="success">
     ✅ Code received
 </div>
 
@@ -302,7 +375,11 @@ button.secondary{
 >
 </div>
 
-<div id="sms"></div>
+<div
+    class="sms"
+    id="sms"
+>
+</div>
 
 </div>
 
@@ -315,9 +392,10 @@ button.secondary{
     Cancel & Refund
 </button>
 
+
 <button
     class="secondary"
-    onclick="location.href='dashboard.html'"
+    onclick="goDashboard()"
 >
     Back to Dashboard
 </button>
@@ -325,23 +403,20 @@ button.secondary{
 </div>
 
 
-<div
-    id="message"
-    class="card hidden"
-></div>
-
-
 </div>
 
 
 <script>
+
+// =====================================================
+// SUPABASE
+// =====================================================
 
 const SUPABASE_URL =
     "https://hkfhehbhmucymusaytoe.supabase.co";
 
 const SUPABASE_ANON_KEY =
     "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
-
 
 const supabaseClient =
     supabase.createClient(
@@ -350,18 +425,41 @@ const supabaseClient =
     );
 
 
+// =====================================================
+// EDGE FUNCTION
+// =====================================================
+
 const EDGE_FUNCTION =
     "numpool-api";
 
 
+// The Edge Function name can remain this.
+// It is only the Supabase function name.
+// The actual provider inside it is 5SIM.
+
+
+// =====================================================
+// STATE
+// =====================================================
+
 let countries = [];
+
+let products = [];
 
 let selectedCountry = null;
 
-let currentOrderId = null;
+let selectedProduct = null;
+
+let currentOrder = null;
 
 let pollTimer = null;
 
+let polling = false;
+
+
+// =====================================================
+// MESSAGE
+// =====================================================
 
 function showMessage(
     text,
@@ -374,7 +472,11 @@ function showMessage(
         );
 
     box.className =
-        "card " + type;
+        "card";
+
+    if(type){
+        box.classList.add(type);
+    }
 
     box.textContent =
         text;
@@ -386,6 +488,39 @@ function showMessage(
 }
 
 
+function hideMessage(){
+
+    document.getElementById(
+        "message"
+    ).classList.add(
+        "hidden"
+    );
+
+}
+
+
+// =====================================================
+// DASHBOARD
+// =====================================================
+
+function goDashboard(){
+
+    if(pollTimer){
+        clearInterval(
+            pollTimer
+        );
+    }
+
+    location.href =
+        "dashboard.html";
+
+}
+
+
+// =====================================================
+// API
+// =====================================================
+
 async function callAPI(
     path,
     options = {}
@@ -396,10 +531,12 @@ async function callAPI(
             session
         }
     } =
-        await supabaseClient.auth.getSession();
+        await supabaseClient
+            .auth
+            .getSession();
 
 
-    if (!session) {
+    if(!session){
 
         throw new Error(
             "Please login first."
@@ -419,6 +556,7 @@ async function callAPI(
                 ...options,
 
                 headers:{
+
                     ...(options.headers || {}),
 
                     Authorization:
@@ -441,13 +579,19 @@ async function callAPI(
         await response.json();
 
 
-    if (!response.ok ||
+    if(
+        !response.ok ||
         data.success === false
     ){
 
         throw new Error(
-            data.error ||
-            "Request failed."
+            typeof data.error ===
+            "string"
+                ? data.error
+                : JSON.stringify(
+                    data.error ||
+                    "Request failed."
+                )
         );
 
     }
@@ -458,132 +602,95 @@ async function callAPI(
 }
 
 
-/* =====================================
-   LOAD SERVICES
-===================================== */
+// =====================================================
+// COUNTRIES
+// =====================================================
 
-async function loadServices(){
+async function loadCountries(){
 
     try{
 
         const data =
             await callAPI(
-                "?action=services"
-            );
-
-        const select =
-            document.getElementById(
-                "service"
+                "?action=countries"
             );
 
 
-        const list =
+        const raw =
             Array.isArray(
-                data.data
+                data.countries
             )
-                ? data.data
+                ? data.countries
                 : [];
 
 
-        select.innerHTML =
-            `<option value="">
-                Select service
-            </option>`;
+        countries =
+            raw
+                .map(country => {
 
+                    /*
+                     5SIM country response is
+                     normally an object keyed by
+                     country code.
 
-        list.forEach(
-            service => {
+                     We normalize it here.
+                    */
 
-                const option =
-                    document.createElement(
-                        "option"
-                    );
+                    if(
+                        typeof country ===
+                        "string"
+                    ){
 
+                        return {
+                            id:
+                                country,
 
-                option.value =
-                    service.id;
+                            name:
+                                country,
 
+                            code:
+                                country,
 
-                option.textContent =
-                    service.name;
-
-
-                select.appendChild(
-                    option
-                );
-
-            }
-        );
-
-
-    }catch(error){
-
-        showMessage(
-            "❌ " +
-            error.message,
-            "error"
-        );
-
-    }
+                            flag:
+                                ""
+                        };
 
                     }
 
 
-/* =====================================
-   COUNTRIES
-===================================== */
+                    return {
+                        id:
+                            country?.id ??
+                            country?.iso ??
+                            country?.code ??
+                            country?.name,
 
-async function loadCountries(){
+                        name:
+                            country?.name ??
+                            country?.country ??
+                            country?.iso ??
+                            country?.code ??
+                            "Unknown",
 
-    const service =
-        document.getElementById(
-            "service"
-        ).value;
+                        code:
+                            country?.iso ??
+                            country?.code ??
+                            country?.name,
 
+                        flag:
+                            country?.flag ??
+                            ""
+                    };
 
-    if (!service){
-
-        showMessage(
-            "Select a service first.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    try{
-
-        const data =
-            await callAPI(
-                "?action=availability&service=" +
-                encodeURIComponent(
-                    service
-                )
-            );
-
-
-        countries =
-            data.countries || [];
+                })
+                .filter(
+                    country =>
+                        country.id
+                );
 
 
         renderCountries(
             countries
-        );
-
-
-        document.getElementById(
-            "step1"
-        ).classList.add(
-            "hidden"
-        );
-
-
-        document.getElementById(
-            "step2"
-        ).classList.remove(
-            "hidden"
         );
 
 
@@ -600,6 +707,10 @@ async function loadCountries(){
 }
 
 
+// =====================================================
+// RENDER COUNTRIES
+// =====================================================
+
 function renderCountries(
     list
 ){
@@ -609,14 +720,13 @@ function renderCountries(
             "countries"
         );
 
-
     box.innerHTML = "";
 
 
-    if (!list.length){
+    if(!list.length){
 
         box.innerHTML =
-            "<p>No countries currently available.</p>";
+            "<p>No countries available right now.</p>";
 
         return;
 
@@ -631,7 +741,6 @@ function renderCountries(
                     "div"
                 );
 
-
             div.className =
                 "country";
 
@@ -639,16 +748,19 @@ function renderCountries(
             div.innerHTML = `
 
                 <strong>
-                    ${country.flag || ""}
+                    ${escapeHtml(
+                        country.flag
+                    )}
 
-                    ${country.name}
+                    ${escapeHtml(
+                        country.name
+                    )}
                 </strong>
 
-                <span>
-                    ${Number(
-                        country.stock
-                    ).toLocaleString()}
-                    available
+                <span class="muted">
+                    ${escapeHtml(
+                        country.code
+                    )}
                 </span>
 
             `;
@@ -671,6 +783,10 @@ function renderCountries(
 }
 
 
+// =====================================================
+// FILTER COUNTRIES
+// =====================================================
+
 function filterCountries(){
 
     const search =
@@ -685,22 +801,24 @@ function filterCountries(){
     renderCountries(
         countries.filter(
             country =>
-                country.name
-                    .toLowerCase()
-                    .includes(
-                        search
-                    )
+                String(
+                    country.name
+                )
+                .toLowerCase()
+                .includes(
+                    search
+                )
         )
     );
 
 }
 
 
-/* =====================================
-   COUNTRY SELECTED
-===================================== */
+// =====================================================
+// SELECT COUNTRY
+// =====================================================
 
-function selectCountry(
+async function selectCountry(
     country
 ){
 
@@ -709,144 +827,61 @@ function selectCountry(
 
 
     document.getElementById(
-        "step2"
+        "stepCountry"
     ).classList.add(
         "hidden"
     );
 
 
     document.getElementById(
-        "step3"
+        "stepProduct"
     ).classList.remove(
         "hidden"
     );
 
 
     document.getElementById(
-        "selectedCountry"
+        "chosenCountry"
     ).textContent =
-        country.flag +
+        (
+            country.flag || ""
+        ) +
         " " +
         country.name;
 
 
     document.getElementById(
-        "selectedPrice"
-    ).textContent =
-        "₦" +
-        Number(
-            country.customer_price_ngn
-        ).toLocaleString();
-
-
-    document.getElementById(
-        "selectedStock"
-    ).textContent =
-        Number(
-            country.stock
-        ).toLocaleString() +
-        " available";
-
-}
-
-
-/* =====================================
-   BUY
-===================================== */
-
-async function buyNumber(){
-
-    if (!selectedCountry){
-
-        return;
-
-    }
-
-
-    const service =
-        document.getElementById(
-            "service"
-        ).value;
-
-
-    const confirmed =
-        confirm(
-            "Buy " +
-            selectedCountry.name +
-            " number for ₦" +
-            Number(
-                selectedCountry.customer_price_ngn
-            ).toLocaleString() +
-            "?"
-        );
-
-
-    if (!confirmed){
-
-        return;
-
-    }
+        "products"
+    ).innerHTML =
+        `
+        <div class="spinner">
+            Loading services...
+        </div>
+        `;
 
 
     try{
 
-        showMessage(
-            "Buying number..."
-        );
-
-
         const data =
             await callAPI(
-                "?action=buy",
-                {
-
-                    method:"POST",
-
-                    body:
-                        JSON.stringify({
-
-                            service,
-
-                            country:
-                                selectedCountry.id
-
-                        })
-
-                }
+                "?action=products&country=" +
+                encodeURIComponent(
+                    country.code
+                )
             );
 
 
-        currentOrderId =
-            data.order_id;
+        products =
+            Array.isArray(
+                data.products
+            )
+                ? data.products
+                : [];
 
 
-        document.getElementById(
-            "step3"
-        ).classList.add(
-            "hidden"
+        renderProducts(
+            products
         );
-
-
-        document.getElementById(
-            "step4"
-        ).classList.remove(
-            "hidden"
-        );
-
-
-        document.getElementById(
-            "number"
-        ).textContent =
-            data.number;
-
-
-        showMessage(
-            "✅ Number purchased. Waiting for code...",
-            "success"
-        );
-
-
-        startPolling();
 
 
     }catch(error){
@@ -862,19 +897,374 @@ async function buyNumber(){
 }
 
 
-/* =====================================
-   POLL SMS
-===================================== */
+// =====================================================
+// RENDER PRODUCTS
+// =====================================================
+
+function renderProducts(
+    list
+){
+
+    const box =
+        document.getElementById(
+            "products"
+        );
+
+    box.innerHTML = "";
+
+
+    if(!list.length){
+
+        box.innerHTML =
+            "<p>No services available for this country right now.</p>";
+
+        return;
+
+    }
+
+
+    /*
+      Same service may have multiple
+      operators.
+
+      We show every live operator option
+      because the price can differ.
+    */
+
+    list.forEach(
+        product => {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.className =
+                "product";
+
+
+            div.innerHTML = `
+
+                <strong>
+                    ${escapeHtml(
+                        product.product
+                    )}
+                </strong>
+
+                <div class="operator">
+                    Operator:
+                    ${escapeHtml(
+                        product.operator
+                    )}
+                </div>
+
+                <div class="productPrice">
+                    ₦${Number(
+                        product.selling_price_ngn
+                    ).toLocaleString()}
+                </div>
+
+                <div class="muted">
+                    Provider price:
+                    $${Number(
+                        product.api_price_usd
+                    ).toFixed(4)}
+                </div>
+
+            `;
+
+
+            div.onclick =
+                () =>
+                    selectProduct(
+                        product
+                    );
+
+
+            box.appendChild(
+                div
+            );
+
+        }
+    );
+
+}
+
+
+// =====================================================
+// FILTER PRODUCTS
+// =====================================================
+
+function filterProducts(){
+
+    const search =
+        document.getElementById(
+            "productSearch"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    renderProducts(
+        products.filter(
+            product =>
+                String(
+                    product.product
+                )
+                .toLowerCase()
+                .includes(
+                    search
+                )
+        )
+    );
+
+}
+
+
+// =====================================================
+// SELECT PRODUCT
+// =====================================================
+
+function selectProduct(
+    product
+){
+
+    selectedProduct =
+        product;
+
+
+    document.getElementById(
+        "stepProduct"
+    ).classList.add(
+        "hidden"
+    );
+
+
+    document.getElementById(
+        "stepBuy"
+    ).classList.remove(
+        "hidden"
+    );
+
+
+    document.getElementById(
+        "buyCountry"
+    ).textContent =
+        (
+            selectedCountry.flag ||
+            ""
+        ) +
+        " " +
+        selectedCountry.name;
+
+
+    document.getElementById(
+        "buyService"
+    ).textContent =
+        "Service: " +
+        product.product;
+
+
+    document.getElementById(
+        "buyOperator"
+    ).textContent =
+        "Operator: " +
+        product.operator;
+
+
+    document.getElementById(
+        "buyPrice"
+    ).textContent =
+        "₦" +
+        Number(
+            product.selling_price_ngn
+        ).toLocaleString();
+
+
+    document.getElementById(
+        "buyStock"
+    ).textContent =
+        "Live price from 5SIM";
+
+}
+
+
+// =====================================================
+// BUY NUMBER
+// =====================================================
+
+async function buyNumber(){
+
+    if(
+        !selectedCountry ||
+        !selectedProduct
+    ){
+
+        return;
+
+    }
+
+
+    const price =
+        Number(
+            selectedProduct
+                .selling_price_ngn
+        );
+
+
+    const confirmed =
+        confirm(
+            "Buy " +
+            selectedCountry.name +
+            " " +
+            selectedProduct.product +
+            " number for ₦" +
+            price.toLocaleString() +
+            "?"
+        );
+
+
+    if(!confirmed){
+        return;
+    }
+
+
+    const button =
+        document.getElementById(
+            "buyButton"
+        );
+
+
+    button.disabled =
+        true;
+
+    button.textContent =
+        "Buying...";
+
+
+    try{
+
+        hideMessage();
+
+
+        const data =
+            await callAPI(
+                "?action=buy",
+                {
+
+                    method:
+                        "POST",
+
+                    body:
+                        JSON.stringify({
+
+                            country:
+                                selectedCountry.code,
+
+                            country_id:
+                                Number(
+                                    selectedCountry.id
+                                ) || 0,
+
+                            product:
+                                selectedProduct.product,
+
+                            operator:
+                                selectedProduct.operator
+
+                        })
+
+                }
+            );
+
+
+        currentOrder =
+            data.order;
+
+
+        document.getElementById(
+            "stepBuy"
+        ).classList.add(
+            "hidden"
+        );
+
+
+        document.getElementById(
+            "stepNumber"
+        ).classList.remove(
+            "hidden"
+        );
+
+
+        document.getElementById(
+            "number"
+        ).textContent =
+            currentOrder.number;
+
+
+        document.getElementById(
+            "waitingStatus"
+        ).classList.remove(
+            "hidden"
+        );
+
+
+        document.getElementById(
+            "receivedStatus"
+        ).classList.add(
+            "hidden"
+        );
+
+
+        document.getElementById(
+            "cancelButton"
+        ).classList.remove(
+            "hidden"
+        );
+
+
+        showMessage(
+            "✅ Number purchased. Waiting for verification code...",
+            "success"
+        );
+
+
+        startPolling();
+
+
+    }catch(error){
+
+        showMessage(
+            "❌ " +
+            error.message,
+            "error"
+        );
+
+    }finally{
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "Buy Number";
+
+    }
+
+}
+
+
+// =====================================================
+// POLLING
+// =====================================================
 
 function startPolling(){
 
-    if (pollTimer){
+    stopPolling();
 
-        clearInterval(
-            pollTimer
-        );
 
-    }
+    polling =
+        true;
 
 
     pollTimer =
@@ -889,9 +1279,37 @@ function startPolling(){
 }
 
 
+function stopPolling(){
+
+    polling =
+        false;
+
+
+    if(pollTimer){
+
+        clearInterval(
+            pollTimer
+        );
+
+        pollTimer =
+            null;
+
+    }
+
+}
+
+
+// =====================================================
+// CHECK SMS
+// =====================================================
+
 async function checkSMS(){
 
-    if (!currentOrderId){
+    if(
+        !currentOrder ||
+        !currentOrder.five_sim_order_id ||
+        !polling
+    ){
 
         return;
 
@@ -902,21 +1320,23 @@ async function checkSMS(){
 
         const data =
             await callAPI(
-                "?action=sms&order_id=" +
+                "?action=status&id=" +
                 encodeURIComponent(
-                    currentOrderId
+                    currentOrder
+                        .five_sim_order_id
                 )
             );
 
 
-        if (
-            data.status ===
-            "received"
+        /*
+          OTP received
+        */
+
+        if(
+            data.otp_code
         ){
 
-            clearInterval(
-                pollTimer
-            );
+            stopPolling();
 
 
             document.getElementById(
@@ -936,19 +1356,20 @@ async function checkSMS(){
             document.getElementById(
                 "code"
             ).textContent =
-                data.code || "";
+                data.otp_code;
 
 
             document.getElementById(
                 "sms"
             ).textContent =
-                data.full_sms || "";
+                data.full_sms ||
+                "Verification SMS received.";
 
 
             /*
-               IMPORTANT:
-               Code has arrived.
-               Cancel button disappears.
+              IMPORTANT:
+              Once code arrives,
+              cancellation is no longer allowed.
             */
 
             document.getElementById(
@@ -963,11 +1384,49 @@ async function checkSMS(){
                 "success"
             );
 
+
+            return;
+
+        }
+
+
+        /*
+          Provider says cancelled.
+        */
+
+        if(
+            data.status ===
+                "cancel" ||
+            data.status ===
+                "cancelled"
+        ){
+
+            stopPolling();
+
+
+            document.getElementById(
+                "cancelButton"
+            ).classList.add(
+                "hidden"
+            );
+
+
+            showMessage(
+                "Number has been cancelled.",
+                "success"
+            );
+
         }
 
     }catch(error){
 
+        /*
+          Don't punish the user for
+          one temporary polling failure.
+        */
+
         console.error(
+            "SMS polling error:",
             error
         );
 
@@ -976,13 +1435,16 @@ async function checkSMS(){
 }
 
 
-/* =====================================
-   CANCEL
-===================================== */
+// =====================================================
+// CANCEL + REFUND
+// =====================================================
 
 async function cancelNumber(){
 
-    if (!currentOrderId){
+    if(
+        !currentOrder ||
+        !currentOrder.five_sim_order_id
+    ){
 
         return;
 
@@ -991,31 +1453,51 @@ async function cancelNumber(){
 
     const confirmed =
         confirm(
-            "Cancel this number and refund your money?"
+            "Cancel this number and refund ₦" +
+            Number(
+                currentOrder.customer_price_ngn
+            ).toLocaleString() +
+            " to your wallet?"
         );
 
 
-    if (!confirmed){
-
+    if(!confirmed){
         return;
-
     }
 
 
+    const button =
+        document.getElementById(
+            "cancelButton"
+        );
+
+
+    button.disabled =
+        true;
+
+    button.textContent =
+        "Cancelling...";
+
+
     try{
+
+        stopPolling();
+
 
         const data =
             await callAPI(
                 "?action=cancel",
                 {
 
-                    method:"POST",
+                    method:
+                        "POST",
 
                     body:
                         JSON.stringify({
 
-                            order_id:
-                                currentOrderId
+                            id:
+                                currentOrder
+                                    .five_sim_order_id
 
                         })
 
@@ -1023,18 +1505,7 @@ async function cancelNumber(){
             );
 
 
-        if (pollTimer){
-
-            clearInterval(
-                pollTimer
-            );
-
-        }
-
-
-        document.getElementById(
-            "cancelButton"
-        ).classList.add(
+        button.classList.add(
             "hidden"
         );
 
@@ -1044,12 +1515,20 @@ async function cancelNumber(){
             Number(
                 data.amount || 0
             ).toLocaleString() +
-            " refunded to your wallet.",
+            " has been refunded to your wallet.",
             "success"
         );
 
 
     }catch(error){
+
+        /*
+          Very important:
+          If 5SIM doesn't confirm cancellation,
+          the Edge Function does NOT refund.
+
+          So we tell the user exactly what happened.
+        */
 
         showMessage(
             "❌ " +
@@ -1057,58 +1536,115 @@ async function cancelNumber(){
             "error"
         );
 
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "Cancel & Refund";
+
+
+        /*
+          Restart polling because the number
+          may still be active.
+        */
+
+        startPolling();
+
     }
 
 }
 
 
-/* =====================================
-   NAVIGATION
-===================================== */
-
-function backToService(){
-
-    document.getElementById(
-        "step2"
-    ).classList.add(
-        "hidden"
-    );
-
-
-    document.getElementById(
-        "step1"
-    ).classList.remove(
-        "hidden"
-    );
-
-}
-
+// =====================================================
+// NAVIGATION
+// =====================================================
 
 function backToCountries(){
 
     document.getElementById(
-        "step3"
+        "stepProduct"
     ).classList.add(
         "hidden"
     );
 
 
     document.getElementById(
-        "step2"
+        "stepCountry"
     ).classList.remove(
         "hidden"
+    );
+
+
+    hideMessage();
+
+}
+
+
+function backToProducts(){
+
+    document.getElementById(
+        "stepBuy"
+    ).classList.add(
+        "hidden"
+    );
+
+
+    document.getElementById(
+        "stepProduct"
+    ).classList.remove(
+        "hidden"
+    );
+
+
+    hideMessage();
+
+}
+
+
+// =====================================================
+// HTML ESCAPE
+// =====================================================
+
+function escapeHtml(
+    value
+){
+
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
     );
 
 }
 
 
-/* =====================================
-   START
-===================================== */
+// =====================================================
+// START
+// =====================================================
 
-loadServices();
+loadCountries();
 
 </script>
 
 </body>
+
 </html>
