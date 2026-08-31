@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
@@ -134,10 +131,6 @@ main{
     margin-bottom:15px;
 }
 
-.field:last-child{
-    margin-bottom:0;
-}
-
 .field label{
     display:block;
     font-size:14px;
@@ -160,7 +153,7 @@ select:focus{
 }
 
 /* =========================
-   LOADING / ERROR
+   LOADING
 ========================= */
 
 .loading{
@@ -199,10 +192,6 @@ select:focus{
     padding:15px;
     margin-bottom:12px;
     background:#fff;
-}
-
-.product:last-child{
-    margin-bottom:0;
 }
 
 .product-top{
@@ -288,10 +277,6 @@ select:focus{
     word-break:break-word;
 }
 
-/* =========================
-   COPY BUTTON
-========================= */
-
 .copy-btn{
     margin-top:10px;
     background:#111;
@@ -302,14 +287,6 @@ select:focus{
     font-weight:bold;
     cursor:pointer;
 }
-
-.copy-btn:active{
-    transform:scale(.98);
-}
-
-/* =========================
-   INFO
-========================= */
 
 .info-row{
     display:flex;
@@ -392,11 +369,6 @@ select:focus{
     color:#111;
 }
 
-.action-btn:disabled{
-    opacity:.55;
-    cursor:not-allowed;
-}
-
 .support-btn{
     width:100%;
     margin-top:10px;
@@ -431,10 +403,6 @@ select:focus{
     border-radius:11px;
     padding:13px;
     margin-bottom:10px;
-}
-
-.history-item:last-child{
-    margin-bottom:0;
 }
 
 .history-title{
@@ -483,30 +451,22 @@ select:focus{
         align-self:flex-start;
     }
 
-    .actions{
-        grid-template-columns:1fr;
-    }
-
 }
 
 </style>
-
 </head>
 
-
 <body>
-
 
 <header>
 
     <div class="header-row">
 
-        <h1>
-            Virtual Numbers
-        </h1>
+        <h1>Virtual Numbers</h1>
 
         <button
             class="back-btn"
+            type="button"
             onclick="location.href='dashboard.html'"
         >
             ← Back
@@ -519,10 +479,9 @@ select:focus{
 
 <main>
 
-
-<!-- =====================================================
+<!-- =========================
      WALLET
-===================================================== -->
+========================= -->
 
 <div class="wallet-card">
 
@@ -537,8 +496,12 @@ select:focus{
         ₦0.00
     </div>
 
+    <!-- IMPORTANT:
+         Your actual wallet page is wallet.html
+    -->
+
     <a
-        href="fundwallet.html"
+        href="wallet.html"
         class="fund-link"
     >
         + Fund Wallet
@@ -547,16 +510,13 @@ select:focus{
 </div>
 
 
-<!-- =====================================================
-     GET NUMBER
-===================================================== -->
+<!-- =========================
+     SELECT NUMBER
+========================= -->
 
 <div class="card">
 
-    <h2>
-        Get a Virtual Number
-    </h2>
-
+    <h2>Get a Virtual Number</h2>
 
     <div class="field">
 
@@ -611,15 +571,13 @@ select:focus{
 </div>
 
 
-<!-- =====================================================
-     AVAILABLE NUMBERS
-===================================================== -->
+<!-- =========================
+     PRODUCTS
+========================= -->
 
 <div class="card">
 
-    <h2>
-        Available Numbers
-    </h2>
+    <h2>Available Numbers</h2>
 
     <div id="products">
 
@@ -632,27 +590,22 @@ select:focus{
 </div>
 
 
-<!-- =====================================================
+<!-- =========================
      ACTIVE NUMBER
-===================================================== -->
+========================= -->
 
 <div
     id="numberCard"
     class="number-card"
 >
 
-    <h2>
-        Your Virtual Number
-    </h2>
-
+    <h2>Your Virtual Number</h2>
 
     <div class="number-box">
-
 
         <div class="number-label">
             Phone Number
         </div>
-
 
         <div
             id="number"
@@ -661,10 +614,10 @@ select:focus{
             —
         </div>
 
-
         <button
             id="copyNumberBtn"
             class="copy-btn"
+            type="button"
             onclick="copyNumber()"
         >
             📋 Copy Number
@@ -672,7 +625,6 @@ select:focus{
 
 
         <div style="margin-top:15px">
-
 
             <div class="info-row">
 
@@ -740,9 +692,9 @@ select:focus{
         </div>
 
 
-        <!-- =================================================
+        <!-- =========================
              OTP
-        ================================================= -->
+        ========================= -->
 
         <div class="otp-box">
 
@@ -767,24 +719,25 @@ select:focus{
         </div>
 
 
-        <!-- =================================================
-             ACTIONS
-        ================================================= -->
+        <!-- =========================
+             ACTION BUTTONS
+        ========================= -->
 
         <div class="actions">
 
             <button
                 id="refreshBtn"
                 class="action-btn refresh-btn"
+                type="button"
                 onclick="checkStatus()"
             >
                 🔄 Check OTP
             </button>
 
-
             <button
                 id="cancelBtn"
                 class="action-btn cancel-btn"
+                type="button"
                 onclick="cancelNumber()"
             >
                 ❌ Cancel & Refund
@@ -795,6 +748,7 @@ select:focus{
 
         <button
             class="support-btn"
+            type="button"
             onclick="contactSupport()"
         >
             💬 Contact Support
@@ -805,16 +759,13 @@ select:focus{
 </div>
 
 
-<!-- =====================================================
-     HISTORY
-===================================================== -->
+<!-- =========================
+     MY VIRTUAL NUMBER HISTORY
+========================= -->
 
 <div class="history-card">
 
-    <h2>
-        Virtual Number History
-    </h2>
-
+    <h2>Virtual Number History</h2>
 
     <div id="history">
 
@@ -826,12 +777,10 @@ select:focus{
 
 </div>
 
-
 </main>
 
 
 <script>
-
 
 /* =====================================================
    SUPABASE
@@ -840,13 +789,11 @@ select:focus{
 const SUPABASE_URL =
     "https://hkfhehbhmucymusaytoe.supabase.co";
 
-
 const SUPABASE_KEY =
     "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
-
 const supabaseClient =
-    supabase.createClient(
+    window.supabase.createClient(
         SUPABASE_URL,
         SUPABASE_KEY
     );
@@ -854,10 +801,12 @@ const supabaseClient =
 
 /* =====================================================
    EDGE FUNCTION
+   Your deployed Edge Function name:
+   numpool-api
 ===================================================== */
 
 const EDGE_FUNCTION_URL =
-    "https://hkfhehbhmucymusaytoe.supabase.co/functions/v1/numpool-api";
+    `${SUPABASE_URL}/functions/v1/numpool-api`;
 
 
 /* =====================================================
@@ -872,20 +821,15 @@ const WHATSAPP_SUPPORT =
    STATE
 ===================================================== */
 
-let currentUser =
-    null;
+let currentUser = null;
 
-let countries =
-    [];
+let countries = [];
 
-let products =
-    [];
+let products = [];
 
-let activeOrder =
-    null;
+let activeOrder = null;
 
-let statusTimer =
-    null;
+let statusTimer = null;
 
 
 /* =====================================================
@@ -893,52 +837,31 @@ let statusTimer =
 ===================================================== */
 
 const countrySelect =
-    document.getElementById(
-        "country"
-    );
-
+    document.getElementById("country");
 
 const serviceSelect =
-    document.getElementById(
-        "service"
-    );
-
+    document.getElementById("service");
 
 const operatorSelect =
-    document.getElementById(
-        "operator"
-    );
-
+    document.getElementById("operator");
 
 const productsBox =
-    document.getElementById(
-        "products"
-    );
-
+    document.getElementById("products");
 
 const walletBalance =
-    document.getElementById(
-        "walletBalance"
-    );
-
+    document.getElementById("walletBalance");
 
 const numberCard =
-    document.getElementById(
-        "numberCard"
-    );
+    document.getElementById("numberCard");
 
 
 /* =====================================================
    FORMAT MONEY
 ===================================================== */
 
-function formatMoney(
-    value
-){
+function formatMoney(value){
 
-    return Number(
-        value || 0
-    ).toLocaleString(
+    return Number(value || 0).toLocaleString(
         "en-NG",
         {
             minimumFractionDigits:2,
@@ -953,33 +876,14 @@ function formatMoney(
    ESCAPE HTML
 ===================================================== */
 
-function esc(
-    value
-){
+function esc(value){
 
-    return String(
-        value ?? ""
-    )
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-    .replace(
-        /</g,
-        "&lt;"
-    )
-    .replace(
-        />/g,
-        "&gt;"
-    )
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-    .replace(
-        /'/g,
-        "&#039;"
-    );
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 
 }
 
@@ -1000,39 +904,19 @@ async function edgeRequest(
     } = options;
 
 
-    /* =========================
-       GET SESSION
-    ========================= */
-
     const {
-        data,
-        error
+        data:{
+            session
+        }
     } =
         await supabaseClient
             .auth
             .getSession();
 
 
-    if(error){
-
-        throw new Error(
-            "Unable to get your login session."
-        );
-
-    }
-
-
-    const session =
-        data?.session;
-
-
-    const accessToken =
-        session?.access_token;
-
-
     if(
-        !accessToken ||
-        typeof accessToken !== "string"
+        !session ||
+        !session.access_token
     ){
 
         throw new Error(
@@ -1042,23 +926,17 @@ async function edgeRequest(
     }
 
 
-    /* =========================
-       BUILD URL
-    ========================= */
-
     const params =
         new URLSearchParams();
 
 
     params.set(
         "action",
-        String(action)
+        action
     );
 
 
-    Object.entries(
-        query
-    ).forEach(
+    Object.entries(query).forEach(
         ([key,value])=>{
 
             if(
@@ -1068,7 +946,7 @@ async function edgeRequest(
             ){
 
                 params.set(
-                    String(key),
+                    key,
                     String(value)
                 );
 
@@ -1078,119 +956,77 @@ async function edgeRequest(
     );
 
 
-    const url =
-        `${EDGE_FUNCTION_URL}?${params.toString()}`;
+    const requestOptions = {
 
+        method,
 
-    /* =========================
-       REQUEST HEADERS
-    ========================= */
+        headers:{
+            Authorization:
+                `Bearer ${session.access_token}`,
 
-    const headers =
-        new Headers();
+            apikey:
+                SUPABASE_KEY,
 
+            "Content-Type":
+                "application/json"
+        }
 
-    /*
-       IMPORTANT:
-
-       Only the authenticated
-       user's JWT is sent.
-
-       We intentionally do NOT
-       send SUPABASE_KEY here.
-    */
-
-    headers.set(
-        "Authorization",
-        `Bearer ${accessToken}`
-    );
+    };
 
 
     if(body !== null){
 
-        headers.set(
-            "Content-Type",
-            "application/json"
-        );
+        requestOptions.body =
+            JSON.stringify(body);
 
     }
 
 
-    /* =========================
-       FETCH
-    ========================= */
-
     const response =
         await fetch(
-            url,
-            {
-                method:method,
-                headers:headers,
-
-                ...(body !== null
-                    ? {
-                        body:
-                            JSON.stringify(body)
-                    }
-                    : {}
-                )
-            }
+            `${EDGE_FUNCTION_URL}?${params.toString()}`,
+            requestOptions
         );
 
-
-    /* =========================
-       RESPONSE
-    ========================= */
 
     const text =
         await response.text();
 
 
-    let result;
+    let data;
 
 
     try{
 
-        result =
-            text
-                ? JSON.parse(text)
-                : {};
+        data =
+            JSON.parse(text);
 
     }catch{
 
-        result = {
+        data = {
             success:false,
-            error:
-                text ||
-                "Invalid response from server."
+            error:text
         };
 
     }
 
 
-    /* =========================
-       ERROR
-    ========================= */
-
     if(
         !response.ok ||
-        result?.success === false
+        data?.success === false
     ){
 
         let message =
-            result?.error;
+            data?.error;
 
 
         if(
-            typeof message ===
-            "object"
+            typeof message === "object"
         ){
 
             message =
                 message?.message ||
-                JSON.stringify(
-                    message
-                );
+                JSON.stringify(message);
 
         }
 
@@ -1203,7 +1039,7 @@ async function edgeRequest(
     }
 
 
-    return result;
+    return data;
 
 }
 
@@ -1259,37 +1095,48 @@ async function loadWallet(){
     }
 
 
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("wallet")
-            .select("balance")
-            .eq(
-                "user-id",
-                currentUser.id
-            )
-            .maybeSingle();
+    try{
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .rpc("ensure_my_wallet");
 
 
-    if(error){
+        if(error){
+
+            console.error(
+                "Wallet error:",
+                error
+            );
+
+            walletBalance.textContent =
+                "Unable to load balance.";
+
+            return;
+
+        }
+
+
+        walletBalance.textContent =
+            "₦" +
+            formatMoney(
+                data?.balance || 0
+            );
+
+    }catch(error){
 
         console.error(
-            "Wallet error:",
+            "Wallet loading error:",
             error
         );
 
-        return;
+        walletBalance.textContent =
+            "Unable to load balance.";
 
     }
-
-
-    walletBalance.textContent =
-        "₦" +
-        formatMoney(
-            data?.balance || 0
-        );
 
 }
 
@@ -1347,8 +1194,7 @@ async function loadCountries(){
 
 
                 option.dataset.countryId =
-                    country.id ??
-                    "";
+                    country.id ?? "";
 
 
                 countrySelect.appendChild(
@@ -1367,12 +1213,6 @@ async function loadCountries(){
                 <option value="">
                     No countries available
                 </option>
-            `;
-
-            productsBox.innerHTML = `
-                <div class="error">
-                    ❌ No countries were returned by NumPool.
-                </div>
             `;
 
         }
@@ -1407,12 +1247,9 @@ async function loadCountries(){
    NORMALIZE COUNTRIES
 ===================================================== */
 
-function normalizeCountries(
-    raw
-){
+function normalizeCountries(raw){
 
-    const result =
-        [];
+    const result = [];
 
 
     if(
@@ -1450,7 +1287,7 @@ function normalizeCountries(
 
                         result.push({
 
-                            code:code,
+                            code,
 
                             id:
                                 item.id ??
@@ -1473,9 +1310,7 @@ function normalizeCountries(
 
     }else{
 
-        Object.entries(
-            raw
-        ).forEach(
+        Object.entries(raw).forEach(
             ([code,item])=>{
 
                 if(
@@ -1485,7 +1320,7 @@ function normalizeCountries(
 
                     result.push({
 
-                        code:code,
+                        code,
 
                         id:
                             item.id ??
@@ -1503,7 +1338,7 @@ function normalizeCountries(
 
                     result.push({
 
-                        code:code,
+                        code,
 
                         id:"",
 
@@ -1521,12 +1356,8 @@ function normalizeCountries(
 
     result.sort(
         (a,b)=>
-            String(
-                a.name
-            ).localeCompare(
-                String(
-                    b.name
-                )
+            String(a.name).localeCompare(
+                String(b.name)
             )
     );
 
@@ -1584,27 +1415,22 @@ countrySelect.addEventListener(
                 </div>
             `;
 
-
             return;
 
         }
 
 
-        await loadProducts(
-            country
-        );
+        await loadProducts(country);
 
     }
 );
 
 
 /* =====================================================
-   LOAD PRODUCTS
+   LOAD VIRTUAL NUMBER PRODUCTS
 ===================================================== */
 
-async function loadProducts(
-    country
-){
+async function loadProducts(country){
 
     try{
 
@@ -1613,7 +1439,7 @@ async function loadProducts(
                 "products",
                 {
                     query:{
-                        country:country
+                        country
                     }
                 }
             );
@@ -1649,13 +1475,6 @@ async function loadProducts(
         `;
 
 
-        operatorSelect.innerHTML = `
-            <option value="any">
-                Any operator
-            </option>
-        `;
-
-
         productsBox.innerHTML = `
             <div class="error">
                 ❌ ${esc(error.message)}
@@ -1676,14 +1495,13 @@ function populateServices(){
     const names =
         [
             ...new Set(
-                products
-                    .map(
-                        item =>
-                            String(
-                                item?.product ||
-                                ""
-                            ).trim()
-                    )
+                products.map(
+                    item =>
+                        String(
+                            item.product ||
+                            ""
+                        ).trim()
+                )
             )
         ]
         .filter(Boolean)
@@ -1774,10 +1592,7 @@ function populateOperators(){
         products.filter(
             item =>
                 !selectedService ||
-                String(
-                    item?.product ||
-                    ""
-                ) ===
+                String(item.product) ===
                 selectedService
         );
 
@@ -1785,14 +1600,13 @@ function populateOperators(){
     const operators =
         [
             ...new Set(
-                matching
-                    .map(
-                        item =>
-                            String(
-                                item?.operator ||
-                                "any"
-                            ).trim()
-                    )
+                matching.map(
+                    item =>
+                        String(
+                            item.operator ||
+                            "any"
+                        ).trim()
+                )
             )
         ]
         .filter(
@@ -1860,17 +1674,14 @@ function renderProducts(){
 
                 const serviceMatch =
                     !selectedService ||
-                    String(
-                        item?.product ||
-                        ""
-                    ) ===
+                    String(item.product) ===
                     selectedService;
 
 
                 const operatorMatch =
                     selectedOperator === "any" ||
                     String(
-                        item?.operator ||
+                        item.operator ||
                         "any"
                     ) ===
                     selectedOperator;
@@ -1900,8 +1711,7 @@ function renderProducts(){
     }
 
 
-    productsBox.innerHTML =
-        "";
+    productsBox.innerHTML = "";
 
 
     filtered.forEach(
@@ -1919,21 +1729,21 @@ function renderProducts(){
 
             const product =
                 String(
-                    item?.product ||
+                    item.product ||
                     ""
-                ).trim();
+                );
 
 
             const operator =
                 String(
-                    item?.operator ||
+                    item.operator ||
                     "any"
-                ).trim();
+                );
 
 
             const price =
                 Number(
-                    item?.selling_price_ngn ||
+                    item.selling_price_ngn ||
                     0
                 );
 
@@ -1964,6 +1774,7 @@ function renderProducts(){
 
                 <button
                     class="buy-btn"
+                    type="button"
                 >
                     Buy Number
                 </button>
@@ -2040,23 +1851,21 @@ async function buyNumber(
 
     const countryId =
         Number(
-            countryOption
-                ?.dataset
-                ?.countryId ||
+            countryOption?.dataset?.countryId ||
             0
         );
 
 
     const product =
         String(
-            item?.product ||
+            item.product ||
             ""
         ).trim();
 
 
     const operator =
         String(
-            item?.operator ||
+            item.operator ||
             "any"
         ).trim() ||
         "any";
@@ -2064,7 +1873,7 @@ async function buyNumber(
 
     const displayedPrice =
         Number(
-            item?.selling_price_ngn ||
+            item.selling_price_ngn ||
             0
         );
 
@@ -2106,13 +1915,6 @@ async function buyNumber(
 
     try{
 
-        /*
-           The Edge Function calculates
-           the real customer price server-side.
-
-           The browser price is NOT trusted.
-        */
-
         const data =
             await edgeRequest(
                 "buy",
@@ -2121,14 +1923,14 @@ async function buyNumber(
 
                     body:{
 
-                        country:country,
+                        country,
 
                         country_id:
                             countryId,
 
-                        operator:operator,
+                        operator,
 
-                        product:product
+                        product
 
                     }
 
@@ -2137,7 +1939,8 @@ async function buyNumber(
 
 
         if(
-            !data?.success
+            !data ||
+            data.success === false
         ){
 
             throw new Error(
@@ -2152,8 +1955,17 @@ async function buyNumber(
             data.order;
 
 
+        if(!activeOrder){
+
+            throw new Error(
+                "The number was not returned by the server."
+            );
+
+        }
+
+
         showActiveOrder(
-            data.order
+            activeOrder
         );
 
 
@@ -2182,7 +1994,6 @@ async function buyNumber(
         button.disabled =
             false;
 
-
         button.textContent =
             "Buy Number";
 
@@ -2195,9 +2006,7 @@ async function buyNumber(
    SHOW ACTIVE ORDER
 ===================================================== */
 
-function showActiveOrder(
-    order
-){
+function showActiveOrder(order){
 
     if(!order){
 
@@ -2221,6 +2030,7 @@ function showActiveOrder(
         "activeCountry"
     ).textContent =
         order.country ||
+        order.country_name ||
         "—";
 
 
@@ -2290,7 +2100,7 @@ async function checkStatus(){
 
     if(!providerId){
 
-        alert(
+        console.error(
             "Provider order ID is missing."
         );
 
@@ -2400,12 +2210,6 @@ async function checkStatus(){
 
     }catch(error){
 
-        /*
-           Automatic polling errors
-           are deliberately not shown
-           as repeated alerts.
-        */
-
         console.error(
             "Status error:",
             error
@@ -2415,7 +2219,6 @@ async function checkStatus(){
 
         refreshBtn.disabled =
             false;
-
 
         refreshBtn.textContent =
             "🔄 Check OTP";
@@ -2542,7 +2345,8 @@ async function cancelNumber(){
 
 
         if(
-            !data?.success
+            !data ||
+            data.success === false
         ){
 
             throw new Error(
@@ -2588,7 +2392,6 @@ async function cancelNumber(){
 
         cancelBtn.disabled =
             false;
-
 
         cancelBtn.textContent =
             "❌ Cancel & Refund";
@@ -2651,6 +2454,12 @@ async function copyNumber(){
 
     }catch(error){
 
+        console.error(
+            "Copy number error:",
+            error
+        );
+
+
         alert(
             "Could not copy number."
         );
@@ -2675,7 +2484,7 @@ function contactSupport(){
 
 
 /* =====================================================
-   LOAD HISTORY
+   LOAD VIRTUAL NUMBER HISTORY
 ===================================================== */
 
 async function loadHistory(){
@@ -2693,33 +2502,236 @@ async function loadHistory(){
     }
 
 
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from(
-                "virtual_number_orders"
-            )
-            .select(
-                "id,numpool_order_id,service_name,country_name,number,customer_price_ngn,status,otp_code,purchased_at,created_at,refunded_at,cancelled_at"
-            )
-            .eq(
-                "user_id",
-                currentUser.id
-            )
-            .order(
-                "created_at",
-                {
-                    ascending:false
-                }
+    try{
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+
+                .from(
+                    "virtual_number_orders"
+                )
+
+                .select(
+                    "id,numpool_order_id,service_name,country_name,number,customer_price_ngn,status,otp_code,purchased_at,created_at,refunded_at,cancelled_at"
+                )
+
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+
+                .order(
+                    "created_at",
+                    {
+                        ascending:false
+                    }
+                );
+
+
+        if(error){
+
+            console.error(
+                "History error:",
+                error
             );
 
 
-    if(error){
+            history.innerHTML = `
+                <div class="error">
+                    ❌ Unable to load virtual number history.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        if(
+            !data ||
+            data.length === 0
+        ){
+
+            history.innerHTML = `
+                <div class="loading">
+                    No virtual number purchases yet.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        history.innerHTML = "";
+
+
+        data.forEach(
+            order=>{
+
+                const status =
+                    String(
+                        order.status ||
+                        ""
+                    ).toLowerCase();
+
+
+                let statusClass =
+                    "status-waiting";
+
+
+                if(
+                    status === "received"
+                ){
+
+                    statusClass =
+                        "status-received";
+
+                }
+
+
+                if(
+                    status === "cancelled"
+                ){
+
+                    statusClass =
+                        "status-cancelled";
+
+                }
+
+
+                let statusText =
+                    "Waiting for SMS";
+
+
+                if(
+                    status === "received"
+                ){
+
+                    statusText =
+                        "OTP Received";
+
+                }else if(
+                    status === "cancelled"
+                ){
+
+                    statusText =
+                        order.refunded_at
+                            ? "Cancelled & Refunded"
+                            : "Cancelled";
+
+                }
+
+
+                const date =
+                    order.created_at
+                        ? new Date(
+                            order.created_at
+                        ).toLocaleString(
+                            "en-NG",
+                            {
+                                dateStyle:"medium",
+                                timeStyle:"short"
+                            }
+                        )
+                        : "";
+
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                item.className =
+                    "history-item";
+
+
+                item.innerHTML = `
+
+                    <div class="history-title">
+
+                        ${esc(
+                            order.service_name ||
+                            "Virtual Number"
+                        )}
+
+                        -
+
+                        ${esc(
+                            order.country_name ||
+                            ""
+                        )}
+
+                    </div>
+
+
+                    <div class="history-meta">
+
+                        Number:
+                        ${esc(
+                            order.number ||
+                            "—"
+                        )}
+
+                        <br>
+
+                        Price:
+                        ₦${formatMoney(
+                            order.customer_price_ngn
+                        )}
+
+                        <br>
+
+                        ${esc(date)}
+
+                    </div>
+
+
+                    ${
+                        order.otp_code
+                            ? `
+                                <div
+                                    class="history-meta"
+                                    style="margin-top:8px"
+                                >
+                                    OTP:
+                                    <strong>
+                                        ${esc(
+                                            order.otp_code
+                                        )}
+                                    </strong>
+                                </div>
+                              `
+                            : ""
+                    }
+
+
+                    <div
+                        class="history-status ${statusClass}"
+                    >
+                        ${esc(
+                            statusText
+                        )}
+                    </div>
+
+                `;
+
+
+                history.appendChild(
+                    item
+                );
+
+            }
+        );
+
+    }catch(error){
 
         console.error(
-            "History error:",
+            "Unexpected history error:",
             error
         );
 
@@ -2730,199 +2742,7 @@ async function loadHistory(){
             </div>
         `;
 
-        return;
-
     }
-
-
-    if(
-        !data ||
-        data.length === 0
-    ){
-
-        history.innerHTML = `
-            <div class="loading">
-                No virtual number purchases yet.
-            </div>
-        `;
-
-        return;
-
-    }
-
-
-    history.innerHTML =
-        "";
-
-
-    data.forEach(
-        order=>{
-
-            const status =
-                String(
-                    order.status ||
-                    ""
-                ).toLowerCase();
-
-
-            let statusClass =
-                "status-waiting";
-
-
-            if(
-                status === "received"
-            ){
-
-                statusClass =
-                    "status-received";
-
-            }
-
-
-            if(
-                status === "cancelled"
-            ){
-
-                statusClass =
-                    "status-cancelled";
-
-            }
-
-
-            let statusText =
-                "Waiting for SMS";
-
-
-            if(
-                status === "received"
-            ){
-
-                statusText =
-                    "OTP Received";
-
-            }else if(
-                status === "cancelled"
-            ){
-
-                statusText =
-                    order.refunded_at
-                        ? "Cancelled & Refunded"
-                        : "Cancelled";
-
-            }
-
-
-            const date =
-                order.created_at
-                    ? new Date(
-                        order.created_at
-                    ).toLocaleString(
-                        "en-NG",
-                        {
-                            dateStyle:
-                                "medium",
-                            timeStyle:
-                                "short"
-                        }
-                    )
-                    : "";
-
-
-            const item =
-                document.createElement(
-                    "div"
-                );
-
-
-            item.className =
-                "history-item";
-
-
-            item.innerHTML = `
-
-                <div class="history-title">
-
-                    ${esc(
-                        order.service_name ||
-                        "Virtual Number"
-                    )}
-
-                    ${
-                        order.country_name
-                            ? `
-                                -
-                                ${esc(
-                                    order.country_name
-                                )}
-                              `
-                            : ""
-                    }
-
-                </div>
-
-
-                <div class="history-meta">
-
-                    Number:
-                    ${esc(
-                        order.number ||
-                        "—"
-                    )}
-
-                    <br>
-
-                    Price:
-                    ₦${formatMoney(
-                        order.customer_price_ngn
-                    )}
-
-                    <br>
-
-                    ${esc(date)}
-
-                </div>
-
-
-                ${
-                    order.otp_code
-                        ? `
-                            <div
-                                class="history-meta"
-                                style="margin-top:8px"
-                            >
-
-                                OTP:
-                                <strong>
-                                    ${esc(
-                                        order.otp_code
-                                    )}
-                                </strong>
-
-                            </div>
-                          `
-                        : ""
-                }
-
-
-                <div
-                    class="history-status ${statusClass}"
-                >
-
-                    ${esc(
-                        statusText
-                    )}
-
-                </div>
-
-            `;
-
-
-            history.appendChild(
-                item
-            );
-
-        }
-    );
 
 }
 
@@ -2962,5 +2782,4 @@ initialize();
 </script>
 
 </body>
-
 </html>
