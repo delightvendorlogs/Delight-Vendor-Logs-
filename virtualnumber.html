@@ -10,9 +10,7 @@
     content="width=device-width, initial-scale=1.0"
 >
 
-<title>
-    Virtual Numbers - Delight Vendor Logs
-</title>
+<title>Virtual Numbers - Delight Vendor Logs</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -290,6 +288,29 @@ select:focus{
     word-break:break-word;
 }
 
+/* =========================
+   COPY BUTTON
+========================= */
+
+.copy-btn{
+    margin-top:10px;
+    background:#111;
+    color:#fff;
+    border:0;
+    padding:9px 12px;
+    border-radius:7px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.copy-btn:active{
+    transform:scale(.98);
+}
+
+/* =========================
+   INFO
+========================= */
+
 .info-row{
     display:flex;
     justify-content:space-between;
@@ -310,21 +331,6 @@ select:focus{
     font-weight:bold;
     text-align:right;
     word-break:break-word;
-}
-
-/* =========================
-   COPY
-========================= */
-
-.copy-btn{
-    margin-top:10px;
-    background:#111;
-    color:#fff;
-    border:0;
-    padding:9px 12px;
-    border-radius:7px;
-    font-weight:bold;
-    cursor:pointer;
 }
 
 /* =========================
@@ -477,6 +483,10 @@ select:focus{
         align-self:flex-start;
     }
 
+    .actions{
+        grid-template-columns:1fr;
+    }
+
 }
 
 </style>
@@ -510,9 +520,9 @@ select:focus{
 <main>
 
 
-<!-- =========================
+<!-- =====================================================
      WALLET
-========================= -->
+===================================================== -->
 
 <div class="wallet-card">
 
@@ -537,9 +547,9 @@ select:focus{
 </div>
 
 
-<!-- =========================
-     NUMBER SELECTION
-========================= -->
+<!-- =====================================================
+     GET NUMBER
+===================================================== -->
 
 <div class="card">
 
@@ -601,9 +611,9 @@ select:focus{
 </div>
 
 
-<!-- =========================
+<!-- =====================================================
      AVAILABLE NUMBERS
-========================= -->
+===================================================== -->
 
 <div class="card">
 
@@ -622,9 +632,9 @@ select:focus{
 </div>
 
 
-<!-- =========================
+<!-- =====================================================
      ACTIVE NUMBER
-========================= -->
+===================================================== -->
 
 <div
     id="numberCard"
@@ -727,13 +737,12 @@ select:focus{
 
             </div>
 
-
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              OTP
-        ========================= -->
+        ================================================= -->
 
         <div class="otp-box">
 
@@ -758,12 +767,11 @@ select:focus{
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              ACTIONS
-        ========================= -->
+        ================================================= -->
 
         <div class="actions">
-
 
             <button
                 id="refreshBtn"
@@ -782,7 +790,6 @@ select:focus{
                 ❌ Cancel & Refund
             </button>
 
-
         </div>
 
 
@@ -793,21 +800,21 @@ select:focus{
             💬 Contact Support
         </button>
 
-
     </div>
 
 </div>
 
 
-<!-- =========================
+<!-- =====================================================
      HISTORY
-========================= -->
+===================================================== -->
 
 <div class="history-card">
 
     <h2>
         Virtual Number History
     </h2>
+
 
     <div id="history">
 
@@ -824,6 +831,7 @@ select:focus{
 
 
 <script>
+
 
 /* =====================================================
    SUPABASE
@@ -848,17 +856,8 @@ const supabaseClient =
    EDGE FUNCTION
 ===================================================== */
 
-/*
-   IMPORTANT:
-
-   Your Edge Function is named:
-
-   numpool-api
-
-*/
-
 const EDGE_FUNCTION_URL =
-    `${SUPABASE_URL}/functions/v1/numpool-api`;
+    "https://hkfhehbhmucymusaytoe.supabase.co/functions/v1/numpool-api";
 
 
 /* =====================================================
@@ -937,11 +936,9 @@ function formatMoney(
     value
 ){
 
-    const number =
-        Number(value || 0);
-
-
-    return number.toLocaleString(
+    return Number(
+        value || 0
+    ).toLocaleString(
         "en-NG",
         {
             minimumFractionDigits:2,
@@ -1009,20 +1006,17 @@ async function edgeRequest(
 
     const {
         data,
-        error:sessionError
+        error
     } =
         await supabaseClient
             .auth
             .getSession();
 
 
-    if(
-        sessionError
-    ){
+    if(error){
 
         throw new Error(
-            sessionError.message ||
-            "Unable to get login session."
+            "Unable to get your login session."
         );
 
     }
@@ -1033,13 +1027,12 @@ async function edgeRequest(
 
 
     const accessToken =
-        String(
-            session?.access_token || ""
-        ).trim();
+        session?.access_token;
 
 
     if(
-        !accessToken
+        !accessToken ||
+        typeof accessToken !== "string"
     ){
 
         throw new Error(
@@ -1064,7 +1057,7 @@ async function edgeRequest(
 
 
     Object.entries(
-        query || {}
+        query
     ).forEach(
         ([key,value])=>{
 
@@ -1090,38 +1083,35 @@ async function edgeRequest(
 
 
     /* =========================
-       HEADERS
+       REQUEST HEADERS
     ========================= */
 
-    /*
-       Keep header values as plain
-       JavaScript strings.
+    const headers =
+        new Headers();
 
-       Content-Type is ONLY included
-       when a body exists.
+
+    /*
+       IMPORTANT:
+
+       Only the authenticated
+       user's JWT is sent.
+
+       We intentionally do NOT
+       send SUPABASE_KEY here.
     */
 
-    const headers = {
-
-        "Authorization":
-            `Bearer ${accessToken}`,
-
-        "apikey":
-            String(
-                SUPABASE_KEY
-            ).trim()
-
-    };
+    headers.set(
+        "Authorization",
+        `Bearer ${accessToken}`
+    );
 
 
-    if(
-        body !== null
-    ){
+    if(body !== null){
 
-        headers[
-            "Content-Type"
-        ] =
-            "application/json";
+        headers.set(
+            "Content-Type",
+            "application/json"
+        );
 
     }
 
@@ -1134,22 +1124,22 @@ async function edgeRequest(
         await fetch(
             url,
             {
-                method:
-                    String(method),
+                method:method,
+                headers:headers,
 
-                headers:
-                    headers,
-
-                body:
-                    body !== null
-                        ? JSON.stringify(body)
-                        : undefined
+                ...(body !== null
+                    ? {
+                        body:
+                            JSON.stringify(body)
+                    }
+                    : {}
+                )
             }
         );
 
 
     /* =========================
-       READ RESPONSE
+       RESPONSE
     ========================= */
 
     const text =
@@ -1162,20 +1152,17 @@ async function edgeRequest(
     try{
 
         result =
-            JSON.parse(
-                text
-            );
+            text
+                ? JSON.parse(text)
+                : {};
 
     }catch{
 
         result = {
-
             success:false,
-
             error:
                 text ||
                 "Invalid response from server."
-
         };
 
     }
@@ -1228,16 +1215,14 @@ async function edgeRequest(
 async function checkLogin(){
 
     const {
-        data,
+        data:{
+            user
+        },
         error
     } =
         await supabaseClient
             .auth
             .getUser();
-
-
-    const user =
-        data?.user;
 
 
     if(
@@ -1256,7 +1241,6 @@ async function checkLogin(){
     currentUser =
         user;
 
-
     return true;
 
 }
@@ -1268,9 +1252,7 @@ async function checkLogin(){
 
 async function loadWallet(){
 
-    if(
-        !currentUser
-    ){
+    if(!currentUser){
 
         return;
 
@@ -1282,20 +1264,12 @@ async function loadWallet(){
         error
     } =
         await supabaseClient
-
-            .from(
-                "wallet"
-            )
-
-            .select(
-                "balance"
-            )
-
+            .from("wallet")
+            .select("balance")
             .eq(
                 "user-id",
                 currentUser.id
             )
-
             .maybeSingle();
 
 
@@ -1327,11 +1301,9 @@ async function loadWallet(){
 async function loadCountries(){
 
     countrySelect.innerHTML = `
-
         <option value="">
             Loading countries...
         </option>
-
     `;
 
 
@@ -1350,11 +1322,9 @@ async function loadCountries(){
 
 
         countrySelect.innerHTML = `
-
             <option value="">
                 Select country
             </option>
-
         `;
 
 
@@ -1394,11 +1364,15 @@ async function loadCountries(){
         ){
 
             countrySelect.innerHTML = `
-
                 <option value="">
                     No countries available
                 </option>
+            `;
 
+            productsBox.innerHTML = `
+                <div class="error">
+                    ❌ No countries were returned by NumPool.
+                </div>
             `;
 
         }
@@ -1412,22 +1386,16 @@ async function loadCountries(){
 
 
         countrySelect.innerHTML = `
-
             <option value="">
                 Unable to load countries
             </option>
-
         `;
 
 
         productsBox.innerHTML = `
-
             <div class="error">
-
                 ❌ ${esc(error.message)}
-
             </div>
-
         `;
 
     }
@@ -1457,10 +1425,6 @@ function normalizeCountries(
     }
 
 
-    /* =========================
-       ARRAY RESPONSE
-    ========================= */
-
     if(
         Array.isArray(raw)
     ){
@@ -1486,18 +1450,14 @@ function normalizeCountries(
 
                         result.push({
 
-                            code:
-
-                                code,
+                            code:code,
 
                             id:
-
                                 item.id ??
                                 item.country_id ??
                                 "",
 
                             name:
-
                                 item.name ??
                                 item.title ??
                                 code
@@ -1511,14 +1471,7 @@ function normalizeCountries(
             }
         );
 
-    }
-
-
-    /* =========================
-       OBJECT RESPONSE
-    ========================= */
-
-    else{
+    }else{
 
         Object.entries(
             raw
@@ -1532,20 +1485,14 @@ function normalizeCountries(
 
                     result.push({
 
-                        code:
-
-                            String(
-                                code
-                            ),
+                        code:code,
 
                         id:
-
                             item.id ??
                             item.country_id ??
                             "",
 
                         name:
-
                             item.name ??
                             item.title ??
                             code
@@ -1556,19 +1503,11 @@ function normalizeCountries(
 
                     result.push({
 
-                        code:
+                        code:code,
 
-                            String(
-                                code
-                            ),
+                        id:"",
 
-                        id:
-                            "",
-
-                        name:
-                            String(
-                                code
-                            )
+                        name:code
 
                     });
 
@@ -1606,61 +1545,43 @@ countrySelect.addEventListener(
     async function(){
 
         const country =
-            String(
-                this.value || ""
-            ).trim();
+            this.value;
 
 
         serviceSelect.innerHTML = `
-
             <option value="">
                 Loading services...
             </option>
-
         `;
 
 
         operatorSelect.innerHTML = `
-
             <option value="any">
                 Any operator
             </option>
-
         `;
 
 
         productsBox.innerHTML = `
-
             <div class="loading">
-
                 Loading available numbers...
-
             </div>
-
         `;
 
 
-        if(
-            !country
-        ){
+        if(!country){
 
             serviceSelect.innerHTML = `
-
                 <option value="">
                     Select a country first
                 </option>
-
             `;
 
 
             productsBox.innerHTML = `
-
                 <div class="loading">
-
                     Select a country to load numbers.
-
                 </div>
-
             `;
 
 
@@ -1692,8 +1613,7 @@ async function loadProducts(
                 "products",
                 {
                     query:{
-                        country:
-                            country
+                        country:country
                     }
                 }
             );
@@ -1709,7 +1629,6 @@ async function loadProducts(
 
         populateServices();
 
-
         renderProducts();
 
     }catch(error){
@@ -1720,27 +1639,27 @@ async function loadProducts(
         );
 
 
-        products =
-            [];
+        products = [];
 
 
         serviceSelect.innerHTML = `
-
             <option value="">
                 Unable to load services
             </option>
+        `;
 
+
+        operatorSelect.innerHTML = `
+            <option value="any">
+                Any operator
+            </option>
         `;
 
 
         productsBox.innerHTML = `
-
             <div class="error">
-
                 ❌ ${esc(error.message)}
-
             </div>
-
         `;
 
     }
@@ -1757,13 +1676,14 @@ function populateServices(){
     const names =
         [
             ...new Set(
-                products.map(
-                    item =>
-                        String(
-                            item?.product ||
-                            ""
-                        ).trim()
-                )
+                products
+                    .map(
+                        item =>
+                            String(
+                                item?.product ||
+                                ""
+                            ).trim()
+                    )
             )
         ]
         .filter(Boolean)
@@ -1774,11 +1694,9 @@ function populateServices(){
 
 
     serviceSelect.innerHTML = `
-
         <option value="">
             All services
         </option>
-
     `;
 
 
@@ -1855,27 +1773,26 @@ function populateOperators(){
     const matching =
         products.filter(
             item =>
-
                 !selectedService ||
-
                 String(
-                    item?.product || ""
+                    item?.product ||
+                    ""
                 ) ===
                 selectedService
-
         );
 
 
     const operators =
         [
             ...new Set(
-                matching.map(
-                    item =>
-                        String(
-                            item?.operator ||
-                            "any"
-                        ).trim()
-                )
+                matching
+                    .map(
+                        item =>
+                            String(
+                                item?.operator ||
+                                "any"
+                            ).trim()
+                    )
             )
         ]
         .filter(
@@ -1890,11 +1807,9 @@ function populateOperators(){
 
 
     operatorSelect.innerHTML = `
-
         <option value="any">
             Any operator
         </option>
-
     `;
 
 
@@ -1945,17 +1860,15 @@ function renderProducts(){
 
                 const serviceMatch =
                     !selectedService ||
-
                     String(
-                        item?.product || ""
+                        item?.product ||
+                        ""
                     ) ===
                     selectedService;
 
 
                 const operatorMatch =
-                    selectedOperator ===
-                    "any" ||
-
+                    selectedOperator === "any" ||
                     String(
                         item?.operator ||
                         "any"
@@ -1977,14 +1890,9 @@ function renderProducts(){
     ){
 
         productsBox.innerHTML = `
-
             <div class="loading">
-
-                No virtual numbers are available
-                for this selection.
-
+                No virtual numbers are available for this selection.
             </div>
-
         `;
 
         return;
@@ -2020,8 +1928,7 @@ function renderProducts(){
                 String(
                     item?.operator ||
                     "any"
-                ).trim() ||
-                "any";
+                ).trim();
 
 
             const price =
@@ -2038,25 +1945,18 @@ function renderProducts(){
                     <div>
 
                         <div class="product-name">
-
                             ${esc(product)}
-
                         </div>
 
                         <div class="product-operator">
-
                             Operator:
                             ${esc(operator)}
-
                         </div>
 
                     </div>
 
-
                     <div class="product-price">
-
                         ₦${formatMoney(price)}
-
                     </div>
 
                 </div>
@@ -2079,10 +1979,12 @@ function renderProducts(){
 
             button.addEventListener(
                 "click",
-                ()=>buyNumber(
-                    item,
-                    button
-                )
+                ()=>{
+                    buyNumber(
+                        item,
+                        button
+                    );
+                }
             );
 
 
@@ -2105,9 +2007,7 @@ async function buyNumber(
     button
 ){
 
-    if(
-        !currentUser
-    ){
+    if(!currentUser){
 
         location.href =
             "login.html";
@@ -2118,15 +2018,10 @@ async function buyNumber(
 
 
     const country =
-        String(
-            countrySelect.value ||
-            ""
-        ).trim();
+        countrySelect.value;
 
 
-    if(
-        !country
-    ){
+    if(!country){
 
         alert(
             "Please select a country."
@@ -2194,9 +2089,7 @@ async function buyNumber(
         );
 
 
-    if(
-        !confirmed
-    ){
+    if(!confirmed){
 
         return;
 
@@ -2214,36 +2107,28 @@ async function buyNumber(
     try{
 
         /*
-           IMPORTANT:
+           The Edge Function calculates
+           the real customer price server-side.
 
-           The customer price is NOT
-           trusted from the browser.
-
-           The Edge Function should
-           calculate the actual price
-           server-side.
+           The browser price is NOT trusted.
         */
 
         const data =
             await edgeRequest(
                 "buy",
                 {
-                    method:
-                        "POST",
+                    method:"POST",
 
                     body:{
 
-                        country:
-                            country,
+                        country:country,
 
                         country_id:
                             countryId,
 
-                        operator:
-                            operator,
+                        operator:operator,
 
-                        product:
-                            product
+                        product:product
 
                     }
 
@@ -2314,9 +2199,7 @@ function showActiveOrder(
     order
 ){
 
-    if(
-        !order
-    ){
+    if(!order){
 
         return;
 
@@ -2345,6 +2228,7 @@ function showActiveOrder(
         "activeService"
     ).textContent =
         order.product ||
+        order.service_name ||
         "—";
 
 
@@ -2376,11 +2260,8 @@ function showActiveOrder(
 
 
     numberCard.scrollIntoView({
-        behavior:
-            "smooth",
-
-        block:
-            "start"
+        behavior:"smooth",
+        block:"start"
     });
 
 }
@@ -2392,9 +2273,7 @@ function showActiveOrder(
 
 async function checkStatus(){
 
-    if(
-        !activeOrder
-    ){
+    if(!activeOrder){
 
         return;
 
@@ -2403,17 +2282,15 @@ async function checkStatus(){
 
     const providerId =
         String(
-            activeOrder.numpool_order_id ||
             activeOrder.five_sim_order_id ||
+            activeOrder.numpool_order_id ||
             ""
         ).trim();
 
 
-    if(
-        !providerId
-    ){
+    if(!providerId){
 
-        console.error(
+        alert(
             "Provider order ID is missing."
         );
 
@@ -2443,8 +2320,7 @@ async function checkStatus(){
                 "status",
                 {
                     query:{
-                        id:
-                            providerId
+                        id:providerId
                     }
                 }
             );
@@ -2465,9 +2341,7 @@ async function checkStatus(){
             ).toLowerCase();
 
 
-        if(
-            otp
-        ){
+        if(otp){
 
             document.getElementById(
                 "otp"
@@ -2515,7 +2389,7 @@ async function checkStatus(){
                 document.getElementById(
                     "activeStatus"
                 ).textContent =
-                "Cancelled";
+                    "Cancelled";
 
 
                 stopStatusPolling();
@@ -2525,6 +2399,12 @@ async function checkStatus(){
         }
 
     }catch(error){
+
+        /*
+           Automatic polling errors
+           are deliberately not shown
+           as repeated alerts.
+        */
 
         console.error(
             "Status error:",
@@ -2568,20 +2448,13 @@ function startStatusPolling(){
 }
 
 
-/* =====================================================
-   STOP POLLING
-===================================================== */
-
 function stopStatusPolling(){
 
-    if(
-        statusTimer
-    ){
+    if(statusTimer){
 
         clearInterval(
             statusTimer
         );
-
 
         statusTimer =
             null;
@@ -2597,9 +2470,7 @@ function stopStatusPolling(){
 
 async function cancelNumber(){
 
-    if(
-        !activeOrder
-    ){
+    if(!activeOrder){
 
         return;
 
@@ -2608,15 +2479,13 @@ async function cancelNumber(){
 
     const providerId =
         String(
-            activeOrder.numpool_order_id ||
             activeOrder.five_sim_order_id ||
+            activeOrder.numpool_order_id ||
             ""
         ).trim();
 
 
-    if(
-        !providerId
-    ){
+    if(!providerId){
 
         alert(
             "Provider order ID is missing."
@@ -2635,9 +2504,7 @@ async function cancelNumber(){
         );
 
 
-    if(
-        !confirmed
-    ){
+    if(!confirmed){
 
         return;
 
@@ -2664,14 +2531,10 @@ async function cancelNumber(){
             await edgeRequest(
                 "cancel",
                 {
-                    method:
-                        "POST",
+                    method:"POST",
 
                     body:{
-
-                        id:
-                            providerId
-
+                        id:providerId
                     }
 
                 }
@@ -2770,7 +2633,7 @@ async function copyNumber(){
             );
 
 
-        const oldText =
+        const old =
             button.textContent;
 
 
@@ -2781,7 +2644,7 @@ async function copyNumber(){
         setTimeout(
             ()=>{
                 button.textContent =
-                    oldText;
+                    old;
             },
             1500
         );
@@ -2823,9 +2686,7 @@ async function loadHistory(){
         );
 
 
-    if(
-        !currentUser
-    ){
+    if(!currentUser){
 
         return;
 
@@ -2837,20 +2698,16 @@ async function loadHistory(){
         error
     } =
         await supabaseClient
-
             .from(
                 "virtual_number_orders"
             )
-
             .select(
                 "id,numpool_order_id,service_name,country_name,number,customer_price_ngn,status,otp_code,purchased_at,created_at,refunded_at,cancelled_at"
             )
-
             .eq(
                 "user_id",
                 currentUser.id
             )
-
             .order(
                 "created_at",
                 {
@@ -2868,13 +2725,9 @@ async function loadHistory(){
 
 
         history.innerHTML = `
-
             <div class="error">
-
                 ❌ Unable to load virtual number history.
-
             </div>
-
         `;
 
         return;
@@ -2888,13 +2741,9 @@ async function loadHistory(){
     ){
 
         history.innerHTML = `
-
             <div class="loading">
-
                 No virtual number purchases yet.
-
             </div>
-
         `;
 
         return;
@@ -2965,7 +2814,6 @@ async function loadHistory(){
 
             const date =
                 order.created_at
-
                     ? new Date(
                         order.created_at
                     ).toLocaleString(
@@ -2973,12 +2821,10 @@ async function loadHistory(){
                         {
                             dateStyle:
                                 "medium",
-
                             timeStyle:
                                 "short"
                         }
                     )
-
                     : "";
 
 
@@ -3001,12 +2847,16 @@ async function loadHistory(){
                         "Virtual Number"
                     )}
 
-                    -
-
-                    ${esc(
-                        order.country_name ||
-                        ""
-                    )}
+                    ${
+                        order.country_name
+                            ? `
+                                -
+                                ${esc(
+                                    order.country_name
+                                )}
+                              `
+                            : ""
+                    }
 
                 </div>
 
@@ -3035,28 +2885,21 @@ async function loadHistory(){
 
                 ${
                     order.otp_code
-
                         ? `
-
                             <div
                                 class="history-meta"
                                 style="margin-top:8px"
                             >
 
                                 OTP:
-
                                 <strong>
-
                                     ${esc(
                                         order.otp_code
                                     )}
-
                                 </strong>
 
                             </div>
-
                           `
-
                         : ""
                 }
 
@@ -3094,9 +2937,7 @@ async function initialize(){
         await checkLogin();
 
 
-    if(
-        !loggedIn
-    ){
+    if(!loggedIn){
 
         return;
 
@@ -3104,13 +2945,9 @@ async function initialize(){
 
 
     await Promise.all([
-
         loadWallet(),
-
         loadCountries(),
-
         loadHistory()
-
     ]);
 
 }
@@ -3123,7 +2960,6 @@ async function initialize(){
 initialize();
 
 </script>
-
 
 </body>
 
