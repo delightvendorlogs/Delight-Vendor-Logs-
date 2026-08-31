@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
+
 <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
@@ -23,10 +25,6 @@ body{
     color:#111;
     font-family:Arial,sans-serif;
 }
-
-/* =========================
-   HEADER
-========================= */
 
 header{
     background:#111;
@@ -61,19 +59,11 @@ header h1{
     cursor:pointer;
 }
 
-/* =========================
-   MAIN
-========================= */
-
 main{
     max-width:650px;
     margin:auto;
     padding:20px 16px 45px;
 }
-
-/* =========================
-   WALLET
-========================= */
 
 .wallet-card{
     background:#111;
@@ -106,10 +96,6 @@ main{
     text-decoration:none;
 }
 
-/* =========================
-   CARD
-========================= */
-
 .card{
     background:#fff;
     border-radius:15px;
@@ -122,10 +108,6 @@ main{
     margin:0 0 15px;
     font-size:20px;
 }
-
-/* =========================
-   FORM
-========================= */
 
 .field{
     margin-bottom:15px;
@@ -152,10 +134,6 @@ select:focus{
     border-color:#111;
 }
 
-/* =========================
-   LOADING
-========================= */
-
 .loading{
     text-align:center;
     padding:22px 10px;
@@ -168,6 +146,7 @@ select:focus{
     border-radius:10px;
     padding:14px;
     line-height:1.5;
+    word-break:break-word;
 }
 
 .success{
@@ -177,10 +156,6 @@ select:focus{
     padding:14px;
     line-height:1.5;
 }
-
-/* =========================
-   PRODUCTS
-========================= */
 
 #products{
     margin-top:5px;
@@ -236,14 +211,6 @@ select:focus{
     opacity:.55;
     cursor:not-allowed;
 }
-
-.buy-btn:active{
-    transform:scale(.99);
-}
-
-/* =========================
-   CURRENT NUMBER
-========================= */
 
 .number-card{
     background:#fff;
@@ -310,10 +277,6 @@ select:focus{
     word-break:break-word;
 }
 
-/* =========================
-   OTP
-========================= */
-
 .otp-box{
     margin-top:15px;
     background:#f5f5f5;
@@ -339,10 +302,6 @@ select:focus{
     word-break:break-word;
     line-height:1.5;
 }
-
-/* =========================
-   ACTIONS
-========================= */
 
 .actions{
     display:grid;
@@ -380,10 +339,6 @@ select:focus{
     font-weight:bold;
     cursor:pointer;
 }
-
-/* =========================
-   HISTORY
-========================= */
 
 .history-card{
     background:#fff;
@@ -432,10 +387,6 @@ select:focus{
     color:#c00;
 }
 
-/* =========================
-   MOBILE
-========================= */
-
 @media(max-width:430px){
 
     main{
@@ -454,326 +405,294 @@ select:focus{
 }
 
 </style>
+
 </head>
 
 <body>
 
 <header>
 
-    <div class="header-row">
+<div class="header-row">
 
-        <h1>Virtual Numbers</h1>
+<h1>Virtual Numbers</h1>
 
-        <button
-            class="back-btn"
-            type="button"
-            onclick="location.href='dashboard.html'"
-        >
-            ← Back
-        </button>
+<button
+    class="back-btn"
+    type="button"
+    onclick="location.href='dashboard.html'"
+>
+← Back
+</button>
 
-    </div>
+</div>
 
 </header>
 
-
 <main>
-
-<!-- =========================
-     WALLET
-========================= -->
 
 <div class="wallet-card">
 
-    <div class="wallet-label">
-        Wallet Balance
-    </div>
+<div class="wallet-label">
+Wallet Balance
+</div>
 
-    <div
-        id="walletBalance"
-        class="wallet-balance"
-    >
-        ₦0.00
-    </div>
+<div
+    id="walletBalance"
+    class="wallet-balance"
+>
+₦0.00
+</div>
 
-    <!-- IMPORTANT:
-         Your actual wallet page is wallet.html
-    -->
-
-    <a
-        href="wallet.html"
-        class="fund-link"
-    >
-        + Fund Wallet
-    </a>
+<a
+    href="wallet.html"
+    class="fund-link"
+>
++ Fund Wallet
+</a>
 
 </div>
 
-
-<!-- =========================
-     SELECT NUMBER
-========================= -->
 
 <div class="card">
 
-    <h2>Get a Virtual Number</h2>
+<h2>Get a Virtual Number</h2>
 
-    <div class="field">
+<div class="field">
 
-        <label for="country">
-            Country
-        </label>
+<label for="country">
+Country
+</label>
 
-        <select id="country">
+<select id="country">
 
-            <option value="">
-                Loading countries...
-            </option>
+<option value="">
+Loading countries...
+</option>
 
-        </select>
-
-    </div>
-
-
-    <div class="field">
-
-        <label for="service">
-            Service
-        </label>
-
-        <select id="service">
-
-            <option value="">
-                Select a country first
-            </option>
-
-        </select>
-
-    </div>
-
-
-    <div class="field">
-
-        <label for="operator">
-            Operator
-        </label>
-
-        <select id="operator">
-
-            <option value="any">
-                Any operator
-            </option>
-
-        </select>
-
-    </div>
+</select>
 
 </div>
 
 
-<!-- =========================
-     PRODUCTS
-========================= -->
+<div class="field">
+
+<label for="service">
+Service
+</label>
+
+<select id="service">
+
+<option value="">
+Select a country first
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label for="operator">
+Operator
+</label>
+
+<select id="operator">
+
+<option value="any">
+Any operator
+</option>
+
+</select>
+
+</div>
+
+</div>
+
 
 <div class="card">
 
-    <h2>Available Numbers</h2>
+<h2>Available Numbers</h2>
 
-    <div id="products">
+<div id="products">
 
-        <div class="loading">
-            Select a country to load numbers.
-        </div>
-
-    </div>
+<div class="loading">
+Select a country to load numbers.
+</div>
 
 </div>
 
+</div>
 
-<!-- =========================
-     ACTIVE NUMBER
-========================= -->
 
 <div
     id="numberCard"
     class="number-card"
 >
 
-    <h2>Your Virtual Number</h2>
+<h2>Your Virtual Number</h2>
 
-    <div class="number-box">
+<div class="number-box">
 
-        <div class="number-label">
-            Phone Number
-        </div>
+<div class="number-label">
+Phone Number
+</div>
 
-        <div
-            id="number"
-            class="number"
-        >
-            —
-        </div>
+<div
+    id="number"
+    class="number"
+>
+—
+</div>
 
-        <button
-            id="copyNumberBtn"
-            class="copy-btn"
-            type="button"
-            onclick="copyNumber()"
-        >
-            📋 Copy Number
-        </button>
-
-
-        <div style="margin-top:15px">
-
-            <div class="info-row">
-
-                <span class="info-label">
-                    Country
-                </span>
-
-                <span
-                    id="activeCountry"
-                    class="info-value"
-                >
-                    —
-                </span>
-
-            </div>
+<button
+    id="copyNumberBtn"
+    class="copy-btn"
+    type="button"
+    onclick="copyNumber()"
+>
+📋 Copy Number
+</button>
 
 
-            <div class="info-row">
+<div style="margin-top:15px">
 
-                <span class="info-label">
-                    Service
-                </span>
+<div class="info-row">
 
-                <span
-                    id="activeService"
-                    class="info-value"
-                >
-                    —
-                </span>
+<span class="info-label">
+Country
+</span>
 
-            </div>
-
-
-            <div class="info-row">
-
-                <span class="info-label">
-                    Price
-                </span>
-
-                <span
-                    id="activePrice"
-                    class="info-value"
-                >
-                    —
-                </span>
-
-            </div>
-
-
-            <div class="info-row">
-
-                <span class="info-label">
-                    Status
-                </span>
-
-                <span
-                    id="activeStatus"
-                    class="info-value"
-                >
-                    Waiting for SMS
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <!-- =========================
-             OTP
-        ========================= -->
-
-        <div class="otp-box">
-
-            <div class="otp-label">
-                OTP / SMS
-            </div>
-
-            <div
-                id="otp"
-                class="otp"
-            >
-                Waiting...
-            </div>
-
-            <div
-                id="sms"
-                class="sms"
-            >
-                Waiting for verification SMS...
-            </div>
-
-        </div>
-
-
-        <!-- =========================
-             ACTION BUTTONS
-        ========================= -->
-
-        <div class="actions">
-
-            <button
-                id="refreshBtn"
-                class="action-btn refresh-btn"
-                type="button"
-                onclick="checkStatus()"
-            >
-                🔄 Check OTP
-            </button>
-
-            <button
-                id="cancelBtn"
-                class="action-btn cancel-btn"
-                type="button"
-                onclick="cancelNumber()"
-            >
-                ❌ Cancel & Refund
-            </button>
-
-        </div>
-
-
-        <button
-            class="support-btn"
-            type="button"
-            onclick="contactSupport()"
-        >
-            💬 Contact Support
-        </button>
-
-    </div>
+<span
+    id="activeCountry"
+    class="info-value"
+>
+—
+</span>
 
 </div>
 
 
-<!-- =========================
-     MY VIRTUAL NUMBER HISTORY
-========================= -->
+<div class="info-row">
+
+<span class="info-label">
+Service
+</span>
+
+<span
+    id="activeService"
+    class="info-value"
+>
+—
+</span>
+
+</div>
+
+
+<div class="info-row">
+
+<span class="info-label">
+Price
+</span>
+
+<span
+    id="activePrice"
+    class="info-value"
+>
+—
+</span>
+
+</div>
+
+
+<div class="info-row">
+
+<span class="info-label">
+Status
+</span>
+
+<span
+    id="activeStatus"
+    class="info-value"
+>
+Waiting for SMS
+</span>
+
+</div>
+
+</div>
+
+
+<div class="otp-box">
+
+<div class="otp-label">
+OTP / SMS
+</div>
+
+<div
+    id="otp"
+    class="otp"
+>
+Waiting...
+</div>
+
+<div
+    id="sms"
+    class="sms"
+>
+Waiting for verification SMS...
+</div>
+
+</div>
+
+
+<div class="actions">
+
+<button
+    id="refreshBtn"
+    class="action-btn refresh-btn"
+    type="button"
+    onclick="checkStatus()"
+>
+🔄 Check OTP
+</button>
+
+<button
+    id="cancelBtn"
+    class="action-btn cancel-btn"
+    type="button"
+    onclick="cancelNumber()"
+>
+❌ Cancel & Refund
+</button>
+
+</div>
+
+
+<button
+    class="support-btn"
+    type="button"
+    onclick="contactSupport()"
+>
+💬 Contact Support
+</button>
+
+</div>
+
+</div>
+
 
 <div class="history-card">
 
-    <h2>Virtual Number History</h2>
+<h2>Virtual Number History</h2>
 
-    <div id="history">
+<div id="history">
 
-        <div class="loading">
-            Loading history...
-        </div>
+<div class="loading">
+Loading history...
+</div>
 
-    </div>
+</div>
 
 </div>
 
@@ -782,114 +701,76 @@ select:focus{
 
 <script>
 
-/* =====================================================
-   SUPABASE
-===================================================== */
-
 const SUPABASE_URL =
-    "https://hkfhehbhmucymusaytoe.supabase.co";
+"https://hkfhehbhmucymusaytoe.supabase.co";
 
 const SUPABASE_KEY =
-    "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+"sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
 const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
-
-
-/* =====================================================
-   EDGE FUNCTION
-   Your deployed Edge Function name:
-   numpool-api
-===================================================== */
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 
 const EDGE_FUNCTION_URL =
-    `${SUPABASE_URL}/functions/v1/numpool-api`;
-
-
-/* =====================================================
-   SUPPORT
-===================================================== */
+`${SUPABASE_URL}/functions/v1/numpool-api`;
 
 const WHATSAPP_SUPPORT =
-    "2347015908401";
-
-
-/* =====================================================
-   STATE
-===================================================== */
+"2347015908401";
 
 let currentUser = null;
-
 let countries = [];
-
 let products = [];
-
 let activeOrder = null;
-
 let statusTimer = null;
 
-
-/* =====================================================
-   DOM
-===================================================== */
-
 const countrySelect =
-    document.getElementById("country");
+document.getElementById("country");
 
 const serviceSelect =
-    document.getElementById("service");
+document.getElementById("service");
 
 const operatorSelect =
-    document.getElementById("operator");
+document.getElementById("operator");
 
 const productsBox =
-    document.getElementById("products");
+document.getElementById("products");
 
 const walletBalance =
-    document.getElementById("walletBalance");
+document.getElementById("walletBalance");
 
 const numberCard =
-    document.getElementById("numberCard");
+document.getElementById("numberCard");
 
-
-/* =====================================================
-   FORMAT MONEY
-===================================================== */
 
 function formatMoney(value){
 
-    return Number(value || 0).toLocaleString(
-        "en-NG",
-        {
-            minimumFractionDigits:2,
-            maximumFractionDigits:2
-        }
-    );
+return Number(value || 0).toLocaleString(
+    "en-NG",
+    {
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+    }
+);
 
 }
 
-
-/* =====================================================
-   ESCAPE HTML
-===================================================== */
 
 function esc(value){
 
-    return String(value ?? "")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+return String(value ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
 
 }
 
 
 /* =====================================================
-   EDGE FUNCTION REQUEST
+   EDGE REQUEST
 ===================================================== */
 
 async function edgeRequest(
@@ -897,348 +778,344 @@ async function edgeRequest(
     options = {}
 ){
 
-    const {
-        method = "GET",
-        query = {},
-        body = null
-    } = options;
+const {
+    method = "GET",
+    query = {},
+    body = null
+} = options;
 
+const {
+    data:{
+        session
+    }
+} =
+await supabaseClient
+    .auth
+    .getSession();
 
-    const {
-        data:{
-            session
-        }
-    } =
-        await supabaseClient
-            .auth
-            .getSession();
+if(
+    !session ||
+    !session.access_token
+){
 
+throw new Error(
+    "Your session has expired. Please login again."
+);
+
+}
+
+const params =
+new URLSearchParams();
+
+params.set(
+    "action",
+    action
+);
+
+Object.entries(query).forEach(
+([key,value])=>{
 
     if(
-        !session ||
-        !session.access_token
+        value !== undefined &&
+        value !== null &&
+        String(value) !== ""
     ){
 
-        throw new Error(
-            "Your session has expired. Please login again."
+        params.set(
+            key,
+            String(value)
         );
 
     }
 
+}
+);
 
-    const params =
-        new URLSearchParams();
+const headers = {
 
+    Authorization:
+        `Bearer ${session.access_token}`,
 
-    params.set(
-        "action",
-        action
-    );
+    apikey:
+        SUPABASE_KEY,
 
+    Accept:
+        "application/json"
 
-    Object.entries(query).forEach(
-        ([key,value])=>{
+};
 
-            if(
-                value !== undefined &&
-                value !== null &&
-                String(value) !== ""
-            ){
+const requestOptions = {
 
-                params.set(
-                    key,
-                    String(value)
-                );
+    method,
 
-            }
+    headers
 
-        }
-    );
+};
 
+if(body !== null){
 
-    const requestOptions = {
+requestOptions.body =
+JSON.stringify(body);
 
-        method,
+requestOptions.headers[
+    "Content-Type"
+] =
+"application/json";
 
-        headers:{
-            Authorization:
-                `Bearer ${session.access_token}`,
+}
 
-            apikey:
-                SUPABASE_KEY,
+const response =
+await fetch(
+    `${EDGE_FUNCTION_URL}?${params.toString()}`,
+    requestOptions
+);
 
-            "Content-Type":
-                "application/json"
-        }
+const text =
+await response.text();
 
-    };
+let data;
 
+try{
 
-    if(body !== null){
+data =
+JSON.parse(text);
 
-        requestOptions.body =
-            JSON.stringify(body);
+}catch{
 
-    }
+data = {
+    success:false,
+    error:text
+};
 
+}
 
-    const response =
-        await fetch(
-            `${EDGE_FUNCTION_URL}?${params.toString()}`,
-            requestOptions
-        );
+if(
+!response.ok ||
+data?.success === false
+){
 
+let message =
+data?.error;
 
-    const text =
-        await response.text();
+if(
+typeof message === "object"
+){
 
+message =
+message?.message ||
+JSON.stringify(message);
 
-    let data;
+}
 
+throw new Error(
+message ||
+`Request failed (${response.status})`
+);
 
-    try{
+}
 
-        data =
-            JSON.parse(text);
-
-    }catch{
-
-        data = {
-            success:false,
-            error:text
-        };
-
-    }
-
-
-    if(
-        !response.ok ||
-        data?.success === false
-    ){
-
-        let message =
-            data?.error;
-
-
-        if(
-            typeof message === "object"
-        ){
-
-            message =
-                message?.message ||
-                JSON.stringify(message);
-
-        }
-
-
-        throw new Error(
-            message ||
-            `Request failed (${response.status})`
-        );
-
-    }
-
-
-    return data;
+return data;
 
 }
 
 
 /* =====================================================
-   AUTH
+   LOGIN
 ===================================================== */
 
 async function checkLogin(){
 
-    const {
-        data:{
-            user
-        },
-        error
-    } =
-        await supabaseClient
-            .auth
-            .getUser();
+const {
+    data:{
+        user
+    },
+    error
+} =
+await supabaseClient
+    .auth
+    .getUser();
 
+if(
+error ||
+!user
+){
 
-    if(
-        error ||
-        !user
-    ){
+location.href =
+"login.html";
 
-        location.href =
-            "login.html";
+return false;
 
-        return false;
+}
 
-    }
+currentUser =
+user;
 
-
-    currentUser =
-        user;
-
-    return true;
+return true;
 
 }
 
 
 /* =====================================================
-   LOAD WALLET
+   WALLET
 ===================================================== */
 
 async function loadWallet(){
 
-    if(!currentUser){
+if(!currentUser){
+    return;
+}
 
-        return;
+try{
 
-    }
+const {
+    data,
+    error
+} =
+await supabaseClient
+    .rpc("ensure_my_wallet");
 
+if(error){
 
-    try{
+console.error(
+    "Wallet error:",
+    error
+);
 
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .rpc("ensure_my_wallet");
+walletBalance.textContent =
+"Unable to load balance.";
 
+return;
 
-        if(error){
+}
 
-            console.error(
-                "Wallet error:",
-                error
-            );
+walletBalance.textContent =
+"₦" +
+formatMoney(
+    data?.balance || 0
+);
 
-            walletBalance.textContent =
-                "Unable to load balance.";
+}catch(error){
 
-            return;
+console.error(
+    "Wallet loading error:",
+    error
+);
 
-        }
+walletBalance.textContent =
+"Unable to load balance.";
 
-
-        walletBalance.textContent =
-            "₦" +
-            formatMoney(
-                data?.balance || 0
-            );
-
-    }catch(error){
-
-        console.error(
-            "Wallet loading error:",
-            error
-        );
-
-        walletBalance.textContent =
-            "Unable to load balance.";
-
-    }
+}
 
 }
 
 
 /* =====================================================
-   LOAD COUNTRIES
+   COUNTRIES
 ===================================================== */
 
 async function loadCountries(){
 
-    countrySelect.innerHTML = `
-        <option value="">
-            Loading countries...
-        </option>
-    `;
+countrySelect.innerHTML = `
+<option value="">
+Loading countries...
+</option>
+`;
 
+productsBox.innerHTML = `
+<div class="loading">
+Loading countries...
+</div>
+`;
 
-    try{
+try{
 
-        const data =
-            await edgeRequest(
-                "countries"
-            );
+const data =
+await edgeRequest(
+    "countries"
+);
 
+countries =
+normalizeCountries(
+    data?.countries
+);
 
-        countries =
-            normalizeCountries(
-                data?.countries
-            );
+countrySelect.innerHTML = `
+<option value="">
+Select country
+</option>
+`;
 
+countries.forEach(
+country=>{
 
-        countrySelect.innerHTML = `
-            <option value="">
-                Select country
-            </option>
-        `;
+const option =
+document.createElement(
+    "option"
+);
 
+option.value =
+country.code;
 
-        countries.forEach(
-            country=>{
+option.textContent =
+country.name ||
+country.code;
 
-                const option =
-                    document.createElement(
-                        "option"
-                    );
+option.dataset.countryId =
+country.id ?? "";
 
+countrySelect.appendChild(
+    option
+);
 
-                option.value =
-                    country.code;
+}
+);
 
+if(
+countries.length === 0
+){
 
-                option.textContent =
-                    country.name ||
-                    country.code;
+countrySelect.innerHTML = `
+<option value="">
+No countries available
+</option>
+`;
 
+productsBox.innerHTML = `
+<div class="error">
+❌ 5SIM returned no countries.
+</div>
+`;
 
-                option.dataset.countryId =
-                    country.id ?? "";
+}else{
 
+productsBox.innerHTML = `
+<div class="loading">
+Select a country to load numbers.
+</div>
+`;
 
-                countrySelect.appendChild(
-                    option
-                );
+}
 
-            }
-        );
+}catch(error){
 
+console.error(
+    "Countries error:",
+    error
+);
 
-        if(
-            countries.length === 0
-        ){
+countrySelect.innerHTML = `
+<option value="">
+Unable to load countries
+</option>
+`;
 
-            countrySelect.innerHTML = `
-                <option value="">
-                    No countries available
-                </option>
-            `;
+productsBox.innerHTML = `
+<div class="error">
+❌ ${esc(error.message)}
+</div>
+`;
 
-        }
-
-    }catch(error){
-
-        console.error(
-            "Countries error:",
-            error
-        );
-
-
-        countrySelect.innerHTML = `
-            <option value="">
-                Unable to load countries
-            </option>
-        `;
-
-
-        productsBox.innerHTML = `
-            <div class="error">
-                ❌ ${esc(error.message)}
-            </div>
-        `;
-
-    }
+}
 
 }
 
@@ -1249,120 +1126,114 @@ async function loadCountries(){
 
 function normalizeCountries(raw){
 
-    const result = [];
+const result = [];
 
+if(
+!raw ||
+typeof raw !== "object"
+){
 
-    if(
-        !raw ||
-        typeof raw !== "object"
-    ){
+return result;
 
-        return result;
+}
 
-    }
+if(
+Array.isArray(raw)
+){
 
+raw.forEach(
+item=>{
 
-    if(
-        Array.isArray(raw)
-    ){
+if(
+item &&
+typeof item === "object"
+){
 
-        raw.forEach(
-            item=>{
+const code =
+String(
+    item.code ??
+    item.short_name ??
+    item.iso ??
+    ""
+).trim();
 
-                if(
-                    item &&
-                    typeof item === "object"
-                ){
+if(code){
 
-                    const code =
-                        String(
-                            item.code ??
-                            item.short_name ??
-                            item.iso ??
-                            ""
-                        ).trim();
+result.push({
 
+code,
 
-                    if(code){
+id:
+item.id ??
+item.country_id ??
+"",
 
-                        result.push({
+name:
+item.name ??
+item.title ??
+code
 
-                            code,
+});
 
-                            id:
-                                item.id ??
-                                item.country_id ??
-                                "",
+}
 
-                            name:
-                                item.name ??
-                                item.title ??
-                                code
+}
 
-                        });
+}
+);
 
-                    }
+}else{
 
-                }
+Object.entries(raw).forEach(
+([code,item])=>{
 
-            }
-        );
+if(
+item &&
+typeof item === "object"
+){
 
-    }else{
+result.push({
 
-        Object.entries(raw).forEach(
-            ([code,item])=>{
+code,
 
-                if(
-                    item &&
-                    typeof item === "object"
-                ){
+id:
+item.id ??
+item.country_id ??
+"",
 
-                    result.push({
+name:
+item.name ??
+item.title ??
+code
 
-                        code,
+});
 
-                        id:
-                            item.id ??
-                            item.country_id ??
-                            "",
+}else{
 
-                        name:
-                            item.name ??
-                            item.title ??
-                            code
+result.push({
 
-                    });
+code,
 
-                }else{
+id:"",
+name:code
 
-                    result.push({
+});
 
-                        code,
+}
 
-                        id:"",
+}
+);
 
-                        name:code
+}
 
-                    });
+result.sort(
+(a,b)=>
+String(a.name).localeCompare(
+    String(b.name)
+)
+);
 
-                }
-
-            }
-        );
-
-    }
-
-
-    result.sort(
-        (a,b)=>
-            String(a.name).localeCompare(
-                String(b.name)
-            )
-    );
-
-
-    return result;
+return result;
 
 }
 
@@ -1372,284 +1243,255 @@ function normalizeCountries(raw){
 ===================================================== */
 
 countrySelect.addEventListener(
-    "change",
-    async function(){
+"change",
+async function(){
 
-        const country =
-            this.value;
+const country =
+this.value;
 
+serviceSelect.innerHTML = `
+<option value="">
+Loading services...
+</option>
+`;
 
-        serviceSelect.innerHTML = `
-            <option value="">
-                Loading services...
-            </option>
-        `;
+operatorSelect.innerHTML = `
+<option value="any">
+Any operator
+</option>
+`;
 
+productsBox.innerHTML = `
+<div class="loading">
+Loading available numbers...
+</div>
+`;
 
-        operatorSelect.innerHTML = `
-            <option value="any">
-                Any operator
-            </option>
-        `;
+if(!country){
 
+serviceSelect.innerHTML = `
+<option value="">
+Select a country first
+</option>
+`;
 
-        productsBox.innerHTML = `
-            <div class="loading">
-                Loading available numbers...
-            </div>
-        `;
+productsBox.innerHTML = `
+<div class="loading">
+Select a country to load numbers.
+</div>
+`;
 
+return;
 
-        if(!country){
+}
 
-            serviceSelect.innerHTML = `
-                <option value="">
-                    Select a country first
-                </option>
-            `;
+await loadProducts(
+    country
+);
 
-
-            productsBox.innerHTML = `
-                <div class="loading">
-                    Select a country to load numbers.
-                </div>
-            `;
-
-            return;
-
-        }
-
-
-        await loadProducts(country);
-
-    }
+}
 );
 
 
 /* =====================================================
-   LOAD VIRTUAL NUMBER PRODUCTS
+   PRODUCTS
 ===================================================== */
 
-async function loadProducts(country){
+async function loadProducts(
+country
+){
 
-    try{
+try{
 
-        const data =
-            await edgeRequest(
-                "products",
-                {
-                    query:{
-                        country
-                    }
-                }
-            );
-
-
-        products =
-            Array.isArray(
-                data?.products
-            )
-                ? data.products
-                : [];
-
-
-        populateServices();
-
-        renderProducts();
-
-    }catch(error){
-
-        console.error(
-            "Products error:",
-            error
-        );
-
-
-        products = [];
-
-
-        serviceSelect.innerHTML = `
-            <option value="">
-                Unable to load services
-            </option>
-        `;
-
-
-        productsBox.innerHTML = `
-            <div class="error">
-                ❌ ${esc(error.message)}
-            </div>
-        `;
-
+const data =
+await edgeRequest(
+    "products",
+    {
+        query:{
+            country
+        }
     }
+);
+
+products =
+Array.isArray(
+    data?.products
+)
+? data.products
+: [];
+
+populateServices();
+
+renderProducts();
+
+}catch(error){
+
+console.error(
+    "Products error:",
+    error
+);
+
+products = [];
+
+serviceSelect.innerHTML = `
+<option value="">
+Unable to load services
+</option>
+`;
+
+productsBox.innerHTML = `
+<div class="error">
+❌ ${esc(error.message)}
+</div>
+`;
+
+}
 
 }
 
 
 /* =====================================================
-   POPULATE SERVICES
+   SERVICES
 ===================================================== */
 
 function populateServices(){
 
-    const names =
-        [
-            ...new Set(
-                products.map(
-                    item =>
-                        String(
-                            item.product ||
-                            ""
-                        ).trim()
-                )
-            )
-        ]
-        .filter(Boolean)
-        .sort(
-            (a,b)=>
-                a.localeCompare(b)
-        );
+const names =
+[
+    ...new Set(
+        products.map(
+            item =>
+                String(
+                    item.product ||
+                    ""
+                ).trim()
+        )
+    )
+]
+.filter(Boolean)
+.sort(
+    (a,b)=>
+        a.localeCompare(b)
+);
 
+serviceSelect.innerHTML = `
+<option value="">
+All services
+</option>
+`;
 
-    serviceSelect.innerHTML = `
-        <option value="">
-            All services
-        </option>
-    `;
+names.forEach(
+name=>{
 
+const option =
+document.createElement(
+    "option"
+);
 
-    names.forEach(
-        name=>{
+option.value =
+name;
 
-            const option =
-                document.createElement(
-                    "option"
-                );
+option.textContent =
+name;
 
+serviceSelect.appendChild(
+    option
+);
 
-            option.value =
-                name;
+}
+);
 
-
-            option.textContent =
-                name;
-
-
-            serviceSelect.appendChild(
-                option
-            );
-
-        }
-    );
-
-
-    populateOperators();
+populateOperators();
 
 }
 
 
-/* =====================================================
-   SERVICE CHANGE
-===================================================== */
-
 serviceSelect.addEventListener(
-    "change",
-    function(){
+"change",
+function(){
 
-        populateOperators();
+populateOperators();
+renderProducts();
 
-        renderProducts();
-
-    }
+}
 );
 
-
-/* =====================================================
-   OPERATOR CHANGE
-===================================================== */
 
 operatorSelect.addEventListener(
-    "change",
-    function(){
+"change",
+function(){
 
-        renderProducts();
+renderProducts();
 
-    }
+}
 );
 
 
 /* =====================================================
-   POPULATE OPERATORS
+   OPERATORS
 ===================================================== */
 
 function populateOperators(){
 
-    const selectedService =
-        serviceSelect.value;
+const selectedService =
+serviceSelect.value;
 
+const matching =
+products.filter(
+item =>
+!selectedService ||
+String(item.product) ===
+selectedService
+);
 
-    const matching =
-        products.filter(
+const operators =
+[
+    ...new Set(
+        matching.map(
             item =>
-                !selectedService ||
-                String(item.product) ===
-                selectedService
-        );
-
-
-    const operators =
-        [
-            ...new Set(
-                matching.map(
-                    item =>
-                        String(
-                            item.operator ||
-                            "any"
-                        ).trim()
-                )
-            )
-        ]
-        .filter(
-            value =>
-                value &&
-                value !== "any"
+                String(
+                    item.operator ||
+                    "any"
+                ).trim()
         )
-        .sort(
-            (a,b)=>
-                a.localeCompare(b)
-        );
+    )
+]
+.filter(
+value =>
+value &&
+value !== "any"
+)
+.sort(
+(a,b)=>
+a.localeCompare(b)
+);
 
+operatorSelect.innerHTML = `
+<option value="any">
+Any operator
+</option>
+`;
 
-    operatorSelect.innerHTML = `
-        <option value="any">
-            Any operator
-        </option>
-    `;
+operators.forEach(
+operator=>{
 
+const option =
+document.createElement(
+    "option"
+);
 
-    operators.forEach(
-        operator=>{
+option.value =
+operator;
 
-            const option =
-                document.createElement(
-                    "option"
-                );
+option.textContent =
+operator;
 
+operatorSelect.appendChild(
+    option
+);
 
-            option.value =
-                operator;
-
-
-            option.textContent =
-                operator;
-
-
-            operatorSelect.appendChild(
-                option
-            );
-
-        }
-    );
+}
+);
 
 }
 
@@ -1660,811 +1502,709 @@ function populateOperators(){
 
 function renderProducts(){
 
-    const selectedService =
-        serviceSelect.value;
+const selectedService =
+serviceSelect.value;
 
+const selectedOperator =
+operatorSelect.value;
 
-    const selectedOperator =
-        operatorSelect.value;
+const filtered =
+products.filter(
+item=>{
 
+const serviceMatch =
+!selectedService ||
+String(item.product) ===
+selectedService;
 
-    const filtered =
-        products.filter(
-            item=>{
+const operatorMatch =
+selectedOperator === "any" ||
+String(
+    item.operator ||
+    "any"
+) === selectedOperator;
 
-                const serviceMatch =
-                    !selectedService ||
-                    String(item.product) ===
-                    selectedService;
+return (
+    serviceMatch &&
+    operatorMatch
+);
 
+}
+);
 
-                const operatorMatch =
-                    selectedOperator === "any" ||
-                    String(
-                        item.operator ||
-                        "any"
-                    ) ===
-                    selectedOperator;
+if(
+filtered.length === 0
+){
 
+productsBox.innerHTML = `
+<div class="loading">
+No virtual numbers are available for this selection.
+</div>
+`;
 
-                return (
-                    serviceMatch &&
-                    operatorMatch
-                );
+return;
 
-            }
-        );
+}
 
+productsBox.innerHTML = "";
 
-    if(
-        filtered.length === 0
-    ){
+filtered.forEach(
+item=>{
 
-        productsBox.innerHTML = `
-            <div class="loading">
-                No virtual numbers are available for this selection.
-            </div>
-        `;
+const card =
+document.createElement(
+    "div"
+);
 
-        return;
+card.className =
+"product";
 
-    }
+const product =
+String(
+    item.product ||
+    ""
+);
 
+const operator =
+String(
+    item.operator ||
+    "any"
+);
 
-    productsBox.innerHTML = "";
+const price =
+Number(
+    item.selling_price_ngn ||
+    0
+);
 
+card.innerHTML = `
 
-    filtered.forEach(
-        item=>{
+<div class="product-top">
 
-            const card =
-                document.createElement(
-                    "div"
-                );
+<div>
 
+<div class="product-name">
+${esc(product)}
+</div>
 
-            card.className =
-                "product";
+<div class="product-operator">
+Operator:
+${esc(operator)}
+</div>
 
+</div>
 
-            const product =
-                String(
-                    item.product ||
-                    ""
-                );
+<div class="product-price">
+₦${formatMoney(price)}
+</div>
 
+</div>
 
-            const operator =
-                String(
-                    item.operator ||
-                    "any"
-                );
+<button
+class="buy-btn"
+type="button"
+>
+Buy Number
+</button>
 
+`;
 
-            const price =
-                Number(
-                    item.selling_price_ngn ||
-                    0
-                );
+const button =
+card.querySelector(
+".buy-btn"
+);
 
+button.addEventListener(
+"click",
+()=>{
+buyNumber(
+    item,
+    button
+);
+}
+);
 
-            card.innerHTML = `
+productsBox.appendChild(
+card
+);
 
-                <div class="product-top">
-
-                    <div>
-
-                        <div class="product-name">
-                            ${esc(product)}
-                        </div>
-
-                        <div class="product-operator">
-                            Operator:
-                            ${esc(operator)}
-                        </div>
-
-                    </div>
-
-                    <div class="product-price">
-                        ₦${formatMoney(price)}
-                    </div>
-
-                </div>
-
-
-                <button
-                    class="buy-btn"
-                    type="button"
-                >
-                    Buy Number
-                </button>
-
-            `;
-
-
-            const button =
-                card.querySelector(
-                    ".buy-btn"
-                );
-
-
-            button.addEventListener(
-                "click",
-                ()=>{
-                    buyNumber(
-                        item,
-                        button
-                    );
-                }
-            );
-
-
-            productsBox.appendChild(
-                card
-            );
-
-        }
-    );
+}
+);
 
 }
 
 
 /* =====================================================
-   BUY NUMBER
+   BUY
 ===================================================== */
 
 async function buyNumber(
-    item,
-    button
+item,
+button
 ){
 
-    if(!currentUser){
+if(!currentUser){
 
-        location.href =
-            "login.html";
+location.href =
+"login.html";
 
-        return;
+return;
 
+}
+
+const country =
+countrySelect.value;
+
+if(!country){
+
+alert(
+"Please select a country."
+);
+
+return;
+
+}
+
+const countryOption =
+countrySelect.options[
+countrySelect.selectedIndex
+];
+
+const countryId =
+Number(
+countryOption?.dataset?.countryId ||
+0
+);
+
+const product =
+String(
+item.product ||
+""
+).trim();
+
+const operator =
+String(
+item.operator ||
+"any"
+).trim() ||
+"any";
+
+const displayedPrice =
+Number(
+item.selling_price_ngn ||
+0
+);
+
+if(
+!product ||
+displayedPrice <= 0
+){
+
+alert(
+"Invalid number information."
+);
+
+return;
+
+}
+
+const confirmed =
+confirm(
+`Buy ${product} number for ₦${formatMoney(displayedPrice)}?`
+);
+
+if(!confirmed){
+    return;
+}
+
+button.disabled =
+true;
+
+button.textContent =
+"Purchasing...";
+
+try{
+
+const data =
+await edgeRequest(
+"buy",
+{
+    method:"POST",
+
+    body:{
+        country,
+
+        country_id:
+            countryId,
+
+        operator,
+
+        product
     }
+}
+);
 
+if(
+!data ||
+data.success === false
+){
 
-    const country =
-        countrySelect.value;
+throw new Error(
+    data?.error ||
+    "Purchase failed."
+);
 
+}
 
-    if(!country){
+activeOrder =
+data.order;
 
-        alert(
-            "Please select a country."
-        );
+if(!activeOrder){
 
-        return;
+throw new Error(
+    "The number was not returned by the server."
+);
 
-    }
+}
 
+showActiveOrder(
+activeOrder
+);
 
-    const countryOption =
-        countrySelect.options[
-            countrySelect.selectedIndex
-        ];
+await loadWallet();
 
+await loadHistory();
 
-    const countryId =
-        Number(
-            countryOption?.dataset?.countryId ||
-            0
-        );
+startStatusPolling();
 
+}catch(error){
 
-    const product =
-        String(
-            item.product ||
-            ""
-        ).trim();
+console.error(
+"Buy error:",
+error
+);
 
+alert(
+"❌ " +
+error.message
+);
 
-    const operator =
-        String(
-            item.operator ||
-            "any"
-        ).trim() ||
-        "any";
+}finally{
 
+button.disabled =
+false;
 
-    const displayedPrice =
-        Number(
-            item.selling_price_ngn ||
-            0
-        );
+button.textContent =
+"Buy Number";
 
-
-    if(
-        !product ||
-        displayedPrice <= 0
-    ){
-
-        alert(
-            "Invalid number information."
-        );
-
-        return;
-
-    }
-
-
-    const confirmed =
-        confirm(
-            `Buy ${product} number for ₦${formatMoney(displayedPrice)}?`
-        );
-
-
-    if(!confirmed){
-
-        return;
-
-    }
-
-
-    button.disabled =
-        true;
-
-
-    button.textContent =
-        "Purchasing...";
-
-
-    try{
-
-        const data =
-            await edgeRequest(
-                "buy",
-                {
-                    method:"POST",
-
-                    body:{
-
-                        country,
-
-                        country_id:
-                            countryId,
-
-                        operator,
-
-                        product
-
-                    }
-
-                }
-            );
-
-
-        if(
-            !data ||
-            data.success === false
-        ){
-
-            throw new Error(
-                data?.error ||
-                "Purchase failed."
-            );
-
-        }
-
-
-        activeOrder =
-            data.order;
-
-
-        if(!activeOrder){
-
-            throw new Error(
-                "The number was not returned by the server."
-            );
-
-        }
-
-
-        showActiveOrder(
-            activeOrder
-        );
-
-
-        await loadWallet();
-
-        await loadHistory();
-
-
-        startStatusPolling();
-
-    }catch(error){
-
-        console.error(
-            "Buy error:",
-            error
-        );
-
-
-        alert(
-            "❌ " +
-            error.message
-        );
-
-    }finally{
-
-        button.disabled =
-            false;
-
-        button.textContent =
-            "Buy Number";
-
-    }
+}
 
 }
 
 
 /* =====================================================
-   SHOW ACTIVE ORDER
+   ACTIVE ORDER
 ===================================================== */
 
-function showActiveOrder(order){
+function showActiveOrder(
+order
+){
 
-    if(!order){
+if(!order){
+    return;
+}
 
-        return;
+numberCard.style.display =
+"block";
 
-    }
+document.getElementById(
+"number"
+).textContent =
+order.number ||
+"—";
 
+document.getElementById(
+"activeCountry"
+).textContent =
+order.country ||
+"—";
 
-    numberCard.style.display =
-        "block";
+document.getElementById(
+"activeService"
+).textContent =
+order.product ||
+"—";
 
+document.getElementById(
+"activePrice"
+).textContent =
+"₦" +
+formatMoney(
+order.customer_price_ngn
+);
 
-    document.getElementById(
-        "number"
-    ).textContent =
-        order.number ||
-        "—";
+document.getElementById(
+"activeStatus"
+).textContent =
+"Waiting for SMS";
 
+document.getElementById(
+"otp"
+).textContent =
+"Waiting...";
 
-    document.getElementById(
-        "activeCountry"
-    ).textContent =
-        order.country ||
-        order.country_name ||
-        "—";
+document.getElementById(
+"sms"
+).textContent =
+"Waiting for verification SMS...";
 
-
-    document.getElementById(
-        "activeService"
-    ).textContent =
-        order.product ||
-        order.service_name ||
-        "—";
-
-
-    document.getElementById(
-        "activePrice"
-    ).textContent =
-        "₦" +
-        formatMoney(
-            order.customer_price_ngn
-        );
-
-
-    document.getElementById(
-        "activeStatus"
-    ).textContent =
-        "Waiting for SMS";
-
-
-    document.getElementById(
-        "otp"
-    ).textContent =
-        "Waiting...";
-
-
-    document.getElementById(
-        "sms"
-    ).textContent =
-        "Waiting for verification SMS...";
-
-
-    numberCard.scrollIntoView({
-        behavior:"smooth",
-        block:"start"
-    });
+numberCard.scrollIntoView({
+behavior:"smooth",
+block:"start"
+});
 
 }
 
 
 /* =====================================================
-   CHECK STATUS
+   STATUS
 ===================================================== */
 
 async function checkStatus(){
 
-    if(!activeOrder){
+if(!activeOrder){
+    return;
+}
 
-        return;
+const providerId =
+String(
+activeOrder.five_sim_order_id ||
+activeOrder.numpool_order_id ||
+""
+).trim();
 
+if(!providerId){
+
+console.error(
+"Provider order ID is missing."
+);
+
+return;
+
+}
+
+const refreshBtn =
+document.getElementById(
+"refreshBtn"
+);
+
+refreshBtn.disabled =
+true;
+
+refreshBtn.textContent =
+"Checking...";
+
+try{
+
+const data =
+await edgeRequest(
+"status",
+{
+    query:{
+        id:providerId
     }
+}
+);
 
+const otp =
+data?.otp_code;
 
-    const providerId =
-        String(
-            activeOrder.five_sim_order_id ||
-            activeOrder.numpool_order_id ||
-            ""
-        ).trim();
+const sms =
+data?.full_sms;
 
+const providerStatus =
+String(
+data?.status ||
+""
+).toLowerCase();
 
-    if(!providerId){
+if(otp){
 
-        console.error(
-            "Provider order ID is missing."
-        );
+document.getElementById(
+"otp"
+).textContent =
+otp;
 
-        return;
+document.getElementById(
+"sms"
+).textContent =
+sms ||
+"Verification SMS received.";
 
-    }
+document.getElementById(
+"activeStatus"
+).textContent =
+"OTP Received";
 
+stopStatusPolling();
 
-    const refreshBtn =
-        document.getElementById(
-            "refreshBtn"
-        );
+await loadHistory();
 
+}else{
 
-    refreshBtn.disabled =
-        true;
+document.getElementById(
+"otp"
+).textContent =
+"Waiting...";
 
+document.getElementById(
+"sms"
+).textContent =
+"No verification SMS yet.";
 
-    refreshBtn.textContent =
-        "Checking...";
+if(
+providerStatus === "cancel" ||
+providerStatus === "cancelled"
+){
 
+document.getElementById(
+"activeStatus"
+).textContent =
+"Cancelled";
 
-    try{
+stopStatusPolling();
 
-        const data =
-            await edgeRequest(
-                "status",
-                {
-                    query:{
-                        id:providerId
-                    }
-                }
-            );
+}
 
+}
 
-        const otp =
-            data?.otp_code;
+}catch(error){
 
+console.error(
+"Status error:",
+error
+);
 
-        const sms =
-            data?.full_sms;
+}finally{
 
+refreshBtn.disabled =
+false;
 
-        const providerStatus =
-            String(
-                data?.status ||
-                ""
-            ).toLowerCase();
+refreshBtn.textContent =
+"🔄 Check OTP";
 
-
-        if(otp){
-
-            document.getElementById(
-                "otp"
-            ).textContent =
-                otp;
-
-
-            document.getElementById(
-                "sms"
-            ).textContent =
-                sms ||
-                "Verification SMS received.";
-
-
-            document.getElementById(
-                "activeStatus"
-            ).textContent =
-                "OTP Received";
-
-
-            stopStatusPolling();
-
-
-            await loadHistory();
-
-        }else{
-
-            document.getElementById(
-                "otp"
-            ).textContent =
-                "Waiting...";
-
-
-            document.getElementById(
-                "sms"
-            ).textContent =
-                "No verification SMS yet.";
-
-
-            if(
-                providerStatus === "cancel" ||
-                providerStatus === "cancelled"
-            ){
-
-                document.getElementById(
-                    "activeStatus"
-                ).textContent =
-                    "Cancelled";
-
-
-                stopStatusPolling();
-
-            }
-
-        }
-
-    }catch(error){
-
-        console.error(
-            "Status error:",
-            error
-        );
-
-    }finally{
-
-        refreshBtn.disabled =
-            false;
-
-        refreshBtn.textContent =
-            "🔄 Check OTP";
-
-    }
+}
 
 }
 
 
 /* =====================================================
-   AUTOMATIC OTP POLLING
+   POLLING
 ===================================================== */
 
 function startStatusPolling(){
 
-    stopStatusPolling();
+stopStatusPolling();
 
+statusTimer =
+setInterval(
+()=>{
+checkStatus();
+},
+7000
+);
 
-    statusTimer =
-        setInterval(
-            ()=>{
-                checkStatus();
-            },
-            7000
-        );
-
-
-    checkStatus();
+checkStatus();
 
 }
 
 
 function stopStatusPolling(){
 
-    if(statusTimer){
+if(statusTimer){
 
-        clearInterval(
-            statusTimer
-        );
+clearInterval(
+statusTimer
+);
 
-        statusTimer =
-            null;
+statusTimer =
+null;
 
-    }
+}
 
 }
 
 
 /* =====================================================
-   CANCEL + REFUND
+   CANCEL
 ===================================================== */
 
 async function cancelNumber(){
 
-    if(!activeOrder){
+if(!activeOrder){
+    return;
+}
 
-        return;
+const providerId =
+String(
+activeOrder.five_sim_order_id ||
+activeOrder.numpool_order_id ||
+""
+).trim();
 
+if(!providerId){
+
+alert(
+"Provider order ID is missing."
+);
+
+return;
+
+}
+
+const confirmed =
+confirm(
+"Cancel this number?\n\n" +
+"If the provider confirms the cancellation, " +
+"your wallet will be refunded."
+);
+
+if(!confirmed){
+    return;
+}
+
+const cancelBtn =
+document.getElementById(
+"cancelBtn"
+);
+
+cancelBtn.disabled =
+true;
+
+cancelBtn.textContent =
+"Cancelling...";
+
+try{
+
+const data =
+await edgeRequest(
+"cancel",
+{
+    method:"POST",
+
+    body:{
+        id:providerId
     }
+}
+);
 
+if(
+!data ||
+data.success === false
+){
 
-    const providerId =
-        String(
-            activeOrder.five_sim_order_id ||
-            activeOrder.numpool_order_id ||
-            ""
-        ).trim();
+throw new Error(
+data?.error ||
+"Cancellation failed."
+);
 
+}
 
-    if(!providerId){
+stopStatusPolling();
 
-        alert(
-            "Provider order ID is missing."
-        );
+document.getElementById(
+"activeStatus"
+).textContent =
+"Cancelled & Refunded";
 
-        return;
+alert(
+`✅ Number cancelled.\n\n₦${formatMoney(data.amount)} has been refunded to your wallet.`
+);
 
-    }
+await loadWallet();
 
+await loadHistory();
 
-    const confirmed =
-        confirm(
-            "Cancel this number?\n\n" +
-            "If the provider confirms the cancellation, " +
-            "your wallet will be refunded."
-        );
+}catch(error){
 
+console.error(
+"Cancel error:",
+error
+);
 
-    if(!confirmed){
+alert(
+"❌ " +
+error.message
+);
 
-        return;
+}finally{
 
-    }
+cancelBtn.disabled =
+false;
 
+cancelBtn.textContent =
+"❌ Cancel & Refund";
 
-    const cancelBtn =
-        document.getElementById(
-            "cancelBtn"
-        );
-
-
-    cancelBtn.disabled =
-        true;
-
-
-    cancelBtn.textContent =
-        "Cancelling...";
-
-
-    try{
-
-        const data =
-            await edgeRequest(
-                "cancel",
-                {
-                    method:"POST",
-
-                    body:{
-                        id:providerId
-                    }
-
-                }
-            );
-
-
-        if(
-            !data ||
-            data.success === false
-        ){
-
-            throw new Error(
-                data?.error ||
-                "Cancellation failed."
-            );
-
-        }
-
-
-        stopStatusPolling();
-
-
-        document.getElementById(
-            "activeStatus"
-        ).textContent =
-            "Cancelled & Refunded";
-
-
-        alert(
-            `✅ Number cancelled.\n\n₦${formatMoney(data.amount)} has been refunded to your wallet.`
-        );
-
-
-        await loadWallet();
-
-        await loadHistory();
-
-    }catch(error){
-
-        console.error(
-            "Cancel error:",
-            error
-        );
-
-
-        alert(
-            "❌ " +
-            error.message
-        );
-
-    }finally{
-
-        cancelBtn.disabled =
-            false;
-
-        cancelBtn.textContent =
-            "❌ Cancel & Refund";
-
-    }
+}
 
 }
 
 
 /* =====================================================
-   COPY NUMBER
+   COPY
 ===================================================== */
 
 async function copyNumber(){
 
-    const number =
-        document.getElementById(
-            "number"
-        ).textContent;
+const number =
+document.getElementById(
+"number"
+).textContent;
 
+if(
+!number ||
+number === "—"
+){
+return;
+}
 
-    if(
-        !number ||
-        number === "—"
-    ){
+try{
 
-        return;
+await navigator.clipboard.writeText(
+number
+);
 
-    }
+const button =
+document.getElementById(
+"copyNumberBtn"
+);
 
+const old =
+button.textContent;
 
-    try{
+button.textContent =
+"✅ Copied";
 
-        await navigator.clipboard.writeText(
-            number
-        );
+setTimeout(
+()=>{
+button.textContent =
+old;
+},
+1500
+);
 
+}catch(error){
 
-        const button =
-            document.getElementById(
-                "copyNumberBtn"
-            );
+console.error(
+"Copy number error:",
+error
+);
 
+alert(
+"Could not copy number."
+);
 
-        const old =
-            button.textContent;
-
-
-        button.textContent =
-            "✅ Copied";
-
-
-        setTimeout(
-            ()=>{
-                button.textContent =
-                    old;
-            },
-            1500
-        );
-
-    }catch(error){
-
-        console.error(
-            "Copy number error:",
-            error
-        );
-
-
-        alert(
-            "Could not copy number."
-        );
-
-    }
+}
 
 }
 
@@ -2475,274 +2215,245 @@ async function copyNumber(){
 
 function contactSupport(){
 
-    window.open(
-        `https://wa.me/${WHATSAPP_SUPPORT}`,
-        "_blank"
-    );
+window.open(
+`https://wa.me/${WHATSAPP_SUPPORT}`,
+"_blank"
+);
 
 }
 
 
 /* =====================================================
-   LOAD VIRTUAL NUMBER HISTORY
+   HISTORY
 ===================================================== */
 
 async function loadHistory(){
 
-    const history =
-        document.getElementById(
-            "history"
-        );
+const history =
+document.getElementById(
+"history"
+);
 
+if(!currentUser){
+    return;
+}
 
-    if(!currentUser){
+try{
 
-        return;
+const {
+    data,
+    error
+} =
+await supabaseClient
 
+.from(
+    "virtual_number_orders"
+)
+
+.select(
+    "id,numpool_order_id,service_name,country_name,number,customer_price_ngn,status,otp_code,purchased_at,created_at,refunded_at,cancelled_at"
+)
+
+.eq(
+    "user_id",
+    currentUser.id
+)
+
+.order(
+    "created_at",
+    {
+        ascending:false
     }
+);
+
+if(error){
+
+console.error(
+"History error:",
+error
+);
 
+history.innerHTML = `
+<div class="error">
+❌ Unable to load virtual number history.
+</div>
+`;
+
+return;
 
-    try{
+}
+
+if(
+!data ||
+data.length === 0
+){
 
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
+history.innerHTML = `
+<div class="loading">
+No virtual number purchases yet.
+</div>
+`;
+
+return;
 
-                .from(
-                    "virtual_number_orders"
-                )
+}
 
-                .select(
-                    "id,numpool_order_id,service_name,country_name,number,customer_price_ngn,status,otp_code,purchased_at,created_at,refunded_at,cancelled_at"
-                )
+history.innerHTML = "";
 
-                .eq(
-                    "user_id",
-                    currentUser.id
-                )
+data.forEach(
+order=>{
 
-                .order(
-                    "created_at",
-                    {
-                        ascending:false
-                    }
-                );
+const status =
+String(
+order.status ||
+""
+).toLowerCase();
 
+let statusClass =
+"status-waiting";
 
-        if(error){
+if(
+status === "received"
+){
+statusClass =
+"status-received";
+}
+
+if(
+status === "cancelled"
+){
+statusClass =
+"status-cancelled";
+}
+
+let statusText =
+"Waiting for SMS";
+
+if(
+status === "received"
+){
+
+statusText =
+"OTP Received";
+
+}else if(
+status === "cancelled"
+){
+
+statusText =
+order.refunded_at
+? "Cancelled & Refunded"
+: "Cancelled";
+
+}
+
+const date =
+order.created_at
+? new Date(
+order.created_at
+).toLocaleString(
+"en-NG",
+{
+    dateStyle:"medium",
+    timeStyle:"short"
+}
+)
+: "";
+
+const item =
+document.createElement(
+"div"
+);
+
+item.className =
+"history-item";
 
-            console.error(
-                "History error:",
-                error
-            );
+item.innerHTML = `
 
+<div class="history-title">
 
-            history.innerHTML = `
-                <div class="error">
-                    ❌ Unable to load virtual number history.
-                </div>
-            `;
+${esc(
+order.service_name ||
+"Virtual Number"
+)}
 
-            return;
+-
 
-        }
+${esc(
+order.country_name ||
+""
+)}
 
+</div>
 
-        if(
-            !data ||
-            data.length === 0
-        ){
+<div class="history-meta">
 
-            history.innerHTML = `
-                <div class="loading">
-                    No virtual number purchases yet.
-                </div>
-            `;
+Number:
+${esc(
+order.number ||
+"—"
+)}
 
-            return;
+<br>
 
-        }
+Price:
+₦${formatMoney(
+order.customer_price_ngn
+)}
 
+<br>
 
-        history.innerHTML = "";
+${esc(date)}
 
+</div>
 
-        data.forEach(
-            order=>{
+${
+order.otp_code
+?
+`
+<div
+class="history-meta"
+style="margin-top:8px"
+>
+OTP:
+<strong>
+${esc(order.otp_code)}
+</strong>
+</div>
+`
+:
+""
+}
 
-                const status =
-                    String(
-                        order.status ||
-                        ""
-                    ).toLowerCase();
+<div
+class="history-status ${statusClass}"
+>
+${esc(statusText)}
+</div>
 
+`;
 
-                let statusClass =
-                    "status-waiting";
+history.appendChild(
+item
+);
 
+}
+);
 
-                if(
-                    status === "received"
-                ){
+}catch(error){
 
-                    statusClass =
-                        "status-received";
+console.error(
+"Unexpected history error:",
+error
+);
 
-                }
+history.innerHTML = `
+<div class="error">
+❌ Unable to load virtual number history.
+</div>
+`;
 
-
-                if(
-                    status === "cancelled"
-                ){
-
-                    statusClass =
-                        "status-cancelled";
-
-                }
-
-
-                let statusText =
-                    "Waiting for SMS";
-
-
-                if(
-                    status === "received"
-                ){
-
-                    statusText =
-                        "OTP Received";
-
-                }else if(
-                    status === "cancelled"
-                ){
-
-                    statusText =
-                        order.refunded_at
-                            ? "Cancelled & Refunded"
-                            : "Cancelled";
-
-                }
-
-
-                const date =
-                    order.created_at
-                        ? new Date(
-                            order.created_at
-                        ).toLocaleString(
-                            "en-NG",
-                            {
-                                dateStyle:"medium",
-                                timeStyle:"short"
-                            }
-                        )
-                        : "";
-
-
-                const item =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                item.className =
-                    "history-item";
-
-
-                item.innerHTML = `
-
-                    <div class="history-title">
-
-                        ${esc(
-                            order.service_name ||
-                            "Virtual Number"
-                        )}
-
-                        -
-
-                        ${esc(
-                            order.country_name ||
-                            ""
-                        )}
-
-                    </div>
-
-
-                    <div class="history-meta">
-
-                        Number:
-                        ${esc(
-                            order.number ||
-                            "—"
-                        )}
-
-                        <br>
-
-                        Price:
-                        ₦${formatMoney(
-                            order.customer_price_ngn
-                        )}
-
-                        <br>
-
-                        ${esc(date)}
-
-                    </div>
-
-
-                    ${
-                        order.otp_code
-                            ? `
-                                <div
-                                    class="history-meta"
-                                    style="margin-top:8px"
-                                >
-                                    OTP:
-                                    <strong>
-                                        ${esc(
-                                            order.otp_code
-                                        )}
-                                    </strong>
-                                </div>
-                              `
-                            : ""
-                    }
-
-
-                    <div
-                        class="history-status ${statusClass}"
-                    >
-                        ${esc(
-                            statusText
-                        )}
-                    </div>
-
-                `;
-
-
-                history.appendChild(
-                    item
-                );
-
-            }
-        );
-
-    }catch(error){
-
-        console.error(
-            "Unexpected history error:",
-            error
-        );
-
-
-        history.innerHTML = `
-            <div class="error">
-                ❌ Unable to load virtual number history.
-            </div>
-        `;
-
-    }
+}
 
 }
 
@@ -2753,29 +2464,20 @@ async function loadHistory(){
 
 async function initialize(){
 
-    const loggedIn =
-        await checkLogin();
+const loggedIn =
+await checkLogin();
 
-
-    if(!loggedIn){
-
-        return;
-
-    }
-
-
-    await Promise.all([
-        loadWallet(),
-        loadCountries(),
-        loadHistory()
-    ]);
-
+if(!loggedIn){
+    return;
 }
 
+await Promise.all([
+    loadWallet(),
+    loadCountries(),
+    loadHistory()
+]);
 
-/* =====================================================
-   START
-===================================================== */
+}
 
 initialize();
 
