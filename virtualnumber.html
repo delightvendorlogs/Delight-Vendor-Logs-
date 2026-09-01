@@ -27,7 +27,7 @@ body {
 
 
 /* ======================================
-   HEADER - LEFT AS BEFORE
+   HEADER
 ====================================== */
 
 header {
@@ -102,7 +102,7 @@ main {
 
 
 /* ======================================
-   BANNER - LEFT BIG/COMFORTABLE
+   BANNER
 ====================================== */
 
 .banner {
@@ -243,7 +243,7 @@ main {
 
 
 /* ======================================
-   WALLET - LEFT AS BEFORE
+   WALLET
 ====================================== */
 
 .wallet-card {
@@ -309,7 +309,7 @@ main {
 
 
 /* ======================================
-   COUNTRY + SERVICE BUTTONS
+   COUNTRY + SERVICE
 ====================================== */
 
 .choice-row {
@@ -553,6 +553,183 @@ main {
 
 
 /* ======================================
+   SAVED ORDERS
+====================================== */
+
+.saved-orders-section {
+  display: none;
+
+  background: white;
+
+  padding: 22px;
+
+  border-radius: 24px;
+
+  margin-bottom: 22px;
+
+  box-shadow:
+    0 4px 18px
+    rgba(0,0,0,.05);
+}
+
+.saved-orders-section.show {
+  display: block;
+}
+
+.saved-orders-title {
+  margin: 0 0 15px;
+
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.saved-order {
+  border: 1px solid #e1e5eb;
+
+  border-radius: 17px;
+
+  padding: 16px;
+
+  margin-bottom: 12px;
+
+  background: #fff;
+}
+
+.saved-order:last-child {
+  margin-bottom: 0;
+}
+
+.saved-order-top {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-start;
+
+  gap: 12px;
+
+  margin-bottom: 12px;
+}
+
+.saved-order-service {
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.saved-order-status {
+  font-size: 12px;
+
+  font-weight: 800;
+
+  padding: 6px 9px;
+
+  border-radius: 999px;
+
+  white-space: nowrap;
+}
+
+.status-pending {
+  color: #92400e;
+  background: #fef3c7;
+}
+
+.status-completed {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.status-cancelled {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.status-info {
+  color: #1e40af;
+  background: #dbeafe;
+}
+
+.saved-order-details {
+  font-size: 14px;
+
+  line-height: 1.8;
+
+  color: #4b5563;
+}
+
+.saved-order-details div {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 15px;
+}
+
+.saved-order-details strong {
+  color: #111827;
+
+  text-align: right;
+
+  word-break: break-word;
+}
+
+.saved-order-otp {
+  margin-top: 12px;
+
+  background: #f3f4f6;
+
+  border-radius: 13px;
+
+  padding: 12px;
+
+  text-align: center;
+
+  font-size: 21px;
+
+  font-weight: 900;
+}
+
+.saved-order-actions {
+  display: flex;
+
+  gap: 9px;
+
+  margin-top: 13px;
+}
+
+.saved-order-button {
+  flex: 1;
+
+  border: none;
+
+  padding: 11px;
+
+  border-radius: 12px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.saved-check-button {
+  background: #101828;
+  color: white;
+}
+
+.saved-cancel-button {
+  background: #ffe0e0;
+  color: #9b1c1c;
+}
+
+.saved-order-date {
+  margin-top: 10px;
+
+  color: #9ca3af;
+
+  font-size: 12px;
+}
+
+
+/* ======================================
    FULL SCREEN PICKER
 ====================================== */
 
@@ -727,6 +904,16 @@ main {
     font-size: 15px;
   }
 
+  .saved-order-details div {
+    display: block;
+  }
+
+  .saved-order-details strong {
+    display: block;
+    text-align: left;
+    margin-top: 2px;
+  }
+
 }
 
 </style>
@@ -821,7 +1008,25 @@ main {
 
 
 <!-- ======================================
-     COUNTRY + SERVICE TOGETHER
+     SAVED / PREVIOUS ORDERS
+====================================== -->
+
+<section
+  id="savedOrdersSection"
+  class="saved-orders-section"
+>
+
+<h2 class="saved-orders-title">
+  Your Virtual Number Orders
+</h2>
+
+<div id="savedOrdersList"></div>
+
+</section>
+
+
+<!-- ======================================
+     COUNTRY + SERVICE
 ====================================== -->
 
 <section class="card">
@@ -901,7 +1106,7 @@ main {
 
 
 <!-- ======================================
-     ORDER AT BOTTOM
+     CURRENT ORDER
 ====================================== -->
 
 <section
@@ -1103,33 +1308,1072 @@ let currentWalletBalance = 0;
 
 
 /* =====================================================
-   MESSAGE
+   PERSISTENT ORDERS
 ===================================================== */
 
-function showMessage(text, type = "error") {
+let savedVirtualOrders = [];
 
-  const box =
-    document.getElementById("message");
+let currentUserId = null;
 
-  const textBox =
-    document.getElementById("messageText");
 
-  const icon =
-    document.getElementById("messageIcon");
+/*
+  The key is user-specific so orders belonging to one
+  logged-in account are not mixed with another account.
+*/
+function getSavedOrdersKey() {
 
-  textBox.textContent = text;
-
-  if (type === "success") {
-    icon.textContent = "✓";
+  if (!currentUserId) {
+    return null;
   }
 
-  else if (type === "info") {
-    icon.textContent = "i";
+  return `delight_vendor_virtual_orders_${currentUserId}`;
+
+}
+
+
+/* =====================================================
+   LOAD SAVED ORDERS
+===================================================== */
+
+function loadSavedVirtualOrders() {
+
+  try {
+
+    const key =
+      getSavedOrdersKey();
+
+    if (!key) {
+
+      savedVirtualOrders = [];
+
+      renderSavedVirtualOrders();
+
+      return;
+
+    }
+
+    const saved =
+      localStorage.getItem(key);
+
+    if (!saved) {
+
+      savedVirtualOrders = [];
+
+    }
+
+    else {
+
+      const parsed =
+        JSON.parse(saved);
+
+      savedVirtualOrders =
+        Array.isArray(parsed)
+          ? parsed
+          : [];
+
+    }
+
+  }
+
+  catch (err) {
+
+    console.error(
+      "Saved orders:",
+      err
+    );
+
+    savedVirtualOrders = [];
+
+  }
+
+  renderSavedVirtualOrders();
+
+}
+
+
+/* =====================================================
+   SAVE SAVED ORDERS
+===================================================== */
+
+function saveVirtualOrders() {
+
+  try {
+
+    const key =
+      getSavedOrdersKey();
+
+    if (!key) return;
+
+    localStorage.setItem(
+      key,
+      JSON.stringify(
+        savedVirtualOrders
+      )
+    );
+
+  }
+
+  catch (err) {
+
+    console.error(
+      "Save orders:",
+      err
+    );
+
+  }
+
+  renderSavedVirtualOrders();
+
+}
+
+
+/* =====================================================
+   SAVE / UPDATE ONE ORDER
+===================================================== */
+
+function saveVirtualOrder(order) {
+
+  if (
+    !order ||
+    order.id === undefined ||
+    order.id === null
+  ) {
+
+    return;
+
+  }
+
+  const orderId =
+    String(order.id);
+
+  const index =
+    savedVirtualOrders.findIndex(
+      item =>
+        String(item.id) ===
+        orderId
+    );
+
+  if (index >= 0) {
+
+    savedVirtualOrders[index] = {
+      ...savedVirtualOrders[index],
+      ...order
+    };
+
   }
 
   else {
-    icon.textContent = "!";
+
+    savedVirtualOrders.unshift(
+      order
+    );
+
   }
+
+  saveVirtualOrders();
+
+}
+
+
+/* =====================================================
+   GET SAVED ORDER
+===================================================== */
+
+function getSavedVirtualOrder(orderId) {
+
+  return savedVirtualOrders.find(
+    order =>
+      String(order.id) ===
+      String(orderId)
+  );
+
+}
+
+
+/* =====================================================
+   DELETE SAVED ORDER
+===================================================== */
+
+function removeSavedVirtualOrder(orderId) {
+
+  savedVirtualOrders =
+    savedVirtualOrders.filter(
+      order =>
+        String(order.id) !==
+        String(orderId)
+    );
+
+  saveVirtualOrders();
+
+}
+
+
+/* =====================================================
+   ORDER STATUS
+===================================================== */
+
+function getOrderStatusInfo(status) {
+
+  const normalized =
+    String(status || "PENDING")
+      .toUpperCase();
+
+  if (
+    normalized === "RECEIVED" ||
+    normalized === "FINISHED" ||
+    normalized === "COMPLETED"
+  ) {
+
+    return {
+      text: "Completed",
+      className: "status-completed"
+    };
+
+  }
+
+  if (
+    normalized === "CANCELED" ||
+    normalized === "CANCELLED" ||
+    normalized === "TIMEOUT" ||
+    normalized === "BANNED"
+  ) {
+
+    return {
+      text:
+        normalized === "TIMEOUT"
+          ? "Timed Out"
+          : "Cancelled",
+
+      className:
+        "status-cancelled"
+    };
+
+  }
+
+  return {
+    text: "Pending",
+    className: "status-pending"
+  };
+
+}
+
+
+/* =====================================================
+   RENDER SAVED ORDERS
+===================================================== */
+
+function renderSavedVirtualOrders() {
+
+  const section =
+    document.getElementById(
+      "savedOrdersSection"
+    );
+
+  const list =
+    document.getElementById(
+      "savedOrdersList"
+    );
+
+  if (!section || !list)
+    return;
+
+
+  if (!savedVirtualOrders.length) {
+
+    section.classList.remove(
+      "show"
+    );
+
+    list.innerHTML = "";
+
+    return;
+
+  }
+
+
+  section.classList.add(
+    "show"
+  );
+
+
+  list.innerHTML =
+    savedVirtualOrders
+      .map(order => {
+
+        const status =
+          String(
+            order.status ||
+            "PENDING"
+          ).toUpperCase();
+
+        const statusInfo =
+          getOrderStatusInfo(
+            status
+          );
+
+
+        const service =
+          order.service_name ||
+          order.service ||
+          "Virtual Number";
+
+
+        const country =
+          order.country_name ||
+          order.country ||
+          "—";
+
+
+        const operator =
+          order.operator ||
+          order.provider ||
+          "—";
+
+
+        const number =
+          order.number ||
+          "Waiting...";
+
+
+        const otp =
+          order.otp_code ||
+          order.code ||
+          "";
+
+
+        let createdText = "";
+
+        if (order.created_at) {
+
+          try {
+
+            createdText =
+              new Date(
+                order.created_at
+              ).toLocaleString(
+                "en-NG",
+                {
+                  dateStyle: "medium",
+                  timeStyle: "short"
+                }
+              );
+
+          }
+
+          catch {
+
+            createdText = "";
+
+          }
+
+        }
+
+
+        const isActive =
+          status === "PENDING" ||
+          status === "RECEIVED";
+
+
+        return `
+
+          <div
+            class="saved-order"
+            data-saved-order-id="${escapeHTML(
+              order.id
+            )}"
+          >
+
+            <div class="saved-order-top">
+
+              <div class="saved-order-service">
+                ${escapeHTML(service)}
+              </div>
+
+              <div
+                class="saved-order-status ${statusInfo.className}"
+              >
+                ${statusInfo.text}
+              </div>
+
+            </div>
+
+
+            <div class="saved-order-details">
+
+              <div>
+                <span>Country:</span>
+
+                <strong>
+                  ${escapeHTML(country)}
+                </strong>
+              </div>
+
+
+              <div>
+                <span>Provider:</span>
+
+                <strong>
+                  ${escapeHTML(operator)}
+                </strong>
+              </div>
+
+
+              <div>
+                <span>Number:</span>
+
+                <strong>
+                  ${escapeHTML(number)}
+                </strong>
+              </div>
+
+            </div>
+
+
+            ${
+              otp
+                ? `
+                  <div class="saved-order-otp">
+                    OTP: ${escapeHTML(otp)}
+                  </div>
+                `
+                : ""
+            }
+
+
+            ${
+              isActive
+                ? `
+                  <div class="saved-order-actions">
+
+                    <button
+                      type="button"
+                      class="saved-order-button saved-check-button"
+                      data-action="check"
+                      data-order-id="${escapeHTML(
+                        order.id
+                      )}"
+                    >
+                      Check SMS
+                    </button>
+
+                    <button
+                      type="button"
+                      class="saved-order-button saved-cancel-button"
+                      data-action="cancel"
+                      data-order-id="${escapeHTML(
+                        order.id
+                      )}"
+                    >
+                      Cancel
+                    </button>
+
+                  </div>
+                `
+                : ""
+            }
+
+
+            ${
+              createdText
+                ? `
+                  <div class="saved-order-date">
+                    ${escapeHTML(createdText)}
+                  </div>
+                `
+                : ""
+            }
+
+          </div>
+
+        `;
+
+      })
+      .join("");
+
+
+  /*
+    Check SMS buttons
+  */
+
+  list
+    .querySelectorAll(
+      '[data-action="check"]'
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        async function() {
+
+          const orderId =
+            this.dataset.orderId;
+
+          await checkSavedVirtualOrder(
+            orderId
+          );
+
+        }
+      );
+
+    });
+
+
+  /*
+    Cancel buttons
+  */
+
+  list
+    .querySelectorAll(
+      '[data-action="cancel"]'
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        async function() {
+
+          const orderId =
+            this.dataset.orderId;
+
+          await cancelSavedVirtualOrder(
+            orderId
+          );
+
+        }
+      );
+
+    });
+
+}
+
+
+/* =====================================================
+   UPDATE SAVED ORDER FROM API
+===================================================== */
+
+function updateSavedOrderFromResponse(
+  orderId,
+  data
+) {
+
+  const oldOrder =
+    getSavedVirtualOrder(
+      orderId
+    ) || {
+      id: orderId
+    };
+
+
+  const apiOrder =
+    data?.order || {};
+
+
+  const updated = {
+
+    ...oldOrder,
+
+    ...apiOrder,
+
+    id: orderId,
+
+
+    service_name:
+      apiOrder.service_name ||
+      apiOrder.service ||
+      oldOrder.service_name ||
+      oldOrder.service ||
+      "",
+
+
+    country_name:
+      apiOrder.country_name ||
+      apiOrder.country ||
+      oldOrder.country_name ||
+      oldOrder.country ||
+      "",
+
+
+    operator:
+      apiOrder.operator ||
+      oldOrder.operator ||
+      "",
+
+
+    number:
+      apiOrder.number ||
+      apiOrder.phone ||
+      oldOrder.number ||
+      "",
+
+
+    otp_code:
+      apiOrder.otp_code ||
+      data?.otp_code ||
+      data?.code ||
+      oldOrder.otp_code ||
+      "",
+
+
+    full_sms:
+      apiOrder.full_sms ||
+      data?.full_sms ||
+      oldOrder.full_sms ||
+      "",
+
+
+    status:
+      data?.status ||
+      apiOrder.status ||
+      oldOrder.status ||
+      "PENDING"
+
+  };
+
+
+  saveVirtualOrder(
+    updated
+  );
+
+}
+
+
+/* =====================================================
+   SHOW SAVED ORDER IN CURRENT ORDER CARD
+===================================================== */
+
+function showSavedOrderInCurrentCard(
+  order
+) {
+
+  if (!order)
+    return;
+
+
+  selectedOrderId =
+    order.id;
+
+
+  document
+    .getElementById("orderService")
+    .textContent =
+    order.service_name ||
+    order.service ||
+    "Virtual Number";
+
+
+  document
+    .getElementById("orderCountry")
+    .textContent =
+    order.country_name ||
+    order.country ||
+    "—";
+
+
+  document
+    .getElementById("orderOperator")
+    .textContent =
+    order.operator ||
+    order.provider ||
+    "—";
+
+
+  document
+    .getElementById("orderNumber")
+    .textContent =
+    order.number ||
+    "Waiting...";
+
+
+  document
+    .getElementById("otpBox")
+    .textContent =
+    order.otp_code
+      ? order.otp_code
+      : "Waiting for SMS...";
+
+
+  document
+    .getElementById("orderCard")
+    .classList.add(
+      "show"
+    );
+
+}
+
+
+/* =====================================================
+   CHECK SAVED ORDER
+===================================================== */
+
+async function checkSavedVirtualOrder(
+  orderId
+) {
+
+  const order =
+    getSavedVirtualOrder(
+      orderId
+    );
+
+  if (!order)
+    return;
+
+
+  selectedOrderId =
+    orderId;
+
+
+  showSavedOrderInCurrentCard(
+    order
+  );
+
+
+  try {
+
+    const data =
+      await apiRequest(
+        {
+          action: "check",
+          order_id: orderId
+        }
+      );
+
+
+    updateSavedOrderFromResponse(
+      orderId,
+      data
+    );
+
+
+    const updated =
+      getSavedVirtualOrder(
+        orderId
+      );
+
+
+    const status =
+      String(
+        data?.status ||
+        updated?.status ||
+        ""
+      ).toLowerCase();
+
+
+    const sms =
+      data?.sms;
+
+
+    /*
+      If SMS arrived
+    */
+
+    if (sms?.code) {
+
+      saveVirtualOrder({
+
+        ...updated,
+
+        otp_code:
+          sms.code,
+
+        full_sms:
+          sms.full ||
+          sms.text ||
+          updated?.full_sms ||
+          "",
+
+        status:
+          data.status ||
+          "RECEIVED"
+
+      });
+
+
+      showSavedOrderInCurrentCard(
+        getSavedVirtualOrder(
+          orderId
+        )
+      );
+
+
+      stopOrderChecking();
+
+
+      showMessage(
+        "SMS code received.",
+        "success"
+      );
+
+
+      renderSavedVirtualOrders();
+
+      return;
+
+    }
+
+
+    /*
+      Cancelled / timeout
+    */
+
+    if (
+      status === "cancelled" ||
+      status === "canceled" ||
+      status === "timeout"
+    ) {
+
+      saveVirtualOrder({
+
+        ...updated,
+
+        status:
+          status === "timeout"
+            ? "TIMEOUT"
+            : "CANCELED"
+
+      });
+
+
+      showSavedOrderInCurrentCard(
+        getSavedVirtualOrder(
+          orderId
+        )
+      );
+
+
+      stopOrderChecking();
+
+
+      if (data.refunded) {
+
+        showMessage(
+          `Order cancelled. ${money(
+            data.refund_amount_ngn
+          )} refunded to your wallet.`,
+          "success"
+        );
+
+        await loadWallet();
+
+      }
+
+
+      renderSavedVirtualOrders();
+
+      return;
+
+    }
+
+
+    /*
+      Still waiting
+    */
+
+    document
+      .getElementById("otpBox")
+      .textContent =
+      "Waiting for SMS...";
+
+
+    showMessage(
+      "No SMS yet. We are still waiting.",
+      "info"
+    );
+
+
+    renderSavedVirtualOrders();
+
+  }
+
+  catch (err) {
+
+    console.error(
+      "SAVED CHECK:",
+      err
+    );
+
+
+    showMessage(
+      err.message ||
+      "Unable to check SMS right now.",
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   CANCEL SAVED ORDER
+===================================================== */
+
+async function cancelSavedVirtualOrder(
+  orderId
+) {
+
+  const order =
+    getSavedVirtualOrder(
+      orderId
+    );
+
+  if (!order)
+    return;
+
+
+  selectedOrderId =
+    orderId;
+
+
+  try {
+
+    const data =
+      await apiRequest(
+        {
+          action: "cancel",
+          order_id: orderId
+        }
+      );
+
+
+    stopOrderChecking();
+
+
+    const updatedOrder = {
+
+      ...order,
+
+      ...(
+        data?.order || {}
+      ),
+
+      id: orderId,
+
+      status:
+        data?.status ||
+        "CANCELED"
+
+    };
+
+
+    saveVirtualOrder(
+      updatedOrder
+    );
+
+
+    /*
+      Show cancellation in the current card
+    */
+
+    showSavedOrderInCurrentCard(
+      updatedOrder
+    );
+
+
+    document
+      .getElementById("otpBox")
+      .textContent =
+      "Cancelled";
+
+
+    /*
+      Refund message
+    */
+
+    if (data.refunded) {
+
+      showMessage(
+        `Number cancelled. ${money(
+          data.refund_amount_ngn
+        )} refunded to your wallet.`,
+        "success"
+      );
+
+      await loadWallet();
+
+    }
+
+    else {
+
+      showMessage(
+        "Number cancelled successfully.",
+        "success"
+      );
+
+    }
+
+
+    renderSavedVirtualOrders();
+
+  }
+
+  catch (err) {
+
+    console.error(
+      "SAVED CANCEL:",
+      err
+    );
+
+
+    showMessage(
+      err.message ||
+      "Unable to cancel the number.",
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+function showMessage(
+  text,
+  type = "error"
+) {
+
+  const box =
+    document.getElementById(
+      "message"
+    );
+
+  const textBox =
+    document.getElementById(
+      "messageText"
+    );
+
+  const icon =
+    document.getElementById(
+      "messageIcon"
+    );
+
+  textBox.textContent =
+    text;
+
+
+  if (type === "success") {
+
+    icon.textContent =
+      "✓";
+
+  }
+
+  else if (type === "info") {
+
+    icon.textContent =
+      "i";
+
+  }
+
+  else {
+
+    icon.textContent =
+      "!";
+
+  }
+
 
   box.className =
     `message show ${type}`;
@@ -1197,6 +2441,7 @@ async function apiRequest(
       .auth
       .getSession();
 
+
   if (!session) {
 
     window.location.href =
@@ -1208,14 +2453,17 @@ async function apiRequest(
 
   }
 
+
   const controller =
     new AbortController();
+
 
   const timer =
     setTimeout(
       () => controller.abort(),
       timeout
     );
+
 
   try {
 
@@ -1244,17 +2492,25 @@ async function apiRequest(
         }
       );
 
+
     let data;
 
+
     try {
-      data = await response.json();
+
+      data =
+        await response.json();
+
     }
 
     catch {
+
       throw new Error(
         "Server returned an invalid response."
       );
+
     }
+
 
     if (
       !response.ok ||
@@ -1267,12 +2523,15 @@ async function apiRequest(
           "Request failed."
         );
 
+
       err.code =
         data?.code || "";
+
 
       throw err;
 
     }
+
 
     return data;
 
@@ -1280,13 +2539,17 @@ async function apiRequest(
 
   catch (err) {
 
-    if (err?.name === "AbortError") {
+    if (
+      err?.name ===
+      "AbortError"
+    ) {
 
       throw new Error(
         "Request timed out. Please try again."
       );
 
     }
+
 
     throw err;
 
@@ -1316,6 +2579,7 @@ async function loadWallet() {
         .auth
         .getUser();
 
+
     if (!user) {
 
       window.location.href =
@@ -1325,25 +2589,54 @@ async function loadWallet() {
 
     }
 
+
+    /*
+      Remember current logged-in user
+    */
+
+    currentUserId =
+      user.id;
+
+
     const {
       data: wallet,
       error
     } =
       await supabaseClient
-        .rpc("ensure_my_wallet");
+        .rpc(
+          "ensure_my_wallet"
+        );
 
-    if (error) throw error;
+
+    if (error)
+      throw error;
+
 
     const balance =
-      Number(wallet?.balance || 0);
+      Number(
+        wallet?.balance || 0
+      );
+
 
     currentWalletBalance =
       balance;
 
+
     document
-      .getElementById("walletBalance")
+      .getElementById(
+        "walletBalance"
+      )
       .textContent =
       money(balance);
+
+
+    /*
+      Load the user's saved virtual
+      number orders after we know
+      the user ID.
+    */
+
+    loadSavedVirtualOrders();
 
   }
 
@@ -1366,19 +2659,30 @@ async function loadWallet() {
 function openCountryPicker() {
 
   document
-    .getElementById("countryPicker")
-    .classList.add("show");
+    .getElementById(
+      "countryPicker"
+    )
+    .classList.add(
+      "show"
+    );
+
 
   document
-    .getElementById("countrySearch")
+    .getElementById(
+      "countrySearch"
+    )
     .value = "";
 
+
   renderCountries("");
+
 
   setTimeout(
     () =>
       document
-        .getElementById("countrySearch")
+        .getElementById(
+          "countrySearch"
+        )
         .focus(),
     100
   );
@@ -1389,8 +2693,12 @@ function openCountryPicker() {
 function closeCountryPicker() {
 
   document
-    .getElementById("countryPicker")
-    .classList.remove("show");
+    .getElementById(
+      "countryPicker"
+    )
+    .classList.remove(
+      "show"
+    );
 
 }
 
@@ -1408,20 +2716,32 @@ function openServicePicker() {
 
   }
 
-  document
-    .getElementById("servicePicker")
-    .classList.add("show");
 
   document
-    .getElementById("serviceSearch")
+    .getElementById(
+      "servicePicker"
+    )
+    .classList.add(
+      "show"
+    );
+
+
+  document
+    .getElementById(
+      "serviceSearch"
+    )
     .value = "";
 
+
   renderServices("");
+
 
   setTimeout(
     () =>
       document
-        .getElementById("serviceSearch")
+        .getElementById(
+          "serviceSearch"
+        )
         .focus(),
     100
   );
@@ -1432,8 +2752,12 @@ function openServicePicker() {
 function closeServicePicker() {
 
   document
-    .getElementById("servicePicker")
-    .classList.remove("show");
+    .getElementById(
+      "servicePicker"
+    )
+    .classList.remove(
+      "show"
+    );
 
 }
 
@@ -1449,10 +2773,12 @@ async function loadCountries() {
       "countryResults"
     );
 
+
   results.innerHTML =
     `<div class="result-item">
       Loading countries...
     </div>`;
+
 
   try {
 
@@ -1464,8 +2790,11 @@ async function loadCountries() {
         15000
       );
 
+
     countries =
-      Array.isArray(data.countries)
+      Array.isArray(
+        data.countries
+      )
         ? data.countries
         : [];
 
@@ -1478,7 +2807,9 @@ async function loadCountries() {
       err
     );
 
+
     countries = [
+
       {
         code: "england",
         name:
@@ -1486,33 +2817,39 @@ async function loadCountries() {
         iso: "gb",
         prefix: "+44"
       },
+
       {
         code: "usa",
         name: "USA",
         iso: "us",
         prefix: "+1"
       },
+
       {
         code: "canada",
         name: "Canada",
         iso: "ca",
         prefix: "+1"
       },
+
       {
         code: "nigeria",
         name: "Nigeria",
         iso: "ng",
         prefix: "+234"
       },
+
       {
         code: "ghana",
         name: "Ghana",
         iso: "gh",
         prefix: "+233"
       }
+
     ];
 
   }
+
 
   renderCountries("");
 
@@ -1530,37 +2867,48 @@ function renderCountries(search) {
       "countryResults"
     );
 
+
   const term =
     String(search || "")
       .trim()
       .toLowerCase();
 
+
   const filtered =
-    countries.filter(country => {
+    countries.filter(
+      country => {
 
-      const name =
-        String(
-          country.name || ""
-        ).toLowerCase();
+        const name =
+          String(
+            country.name || ""
+          )
+            .toLowerCase();
 
-      const code =
-        String(
-          country.code || ""
-        ).toLowerCase();
 
-      const iso =
-        String(
-          country.iso || ""
-        ).toLowerCase();
+        const code =
+          String(
+            country.code || ""
+          )
+            .toLowerCase();
 
-      return (
-        !term ||
-        name.includes(term) ||
-        code.includes(term) ||
-        iso.includes(term)
-      );
 
-    });
+        const iso =
+          String(
+            country.iso || ""
+          )
+            .toLowerCase();
+
+
+        return (
+          !term ||
+          name.includes(term) ||
+          code.includes(term) ||
+          iso.includes(term)
+        );
+
+      }
+    );
+
 
   if (!filtered.length) {
 
@@ -1573,26 +2921,34 @@ function renderCountries(search) {
 
   }
 
+
   results.innerHTML =
     filtered
       .slice(0, 50)
       .map(
         (country, index) => `
+
           <div
             class="result-item"
             data-country-index="${index}"
           >
-            ${escapeHTML(country.name)}
+
+            ${escapeHTML(
+              country.name
+            )}
 
             <small>
               ${escapeHTML(
                 country.prefix || ""
               )}
             </small>
+
           </div>
+
         `
       )
       .join("");
+
 
   results
     .querySelectorAll(
@@ -1617,47 +2973,72 @@ function renderCountries(search) {
    SELECT COUNTRY
 ===================================================== */
 
-async function selectCountry(country) {
+async function selectCountry(
+  country
+) {
 
   selectedCountry =
     country;
 
+
   selectedService =
     null;
+
 
   selectedOperator =
     null;
 
+
   services = [];
 
+
   document
-    .getElementById("countryValue")
+    .getElementById(
+      "countryValue"
+    )
     .textContent =
     country.name;
 
+
   document
-    .getElementById("serviceValue")
+    .getElementById(
+      "serviceValue"
+    )
     .textContent =
     "Choose service";
 
-  document
-    .getElementById("providerWrap")
-    .classList.remove("show");
 
   document
-    .getElementById("operatorGrid")
+    .getElementById(
+      "providerWrap"
+    )
+    .classList.remove(
+      "show"
+    );
+
+
+  document
+    .getElementById(
+      "operatorGrid"
+    )
     .innerHTML = "";
 
+
   document
-    .getElementById("buyButton")
+    .getElementById(
+      "buyButton"
+    )
     .disabled = true;
 
+
   closeCountryPicker();
+
 
   showMessage(
     "Loading services...",
     "info"
   );
+
 
   await loadServices();
 
@@ -1673,20 +3054,27 @@ async function loadServices() {
   if (!selectedCountry)
     return;
 
+
   try {
 
     const data =
       await apiRequest(
         {
           action: "prices",
-          country: selectedCountry.code
+
+          country:
+            selectedCountry.code
         }
       );
 
+
     services =
-      Array.isArray(data.services)
+      Array.isArray(
+        data.services
+      )
         ? data.services
         : [];
+
 
     if (!services.length) {
 
@@ -1712,7 +3100,9 @@ async function loadServices() {
       err
     );
 
+
     services = [];
+
 
     showMessage(
       "Service not available right now. Please try again later.",
@@ -1735,15 +3125,18 @@ function renderServices(search) {
       "serviceResults"
     );
 
+
   const term =
     String(search || "")
       .trim()
       .toLowerCase();
 
+
   const filtered =
     services.filter(
       service =>
         !term ||
+
         String(
           service.service_name || ""
         )
@@ -1757,6 +3150,7 @@ function renderServices(search) {
           .includes(term)
     );
 
+
   if (!filtered.length) {
 
     results.innerHTML =
@@ -1768,6 +3162,7 @@ function renderServices(search) {
 
   }
 
+
   results.innerHTML =
     filtered
       .map(
@@ -1778,7 +3173,9 @@ function renderServices(search) {
               service.stock || 0
             ) > 0;
 
+
           return `
+
             <div
               class="result-item"
               data-service-index="${index}"
@@ -1799,11 +3196,13 @@ function renderServices(search) {
               </small>
 
             </div>
+
           `;
 
         }
       )
       .join("");
+
 
   results
     .querySelectorAll(
@@ -1828,31 +3227,49 @@ function renderServices(search) {
    SELECT SERVICE
 ===================================================== */
 
-function selectService(service) {
+function selectService(
+  service
+) {
 
   selectedService =
     service;
 
+
   selectedOperator =
     null;
 
+
   document
-    .getElementById("serviceValue")
+    .getElementById(
+      "serviceValue"
+    )
     .textContent =
     service.service_name;
 
+
   closeServicePicker();
 
-  renderProviders(service);
+
+  renderProviders(
+    service
+  );
+
 
   document
-    .getElementById("providerWrap")
-    .classList.add("show");
+    .getElementById(
+      "providerWrap"
+    )
+    .classList.add(
+      "show"
+    );
+
 
   setTimeout(
     () =>
       document
-        .getElementById("providerWrap")
+        .getElementById(
+          "providerWrap"
+        )
         .scrollIntoView({
           behavior: "smooth",
           block: "start"
@@ -1867,32 +3284,46 @@ function selectService(service) {
    RENDER PROVIDERS
 ===================================================== */
 
-function renderProviders(service) {
+function renderProviders(
+  service
+) {
 
   const options =
-    Array.isArray(service.options)
+    Array.isArray(
+      service.options
+    )
       ? service.options
       : [];
+
 
   const available =
     options.filter(
       option =>
-        Number(option.stock || 0) > 0
+        Number(
+          option.stock || 0
+        ) > 0
     );
+
 
   const grid =
     document.getElementById(
       "operatorGrid"
     );
 
+
   const button =
     document.getElementById(
       "buyButton"
     );
 
-  selectedOperator = null;
 
-  button.disabled = true;
+  selectedOperator =
+    null;
+
+
+  button.disabled =
+    true;
+
 
   if (!available.length) {
 
@@ -1905,12 +3336,14 @@ function renderProviders(service) {
 
   }
 
+
   grid.innerHTML =
     available
       .map(
         (option, index) => {
 
           return `
+
             <div
               class="operator-card"
               data-operator-index="${index}"
@@ -1934,11 +3367,13 @@ function renderProviders(service) {
               </div>
 
             </div>
+
           `;
 
         }
       )
       .join("");
+
 
   grid
     .querySelectorAll(
@@ -1964,10 +3399,14 @@ function renderProviders(service) {
    SELECT PROVIDER
 ===================================================== */
 
-function selectOperator(option, element) {
+function selectOperator(
+  option,
+  element
+) {
 
   selectedOperator =
     option;
+
 
   document
     .querySelectorAll(
@@ -1980,12 +3419,16 @@ function selectOperator(option, element) {
         )
     );
 
+
   element.classList.add(
     "selected"
   );
 
+
   document
-    .getElementById("buyButton")
+    .getElementById(
+      "buyButton"
+    )
     .disabled = false;
 
 }
@@ -2027,10 +3470,13 @@ async function buyNumber() {
 
   }
 
+
   await loadWallet();
+
 
   const price =
     getSelectedPrice();
+
 
   if (
     price > 0 &&
@@ -2041,6 +3487,7 @@ async function buyNumber() {
       price -
       currentWalletBalance;
 
+
     showMessage(
       `Insufficient balance. Please add ${money(
         amountNeeded
@@ -2048,21 +3495,28 @@ async function buyNumber() {
       "warning"
     );
 
+
     return;
 
   }
+
 
   const button =
     document.getElementById(
       "buyButton"
     );
 
-  button.disabled = true;
+
+  button.disabled =
+    true;
+
 
   button.textContent =
     "Buying number...";
 
+
   hideMessage();
+
 
   try {
 
@@ -2083,6 +3537,7 @@ async function buyNumber() {
         30000
       );
 
+
     if (!data?.order) {
 
       throw new Error(
@@ -2091,50 +3546,146 @@ async function buyNumber() {
 
     }
 
+
     const order =
       data.order;
+
 
     selectedOrderId =
       order.id;
 
-    document
-      .getElementById("orderService")
-      .textContent =
-      order.service;
+
+    /*
+      SAVE THE NEW ORDER
+      ==================
+    */
+
+    saveVirtualOrder({
+
+      id:
+        order.id,
+
+      service_name:
+        order.service_name ||
+        order.service ||
+        selectedService.service_name,
+
+      service:
+        order.service ||
+        selectedService.service_name,
+
+      country_name:
+        order.country_name ||
+        order.country ||
+        selectedCountry.name,
+
+      country:
+        order.country ||
+        selectedCountry.name,
+
+      operator:
+        order.operator ||
+        selectedOperator.operator,
+
+      number:
+        order.number ||
+        order.phone ||
+        "",
+
+      otp_code:
+        order.otp_code ||
+        "",
+
+      full_sms:
+        order.full_sms ||
+        "",
+
+      status:
+        order.status ||
+        "PENDING",
+
+      customer_price_ngn:
+        order.customer_price_ngn ||
+        price,
+
+      created_at:
+        order.created_at ||
+        new Date().toISOString()
+
+    });
+
+
+    /*
+      SHOW CURRENT ORDER
+    */
 
     document
-      .getElementById("orderCountry")
+      .getElementById(
+        "orderService"
+      )
       .textContent =
-      order.country;
+      order.service ||
+      selectedService.service_name;
+
 
     document
-      .getElementById("orderOperator")
+      .getElementById(
+        "orderCountry"
+      )
       .textContent =
-      order.operator;
+      order.country ||
+      selectedCountry.name;
+
 
     document
-      .getElementById("orderNumber")
+      .getElementById(
+        "orderOperator"
+      )
       .textContent =
-      order.number || "Waiting...";
+      order.operator ||
+      selectedOperator.operator;
+
 
     document
-      .getElementById("otpBox")
+      .getElementById(
+        "orderNumber"
+      )
+      .textContent =
+      order.number ||
+      order.phone ||
+      "Waiting...";
+
+
+    document
+      .getElementById(
+        "otpBox"
+      )
       .textContent =
       "Waiting for SMS...";
+
 
     const orderCard =
       document.getElementById(
         "orderCard"
       );
 
-    orderCard.classList.add("show");
+
+    orderCard.classList.add(
+      "show"
+    );
+
 
     showMessage(
       "Number purchased successfully.",
       "success"
     );
 
+
     await loadWallet();
+
+
+    renderSavedVirtualOrders();
+
 
     setTimeout(
       () =>
@@ -2144,6 +3695,7 @@ async function buyNumber() {
         }),
       200
     );
+
 
     startOrderChecking();
 
@@ -2156,12 +3708,14 @@ async function buyNumber() {
       err
     );
 
+
     if (
       err.code ===
       "USER_INSUFFICIENT_FUNDS"
     ) {
 
       await loadWallet();
+
 
       const amountNeeded =
         Math.max(
@@ -2170,12 +3724,16 @@ async function buyNumber() {
           currentWalletBalance
         );
 
+
       showMessage(
         amountNeeded > 0
+
           ? `Insufficient balance. Please add ${money(
               amountNeeded
             )} to your wallet.`
+
           : "Insufficient balance. Please fund your wallet.",
+
         "warning"
       );
 
@@ -2184,6 +3742,7 @@ async function buyNumber() {
     else if (
       err.code ===
       "PROVIDER_INSUFFICIENT_BALANCE" ||
+
       err.code ===
       "PROVIDER_ACCOUNT_ERROR"
     ) {
@@ -2224,6 +3783,7 @@ async function buyNumber() {
     button.disabled =
       !selectedOperator;
 
+
     button.textContent =
       "🛒 Buy Number";
 
@@ -2233,7 +3793,7 @@ async function buyNumber() {
 
 
 /* =====================================================
-   CHECK ORDER
+   CHECK CURRENT ORDER
 ===================================================== */
 
 async function checkOrder() {
@@ -2241,53 +3801,132 @@ async function checkOrder() {
   if (!selectedOrderId)
     return;
 
+
   try {
 
     const data =
       await apiRequest(
         {
           action: "check",
-          order_id: selectedOrderId
+
+          order_id:
+            selectedOrderId
         }
       );
 
+
+    /*
+      Update saved order
+    */
+
+    updateSavedOrderFromResponse(
+      selectedOrderId,
+      data
+    );
+
+
+    const savedOrder =
+      getSavedVirtualOrder(
+        selectedOrderId
+      );
+
+
     const status =
       String(
-        data.status || ""
-      ).toLowerCase();
+        data.status ||
+        savedOrder?.status ||
+        ""
+      )
+        .toLowerCase();
+
 
     const sms =
       data.sms;
 
+
+    /*
+      SMS received
+    */
+
     if (sms?.code) {
 
       document
-        .getElementById("otpBox")
+        .getElementById(
+          "otpBox"
+        )
         .textContent =
         sms.code;
 
+
+      saveVirtualOrder({
+
+        ...savedOrder,
+
+        otp_code:
+          sms.code,
+
+        full_sms:
+          sms.full ||
+          sms.text ||
+          savedOrder?.full_sms ||
+          "",
+
+        status:
+          data.status ||
+          "RECEIVED"
+
+      });
+
+
       stopOrderChecking();
+
 
       showMessage(
         "SMS code received.",
         "success"
       );
 
+
+      renderSavedVirtualOrders();
+
+
       return;
 
     }
 
+
+    /*
+      Cancelled / timeout
+    */
+
     if (
       status === "cancelled" ||
+      status === "canceled" ||
       status === "timeout"
     ) {
 
       stopOrderChecking();
 
+
       document
-        .getElementById("otpBox")
+        .getElementById(
+          "otpBox"
+        )
         .textContent =
         "Order cancelled";
+
+
+      saveVirtualOrder({
+
+        ...savedOrder,
+
+        status:
+          status === "timeout"
+            ? "TIMEOUT"
+            : "CANCELED"
+
+      });
+
 
       if (data.refunded) {
 
@@ -2298,18 +3937,29 @@ async function checkOrder() {
           "success"
         );
 
+
         await loadWallet();
 
       }
+
+
+      renderSavedVirtualOrders();
+
 
       return;
 
     }
 
+
     document
-      .getElementById("otpBox")
+      .getElementById(
+        "otpBox"
+      )
       .textContent =
       "Waiting for SMS...";
+
+
+    renderSavedVirtualOrders();
 
   }
 
@@ -2332,6 +3982,7 @@ async function checkOrder() {
 function startOrderChecking() {
 
   stopOrderChecking();
+
 
   orderCheckTimer =
     setInterval(
@@ -2358,7 +4009,7 @@ function stopOrderChecking() {
 
 
 /* =====================================================
-   CANCEL ORDER
+   CANCEL CURRENT ORDER
 ===================================================== */
 
 async function cancelOrder() {
@@ -2366,13 +4017,6 @@ async function cancelOrder() {
   if (!selectedOrderId)
     return;
 
-  const okay =
-    confirm(
-      "Cancel this number?"
-    );
-
-  if (!okay)
-    return;
 
   try {
 
@@ -2380,11 +4024,55 @@ async function cancelOrder() {
       await apiRequest(
         {
           action: "cancel",
-          order_id: selectedOrderId
+
+          order_id:
+            selectedOrderId
         }
       );
 
+
     stopOrderChecking();
+
+
+    const oldOrder =
+      getSavedVirtualOrder(
+        selectedOrderId
+      ) || {
+        id:
+          selectedOrderId
+      };
+
+
+    const updatedOrder = {
+
+      ...oldOrder,
+
+      ...(
+        data?.order || {}
+      ),
+
+      id:
+        selectedOrderId,
+
+      status:
+        data?.status ||
+        "CANCELED"
+
+    };
+
+
+    saveVirtualOrder(
+      updatedOrder
+    );
+
+
+    document
+      .getElementById(
+        "otpBox"
+      )
+      .textContent =
+      "Cancelled";
+
 
     if (data.refunded) {
 
@@ -2395,14 +4083,22 @@ async function cancelOrder() {
         "success"
       );
 
+
       await loadWallet();
 
     }
 
-    document
-      .getElementById("otpBox")
-      .textContent =
-      "Cancelled";
+    else {
+
+      showMessage(
+        "Number cancelled successfully.",
+        "success"
+      );
+
+    }
+
+
+    renderSavedVirtualOrders();
 
   }
 
@@ -2412,6 +4108,7 @@ async function cancelOrder() {
       "CANCEL:",
       err
     );
+
 
     showMessage(
       err.message ||
@@ -2429,7 +4126,9 @@ async function cancelOrder() {
 ===================================================== */
 
 document
-  .getElementById("countrySearch")
+  .getElementById(
+    "countrySearch"
+  )
   .addEventListener(
     "input",
     function() {
@@ -2443,7 +4142,9 @@ document
 
 
 document
-  .getElementById("serviceSearch")
+  .getElementById(
+    "serviceSearch"
+  )
   .addEventListener(
     "input",
     function() {
@@ -2462,7 +4163,26 @@ document
 
 (async function() {
 
+  /*
+    Load wallet first because this
+    also establishes currentUserId.
+  */
+
   await loadWallet();
+
+
+  /*
+    Load previous virtual-number
+    orders immediately.
+  */
+
+  loadSavedVirtualOrders();
+
+
+  /*
+    Then load countries for making
+    a NEW purchase.
+  */
 
   await loadCountries();
 
