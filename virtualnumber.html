@@ -921,7 +921,6 @@ main {
 
 <body>
 
-
 <header>
 
 <button
@@ -943,7 +942,6 @@ main {
 
 
 <main>
-
 
 <section class="banner">
 
@@ -1007,10 +1005,6 @@ main {
 </section>
 
 
-<!-- ======================================
-     SAVED / PREVIOUS ORDERS
-====================================== -->
-
 <section
   id="savedOrdersSection"
   class="saved-orders-section"
@@ -1024,10 +1018,6 @@ main {
 
 </section>
 
-
-<!-- ======================================
-     COUNTRY + SERVICE
-====================================== -->
 
 <section class="card">
 
@@ -1075,8 +1065,6 @@ main {
 </div>
 
 
-<!-- PROVIDERS -->
-
 <div
   id="providerWrap"
   class="provider-wrap"
@@ -1104,10 +1092,6 @@ main {
 
 </section>
 
-
-<!-- ======================================
-     CURRENT ORDER
-====================================== -->
 
 <section
   id="orderCard"
@@ -1166,10 +1150,6 @@ main {
 </main>
 
 
-<!-- ======================================
-     COUNTRY FULL SCREEN PICKER
-====================================== -->
-
 <div
   id="countryPicker"
   class="picker"
@@ -1209,10 +1189,6 @@ main {
 
 </div>
 
-
-<!-- ======================================
-     SERVICE FULL SCREEN PICKER
-====================================== -->
 
 <div
   id="servicePicker"
@@ -1316,10 +1292,6 @@ let savedVirtualOrders = [];
 let currentUserId = null;
 
 
-/*
-  The key is user-specific so orders belonging to one
-  logged-in account are not mixed with another account.
-*/
 function getSavedOrdersKey() {
 
   if (!currentUserId) {
@@ -1332,7 +1304,7 @@ function getSavedOrdersKey() {
 
 
 /* =====================================================
-   LOAD SAVED ORDERS
+   LOAD LOCAL SAVED ORDERS
 ===================================================== */
 
 function loadSavedVirtualOrders() {
@@ -1392,7 +1364,154 @@ function loadSavedVirtualOrders() {
 
 
 /* =====================================================
-   SAVE SAVED ORDERS
+   NEW:
+   LOAD OLD ORDERS FROM SUPABASE DATABASE
+===================================================== */
+
+async function loadOrdersFromDatabase() {
+
+  if (!currentUserId) {
+    return;
+  }
+
+  try {
+
+    const {
+      data: orders,
+      error
+    } =
+      await supabaseClient
+        .from("virtual_number_orders")
+        .select("*")
+        .eq(
+          "user_id",
+          currentUserId
+        )
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    if (!Array.isArray(orders)) {
+      return;
+    }
+
+
+    /*
+      Merge database orders with
+      localStorage orders.
+
+      Database is treated as the
+      source for old orders.
+    */
+
+    orders.forEach(
+      dbOrder => {
+
+        const existingIndex =
+          savedVirtualOrders.findIndex(
+            localOrder =>
+              String(localOrder.id) ===
+              String(dbOrder.id)
+          );
+
+
+        if (
+          existingIndex >= 0
+        ) {
+
+          savedVirtualOrders[
+            existingIndex
+          ] = {
+
+            ...savedVirtualOrders[
+              existingIndex
+            ],
+
+            ...dbOrder
+
+          };
+
+        }
+
+        else {
+
+          savedVirtualOrders.push(
+            dbOrder
+          );
+
+        }
+
+      }
+    );
+
+
+    /*
+      Newest orders first
+    */
+
+    savedVirtualOrders.sort(
+      (a, b) =>
+        new Date(
+          b.created_at || 0
+        ) -
+        new Date(
+          a.created_at || 0
+        )
+    );
+
+
+    /*
+      Save merged list locally too
+    */
+
+    const key =
+      getSavedOrdersKey();
+
+
+    if (key) {
+
+      localStorage.setItem(
+        key,
+        JSON.stringify(
+          savedVirtualOrders
+        )
+      );
+
+    }
+
+
+    renderSavedVirtualOrders();
+
+  }
+
+  catch (err) {
+
+    /*
+      Do not break the page if
+      database loading fails.
+    */
+
+    console.error(
+      "DATABASE ORDERS:",
+      err
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   SAVE ORDERS
 ===================================================== */
 
 function saveVirtualOrders() {
@@ -1453,11 +1572,15 @@ function saveVirtualOrder(order) {
         orderId
     );
 
+
   if (index >= 0) {
 
     savedVirtualOrders[index] = {
+
       ...savedVirtualOrders[index],
+
       ...order
+
     };
 
   }
@@ -1470,13 +1593,14 @@ function saveVirtualOrder(order) {
 
   }
 
+
   saveVirtualOrders();
 
 }
 
 
 /* =====================================================
-   GET SAVED ORDER
+   GET ORDER
 ===================================================== */
 
 function getSavedVirtualOrder(orderId) {
@@ -1491,7 +1615,7 @@ function getSavedVirtualOrder(orderId) {
 
 
 /* =====================================================
-   DELETE SAVED ORDER
+   REMOVE ORDER
 ===================================================== */
 
 function removeSavedVirtualOrder(orderId) {
@@ -1509,7 +1633,7 @@ function removeSavedVirtualOrder(orderId) {
 
 
 /* =====================================================
-   ORDER STATUS
+   STATUS
 ===================================================== */
 
 function getOrderStatusInfo(status) {
@@ -1517,6 +1641,7 @@ function getOrderStatusInfo(status) {
   const normalized =
     String(status || "PENDING")
       .toUpperCase();
+
 
   if (
     normalized === "RECEIVED" ||
@@ -1531,6 +1656,7 @@ function getOrderStatusInfo(status) {
 
   }
 
+
   if (
     normalized === "CANCELED" ||
     normalized === "CANCELLED" ||
@@ -1539,6 +1665,7 @@ function getOrderStatusInfo(status) {
   ) {
 
     return {
+
       text:
         normalized === "TIMEOUT"
           ? "Timed Out"
@@ -1546,13 +1673,17 @@ function getOrderStatusInfo(status) {
 
       className:
         "status-cancelled"
+
     };
 
   }
 
+
   return {
+
     text: "Pending",
     className: "status-pending"
+
   };
 
 }
@@ -1573,6 +1704,7 @@ function renderSavedVirtualOrders() {
     document.getElementById(
       "savedOrdersList"
     );
+
 
   if (!section || !list)
     return;
@@ -1605,6 +1737,7 @@ function renderSavedVirtualOrders() {
             order.status ||
             "PENDING"
           ).toUpperCase();
+
 
         const statusInfo =
           getOrderStatusInfo(
@@ -1643,6 +1776,7 @@ function renderSavedVirtualOrders() {
 
         let createdText = "";
 
+
         if (order.created_at) {
 
           try {
@@ -1668,6 +1802,17 @@ function renderSavedVirtualOrders() {
 
         }
 
+
+        /*
+          TIMEOUT is not active.
+
+          CANCELED is not active.
+
+          BANNED is not active.
+
+          PENDING and RECEIVED
+          can still be checked/cancelled.
+        */
 
         const isActive =
           status === "PENDING" ||
@@ -1792,7 +1937,7 @@ function renderSavedVirtualOrders() {
 
 
   /*
-    Check SMS buttons
+    CHECK BUTTONS
   */
 
   list
@@ -1819,7 +1964,7 @@ function renderSavedVirtualOrders() {
 
 
   /*
-    Cancel buttons
+    CANCEL BUTTONS
   */
 
   list
@@ -1938,7 +2083,7 @@ function updateSavedOrderFromResponse(
 
 
 /* =====================================================
-   SHOW SAVED ORDER IN CURRENT ORDER CARD
+   SHOW SAVED ORDER
 ===================================================== */
 
 function showSavedOrderInCurrentCard(
@@ -1954,7 +2099,9 @@ function showSavedOrderInCurrentCard(
 
 
   document
-    .getElementById("orderService")
+    .getElementById(
+      "orderService"
+    )
     .textContent =
     order.service_name ||
     order.service ||
@@ -1962,7 +2109,9 @@ function showSavedOrderInCurrentCard(
 
 
   document
-    .getElementById("orderCountry")
+    .getElementById(
+      "orderCountry"
+    )
     .textContent =
     order.country_name ||
     order.country ||
@@ -1970,7 +2119,9 @@ function showSavedOrderInCurrentCard(
 
 
   document
-    .getElementById("orderOperator")
+    .getElementById(
+      "orderOperator"
+    )
     .textContent =
     order.operator ||
     order.provider ||
@@ -1978,14 +2129,18 @@ function showSavedOrderInCurrentCard(
 
 
   document
-    .getElementById("orderNumber")
+    .getElementById(
+      "orderNumber"
+    )
     .textContent =
     order.number ||
     "Waiting...";
 
 
   document
-    .getElementById("otpBox")
+    .getElementById(
+      "otpBox"
+    )
     .textContent =
     order.otp_code
       ? order.otp_code
@@ -1993,7 +2148,9 @@ function showSavedOrderInCurrentCard(
 
 
   document
-    .getElementById("orderCard")
+    .getElementById(
+      "orderCard"
+    )
     .classList.add(
       "show"
     );
@@ -2013,6 +2170,7 @@ async function checkSavedVirtualOrder(
     getSavedVirtualOrder(
       orderId
     );
+
 
   if (!order)
     return;
@@ -2063,7 +2221,7 @@ async function checkSavedVirtualOrder(
 
 
     /*
-      If SMS arrived
+      SMS ARRIVED
     */
 
     if (sms?.code) {
@@ -2112,7 +2270,7 @@ async function checkSavedVirtualOrder(
 
 
     /*
-      Cancelled / timeout
+      TIMEOUT / CANCELLED
     */
 
     if (
@@ -2152,7 +2310,19 @@ async function checkSavedVirtualOrder(
           "success"
         );
 
+
         await loadWallet();
+
+      }
+
+      else {
+
+        showMessage(
+          status === "timeout"
+            ? "This number has timed out."
+            : "This number has been cancelled.",
+          "info"
+        );
 
       }
 
@@ -2165,11 +2335,13 @@ async function checkSavedVirtualOrder(
 
 
     /*
-      Still waiting
+      STILL WAITING
     */
 
     document
-      .getElementById("otpBox")
+      .getElementById(
+        "otpBox"
+      )
       .textContent =
       "Waiting for SMS...";
 
@@ -2216,6 +2388,7 @@ async function cancelSavedVirtualOrder(
       orderId
     );
 
+
   if (!order)
     return;
 
@@ -2260,24 +2433,18 @@ async function cancelSavedVirtualOrder(
     );
 
 
-    /*
-      Show cancellation in the current card
-    */
-
     showSavedOrderInCurrentCard(
       updatedOrder
     );
 
 
     document
-      .getElementById("otpBox")
+      .getElementById(
+        "otpBox"
+      )
       .textContent =
       "Cancelled";
 
-
-    /*
-      Refund message
-    */
 
     if (data.refunded) {
 
@@ -2287,6 +2454,7 @@ async function cancelSavedVirtualOrder(
         )} refunded to your wallet.`,
         "success"
       );
+
 
       await loadWallet();
 
@@ -2348,6 +2516,7 @@ function showMessage(
     document.getElementById(
       "messageIcon"
     );
+
 
   textBox.textContent =
     text;
@@ -2426,7 +2595,8 @@ function money(value) {
 
 
 /* =====================================================
-   API REQUEST - SAME LOGIC
+   API REQUEST
+   UNCHANGED
 ===================================================== */
 
 async function apiRequest(
@@ -2474,6 +2644,7 @@ async function apiRequest(
           method: "POST",
 
           headers: {
+
             "Content-Type":
               "application/json",
 
@@ -2482,6 +2653,7 @@ async function apiRequest(
 
             "apikey":
               SUPABASE_KEY
+
           },
 
           body:
@@ -2489,6 +2661,7 @@ async function apiRequest(
 
           signal:
             controller.signal
+
         }
       );
 
@@ -2565,7 +2738,8 @@ async function apiRequest(
 
 
 /* =====================================================
-   WALLET - SAME RPC
+   WALLET
+   SAME RPC
 ===================================================== */
 
 async function loadWallet() {
@@ -2589,10 +2763,6 @@ async function loadWallet() {
 
     }
 
-
-    /*
-      Remember current logged-in user
-    */
 
     currentUserId =
       user.id;
@@ -2631,12 +2801,19 @@ async function loadWallet() {
 
 
     /*
-      Load the user's saved virtual
-      number orders after we know
-      the user ID.
+      Local orders
     */
 
     loadSavedVirtualOrders();
+
+
+    /*
+      IMPORTANT:
+      Also load orders already stored
+      in Supabase.
+    */
+
+    await loadOrdersFromDatabase();
 
   }
 
@@ -2653,7 +2830,7 @@ async function loadWallet() {
 
 
 /* =====================================================
-   OPEN/CLOSE PICKERS
+   PICKERS
 ===================================================== */
 
 function openCountryPicker() {
@@ -3281,7 +3458,7 @@ function selectService(
 
 
 /* =====================================================
-   RENDER PROVIDERS
+   PROVIDERS
 ===================================================== */
 
 function renderProviders(
@@ -3555,11 +3732,6 @@ async function buyNumber() {
       order.id;
 
 
-    /*
-      SAVE THE NEW ORDER
-      ==================
-    */
-
     saveVirtualOrder({
 
       id:
@@ -3614,10 +3786,6 @@ async function buyNumber() {
 
     });
 
-
-    /*
-      SHOW CURRENT ORDER
-    */
 
     document
       .getElementById(
@@ -3815,10 +3983,6 @@ async function checkOrder() {
       );
 
 
-    /*
-      Update saved order
-    */
-
     updateSavedOrderFromResponse(
       selectedOrderId,
       data
@@ -3843,10 +4007,6 @@ async function checkOrder() {
     const sms =
       data.sms;
 
-
-    /*
-      SMS received
-    */
 
     if (sms?.code) {
 
@@ -3894,10 +4054,6 @@ async function checkOrder() {
 
     }
 
-
-    /*
-      Cancelled / timeout
-    */
 
     if (
       status === "cancelled" ||
@@ -4164,24 +4320,18 @@ document
 (async function() {
 
   /*
-    Load wallet first because this
-    also establishes currentUserId.
+    loadWallet() now does:
+    1. Get logged-in user
+    2. Load wallet
+    3. Load local orders
+    4. Load old database orders
   */
 
   await loadWallet();
 
 
   /*
-    Load previous virtual-number
-    orders immediately.
-  */
-
-  loadSavedVirtualOrders();
-
-
-  /*
-    Then load countries for making
-    a NEW purchase.
+    Load countries for NEW purchases.
   */
 
   await loadCountries();
