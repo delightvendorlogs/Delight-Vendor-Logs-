@@ -27,6 +27,11 @@ body {
   font-family: Arial, sans-serif;
 }
 
+
+/* ======================================
+   HEADER
+====================================== */
+
 header {
   height: 122px;
   background: #101828;
@@ -70,21 +75,40 @@ header h1 {
   background: #1d2b41;
   color: white;
 
-  padding: 14px 20px;
+  padding: 0;
 
   border-radius: 17px;
 
-  font-weight: bold;
-  font-size: 18px;
+  overflow: hidden;
 }
+
+.header-wallet a {
+  display: block;
+
+  color: white;
+  text-decoration: none;
+
+  padding: 14px 18px;
+
+  font-weight: bold;
+  font-size: 17px;
+
+  cursor: pointer;
+}
+
+
+/* ======================================
+   MAIN
+====================================== */
 
 main {
   width: 100%;
   max-width: 760px;
   margin: auto;
 
-  padding: 30px 24px 60px;
+  padding: 30px 24px 100px;
 }
+
 
 /* ======================================
    BANNER
@@ -120,6 +144,7 @@ main {
   color: #e4e9f0;
 }
 
+
 /* ======================================
    FLOATING MESSAGE
 ====================================== */
@@ -129,98 +154,135 @@ main {
 
   position: fixed;
 
-  top: 18px;
   left: 50%;
+  bottom: 22px;
 
-  transform: translateX(-50%);
+  transform:
+    translateX(-50%)
+    translateY(30px);
 
   width: calc(100% - 32px);
   max-width: 700px;
 
   z-index: 99999;
 
-  padding: 17px 48px 17px 20px;
+  padding: 18px 54px 18px 20px;
 
-  border-radius: 16px;
+  border-radius: 18px;
 
   font-size: 17px;
-
-  line-height: 1.4;
+  line-height: 1.45;
 
   font-weight: 600;
 
   box-shadow:
-    0 8px 30px
-    rgba(0,0,0,.18);
+    0 10px 35px
+    rgba(0,0,0,.22);
 
-  animation:
-    messageSlide .2s ease;
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition:
+    opacity .25s ease,
+    transform .25s ease;
 }
 
 .message.show {
   display: block;
+
+  opacity: 1;
+
+  pointer-events: auto;
+
+  transform:
+    translateX(-50%)
+    translateY(0);
 }
 
 .message.error {
-  background: #ffe3e3;
-  color: #a12626;
+  background: #ef4444;
+  color: white;
 }
 
 .message.success {
-  background: #ddf8e6;
-  color: #137333;
+  background: #18795f;
+  color: white;
 }
 
 .message.info {
-  background: #e5efff;
-  color: #1856a8;
+  background: #1d4f91;
+  color: white;
+}
+
+.message.warning {
+  background: #ef4444;
+  color: white;
+
+  animation:
+    warningBlink 1s ease-in-out infinite;
+}
+
+@keyframes warningBlink {
+
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: .62;
+  }
+
+  100% {
+    opacity: 1;
+  }
+
+}
+
+.message-icon {
+  display: inline-flex;
+
+  width: 26px;
+  height: 26px;
+
+  align-items: center;
+  justify-content: center;
+
+  margin-right: 10px;
+
+  border: 2px solid currentColor;
+  border-radius: 50%;
+
+  font-size: 17px;
+  font-weight: bold;
+
+  vertical-align: middle;
 }
 
 .message-close {
   position: absolute;
 
-  right: 10px;
+  right: 11px;
   top: 50%;
 
   transform: translateY(-50%);
 
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
 
   border: none;
+  border-radius: 9px;
 
-  background: transparent;
+  background: rgba(255,255,255,.14);
 
-  color: inherit;
+  color: white;
 
-  font-size: 24px;
-
+  font-size: 25px;
   line-height: 1;
 
   cursor: pointer;
-
-  border-radius: 8px;
 }
 
-.message-close:hover {
-  background: rgba(0,0,0,.08);
-}
-
-@keyframes messageSlide {
-
-  from {
-    opacity: 0;
-    transform:
-      translate(-50%, -12px);
-  }
-
-  to {
-    opacity: 1;
-    transform:
-      translate(-50%, 0);
-  }
-
-}
 
 /* ======================================
    WALLET
@@ -252,6 +314,24 @@ main {
   margin-top: 18px;
 }
 
+.wallet-fund-link {
+  display: inline-block;
+
+  margin-top: 18px;
+
+  padding: 13px 20px;
+
+  border-radius: 14px;
+
+  background: #101828;
+  color: white;
+
+  text-decoration: none;
+
+  font-weight: bold;
+}
+
+
 /* ======================================
    SECTION
 ====================================== */
@@ -272,9 +352,9 @@ main {
 
 .card h2 {
   margin-top: 0;
-
   font-size: 25px;
 }
+
 
 /* ======================================
    SEARCH
@@ -285,7 +365,7 @@ main {
 
   padding: 18px;
 
-  border: 1px solid #ddd;
+  border: 1px solid #d7dbe2;
 
   border-radius: 18px;
 
@@ -294,11 +374,14 @@ main {
   outline: none;
 
   margin-bottom: 12px;
+
+  background: white;
 }
 
 .search-box:focus {
   border-color: #111827;
 }
+
 
 /* ======================================
    RESULTS
@@ -348,8 +431,9 @@ main {
   font-weight: normal;
 }
 
+
 /* ======================================
-   SELECTED
+   SELECTED COUNTRY
 ====================================== */
 
 .selected-box {
@@ -367,6 +451,7 @@ main {
 .selected-box strong {
   font-size: 20px;
 }
+
 
 /* ======================================
    SERVICES
@@ -429,9 +514,25 @@ main {
   font-size: 14px;
 }
 
+
 /* ======================================
    OPERATOR
 ====================================== */
+
+.operator-title {
+  margin: 0 0 8px;
+
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.operator-subtitle {
+  margin: 0 0 20px;
+
+  color: #6b7280;
+
+  font-size: 16px;
+}
 
 .operator-grid {
   display: grid;
@@ -442,36 +543,61 @@ main {
       minmax(180px, 1fr)
     );
 
-  gap: 12px;
-
-  margin-top: 15px;
+  gap: 14px;
 }
 
 .operator-card {
-  border: 1px solid #ddd;
+  border: 1px solid #d9dee6;
 
-  padding: 17px;
+  padding: 21px;
 
-  border-radius: 17px;
+  border-radius: 22px;
 
   cursor: pointer;
 
   background: white;
+
+  transition:
+    border .15s ease,
+    transform .15s ease,
+    box-shadow .15s ease;
+
+  position: relative;
+}
+
+.operator-card:hover {
+  transform: translateY(-1px);
 }
 
 .operator-card.selected {
-  background: #101828;
-  color: white;
-  border-color: #101828;
+  border: 3px solid #374151;
+
+  box-shadow:
+    0 4px 14px
+    rgba(0,0,0,.08);
 }
 
 .operator-name {
+  font-size: 20px;
   font-weight: bold;
 }
 
 .operator-price {
-  margin-top: 7px;
+  margin-top: 14px;
+
+  font-size: 28px;
+  font-weight: 900;
 }
+
+.operator-stock {
+  margin-top: 13px;
+
+  color: #18795f;
+
+  font-size: 16px;
+  font-weight: bold;
+}
+
 
 /* ======================================
    BUY
@@ -482,7 +608,7 @@ main {
 
   border: none;
 
-  background: #101828;
+  background: #18795f;
 
   color: white;
 
@@ -496,13 +622,14 @@ main {
 
   cursor: pointer;
 
-  margin-top: 20px;
+  margin-top: 22px;
 }
 
 .buy-button:disabled {
   opacity: .55;
   cursor: not-allowed;
 }
+
 
 /* ======================================
    ORDER
@@ -588,6 +715,7 @@ main {
   color: #9b1c1c;
 }
 
+
 /* ======================================
    MOBILE
 ====================================== */
@@ -610,11 +738,11 @@ main {
 
   main {
     padding:
-      30px 24px 50px;
+      30px 24px 110px;
   }
 
   .banner {
-    padding: 38px 38px;
+    padding: 38px;
 
     border-radius: 32px;
   }
@@ -640,14 +768,19 @@ main {
   }
 
   .message {
-    top: 12px;
+    bottom: 16px;
 
     width: calc(100% - 24px);
 
     padding:
-      15px 45px 15px 17px;
+      16px 48px 16px 17px;
 
     font-size: 16px;
+  }
+
+  .header-wallet a {
+    padding: 14px 14px;
+    font-size: 15px;
   }
 
 }
@@ -657,6 +790,11 @@ main {
 </head>
 
 <body>
+
+
+<!-- ======================================
+     HEADER
+====================================== -->
 
 <header>
 
@@ -673,15 +811,17 @@ main {
 
 <div
   class="header-wallet"
-  id="headerWallet"
 >
-  ₦0
+  <a href="wallet.html">
+    Fund Wallet
+  </a>
 </div>
 
 </header>
 
 
 <main>
+
 
 <!-- ======================================
      BANNER
@@ -712,16 +852,25 @@ main {
   role="alert"
 >
 
-  <span id="messageText"></span>
+<span
+  id="messageIcon"
+  class="message-icon"
+>
+  !
+</span>
 
-  <button
-    type="button"
-    class="message-close"
-    onclick="hideMessage()"
-    aria-label="Close message"
-  >
-    ×
-  </button>
+<span
+  id="messageText"
+></span>
+
+<button
+  type="button"
+  class="message-close"
+  onclick="hideMessage()"
+  aria-label="Close message"
+>
+  ×
+</button>
 
 </div>
 
@@ -742,6 +891,13 @@ main {
 >
   ₦0
 </div>
+
+<a
+  href="wallet.html"
+  class="wallet-fund-link"
+>
+  Fund Wallet
+</a>
 
 </section>
 
@@ -818,9 +974,13 @@ main {
   style="display:none;"
 >
 
-<h2>
-  3. Choose Operator
+<h2 class="operator-title">
+  Available Servers
 </h2>
+
+<p class="operator-subtitle">
+  Select the server you want to use.
+</p>
 
 <div
   id="operatorGrid"
@@ -833,7 +993,7 @@ main {
   onclick="buyNumber()"
   disabled
 >
-  Buy Number
+  🛒 Buy Number
 </button>
 
 </section>
@@ -954,6 +1114,8 @@ let selectedOrderId = null;
 
 let orderCheckTimer = null;
 
+let currentWalletBalance = 0;
+
 
 /* =====================================================
    MESSAGE
@@ -974,21 +1136,30 @@ function showMessage(
       "messageText"
     );
 
+  const icon =
+    document.getElementById(
+      "messageIcon"
+    );
+
   textBox.textContent =
     text;
 
+  if (type === "success") {
+
+    icon.textContent = "✓";
+
+  } else if (type === "info") {
+
+    icon.textContent = "i";
+
+  } else {
+
+    icon.textContent = "!";
+
+  }
+
   box.className =
     `message show ${type}`;
-
-  /*
-   * Always bring the message
-   * to the user's visible screen.
-   */
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
 
 }
 
@@ -1007,12 +1178,11 @@ function hideMessage() {
   box.className =
     "message";
 
-  const textBox =
-    document.getElementById(
+  document
+    .getElementById(
       "messageText"
-    );
-
-  textBox.textContent =
+    )
+    .textContent =
     "";
 
 }
@@ -1032,6 +1202,7 @@ function escapeHTML(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+
 }
 
 
@@ -1050,6 +1221,7 @@ function money(value) {
         maximumFractionDigits: 0
       }
     );
+
 }
 
 
@@ -1079,6 +1251,7 @@ async function apiRequest(
     throw new Error(
       "Please login."
     );
+
   }
 
   const controller =
@@ -1150,6 +1323,7 @@ async function apiRequest(
         data?.code || "";
 
       throw err;
+
     }
 
     return data;
@@ -1164,6 +1338,7 @@ async function apiRequest(
       throw new Error(
         "Request timed out. Please try again."
       );
+
     }
 
     throw err;
@@ -1200,6 +1375,7 @@ async function loadWallet() {
         "login.html";
 
       return;
+
     }
 
     const {
@@ -1220,16 +1396,12 @@ async function loadWallet() {
         wallet?.balance || 0
       );
 
-    document
-      .getElementById(
-        "walletBalance"
-      )
-      .textContent =
-      money(balance);
+    currentWalletBalance =
+      balance;
 
     document
       .getElementById(
-        "headerWallet"
+        "walletBalance"
       )
       .textContent =
       money(balance);
@@ -1367,12 +1539,6 @@ function renderCountries(
             country.iso || ""
           ).toLowerCase();
 
-        /*
-         * UK / United Kingdom /
-         * England should all find
-         * the UK entry.
-         */
-
         const isUK =
           code === "england" ||
           code === "uk" ||
@@ -1394,7 +1560,9 @@ function renderCountries(
             term === "gb"
           )
         ) {
+
           return true;
+
         }
 
         return (
@@ -1419,37 +1587,57 @@ function renderCountries(
     );
 
     return;
+
   }
 
   results.innerHTML =
     filtered
-      .slice(
-        0,
-        30
-      )
+      .slice(0, 30)
       .map(
-        country => `
-          <div
-            class="result-item"
-            onclick='selectCountry(${JSON.stringify(
-              country
-            )})'
-          >
+        (country, index) => {
 
-            ${escapeHTML(
-              country.name
-            )}
-
-            <small>
+          return `
+            <div
+              class="result-item"
+              data-country-index="${index}"
+            >
               ${escapeHTML(
-                country.prefix || ""
+                country.name
               )}
-            </small>
 
-          </div>
-        `
+              <small>
+                ${escapeHTML(
+                  country.prefix || ""
+                )}
+              </small>
+            </div>
+          `;
+
+        }
       )
       .join("");
+
+  const items =
+    results.querySelectorAll(
+      ".result-item[data-country-index]"
+    );
+
+  items.forEach(
+    (item, index) => {
+
+      item.addEventListener(
+        "click",
+        function() {
+
+          selectCountry(
+            filtered[index]
+          );
+
+        }
+      );
+
+    }
+  );
 
   results.classList.add(
     "show"
@@ -1475,12 +1663,21 @@ async function selectCountry(
   selectedOperator =
     null;
 
+  services = [];
+
   document
     .getElementById(
       "countrySearch"
     )
     .value =
     country.name;
+
+  document
+    .getElementById(
+      "serviceSearch"
+    )
+    .value =
+    "";
 
   const results =
     document.getElementById(
@@ -1659,12 +1856,13 @@ function renderServices(
        </div>`;
 
     return;
+
   }
 
   grid.innerHTML =
     filtered
       .map(
-        service => {
+        (service, index) => {
 
           const available =
             Number(
@@ -1679,9 +1877,7 @@ function renderServices(
                   ? "selected"
                   : ""
               }"
-              onclick='selectService(${JSON.stringify(
-                service
-              )})'
+              data-service-index="${index}"
             >
 
               <div class="service-name">
@@ -1710,9 +1906,32 @@ function renderServices(
 
             </div>
           `;
+
         }
       )
       .join("");
+
+  const cards =
+    grid.querySelectorAll(
+      ".service-card[data-service-index]"
+    );
+
+  cards.forEach(
+    (card, index) => {
+
+      card.addEventListener(
+        "click",
+        function() {
+
+          selectService(
+            filtered[index]
+          );
+
+        }
+      );
+
+    }
+  );
 
 }
 
@@ -1781,44 +2000,81 @@ function selectService(
       true;
 
     return;
+
   }
 
   operatorGrid.innerHTML =
     available
       .map(
-        option => `
-          <div
-            class="operator-card"
-            onclick='selectOperator(${JSON.stringify(
-              option
-            )}, this)'
-          >
+        (option, index) => {
 
-            <div class="operator-name">
-              ${escapeHTML(
-                option.operator
-              )}
+          const stock =
+            Number(
+              option.stock || 0
+            );
+
+          return `
+            <div
+              class="operator-card"
+              data-operator-index="${index}"
+            >
+
+              <div class="operator-name">
+                ${escapeHTML(
+                  option.operator ||
+                  `Server ${index + 1}`
+                )}
+              </div>
+
+              <div class="operator-price">
+                ${money(
+                  option.customer_price_ngn
+                )}
+              </div>
+
+              <div class="operator-stock">
+                ${
+                  stock > 0
+                    ? "Available"
+                    : "Not available"
+                }
+              </div>
+
             </div>
+          `;
 
-            <div class="operator-price">
-              ${money(
-                option.customer_price_ngn
-              )}
-            </div>
-
-          </div>
-        `
+        }
       )
       .join("");
+
+  const operatorCards =
+    operatorGrid.querySelectorAll(
+      ".operator-card[data-operator-index]"
+    );
+
+  operatorCards.forEach(
+    (card, index) => {
+
+      card.addEventListener(
+        "click",
+        function() {
+
+          selectOperator(
+            available[index],
+            card
+          );
+
+        }
+      );
+
+    }
+  );
 
   const first =
     available[0];
 
   const firstElement =
-    operatorGrid
-      .querySelector(
-        ".operator-card"
-      );
+    operatorCards[0];
 
   selectOperator(
     first,
@@ -1870,6 +2126,21 @@ function selectOperator(
 
 
 /* =====================================================
+   GET SELECTED PRICE
+===================================================== */
+
+function getSelectedPrice() {
+
+  return Number(
+    selectedOperator?.customer_price_ngn ||
+    selectedService?.best_price_ngn ||
+    0
+  );
+
+}
+
+
+/* =====================================================
    BUY
 ===================================================== */
 
@@ -1883,11 +2154,49 @@ async function buyNumber() {
 
     showMessage(
       "Please select a country, service and operator.",
-      "error"
+      "warning"
     );
 
     return;
+
   }
+
+
+  /*
+   * Refresh wallet first.
+   */
+
+  await loadWallet();
+
+
+  const price =
+    getSelectedPrice();
+
+
+  /*
+   * Frontend insufficient balance check.
+   */
+
+  if (
+    price > 0 &&
+    currentWalletBalance < price
+  ) {
+
+    const amountNeeded =
+      price -
+      currentWalletBalance;
+
+    showMessage(
+      `Insufficient balance. Please add ${money(
+        amountNeeded
+      )} to your wallet.`,
+      "warning"
+    );
+
+    return;
+
+  }
+
 
   const button =
     document.getElementById(
@@ -1998,25 +2307,44 @@ async function buyNumber() {
       err
     );
 
-    /*
-     * USER WALLET ERROR
-     */
-
     if (
       err.code ===
       "USER_INSUFFICIENT_FUNDS"
     ) {
 
-      showMessage(
-        "Insufficient fund. Please fund wallet.",
-        "error"
-      );
+      await loadWallet();
+
+      const price =
+        getSelectedPrice();
+
+      const amountNeeded =
+        Math.max(
+          0,
+          price -
+          currentWalletBalance
+        );
+
+      if (
+        amountNeeded > 0
+      ) {
+
+        showMessage(
+          `Insufficient balance. Please add ${money(
+            amountNeeded
+          )} to your wallet.`,
+          "warning"
+        );
+
+      } else {
+
+        showMessage(
+          "Insufficient balance. Please fund your wallet.",
+          "warning"
+        );
+
+      }
 
     }
-
-    /*
-     * 5SIM PROVIDER BALANCE
-     */
 
     else if (
       err.code ===
@@ -2026,15 +2354,11 @@ async function buyNumber() {
     ) {
 
       showMessage(
-        "Number Available. Please fund wallet, contact us.",
+        "Number is currently unavailable. Please contact support.",
         "error"
       );
 
     }
-
-    /*
-     * OUT OF STOCK
-     */
 
     else if (
       err.code ===
@@ -2047,10 +2371,6 @@ async function buyNumber() {
       );
 
     }
-
-    /*
-     * OTHER
-     */
 
     else {
 
@@ -2068,7 +2388,7 @@ async function buyNumber() {
       false;
 
     button.textContent =
-      "Buy Number";
+      "🛒 Buy Number";
 
   }
 
@@ -2124,6 +2444,7 @@ async function checkOrder() {
       );
 
       return;
+
     }
 
     if (
@@ -2158,6 +2479,7 @@ async function checkOrder() {
       }
 
       return;
+
     }
 
     document
@@ -2341,5 +2663,4 @@ document
 </script>
 
 </body>
-
 </html>
