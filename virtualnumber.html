@@ -1104,8 +1104,6 @@ main {
     margin-top: 2px;
   }
 
-  /* POPUP FITS ONE PHONE SCREEN */
-
   .verification-overlay {
     padding: 10px;
   }
@@ -1290,10 +1288,13 @@ main {
         </div>
 
         <div>
+
           <strong>
             If a provider does not receive a code, try another provider with a better success rate.
           </strong>
+
           Each server shows its own expiry time. Cancel early to receive a full refund if no code arrives.
+
         </div>
 
       </div>
@@ -1330,9 +1331,11 @@ main {
 <h1>Virtual Numbers</h1>
 
 <div class="header-wallet">
+
   <a href="wallet.html">
     Fund Wallet
   </a>
+
 </div>
 
 </header>
@@ -1402,6 +1405,10 @@ main {
 
 </section>
 
+
+<!-- ======================================
+     COUNTRY + SERVICE
+====================================== -->
 
 <section class="card">
 
@@ -1477,7 +1484,28 @@ main {
 </section>
 
 
-<!-- NEW ORDER -->
+<!-- ======================================
+     SAVED ORDERS
+     DIRECTLY UNDER COUNTRY/SERVICE
+====================================== -->
+
+<section
+  id="savedOrdersSection"
+  class="saved-orders-section"
+>
+
+<h2 class="saved-orders-title">
+  Your Virtual Number Orders
+</h2>
+
+<div id="savedOrdersList"></div>
+
+</section>
+
+
+<!-- ======================================
+     CURRENT ORDER
+====================================== -->
 
 <section
   id="orderCard"
@@ -1519,7 +1547,7 @@ main {
   class="action-button check-button"
   onclick="checkOrder()"
 >
-  Check SMS
+  Get Code
 </button>
 
 <button
@@ -1533,26 +1561,12 @@ main {
 
 </section>
 
-
-<!-- SAVED ORDERS -->
-
-<section
-  id="savedOrdersSection"
-  class="saved-orders-section"
->
-
-<h2 class="saved-orders-title">
-  Your Virtual Number Orders
-</h2>
-
-<div id="savedOrdersList"></div>
-
-</section>
-
 </main>
 
 
-<!-- COUNTRY PICKER -->
+<!-- ======================================
+     COUNTRY PICKER
+====================================== -->
 
 <div
   id="countryPicker"
@@ -1594,7 +1608,9 @@ main {
 </div>
 
 
-<!-- SERVICE PICKER -->
+<!-- ======================================
+     SERVICE PICKER
+====================================== -->
 
 <div
   id="servicePicker"
@@ -1695,28 +1711,39 @@ let currentUserId = null;
 
 /* =====================================================
    VERIFICATION POPUP
-   ALWAYS SHOW ON PAGE LOAD / REFRESH
+   SHOW EVERY PAGE LOAD
 ===================================================== */
 
 function showVerificationTips() {
 
-  document
-    .getElementById("verificationOverlay")
-    .classList.add("show");
+  const overlay =
+    document.getElementById(
+      "verificationOverlay"
+    );
+
+  if (overlay) {
+    overlay.classList.add("show");
+  }
 
 }
 
 
 function closeVerificationTips() {
 
-  document
-    .getElementById("verificationOverlay")
-    .classList.remove("show");
+  const overlay =
+    document.getElementById(
+      "verificationOverlay"
+    );
+
+  if (overlay) {
+    overlay.classList.remove("show");
+  }
 
 }
 
+
 /* =====================================================
-   PERSISTENT ORDERS
+   LOCAL ORDER STORAGE
 ===================================================== */
 
 function getSavedOrdersKey() {
@@ -1740,6 +1767,7 @@ function loadSavedVirtualOrders() {
     if (!key) {
 
       savedVirtualOrders = [];
+
       renderSavedVirtualOrders();
 
       return;
@@ -1785,6 +1813,10 @@ function loadSavedVirtualOrders() {
 }
 
 
+/* =====================================================
+   SAVE LOCAL ORDERS
+===================================================== */
+
 function saveVirtualOrders() {
 
   try {
@@ -1814,6 +1846,10 @@ function saveVirtualOrders() {
 
 }
 
+
+/* =====================================================
+   SAVE / UPDATE ONE ORDER
+===================================================== */
 
 function saveVirtualOrder(order) {
 
@@ -1845,11 +1881,23 @@ function saveVirtualOrder(order) {
 
   else {
 
-    /* NEW ORDER ALWAYS TOP */
+    /* NEWEST ORDER ALWAYS GOES TOP */
 
     savedVirtualOrders.unshift(order);
 
   }
+
+  /* ALWAYS KEEP NEWEST FIRST */
+
+  savedVirtualOrders.sort(
+    (a, b) =>
+      new Date(
+        b.created_at || 0
+      ) -
+      new Date(
+        a.created_at || 0
+      )
+  );
 
   saveVirtualOrders();
 
@@ -1867,11 +1915,30 @@ function getSavedVirtualOrder(orderId) {
 }
 
 
+/* =====================================================
+   NORMALIZE STATUS
+===================================================== */
+
+function normalizeOrderStatus(status) {
+
+  return String(
+    status || "PENDING"
+  )
+    .trim()
+    .toUpperCase();
+
+}
+
+
+/* =====================================================
+   STATUS DISPLAY
+===================================================== */
+
 function getOrderStatusInfo(status) {
 
   const normalized =
-    String(status || "PENDING")
-      .toUpperCase();
+    normalizeOrderStatus(status);
+
 
   if (
     normalized === "RECEIVED" ||
@@ -1886,6 +1953,7 @@ function getOrderStatusInfo(status) {
 
   }
 
+
   if (
     normalized === "CANCELED" ||
     normalized === "CANCELLED" ||
@@ -1894,6 +1962,7 @@ function getOrderStatusInfo(status) {
   ) {
 
     return {
+
       text:
         normalized === "TIMEOUT"
           ? "Timed Out"
@@ -1901,41 +1970,198 @@ function getOrderStatusInfo(status) {
 
       className:
         "status-cancelled"
+
     };
 
   }
 
+
   return {
+
     text: "Pending",
-    className: "status-pending"
+
+    className:
+      "status-pending"
+
   };
 
 }
 
 
 /* =====================================================
-   CHECK IF ORDER CAN STILL BE CANCELLED
+   ACTIVE ORDER CAN ALWAYS BE CANCELLED
 ===================================================== */
 
 function canCancelSavedOrder(status) {
 
   const normalized =
-    String(status || "PENDING")
-      .toUpperCase();
+    normalizeOrderStatus(status);
 
   const finishedStatuses = [
+
     "RECEIVED",
     "FINISHED",
     "COMPLETED",
+
     "CANCELED",
     "CANCELLED",
     "TIMEOUT",
     "BANNED"
+
   ];
 
   return !finishedStatuses.includes(
     normalized
   );
+
+}
+
+
+/* =====================================================
+   LOAD ORDERS FROM DATABASE
+===================================================== */
+
+async function loadOrdersFromDatabase() {
+
+  if (!currentUserId) {
+    return;
+  }
+
+
+  try {
+
+    const {
+      data: orders,
+      error
+    } =
+      await supabaseClient
+        .from("virtual_number_orders")
+        .select("*")
+        .eq(
+          "user_id",
+          currentUserId
+        )
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
+
+
+    if (error) {
+
+      console.error(
+        "DATABASE ORDERS:",
+        error
+      );
+
+      return;
+
+    }
+
+
+    if (!Array.isArray(orders)) {
+      return;
+    }
+
+
+    /*
+      DATABASE IS THE SOURCE FOR OLD ORDERS.
+
+      Merge them with local orders so an order
+      purchased earlier can appear again after
+      refreshing/re-entering the page.
+    */
+
+    orders.forEach(
+      dbOrder => {
+
+        const existingIndex =
+          savedVirtualOrders.findIndex(
+            localOrder =>
+              String(
+                localOrder.id
+              ) ===
+              String(
+                dbOrder.id
+              )
+          );
+
+
+        if (
+          existingIndex >= 0
+        ) {
+
+          savedVirtualOrders[
+            existingIndex
+          ] = {
+
+            ...savedVirtualOrders[
+              existingIndex
+            ],
+
+            ...dbOrder
+
+          };
+
+        }
+
+        else {
+
+          savedVirtualOrders.push(
+            dbOrder
+          );
+
+        }
+
+      }
+    );
+
+
+    /*
+      NEWEST ORDER FIRST
+    */
+
+    savedVirtualOrders.sort(
+      (a, b) =>
+        new Date(
+          b.created_at || 0
+        ) -
+        new Date(
+          a.created_at || 0
+        )
+    );
+
+
+    const key =
+      getSavedOrdersKey();
+
+
+    if (key) {
+
+      localStorage.setItem(
+        key,
+        JSON.stringify(
+          savedVirtualOrders
+        )
+      );
+
+    }
+
+
+    renderSavedVirtualOrders();
+
+  }
+
+  catch (err) {
+
+    console.error(
+      "LOAD DATABASE ORDERS:",
+      err
+    );
+
+  }
 
 }
 
@@ -1956,13 +2182,18 @@ function renderSavedVirtualOrders() {
       "savedOrdersList"
     );
 
-  if (!section || !list)
+
+  if (!section || !list) {
     return;
+  }
 
 
   if (!savedVirtualOrders.length) {
 
-    section.classList.remove("show");
+    section.classList.remove(
+      "show"
+    );
+
     list.innerHTML = "";
 
     return;
@@ -1970,7 +2201,9 @@ function renderSavedVirtualOrders() {
   }
 
 
-  section.classList.add("show");
+  section.classList.add(
+    "show"
+  );
 
 
   list.innerHTML =
@@ -1978,13 +2211,15 @@ function renderSavedVirtualOrders() {
       .map(order => {
 
         const status =
-          String(
-            order.status ||
-            "PENDING"
-          ).toUpperCase();
+          normalizeOrderStatus(
+            order.status
+          );
+
 
         const statusInfo =
-          getOrderStatusInfo(status);
+          getOrderStatusInfo(
+            status
+          );
 
 
         const service =
@@ -2019,6 +2254,7 @@ function renderSavedVirtualOrders() {
 
         let createdText = "";
 
+
         if (order.created_at) {
 
           try {
@@ -2029,8 +2265,11 @@ function renderSavedVirtualOrders() {
               ).toLocaleString(
                 "en-NG",
                 {
-                  dateStyle: "medium",
-                  timeStyle: "short"
+                  dateStyle:
+                    "medium",
+
+                  timeStyle:
+                    "short"
                 }
               );
 
@@ -2046,12 +2285,20 @@ function renderSavedVirtualOrders() {
 
 
         /*
-          CANCEL BUTTON FOR EVERY ORDER
-          STILL WAITING / PENDING / PROCESSING
+          IMPORTANT:
+
+          Any order that is NOT completed,
+          cancelled, timeout or banned
+          remains cancellable.
+
+          Therefore PENDING will ALWAYS
+          get Get Code + Cancel.
         */
 
         const canCancel =
-          canCancelSavedOrder(status);
+          canCancelSavedOrder(
+            status
+          );
 
 
         return `
@@ -2080,17 +2327,28 @@ function renderSavedVirtualOrders() {
 
               <div>
                 <span>Country:</span>
-                <strong>${escapeHTML(country)}</strong>
+
+                <strong>
+                  ${escapeHTML(country)}
+                </strong>
               </div>
+
 
               <div>
                 <span>Provider:</span>
-                <strong>${escapeHTML(operator)}</strong>
+
+                <strong>
+                  ${escapeHTML(operator)}
+                </strong>
               </div>
+
 
               <div>
                 <span>Number:</span>
-                <strong>${escapeHTML(number)}</strong>
+
+                <strong>
+                  ${escapeHTML(number)}
+                </strong>
               </div>
 
             </div>
@@ -2118,8 +2376,9 @@ function renderSavedVirtualOrders() {
                       data-action="check"
                       data-order-id="${escapeHTML(order.id)}"
                     >
-                      Check SMS
+                      Get Code
                     </button>
+
 
                     <button
                       type="button"
@@ -2154,6 +2413,10 @@ function renderSavedVirtualOrders() {
       .join("");
 
 
+  /*
+    GET CODE BUTTONS
+  */
+
   list
     .querySelectorAll(
       '[data-action="check"]'
@@ -2173,6 +2436,10 @@ function renderSavedVirtualOrders() {
 
     });
 
+
+  /*
+    CANCEL BUTTONS
+  */
 
   list
     .querySelectorAll(
@@ -2197,7 +2464,7 @@ function renderSavedVirtualOrders() {
 
 
 /* =====================================================
-   UPDATE SAVED ORDER
+   UPDATE SAVED ORDER FROM API
 ===================================================== */
 
 function updateSavedOrderFromResponse(
@@ -2206,7 +2473,9 @@ function updateSavedOrderFromResponse(
 ) {
 
   const oldOrder =
-    getSavedVirtualOrder(orderId) || {
+    getSavedVirtualOrder(
+      orderId
+    ) || {
       id: orderId
     };
 
@@ -2218,9 +2487,12 @@ function updateSavedOrderFromResponse(
   const updated = {
 
     ...oldOrder,
+
     ...apiOrder,
 
-    id: orderId,
+    id:
+      orderId,
+
 
     service_name:
       apiOrder.service_name ||
@@ -2229,6 +2501,7 @@ function updateSavedOrderFromResponse(
       oldOrder.service ||
       "",
 
+
     country_name:
       apiOrder.country_name ||
       apiOrder.country ||
@@ -2236,16 +2509,19 @@ function updateSavedOrderFromResponse(
       oldOrder.country ||
       "",
 
+
     operator:
       apiOrder.operator ||
       oldOrder.operator ||
       "",
+
 
     number:
       apiOrder.number ||
       apiOrder.phone ||
       oldOrder.number ||
       "",
+
 
     otp_code:
       apiOrder.otp_code ||
@@ -2254,11 +2530,13 @@ function updateSavedOrderFromResponse(
       oldOrder.otp_code ||
       "",
 
+
     full_sms:
       apiOrder.full_sms ||
       data?.full_sms ||
       oldOrder.full_sms ||
       "",
+
 
     status:
       data?.status ||
@@ -2269,19 +2547,24 @@ function updateSavedOrderFromResponse(
   };
 
 
-  saveVirtualOrder(updated);
+  saveVirtualOrder(
+    updated
+  );
 
 }
 
 
 /* =====================================================
-   SHOW SAVED ORDER
+   SHOW SAVED ORDER IN CURRENT CARD
 ===================================================== */
 
-function showSavedOrderInCurrentCard(order) {
+function showSavedOrderInCurrentCard(
+  order
+) {
 
-  if (!order)
+  if (!order) {
     return;
+  }
 
 
   selectedOrderId =
@@ -2330,7 +2613,9 @@ function showSavedOrderInCurrentCard(order) {
 
   document.getElementById(
     "orderCard"
-  ).classList.add("show");
+  ).classList.add(
+    "show"
+  );
 
 }
 
@@ -2339,28 +2624,40 @@ function showSavedOrderInCurrentCard(order) {
    CHECK SAVED ORDER
 ===================================================== */
 
-async function checkSavedVirtualOrder(orderId) {
+async function checkSavedVirtualOrder(
+  orderId
+) {
 
   const order =
-    getSavedVirtualOrder(orderId);
+    getSavedVirtualOrder(
+      orderId
+    );
 
-  if (!order)
+
+  if (!order) {
     return;
+  }
 
 
   selectedOrderId =
     orderId;
 
 
-  showSavedOrderInCurrentCard(order);
+  showSavedOrderInCurrentCard(
+    order
+  );
 
 
   try {
 
     const data =
       await apiRequest({
+
         action: "check",
-        order_id: orderId
+
+        order_id:
+          orderId
+
       });
 
 
@@ -2371,20 +2668,26 @@ async function checkSavedVirtualOrder(orderId) {
 
 
     const updated =
-      getSavedVirtualOrder(orderId);
+      getSavedVirtualOrder(
+        orderId
+      );
 
 
     const status =
-      String(
+      normalizeOrderStatus(
         data?.status ||
         updated?.status ||
         ""
-      ).toLowerCase();
+      );
 
 
     const sms =
       data?.sms;
 
+
+    /*
+      SMS RECEIVED
+    */
 
     if (sms?.code) {
 
@@ -2392,7 +2695,8 @@ async function checkSavedVirtualOrder(orderId) {
 
         ...updated,
 
-        otp_code: sms.code,
+        otp_code:
+          sms.code,
 
         full_sms:
           sms.full ||
@@ -2408,7 +2712,9 @@ async function checkSavedVirtualOrder(orderId) {
 
 
       showSavedOrderInCurrentCard(
-        getSavedVirtualOrder(orderId)
+        getSavedVirtualOrder(
+          orderId
+        )
       );
 
 
@@ -2426,10 +2732,14 @@ async function checkSavedVirtualOrder(orderId) {
     }
 
 
+    /*
+      CANCELLED / TIMEOUT
+    */
+
     if (
-      status === "cancelled" ||
-      status === "canceled" ||
-      status === "timeout"
+      status === "CANCELLED" ||
+      status === "CANCELED" ||
+      status === "TIMEOUT"
     ) {
 
       saveVirtualOrder({
@@ -2437,7 +2747,7 @@ async function checkSavedVirtualOrder(orderId) {
         ...updated,
 
         status:
-          status === "timeout"
+          status === "TIMEOUT"
             ? "TIMEOUT"
             : "CANCELED"
 
@@ -2445,7 +2755,9 @@ async function checkSavedVirtualOrder(orderId) {
 
 
       showSavedOrderInCurrentCard(
-        getSavedVirtualOrder(orderId)
+        getSavedVirtualOrder(
+          orderId
+        )
       );
 
 
@@ -2461,6 +2773,7 @@ async function checkSavedVirtualOrder(orderId) {
           "success"
         );
 
+
         await loadWallet();
 
       }
@@ -2470,6 +2783,10 @@ async function checkSavedVirtualOrder(orderId) {
 
     }
 
+
+    /*
+      STILL PENDING
+    */
 
     document.getElementById(
       "otpBox"
@@ -2491,6 +2808,7 @@ async function checkSavedVirtualOrder(orderId) {
       err
     );
 
+
     showMessage(
       err.message ||
       "Unable to check SMS right now.",
@@ -2506,13 +2824,19 @@ async function checkSavedVirtualOrder(orderId) {
    CANCEL SAVED ORDER
 ===================================================== */
 
-async function cancelSavedVirtualOrder(orderId) {
+async function cancelSavedVirtualOrder(
+  orderId
+) {
 
   const order =
-    getSavedVirtualOrder(orderId);
+    getSavedVirtualOrder(
+      orderId
+    );
 
-  if (!order)
+
+  if (!order) {
     return;
+  }
 
 
   selectedOrderId =
@@ -2523,8 +2847,12 @@ async function cancelSavedVirtualOrder(orderId) {
 
     const data =
       await apiRequest({
+
         action: "cancel",
-        order_id: orderId
+
+        order_id:
+          orderId
+
       });
 
 
@@ -2534,9 +2862,11 @@ async function cancelSavedVirtualOrder(orderId) {
     const updatedOrder = {
 
       ...order,
+
       ...(data?.order || {}),
 
-      id: orderId,
+      id:
+        orderId,
 
       status:
         data?.status ||
@@ -2545,7 +2875,9 @@ async function cancelSavedVirtualOrder(orderId) {
     };
 
 
-    saveVirtualOrder(updatedOrder);
+    saveVirtualOrder(
+      updatedOrder
+    );
 
 
     showSavedOrderInCurrentCard(
@@ -2567,6 +2899,7 @@ async function cancelSavedVirtualOrder(orderId) {
         )} refunded to your wallet.`,
         "success"
       );
+
 
       await loadWallet();
 
@@ -2590,6 +2923,7 @@ async function cancelSavedVirtualOrder(orderId) {
       err
     );
 
+
     showMessage(
       err.message ||
       "Unable to cancel the number.",
@@ -2611,33 +2945,43 @@ function showMessage(
 ) {
 
   const box =
-    document.getElementById("message");
+    document.getElementById(
+      "message"
+    );
 
   const textBox =
-    document.getElementById("messageText");
+    document.getElementById(
+      "messageText"
+    );
 
   const icon =
-    document.getElementById("messageIcon");
+    document.getElementById(
+      "messageIcon"
+    );
 
 
-  textBox.textContent = text;
+  textBox.textContent =
+    text;
 
 
   if (type === "success") {
 
-    icon.textContent = "✓";
+    icon.textContent =
+      "✓";
 
   }
 
   else if (type === "info") {
 
-    icon.textContent = "i";
+    icon.textContent =
+      "i";
 
   }
 
   else {
 
-    icon.textContent = "!";
+    icon.textContent =
+      "!";
 
   }
 
@@ -2662,14 +3006,33 @@ function hideMessage() {
    ESCAPE HTML
 ===================================================== */
 
-function escapeHTML(value) {
+function escapeHTML(
+  value
+) {
 
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+  return String(
+    value ?? ""
+  )
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
 
 }
 
@@ -2678,14 +3041,19 @@ function escapeHTML(value) {
    MONEY
 ===================================================== */
 
-function money(value) {
+function money(
+  value
+) {
 
   return "₦" +
-    Number(value || 0)
+    Number(
+      value || 0
+    )
       .toLocaleString(
         "en-NG",
         {
-          maximumFractionDigits: 0
+          maximumFractionDigits:
+            0
         }
       );
 
@@ -2702,7 +3070,9 @@ async function apiRequest(
 ) {
 
   const {
-    data: { session }
+    data: {
+      session
+    }
   } =
     await supabaseClient
       .auth
@@ -2727,7 +3097,8 @@ async function apiRequest(
 
   const timer =
     setTimeout(
-      () => controller.abort(),
+      () =>
+        controller.abort(),
       timeout
     );
 
@@ -2738,9 +3109,12 @@ async function apiRequest(
       await fetch(
         API_URL,
         {
-          method: "POST",
+
+          method:
+            "POST",
 
           headers: {
+
             "Content-Type":
               "application/json",
 
@@ -2749,13 +3123,17 @@ async function apiRequest(
 
             "apikey":
               SUPABASE_KEY
+
           },
 
           body:
-            JSON.stringify(payload),
+            JSON.stringify(
+              payload
+            ),
 
           signal:
             controller.signal
+
         }
       );
 
@@ -2790,8 +3168,11 @@ async function apiRequest(
           "Request failed."
         );
 
+
       err.code =
-        data?.code || "";
+        data?.code ||
+        "";
+
 
       throw err;
 
@@ -2805,7 +3186,8 @@ async function apiRequest(
   catch (err) {
 
     if (
-      err?.name === "AbortError"
+      err?.name ===
+      "AbortError"
     ) {
 
       throw new Error(
@@ -2820,7 +3202,9 @@ async function apiRequest(
 
   finally {
 
-    clearTimeout(timer);
+    clearTimeout(
+      timer
+    );
 
   }
 
@@ -2836,7 +3220,9 @@ async function loadWallet() {
   try {
 
     const {
-      data: { user }
+      data: {
+        user
+      }
     } =
       await supabaseClient
         .auth
@@ -2862,16 +3248,20 @@ async function loadWallet() {
       error
     } =
       await supabaseClient
-        .rpc("ensure_my_wallet");
+        .rpc(
+          "ensure_my_wallet"
+        );
 
 
-    if (error)
+    if (error) {
       throw error;
+    }
 
 
     const balance =
       Number(
-        wallet?.balance || 0
+        wallet?.balance ||
+        0
       );
 
 
@@ -2885,10 +3275,23 @@ async function loadWallet() {
       money(balance);
 
 
+    /*
+      LOAD LOCAL ORDERS FIRST
+    */
+
     loadSavedVirtualOrders();
 
 
-    /* SHOW POPUP ONLY IF USER NEVER DISMISSED IT */
+    /*
+      THEN LOAD REAL ORDERS FROM DATABASE
+    */
+
+    await loadOrdersFromDatabase();
+
+
+    /*
+      POPUP ALWAYS SHOWS ON PAGE ENTRY
+    */
 
     showVerificationTips();
 
@@ -2907,22 +3310,27 @@ async function loadWallet() {
 
 
 /* =====================================================
-   PICKERS
+   COUNTRY PICKER
 ===================================================== */
 
 function openCountryPicker() {
 
   document.getElementById(
     "countryPicker"
-  ).classList.add("show");
+  ).classList.add(
+    "show"
+  );
 
 
   document.getElementById(
     "countrySearch"
-  ).value = "";
+  ).value =
+    "";
 
 
-  renderCountries("");
+  renderCountries(
+    ""
+  );
 
 
   setTimeout(
@@ -2940,10 +3348,16 @@ function closeCountryPicker() {
 
   document.getElementById(
     "countryPicker"
-  ).classList.remove("show");
+  ).classList.remove(
+    "show"
+  );
 
 }
 
+
+/* =====================================================
+   SERVICE PICKER
+===================================================== */
 
 function openServicePicker() {
 
@@ -2961,15 +3375,20 @@ function openServicePicker() {
 
   document.getElementById(
     "servicePicker"
-  ).classList.add("show");
+  ).classList.add(
+    "show"
+  );
 
 
   document.getElementById(
     "serviceSearch"
-  ).value = "";
+  ).value =
+    "";
 
 
-  renderServices("");
+  renderServices(
+    ""
+  );
 
 
   setTimeout(
@@ -2987,7 +3406,9 @@ function closeServicePicker() {
 
   document.getElementById(
     "servicePicker"
-  ).classList.remove("show");
+  ).classList.remove(
+    "show"
+  );
 
 }
 
@@ -3005,9 +3426,11 @@ async function loadCountries() {
 
 
   results.innerHTML =
-    `<div class="result-item">
-      Loading countries...
-    </div>`;
+    `
+      <div class="result-item">
+        Loading countries...
+      </div>
+    `;
 
 
   try {
@@ -3015,14 +3438,17 @@ async function loadCountries() {
     const data =
       await apiRequest(
         {
-          action: "countries"
+          action:
+            "countries"
         },
         15000
       );
 
 
     countries =
-      Array.isArray(data.countries)
+      Array.isArray(
+        data.countries
+      )
         ? data.countries
         : [];
 
@@ -3039,38 +3465,77 @@ async function loadCountries() {
     countries = [
 
       {
-        code: "england",
-        name: "United Kingdom (UK / England)",
-        iso: "gb",
-        prefix: "+44"
+        code:
+          "england",
+
+        name:
+          "United Kingdom (UK / England)",
+
+        iso:
+          "gb",
+
+        prefix:
+          "+44"
       },
 
-      {
-        code: "usa",
-        name: "USA",
-        iso: "us",
-        prefix: "+1"
-      },
 
       {
-        code: "canada",
-        name: "Canada",
-        iso: "ca",
-        prefix: "+1"
+        code:
+          "usa",
+
+        name:
+          "USA",
+
+        iso:
+          "us",
+
+        prefix:
+          "+1"
       },
 
-      {
-        code: "nigeria",
-        name: "Nigeria",
-        iso: "ng",
-        prefix: "+234"
-      },
 
       {
-        code: "ghana",
-        name: "Ghana",
-        iso: "gh",
-        prefix: "+233"
+        code:
+          "canada",
+
+        name:
+          "Canada",
+
+        iso:
+          "ca",
+
+        prefix:
+          "+1"
+      },
+
+
+      {
+        code:
+          "nigeria",
+
+        name:
+          "Nigeria",
+
+        iso:
+          "ng",
+
+        prefix:
+          "+234"
+      },
+
+
+      {
+        code:
+          "ghana",
+
+        name:
+          "Ghana",
+
+        iso:
+          "gh",
+
+        prefix:
+          "+233"
       }
 
     ];
@@ -3078,7 +3543,9 @@ async function loadCountries() {
   }
 
 
-  renderCountries("");
+  renderCountries(
+    ""
+  );
 
 }
 
@@ -3087,7 +3554,9 @@ async function loadCountries() {
    RENDER COUNTRIES
 ===================================================== */
 
-function renderCountries(search) {
+function renderCountries(
+  search
+) {
 
   const results =
     document.getElementById(
@@ -3096,68 +3565,113 @@ function renderCountries(search) {
 
 
   const term =
-    String(search || "")
+    String(
+      search || ""
+    )
       .trim()
       .toLowerCase();
 
 
   const filtered =
-    countries.filter(country => {
+    countries.filter(
+      country => {
 
-      const name =
-        String(country.name || "")
-          .toLowerCase();
-
-      const code =
-        String(country.code || "")
-          .toLowerCase();
-
-      const iso =
-        String(country.iso || "")
-          .toLowerCase();
+        const name =
+          String(
+            country.name ||
+            ""
+          )
+            .toLowerCase();
 
 
-      const isEngland =
-        code === "england" ||
-        iso === "gb" ||
-        name.includes("england") ||
-        name.includes("united kingdom") ||
-        name.includes("uk");
+        const code =
+          String(
+            country.code ||
+            ""
+          )
+            .toLowerCase();
 
 
-      const ukTerms = [
-        "uk",
-        "u.k",
-        "u.k.",
-        "united kingdom",
-        "britain",
-        "great britain",
-        "england"
-      ];
+        const iso =
+          String(
+            country.iso ||
+            ""
+          )
+            .toLowerCase();
 
 
-      const matchesUK =
-        ukTerms.includes(term) &&
-        isEngland;
+        const isEngland =
+          code ===
+            "england" ||
+
+          iso ===
+            "gb" ||
+
+          name.includes(
+            "england"
+          ) ||
+
+          name.includes(
+            "united kingdom"
+          ) ||
+
+          name.includes(
+            "uk"
+          );
 
 
-      return (
-        !term ||
-        matchesUK ||
-        name.includes(term) ||
-        code.includes(term) ||
-        iso.includes(term)
-      );
+        const ukTerms = [
 
-    });
+          "uk",
+          "u.k",
+          "u.k.",
+          "united kingdom",
+          "britain",
+          "great britain",
+          "england"
+
+        ];
+
+
+        const matchesUK =
+          ukTerms.includes(
+            term
+          ) &&
+          isEngland;
+
+
+        return (
+
+          !term ||
+
+          matchesUK ||
+
+          name.includes(
+            term
+          ) ||
+
+          code.includes(
+            term
+          ) ||
+
+          iso.includes(
+            term
+          )
+
+        );
+
+      }
+    );
 
 
   if (!filtered.length) {
 
     results.innerHTML =
-      `<div class="result-item">
-        Country not found.
-      </div>`;
+      `
+        <div class="result-item">
+          Country not found.
+        </div>
+      `;
 
     return;
 
@@ -3166,20 +3680,29 @@ function renderCountries(search) {
 
   results.innerHTML =
     filtered
-      .slice(0, 50)
+      .slice(
+        0,
+        50
+      )
       .map(
-        (country, index) => `
+        (
+          country,
+          index
+        ) => `
 
           <div
             class="result-item"
             data-country-index="${index}"
           >
 
-            ${escapeHTML(country.name)}
+            ${escapeHTML(
+              country.name
+            )}
 
             <small>
               ${escapeHTML(
-                country.prefix || ""
+                country.prefix ||
+                ""
               )}
             </small>
 
@@ -3195,7 +3718,10 @@ function renderCountries(search) {
       "[data-country-index]"
     )
     .forEach(
-      (item, index) => {
+      (
+        item,
+        index
+      ) => {
 
         item.onclick =
           () =>
@@ -3213,16 +3739,21 @@ function renderCountries(search) {
    SELECT COUNTRY
 ===================================================== */
 
-async function selectCountry(country) {
+async function selectCountry(
+  country
+) {
 
   selectedCountry =
     country;
 
+
   selectedService =
     null;
 
+
   selectedOperator =
     null;
+
 
   services = [];
 
@@ -3241,17 +3772,21 @@ async function selectCountry(country) {
 
   document.getElementById(
     "providerWrap"
-  ).classList.remove("show");
+  ).classList.remove(
+    "show"
+  );
 
 
   document.getElementById(
     "operatorGrid"
-  ).innerHTML = "";
+  ).innerHTML =
+    "";
 
 
   document.getElementById(
     "buyButton"
-  ).disabled = true;
+  ).disabled =
+    true;
 
 
   closeCountryPicker();
@@ -3274,22 +3809,29 @@ async function selectCountry(country) {
 
 async function loadServices() {
 
-  if (!selectedCountry)
+  if (!selectedCountry) {
     return;
+  }
 
 
   try {
 
     const data =
       await apiRequest({
-        action: "prices",
+
+        action:
+          "prices",
+
         country:
           selectedCountry.code
+
       });
 
 
     services =
-      Array.isArray(data.services)
+      Array.isArray(
+        data.services
+      )
         ? data.services
         : [];
 
@@ -3336,7 +3878,9 @@ async function loadServices() {
    RENDER SERVICES
 ===================================================== */
 
-function renderServices(search) {
+function renderServices(
+  search
+) {
 
   const results =
     document.getElementById(
@@ -3345,7 +3889,9 @@ function renderServices(search) {
 
 
   const term =
-    String(search || "")
+    String(
+      search || ""
+    )
       .trim()
       .toLowerCase();
 
@@ -3353,28 +3899,37 @@ function renderServices(search) {
   const filtered =
     services.filter(
       service =>
+
         !term ||
 
         String(
-          service.service_name || ""
+          service.service_name ||
+          ""
         )
           .toLowerCase()
-          .includes(term) ||
+          .includes(
+            term
+          ) ||
 
         String(
-          service.service_code || ""
+          service.service_code ||
+          ""
         )
           .toLowerCase()
-          .includes(term)
+          .includes(
+            term
+          )
     );
 
 
   if (!filtered.length) {
 
     results.innerHTML =
-      `<div class="result-item">
-        Service not found.
-      </div>`;
+      `
+        <div class="result-item">
+          Service not found.
+        </div>
+      `;
 
     return;
 
@@ -3384,11 +3939,15 @@ function renderServices(search) {
   results.innerHTML =
     filtered
       .map(
-        (service, index) => {
+        (
+          service,
+          index
+        ) => {
 
           const available =
             Number(
-              service.stock || 0
+              service.stock ||
+              0
             ) > 0;
 
 
@@ -3427,7 +3986,10 @@ function renderServices(search) {
       "[data-service-index]"
     )
     .forEach(
-      (item, index) => {
+      (
+        item,
+        index
+      ) => {
 
         item.onclick =
           () =>
@@ -3445,7 +4007,9 @@ function renderServices(search) {
    SELECT SERVICE
 ===================================================== */
 
-function selectService(service) {
+function selectService(
+  service
+) {
 
   selectedService =
     service;
@@ -3464,24 +4028,20 @@ function selectService(service) {
   closeServicePicker();
 
 
-  renderProviders(service);
+  renderProviders(
+    service
+  );
 
 
   document.getElementById(
     "providerWrap"
-  ).classList.add("show");
-
-
-  setTimeout(
-    () =>
-      document.getElementById(
-        "providerWrap"
-      ).scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      }),
-    150
+  ).classList.add(
+    "show"
   );
+
+  /*
+    NO AUTO SCROLL
+  */
 
 }
 
@@ -3490,10 +4050,14 @@ function selectService(service) {
    RENDER PROVIDERS
 ===================================================== */
 
-function renderProviders(service) {
+function renderProviders(
+  service
+) {
 
   const options =
-    Array.isArray(service.options)
+    Array.isArray(
+      service.options
+    )
       ? service.options
       : [];
 
@@ -3501,7 +4065,10 @@ function renderProviders(service) {
   const available =
     options.filter(
       option =>
-        Number(option.stock || 0) > 0
+        Number(
+          option.stock ||
+          0
+        ) > 0
     );
 
 
@@ -3528,9 +4095,11 @@ function renderProviders(service) {
   if (!available.length) {
 
     grid.innerHTML =
-      `<div class="result-item">
-        Number not available right now.
-      </div>`;
+      `
+        <div class="result-item">
+          Number not available right now.
+        </div>
+      `;
 
     return;
 
@@ -3540,7 +4109,10 @@ function renderProviders(service) {
   grid.innerHTML =
     available
       .map(
-        (option, index) => `
+        (
+          option,
+          index
+        ) => `
 
           <div
             class="operator-card"
@@ -3548,17 +4120,23 @@ function renderProviders(service) {
           >
 
             <div class="operator-name">
+
               ${escapeHTML(
                 option.operator ||
                 `Provider ${index + 1}`
               )}
+
             </div>
 
+
             <div class="operator-price">
+
               ${money(
                 option.customer_price_ngn
               )}
+
             </div>
+
 
             <div class="operator-stock">
               Available
@@ -3576,7 +4154,10 @@ function renderProviders(service) {
       "[data-operator-index]"
     )
     .forEach(
-      (card, index) => {
+      (
+        card,
+        index
+      ) => {
 
         card.onclick =
           () =>
@@ -3623,7 +4204,8 @@ function selectOperator(
 
   document.getElementById(
     "buyButton"
-  ).disabled = false;
+  ).disabled =
+    false;
 
 }
 
@@ -3674,7 +4256,8 @@ async function buyNumber() {
 
   if (
     price > 0 &&
-    currentWalletBalance < price
+    currentWalletBalance <
+      price
   ) {
 
     const amountNeeded =
@@ -3717,7 +4300,9 @@ async function buyNumber() {
     const data =
       await apiRequest(
         {
-          action: "buy",
+
+          action:
+            "buy",
 
           country:
             selectedCountry.code,
@@ -3727,7 +4312,9 @@ async function buyNumber() {
 
           operator:
             selectedOperator.operator
+
         },
+
         30000
       );
 
@@ -3749,7 +4336,12 @@ async function buyNumber() {
       order.id;
 
 
-    /* NEW ORDER GOES TO TOP */
+    /*
+      SAVE NEW ORDER.
+
+      unshift + created_at sorting means
+      newest purchase stays at the top.
+    */
 
     saveVirtualOrder({
 
@@ -3841,13 +4433,9 @@ async function buyNumber() {
       "Waiting for SMS...";
 
 
-    const orderCard =
-      document.getElementById(
-        "orderCard"
-      );
-
-
-    orderCard.classList.add(
+    document.getElementById(
+      "orderCard"
+    ).classList.add(
       "show"
     );
 
@@ -3863,8 +4451,6 @@ async function buyNumber() {
 
     renderSavedVirtualOrders();
 
-
-    /* NO AUTO SCROLL */
 
     startOrderChecking();
 
@@ -3895,6 +4481,7 @@ async function buyNumber() {
 
 
       showMessage(
+
         amountNeeded > 0
 
           ? `Insufficient balance. Please add ${money(
@@ -3904,16 +4491,17 @@ async function buyNumber() {
           : "Insufficient balance. Please fund your wallet.",
 
         "warning"
+
       );
 
     }
 
     else if (
       err.code ===
-      "PROVIDER_INSUFFICIENT_BALANCE" ||
+        "PROVIDER_INSUFFICIENT_BALANCE" ||
 
       err.code ===
-      "PROVIDER_ACCOUNT_ERROR"
+        "PROVIDER_ACCOUNT_ERROR"
     ) {
 
       showMessage(
@@ -3967,17 +4555,22 @@ async function buyNumber() {
 
 async function checkOrder() {
 
-  if (!selectedOrderId)
+  if (!selectedOrderId) {
     return;
+  }
 
 
   try {
 
     const data =
       await apiRequest({
-        action: "check",
+
+        action:
+          "check",
+
         order_id:
           selectedOrderId
+
       });
 
 
@@ -3994,11 +4587,11 @@ async function checkOrder() {
 
 
     const status =
-      String(
+      normalizeOrderStatus(
         data.status ||
         savedOrder?.status ||
         ""
-      ).toLowerCase();
+      );
 
 
     const sms =
@@ -4048,9 +4641,9 @@ async function checkOrder() {
 
 
     if (
-      status === "cancelled" ||
-      status === "canceled" ||
-      status === "timeout"
+      status === "CANCELLED" ||
+      status === "CANCELED" ||
+      status === "TIMEOUT"
     ) {
 
       stopOrderChecking();
@@ -4067,7 +4660,7 @@ async function checkOrder() {
         ...savedOrder,
 
         status:
-          status === "timeout"
+          status === "TIMEOUT"
             ? "TIMEOUT"
             : "CANCELED"
 
@@ -4139,7 +4732,8 @@ function stopOrderChecking() {
       orderCheckTimer
     );
 
-    orderCheckTimer = null;
+    orderCheckTimer =
+      null;
 
   }
 
@@ -4152,17 +4746,22 @@ function stopOrderChecking() {
 
 async function cancelOrder() {
 
-  if (!selectedOrderId)
+  if (!selectedOrderId) {
     return;
+  }
 
 
   try {
 
     const data =
       await apiRequest({
-        action: "cancel",
+
+        action:
+          "cancel",
+
         order_id:
           selectedOrderId
+
       });
 
 
@@ -4173,8 +4772,10 @@ async function cancelOrder() {
       getSavedVirtualOrder(
         selectedOrderId
       ) || {
+
         id:
           selectedOrderId
+
       };
 
 
@@ -4183,7 +4784,8 @@ async function cancelOrder() {
       ...oldOrder,
 
       ...(
-        data?.order || {}
+        data?.order ||
+        {}
       ),
 
       id:
@@ -4288,6 +4890,14 @@ document.getElementById(
 ===================================================== */
 
 (async function() {
+
+  /*
+    1. Load wallet/user
+    2. Load local orders
+    3. Load old database orders
+    4. Load countries
+    5. Show verification popup
+  */
 
   await loadWallet();
 
