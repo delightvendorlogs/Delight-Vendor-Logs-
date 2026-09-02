@@ -78,14 +78,20 @@ document.getElementById("registerForm").addEventListener("submit", async functio
     return;
   }
 
+  if (password.length < 6) {
+    message.textContent = "Password must be at least 6 characters.";
+    return;
+  }
+
+  message.textContent = "Creating your account...";
+
   const { data, error } = await supabaseClient.auth.signUp({
     email: email,
     password: password,
     options: {
       data: {
         name: name
-      },
-      emailRedirectTo: "https://delightvendorlogs.github.io/Delight-Vendor-Logs-/auth-callback.html"
+      }
     }
   });
 
@@ -94,7 +100,33 @@ document.getElementById("registerForm").addEventListener("submit", async functio
     return;
   }
 
-  message.textContent = "Account created! Check your email to confirm your account.";
+  /*
+    Confirm Email is OFF in Supabase.
+    Therefore a session should be created immediately.
+  */
+
+  if (data && data.session) {
+
+    message.textContent = "Account created successfully!";
+
+    setTimeout(function() {
+      window.location.href = "dashboard.html";
+    }, 500);
+
+  } else {
+
+    /*
+      Safety fallback in case Supabase does not return
+      a session for some reason.
+    */
+
+    message.textContent = "Account created successfully. Please log in.";
+
+    setTimeout(function() {
+      window.location.href = "login.html";
+    }, 1000);
+
+  }
 
 });
 
