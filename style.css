@@ -426,3 +426,77 @@ text-align:center;
 word-break:break-word;
 line-height:1.5;
 }
+
+
+/* =========================
+   LANDING PAGE - FULL SCREEN
+   ========================= */
+
+@media (max-width: 600px) {
+
+  /* Make the home/landing screen use the full phone viewport */
+  body:not(:has(header)) {
+    min-height: 100dvh;
+    height: 100dvh;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  body:not(:has(header)) main {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100dvh;
+
+    padding: 35px 18px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  body:not(:has(header)) h1 {
+    font-size: 34px;
+    line-height: 1.2;
+    margin: 0 0 10px;
+  }
+
+  body:not(:has(header)) h2 {
+    font-size: 26px;
+    line-height: 1.25;
+    margin: 22px 0 14px;
+  }
+
+  body:not(:has(header)) p {
+    font-size: 19px;
+    line-height: 1.45;
+  }
+
+  body:not(:has(header)) button {
+    min-height: 58px;
+    padding: 14px 22px;
+    font-size: 18px;
+    border-radius: 11px;
+  }
+
+  body:not(:has(header)) input,
+  body:not(:has(header)) select {
+    min-height: 58px;
+    font-size: 18px;
+  }
+
+  /* Category boxes */
+  body:not(:has(header)) li {
+    min-height: 58px;
+    margin: 10px auto;
+    padding: 17px 14px;
+
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+}
