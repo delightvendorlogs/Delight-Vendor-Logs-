@@ -427,122 +427,278 @@ word-break:break-word;
 line-height:1.5;
 }
 
-/* =========================
-   LANDING PAGE ONLY
-   FULL PHONE SCREEN
-========================= */
+/* =====================================================
+   DELIGHT VENDOR LOGS - LANDING PAGE ONLY
+   FULL SCREEN MOBILE DESIGN
+===================================================== */
 
 body.landing-page {
+  width: 100%;
   min-height: 100dvh;
   height: 100dvh;
+
+  margin: 0;
+  padding: 28px 18px;
+
   overflow: hidden;
 
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
 
-  padding: 24px 18px;
+  background: #f5f5f5;
 }
 
-/* Main title */
+
+/* =========================
+   STORE TITLE
+========================= */
+
 body.landing-page > h1 {
-  font-size: 38px;
-  line-height: 1.15;
-  margin: 0 0 10px;
+  width: 100%;
+  max-width: 700px;
+
+  margin: 0 !important;
+
+  font-size: 38px !important;
+  line-height: 1.15 !important;
+  font-weight: 800;
+
+  text-align: center;
 }
 
-/* Subtitle */
+
+/* =========================
+   SUBTITLE
+========================= */
+
 body.landing-page > p {
-  font-size: 21px;
-  margin: 0 0 18px;
+  width: 100%;
+  max-width: 600px;
+
+  margin: 0 !important;
+
+  font-size: 21px !important;
+  line-height: 1.4;
+
+  text-align: center;
 }
 
-/* Top buttons */
+
+/* =========================
+   TOP BUTTONS
+========================= */
+
 body.landing-page > a,
 body.landing-page > button {
-  display: inline-block;
+  flex-shrink: 0;
 }
+
+
+/* Login button */
+
+body.landing-page > a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  text-decoration: none;
+}
+
+
+/* Make the three main buttons larger */
 
 body.landing-page > a button,
 body.landing-page > button {
-  min-height: 58px;
-  padding: 14px 22px;
-  margin: 6px 3px;
+  min-height: 62px !important;
 
-  font-size: 18px;
-  border-radius: 11px;
+  margin: 4px !important;
+  padding: 15px 24px !important;
+
+  font-size: 19px !important;
+  font-weight: 700;
+
+  border-radius: 12px !important;
 }
 
-/* Categories title */
+
+/* Put the first 3 buttons close together */
+
+body.landing-page > a {
+  margin-right: 0;
+}
+
+
+/* =========================
+   CATEGORIES
+========================= */
+
 body.landing-page > h2 {
-  font-size: 29px;
-  margin: 20px 0 12px;
+  width: 100%;
+  max-width: 700px;
+
+  margin: 8px 0 4px !important;
+
+  font-size: 30px !important;
+  line-height: 1.2 !important;
+  font-weight: 800;
+
+  text-align: center;
 }
 
-/* Category list */
+
+/* =========================
+   CATEGORY LIST
+========================= */
+
 body.landing-page > ul {
   width: 100%;
-  max-width: 520px;
-  margin: 0 0 14px;
-  padding: 0;
+  max-width: 650px;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
 }
 
+
+/* Category boxes */
+
 body.landing-page > ul li {
-  width: 100%;
-  min-height: 58px;
+  width: 100% !important;
 
-  margin: 8px 0;
-  padding: 16px;
+  min-height: 64px !important;
 
-  font-size: 19px;
-  border-radius: 12px;
+  margin: 0 !important;
+  padding: 17px 15px !important;
 
   display: flex;
   align-items: center;
   justify-content: center;
+
+  background: #ffffff;
+
+  border-radius: 14px;
+
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+
+  font-size: 20px !important;
+  font-weight: 600;
+
+  text-align: center;
 }
 
-/* WhatsApp button */
+
+/* =========================
+   WHATSAPP BUTTON
+========================= */
+
 body.landing-page > button:last-child {
-  min-height: 58px;
-  padding: 15px 24px;
-  margin-top: 4px;
+  min-height: 62px !important;
 
-  font-size: 18px;
+  margin: 5px 0 0 !important;
+  padding: 15px 28px !important;
+
+  font-size: 18px !important;
+
+  border-radius: 12px !important;
 }
 
-/* Smaller phones */
-@media (max-width: 380px) {
+
+/* =========================
+   PHONE SCREEN
+========================= */
+
+@media (max-width: 600px) {
+
   body.landing-page {
-    padding: 18px 14px;
+    padding: 24px 16px;
+
+    justify-content: space-evenly;
   }
 
   body.landing-page > h1 {
-    font-size: 32px;
+    font-size: 34px !important;
   }
 
   body.landing-page > p {
-    font-size: 19px;
-  }
-
-  body.landing-page > h2 {
-    font-size: 26px;
-    margin-top: 14px;
-  }
-
-  body.landing-page > ul li {
-    min-height: 52px;
-    margin: 6px 0;
-    padding: 13px;
-
-    font-size: 18px;
+    font-size: 20px !important;
   }
 
   body.landing-page > a button,
   body.landing-page > button {
-    min-height: 52px;
-    padding: 12px 17px;
-    font-size: 17px;
+    min-height: 60px !important;
+
+    padding: 14px 20px !important;
+
+    font-size: 18px !important;
+  }
+
+  body.landing-page > h2 {
+    font-size: 28px !important;
+  }
+
+  body.landing-page > ul li {
+    min-height: 62px !important;
+
+    font-size: 19px !important;
+  }
+
+  body.landing-page > button:last-child {
+    min-height: 60px !important;
+    font-size: 17px !important;
+  }
+}
+
+
+/* =========================
+   VERY SMALL PHONES
+========================= */
+
+@media (max-width: 380px) {
+
+  body.landing-page {
+    padding: 16px 12px;
+  }
+
+  body.landing-page > h1 {
+    font-size: 30px !important;
+  }
+
+  body.landing-page > p {
+    font-size: 18px !important;
+  }
+
+  body.landing-page > a button,
+  body.landing-page > button {
+    min-height: 54px !important;
+
+    padding: 12px 15px !important;
+
+    font-size: 16px !important;
+  }
+
+  body.landing-page > h2 {
+    font-size: 25px !important;
+  }
+
+  body.landing-page > ul {
+    gap: 7px;
+  }
+
+  body.landing-page > ul li {
+    min-height: 54px !important;
+
+    font-size: 17px !important;
+  }
+
+  body.landing-page > button:last-child {
+    min-height: 54px !important;
+
+    font-size: 16px !important;
+    padding: 12px 18px !important;
   }
 }
