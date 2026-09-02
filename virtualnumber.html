@@ -132,210 +132,6 @@ main {
 
 
 /* ======================================
-   IMPORTANT VERIFICATION MODAL
-====================================== */
-
-.verification-modal {
-  display: none;
-
-  position: fixed;
-  inset: 0;
-
-  z-index: 100000;
-
-  background: rgba(16,24,40,.58);
-
-  padding: 18px;
-
-  align-items: center;
-  justify-content: center;
-}
-
-.verification-modal.show {
-  display: flex;
-}
-
-.verification-box {
-  width: 100%;
-  max-width: 700px;
-
-  max-height: calc(100vh - 36px);
-  overflow-y: auto;
-
-  background: white;
-  color: #111827;
-
-  border-radius: 28px;
-
-  box-shadow:
-    0 25px 70px
-    rgba(0,0,0,.30);
-}
-
-.verification-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 15px;
-
-  padding: 25px 28px;
-
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.verification-title {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-
-  font-size: 27px;
-  font-weight: 800;
-}
-
-.verification-megaphone {
-  font-size: 30px;
-}
-
-.verification-close {
-  width: 44px;
-  height: 44px;
-
-  border: none;
-  background: transparent;
-
-  color: #9ca3af;
-
-  font-size: 38px;
-  line-height: 1;
-
-  cursor: pointer;
-}
-
-.verification-content {
-  padding: 24px 28px 28px;
-}
-
-.verification-tips {
-  background: #f8fafc;
-
-  border: 1px solid #e2e8f0;
-
-  border-radius: 22px;
-
-  padding: 24px;
-
-  box-shadow:
-    inset 0 1px 0
-    rgba(255,255,255,.7);
-}
-
-.verification-tips h3 {
-  margin: 0 0 20px;
-
-  font-size: 24px;
-}
-
-.verification-tip {
-  display: flex;
-  align-items: flex-start;
-
-  gap: 15px;
-
-  margin-top: 19px;
-
-  font-size: 18px;
-  line-height: 1.5;
-
-  color: #4b5563;
-}
-
-.verification-tip:first-of-type {
-  margin-top: 0;
-}
-
-.tip-icon {
-  width: 30px;
-  flex: 0 0 30px;
-
-  font-size: 24px;
-  text-align: center;
-}
-
-.verification-tip strong {
-  color: #374151;
-}
-
-.verification-note {
-  margin-top: 22px;
-
-  padding: 22px;
-
-  border: 1px solid #f1e4a8;
-
-  border-radius: 20px;
-
-  background: #fffdf2;
-
-  color: #4b4030;
-
-  display: flex;
-  align-items: flex-start;
-
-  gap: 15px;
-
-  font-size: 18px;
-  line-height: 1.5;
-}
-
-.verification-provider-note {
-  margin-top: 15px;
-
-  padding: 20px 22px;
-
-  border: 1px solid #dbe3ea;
-
-  border-radius: 20px;
-
-  background: #fff;
-
-  color: #374151;
-
-  display: flex;
-  align-items: flex-start;
-
-  gap: 15px;
-
-  font-size: 18px;
-  line-height: 1.5;
-}
-
-.verification-proceed {
-  width: 100%;
-
-  margin-top: 24px;
-
-  border: none;
-
-  padding: 19px 20px;
-
-  border-radius: 18px;
-
-  background: #101828;
-  color: white;
-
-  font-size: 20px;
-  font-weight: 800;
-
-  cursor: pointer;
-}
-
-.verification-proceed:hover {
-  opacity: .94;
-}
-
-
-/* ======================================
    SMALL MESSAGE
 ====================================== */
 
@@ -442,6 +238,195 @@ main {
   color: white;
 
   font-size: 25px;
+  cursor: pointer;
+}
+
+
+/* ======================================
+   IMPORTANT VERIFICATION POPUP
+====================================== */
+
+.verification-overlay {
+  display: none;
+
+  position: fixed;
+  inset: 0;
+
+  z-index: 100000;
+
+  background: rgba(17,24,39,.58);
+
+  padding: 18px;
+
+  align-items: center;
+  justify-content: center;
+}
+
+.verification-overlay.show {
+  display: flex;
+}
+
+.verification-modal {
+  width: 100%;
+  max-width: 640px;
+
+  max-height: calc(100vh - 36px);
+
+  background: white;
+
+  border-radius: 25px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 20px 60px
+    rgba(0,0,0,.28);
+}
+
+.verification-header {
+  min-height: 70px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 16px 22px;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.verification-header-icon {
+  font-size: 26px;
+  margin-right: 13px;
+}
+
+.verification-header h2 {
+  margin: 0;
+
+  font-size: 25px;
+
+  color: #111827;
+}
+
+.verification-close {
+  margin-left: auto;
+
+  width: 42px;
+  height: 42px;
+
+  border: none;
+
+  background: transparent;
+
+  color: #9ca3af;
+
+  font-size: 35px;
+
+  cursor: pointer;
+
+  line-height: 1;
+}
+
+.verification-content {
+  padding: 16px 22px 14px;
+}
+
+.verification-tips {
+  background: #f8f9fb;
+
+  border: 1px solid #e1e5eb;
+
+  border-radius: 20px;
+
+  padding: 17px 19px;
+}
+
+.verification-tips h3 {
+  margin: 0 0 13px;
+
+  font-size: 20px;
+
+  color: #374151;
+}
+
+.tip-row {
+  display: flex;
+
+  gap: 11px;
+
+  margin-top: 11px;
+
+  color: #4b5563;
+
+  font-size: 16px;
+
+  line-height: 1.38;
+}
+
+.tip-icon {
+  flex-shrink: 0;
+
+  width: 27px;
+
+  font-size: 20px;
+
+  text-align: center;
+}
+
+.tip-row strong {
+  color: #374151;
+}
+
+.provider-tip {
+  margin-top: 14px;
+
+  background: #fffdf4;
+
+  border: 1px solid #f3e8b2;
+
+  border-radius: 18px;
+
+  padding: 15px 17px;
+
+  display: flex;
+
+  gap: 12px;
+
+  font-size: 16px;
+
+  line-height: 1.4;
+
+  color: #5b4a24;
+}
+
+.provider-tip-icon {
+  flex-shrink: 0;
+
+  font-size: 23px;
+}
+
+.verification-footer {
+  padding: 13px 22px 20px;
+
+  border-top: 1px solid #e5e7eb;
+}
+
+.proceed-button {
+  width: 100%;
+
+  border: none;
+
+  border-radius: 16px;
+
+  background: #101828;
+
+  color: white;
+
+  padding: 16px;
+
+  font-size: 18px;
+
+  font-weight: bold;
+
   cursor: pointer;
 }
 
@@ -633,6 +618,11 @@ main {
   font-weight: bold;
 }
 
+
+/* ======================================
+   BUY
+====================================== */
+
 .buy-button {
   width: 100%;
 
@@ -660,7 +650,7 @@ main {
 
 
 /* ======================================
-   CURRENT ORDER
+   ORDER
 ====================================== */
 
 .order-card {
@@ -841,6 +831,11 @@ main {
 .status-cancelled {
   color: #991b1b;
   background: #fee2e2;
+}
+
+.status-info {
+  color: #1e40af;
+  background: #dbeafe;
 }
 
 .saved-order-details {
@@ -1109,34 +1104,84 @@ main {
     margin-top: 2px;
   }
 
+  /* POPUP FITS ONE PHONE SCREEN */
+
+  .verification-overlay {
+    padding: 10px;
+  }
+
+  .verification-modal {
+    max-height: calc(100vh - 20px);
+    border-radius: 22px;
+  }
+
   .verification-header {
-    padding: 21px 20px;
+    min-height: 60px;
+    padding: 10px 16px;
+  }
+
+  .verification-header h2 {
+    font-size: 20px;
+  }
+
+  .verification-header-icon {
+    font-size: 22px;
+    margin-right: 9px;
+  }
+
+  .verification-close {
+    width: 34px;
+    height: 34px;
+    font-size: 29px;
   }
 
   .verification-content {
-    padding: 18px 20px 22px;
-  }
-
-  .verification-title {
-    font-size: 24px;
+    padding: 11px 16px 10px;
   }
 
   .verification-tips {
-    padding: 19px;
+    padding: 13px 14px;
+    border-radius: 17px;
   }
 
   .verification-tips h3 {
-    font-size: 21px;
+    font-size: 17px;
+    margin-bottom: 8px;
   }
 
-  .verification-tip,
-  .verification-note,
-  .verification-provider-note {
+  .tip-row {
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.32;
+  }
+
+  .tip-icon {
+    width: 23px;
+    font-size: 17px;
+  }
+
+  .provider-tip {
+    margin-top: 10px;
+    padding: 11px 13px;
+    border-radius: 15px;
+    gap: 9px;
+    font-size: 14px;
+    line-height: 1.32;
+  }
+
+  .provider-tip-icon {
+    font-size: 20px;
+  }
+
+  .verification-footer {
+    padding: 10px 16px 14px;
+  }
+
+  .proceed-button {
+    padding: 13px;
     font-size: 16px;
-  }
-
-  .verification-proceed {
-    font-size: 18px;
+    border-radius: 14px;
   }
 
 }
@@ -1149,36 +1194,29 @@ main {
 
 <!-- ======================================
      IMPORTANT VERIFICATION POPUP
-     SHOWS EVERY TIME PAGE IS ENTERED
 ====================================== -->
 
 <div
-  id="verificationModal"
-  class="verification-modal"
+  id="verificationOverlay"
+  class="verification-overlay"
 >
 
-  <div
-    class="verification-box"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="verificationTitle"
-  >
+  <div class="verification-modal">
 
     <div class="verification-header">
 
-      <div
-        id="verificationTitle"
-        class="verification-title"
-      >
-        <span class="verification-megaphone">📣</span>
-        <span>Important Verification Tips</span>
+      <div class="verification-header-icon">
+        📢
       </div>
+
+      <h2>
+        Important Verification Tips
+      </h2>
 
       <button
         type="button"
         class="verification-close"
-        onclick="closeVerificationModal()"
-        aria-label="Close"
+        onclick="closeVerificationTips()"
       >
         ×
       </button>
@@ -1190,10 +1228,12 @@ main {
 
       <div class="verification-tips">
 
-        <h3>🛡️ Best Practices for Success</h3>
+        <h3>
+          🛡️ Best Practices for Success
+        </h3>
 
 
-        <div class="verification-tip">
+        <div class="tip-row">
 
           <div class="tip-icon">🔄</div>
 
@@ -1205,7 +1245,7 @@ main {
         </div>
 
 
-        <div class="verification-tip">
+        <div class="tip-row">
 
           <div class="tip-icon">📱</div>
 
@@ -1217,7 +1257,7 @@ main {
         </div>
 
 
-        <div class="verification-tip">
+        <div class="tip-row">
 
           <div class="tip-icon">🌐</div>
 
@@ -1229,7 +1269,7 @@ main {
         </div>
 
 
-        <div class="verification-tip">
+        <div class="tip-row">
 
           <div class="tip-icon">📶</div>
 
@@ -1243,34 +1283,30 @@ main {
       </div>
 
 
-      <div class="verification-note">
+      <div class="provider-tip">
 
-        <div class="tip-icon">💡</div>
+        <div class="provider-tip-icon">
+          💡
+        </div>
 
         <div>
-          <strong>Each server shows its own expiry time.</strong>
-          Cancel early to receive a full refund if no code arrives, where eligible.
+          <strong>
+            If a provider does not receive a code, try another provider with a better success rate.
+          </strong>
+          Each server shows its own expiry time. Cancel early to receive a full refund if no code arrives.
         </div>
 
       </div>
 
+    </div>
 
-      <div class="verification-provider-note">
 
-        <div class="tip-icon">🔁</div>
-
-        <div>
-          <strong>If one provider does not receive a code, try another provider.</strong>
-          Check the success rate and choose another available provider with a better success rate when possible.
-        </div>
-
-      </div>
-
+    <div class="verification-footer">
 
       <button
         type="button"
-        class="verification-proceed"
-        onclick="closeVerificationModal()"
+        class="proceed-button"
+        onclick="closeVerificationTips()"
       >
         I Understand, Proceed
       </button>
@@ -1441,7 +1477,7 @@ main {
 </section>
 
 
-<!-- NEW/CURRENT ORDER STAYS ABOVE OLD ORDERS -->
+<!-- NEW ORDER -->
 
 <section
   id="orderCard"
@@ -1487,7 +1523,6 @@ main {
 </button>
 
 <button
-  id="currentCancelButton"
   class="action-button cancel-button"
   onclick="cancelOrder()"
 >
@@ -1499,7 +1534,7 @@ main {
 </section>
 
 
-<!-- OLD/SAVED ORDERS -->
+<!-- SAVED ORDERS -->
 
 <section
   id="savedOrdersSection"
@@ -1545,7 +1580,7 @@ main {
   id="countrySearch"
   class="search-box"
   type="search"
-  placeholder="Search country, UK or England..."
+  placeholder="Search country..."
   autocomplete="off"
 >
 
@@ -1659,23 +1694,52 @@ let currentUserId = null;
 
 
 /* =====================================================
-   IMPORTANT POPUP
-   ALWAYS SHOWS ON EVERY PAGE ENTRY/REFRESH
+   VERIFICATION POPUP
 ===================================================== */
 
-function openVerificationModal() {
+function getVerificationTipsKey() {
+
+  if (!currentUserId) {
+    return "delight_vendor_verification_tips_seen";
+  }
+
+  return
+    `delight_vendor_verification_tips_seen_${currentUserId}`;
+
+}
+
+
+function showVerificationTips() {
+
+  const key =
+    getVerificationTipsKey();
+
+  const alreadySeen =
+    localStorage.getItem(key);
+
+  if (alreadySeen === "yes") {
+    return;
+  }
 
   document
-    .getElementById("verificationModal")
+    .getElementById("verificationOverlay")
     .classList.add("show");
 
 }
 
 
-function closeVerificationModal() {
+function closeVerificationTips() {
+
+  const key =
+    getVerificationTipsKey();
+
+  localStorage.setItem(
+    key,
+    "yes"
+  );
 
   document
-    .getElementById("verificationModal")
+    .getElementById("verificationOverlay")
     .classList.remove("show");
 
 }
@@ -1687,8 +1751,9 @@ function closeVerificationModal() {
 
 function getSavedOrdersKey() {
 
-  if (!currentUserId)
+  if (!currentUserId) {
     return null;
+  }
 
   return `delight_vendor_virtual_orders_${currentUserId}`;
 
@@ -1757,8 +1822,7 @@ function saveVirtualOrders() {
     const key =
       getSavedOrdersKey();
 
-    if (!key)
-      return;
+    if (!key) return;
 
     localStorage.setItem(
       key,
@@ -1811,7 +1875,7 @@ function saveVirtualOrder(order) {
 
   else {
 
-    /* NEW ORDER ALWAYS GOES TO TOP */
+    /* NEW ORDER ALWAYS TOP */
 
     savedVirtualOrders.unshift(order);
 
@@ -1832,10 +1896,6 @@ function getSavedVirtualOrder(orderId) {
 
 }
 
-
-/* =====================================================
-   ORDER STATUS
-===================================================== */
 
 function getOrderStatusInfo(status) {
 
@@ -1883,16 +1943,28 @@ function getOrderStatusInfo(status) {
 }
 
 
-function isPendingOrder(status) {
+/* =====================================================
+   CHECK IF ORDER CAN STILL BE CANCELLED
+===================================================== */
+
+function canCancelSavedOrder(status) {
 
   const normalized =
     String(status || "PENDING")
       .toUpperCase();
 
-  return (
-    normalized === "PENDING" ||
-    normalized === "PROCESSING" ||
-    normalized === "WAITING"
+  const finishedStatuses = [
+    "RECEIVED",
+    "FINISHED",
+    "COMPLETED",
+    "CANCELED",
+    "CANCELLED",
+    "TIMEOUT",
+    "BANNED"
+  ];
+
+  return !finishedStatuses.includes(
+    normalized
   );
 
 }
@@ -1944,30 +2016,36 @@ function renderSavedVirtualOrders() {
         const statusInfo =
           getOrderStatusInfo(status);
 
+
         const service =
           order.service_name ||
           order.service ||
           "Virtual Number";
+
 
         const country =
           order.country_name ||
           order.country ||
           "—";
 
+
         const operator =
           order.operator ||
           order.provider ||
           "—";
+
 
         const number =
           order.number ||
           order.phone ||
           "Waiting...";
 
+
         const otp =
           order.otp_code ||
           order.code ||
           "";
+
 
         let createdText = "";
 
@@ -1997,8 +2075,13 @@ function renderSavedVirtualOrders() {
         }
 
 
-        const pending =
-          isPendingOrder(status);
+        /*
+          CANCEL BUTTON FOR EVERY ORDER
+          STILL WAITING / PENDING / PROCESSING
+        */
+
+        const canCancel =
+          canCancelSavedOrder(status);
 
 
         return `
@@ -2055,7 +2138,7 @@ function renderSavedVirtualOrders() {
 
 
             ${
-              pending
+              canCancel
                 ? `
                   <div class="saved-order-actions">
 
@@ -2143,6 +2226,10 @@ function renderSavedVirtualOrders() {
 }
 
 
+/* =====================================================
+   UPDATE SAVED ORDER
+===================================================== */
+
 function updateSavedOrderFromResponse(
   orderId,
   data
@@ -2182,14 +2269,12 @@ function updateSavedOrderFromResponse(
     operator:
       apiOrder.operator ||
       oldOrder.operator ||
-      oldOrder.provider ||
       "",
 
     number:
       apiOrder.number ||
       apiOrder.phone ||
       oldOrder.number ||
-      oldOrder.phone ||
       "",
 
     otp_code:
@@ -2220,7 +2305,7 @@ function updateSavedOrderFromResponse(
 
 
 /* =====================================================
-   SHOW ORDER IN CURRENT CARD
+   SHOW SAVED ORDER
 ===================================================== */
 
 function showSavedOrderInCurrentCard(order) {
@@ -2271,17 +2356,6 @@ function showSavedOrderInCurrentCard(order) {
     order.otp_code
       ? order.otp_code
       : "Waiting for SMS...";
-
-
-  const cancelButton =
-    document.getElementById(
-      "currentCancelButton"
-    );
-
-  cancelButton.style.display =
-    isPendingOrder(order.status)
-      ? "block"
-      : "none";
 
 
   document.getElementById(
@@ -2363,11 +2437,8 @@ async function checkSavedVirtualOrder(orderId) {
       });
 
 
-      const finalOrder =
-        getSavedVirtualOrder(orderId);
-
       showSavedOrderInCurrentCard(
-        finalOrder
+        getSavedVirtualOrder(orderId)
       );
 
 
@@ -2424,17 +2495,6 @@ async function checkSavedVirtualOrder(orderId) {
 
       }
 
-      else {
-
-        showMessage(
-          status === "timeout"
-            ? "Order timed out."
-            : "Order cancelled.",
-          "info"
-        );
-
-      }
-
 
       return;
 
@@ -2483,18 +2543,6 @@ async function cancelSavedVirtualOrder(orderId) {
 
   if (!order)
     return;
-
-
-  if (!isPendingOrder(order.status)) {
-
-    showMessage(
-      "Only pending orders can be cancelled.",
-      "info"
-    );
-
-    return;
-
-  }
 
 
   selectedOrderId =
@@ -2869,6 +2917,11 @@ async function loadWallet() {
 
     loadSavedVirtualOrders();
 
+
+    /* SHOW POPUP ONLY IF USER NEVER DISMISSED IT */
+
+    showVerificationTips();
+
   }
 
   catch (err) {
@@ -2970,53 +3023,6 @@ function closeServicePicker() {
 
 
 /* =====================================================
-   ENSURE UK / ENGLAND SEARCH EXISTS
-===================================================== */
-
-function ensureEnglandCountry() {
-
-  const exists =
-    countries.some(country => {
-
-      const name =
-        String(country.name || "")
-          .toLowerCase();
-
-      const code =
-        String(country.code || "")
-          .toLowerCase();
-
-      const iso =
-        String(country.iso || "")
-          .toLowerCase();
-
-      return (
-        code === "england" ||
-        iso === "gb" ||
-        name.includes("england") ||
-        name.includes("united kingdom")
-      );
-
-    });
-
-
-  if (!exists) {
-
-    countries.unshift({
-
-      code: "england",
-      name: "United Kingdom (UK / England)",
-      iso: "gb",
-      prefix: "+44"
-
-    });
-
-  }
-
-}
-
-
-/* =====================================================
    LOAD COUNTRIES
 ===================================================== */
 
@@ -3102,13 +3108,6 @@ async function loadCountries() {
   }
 
 
-  /*
-    Make sure UK / England can still
-    be found in the country search.
-  */
-
-  ensureEnglandCountry();
-
   renderCountries("");
 
 }
@@ -3116,7 +3115,6 @@ async function loadCountries() {
 
 /* =====================================================
    RENDER COUNTRIES
-   UK / UNITED KINGDOM / ENGLAND SEARCH
 ===================================================== */
 
 function renderCountries(search) {
@@ -3154,8 +3152,7 @@ function renderCountries(search) {
         iso === "gb" ||
         name.includes("england") ||
         name.includes("united kingdom") ||
-        name.includes("uk") ||
-        name.includes("britain");
+        name.includes("uk");
 
 
       const ukTerms = [
@@ -3163,10 +3160,9 @@ function renderCountries(search) {
         "u.k",
         "u.k.",
         "united kingdom",
-        "england",
         "britain",
         "great britain",
-        "gb"
+        "england"
       ];
 
 
@@ -3506,12 +3502,6 @@ function selectService(service) {
   ).classList.add("show");
 
 
-  /*
-    This scroll is only for showing providers
-    after choosing a service.
-    Buying a number itself does NOT scroll.
-  */
-
   setTimeout(
     () =>
       document.getElementById(
@@ -3789,12 +3779,9 @@ async function buyNumber() {
       order.id;
 
 
-    /*
-      SAVE NEW ORDER.
-      NEW ORDER IS INSERTED AT TOP.
-    */
+    /* NEW ORDER GOES TO TOP */
 
-    const newSavedOrder = {
+    saveVirtualOrder({
 
       id:
         order.id,
@@ -3846,30 +3833,53 @@ async function buyNumber() {
         order.created_at ||
         new Date().toISOString()
 
-    };
+    });
 
 
-    saveVirtualOrder(
-      newSavedOrder
-    );
+    document.getElementById(
+      "orderService"
+    ).textContent =
+      order.service ||
+      selectedService.service_name;
 
 
-    /*
-      SHOW CURRENT ORDER.
-      NO scrollIntoView.
-      PAGE WILL NOT AUTOMATICALLY
-      DRAG THE USER DOWN.
-    */
+    document.getElementById(
+      "orderCountry"
+    ).textContent =
+      order.country ||
+      selectedCountry.name;
 
-    showSavedOrderInCurrentCard(
-      newSavedOrder
-    );
+
+    document.getElementById(
+      "orderOperator"
+    ).textContent =
+      order.operator ||
+      selectedOperator.operator;
+
+
+    document.getElementById(
+      "orderNumber"
+    ).textContent =
+      order.number ||
+      order.phone ||
+      "Waiting...";
 
 
     document.getElementById(
       "otpBox"
     ).textContent =
       "Waiting for SMS...";
+
+
+    const orderCard =
+      document.getElementById(
+        "orderCard"
+      );
+
+
+    orderCard.classList.add(
+      "show"
+    );
 
 
     showMessage(
@@ -3883,6 +3893,8 @@ async function buyNumber() {
 
     renderSavedVirtualOrders();
 
+
+    /* NO AUTO SCROLL */
 
     startOrderChecking();
 
@@ -3947,7 +3959,7 @@ async function buyNumber() {
     ) {
 
       showMessage(
-        "Number not available right now. Please try another provider.",
+        "Number not available right now. Please try again later.",
         "error"
       );
 
@@ -4051,13 +4063,6 @@ async function checkOrder() {
       });
 
 
-      showSavedOrderInCurrentCard(
-        getSavedVirtualOrder(
-          selectedOrderId
-        )
-      );
-
-
       stopOrderChecking();
 
 
@@ -4084,9 +4089,7 @@ async function checkOrder() {
       document.getElementById(
         "otpBox"
       ).textContent =
-        status === "timeout"
-          ? "Order timed out"
-          : "Order cancelled";
+        "Order cancelled";
 
 
       saveVirtualOrder({
@@ -4099,13 +4102,6 @@ async function checkOrder() {
             : "CANCELED"
 
       });
-
-
-      showSavedOrderInCurrentCard(
-        getSavedVirtualOrder(
-          selectedOrderId
-        )
-      );
 
 
       if (data.refunded) {
@@ -4190,29 +4186,6 @@ async function cancelOrder() {
     return;
 
 
-  const existingOrder =
-    getSavedVirtualOrder(
-      selectedOrderId
-    );
-
-
-  if (
-    existingOrder &&
-    !isPendingOrder(
-      existingOrder.status
-    )
-  ) {
-
-    showMessage(
-      "Only pending orders can be cancelled.",
-      "info"
-    );
-
-    return;
-
-  }
-
-
   try {
 
     const data =
@@ -4227,7 +4200,9 @@ async function cancelOrder() {
 
 
     const oldOrder =
-      existingOrder || {
+      getSavedVirtualOrder(
+        selectedOrderId
+      ) || {
         id:
           selectedOrderId
       };
@@ -4252,11 +4227,6 @@ async function cancelOrder() {
 
 
     saveVirtualOrder(
-      updatedOrder
-    );
-
-
-    showSavedOrderInCurrentCard(
       updatedOrder
     );
 
@@ -4348,16 +4318,6 @@ document.getElementById(
 ===================================================== */
 
 (async function() {
-
-  /*
-    IMPORTANT:
-    This popup opens EVERY TIME
-    virtualnumber.html is entered or refreshed.
-    There is NO "already shown" storage.
-  */
-
-  openVerificationModal();
-
 
   await loadWallet();
 
