@@ -427,76 +427,122 @@ word-break:break-word;
 line-height:1.5;
 }
 
-
 /* =========================
-   LANDING PAGE - FULL SCREEN
-   ========================= */
+   LANDING PAGE ONLY
+   FULL PHONE SCREEN
+========================= */
 
-@media (max-width: 600px) {
+body.landing-page {
+  min-height: 100dvh;
+  height: 100dvh;
+  overflow: hidden;
 
-  /* Make the home/landing screen use the full phone viewport */
-  body:not(:has(header)) {
-    min-height: 100dvh;
-    height: 100dvh;
-    overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  padding: 24px 18px;
+}
+
+/* Main title */
+body.landing-page > h1 {
+  font-size: 38px;
+  line-height: 1.15;
+  margin: 0 0 10px;
+}
+
+/* Subtitle */
+body.landing-page > p {
+  font-size: 21px;
+  margin: 0 0 18px;
+}
+
+/* Top buttons */
+body.landing-page > a,
+body.landing-page > button {
+  display: inline-block;
+}
+
+body.landing-page > a button,
+body.landing-page > button {
+  min-height: 58px;
+  padding: 14px 22px;
+  margin: 6px 3px;
+
+  font-size: 18px;
+  border-radius: 11px;
+}
+
+/* Categories title */
+body.landing-page > h2 {
+  font-size: 29px;
+  margin: 20px 0 12px;
+}
+
+/* Category list */
+body.landing-page > ul {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 0 14px;
+  padding: 0;
+}
+
+body.landing-page > ul li {
+  width: 100%;
+  min-height: 58px;
+
+  margin: 8px 0;
+  padding: 16px;
+
+  font-size: 19px;
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* WhatsApp button */
+body.landing-page > button:last-child {
+  min-height: 58px;
+  padding: 15px 24px;
+  margin-top: 4px;
+
+  font-size: 18px;
+}
+
+/* Smaller phones */
+@media (max-width: 380px) {
+  body.landing-page {
+    padding: 18px 14px;
   }
 
-  body:not(:has(header)) main {
-    width: 100%;
-    max-width: 100%;
-    min-height: 100dvh;
-
-    padding: 35px 18px;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  body.landing-page > h1 {
+    font-size: 32px;
   }
 
-  body:not(:has(header)) h1 {
-    font-size: 34px;
-    line-height: 1.2;
-    margin: 0 0 10px;
-  }
-
-  body:not(:has(header)) h2 {
-    font-size: 26px;
-    line-height: 1.25;
-    margin: 22px 0 14px;
-  }
-
-  body:not(:has(header)) p {
+  body.landing-page > p {
     font-size: 19px;
-    line-height: 1.45;
   }
 
-  body:not(:has(header)) button {
-    min-height: 58px;
-    padding: 14px 22px;
-    font-size: 18px;
-    border-radius: 11px;
+  body.landing-page > h2 {
+    font-size: 26px;
+    margin-top: 14px;
   }
 
-  body:not(:has(header)) input,
-  body:not(:has(header)) select {
-    min-height: 58px;
-    font-size: 18px;
-  }
-
-  /* Category boxes */
-  body:not(:has(header)) li {
-    min-height: 58px;
-    margin: 10px auto;
-    padding: 17px 14px;
+  body.landing-page > ul li {
+    min-height: 52px;
+    margin: 6px 0;
+    padding: 13px;
 
     font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
+  body.landing-page > a button,
+  body.landing-page > button {
+    min-height: 52px;
+    padding: 12px 17px;
+    font-size: 17px;
+  }
 }
