@@ -1,418 +1,403 @@
-* {
-  box-sizing: border-box;
+{
+box-sizing: border-box;
 }
+
 
 html,
 body {
-  width: 100%;
-  min-height: 100%;
-  margin: 0;
-  padding: 0;
+width: 100%;
+min-height: 100%;
+margin: 0;
+padding: 0;
 }
 
 body {
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
-  color: #222;
-  font-size: 18px;
-  line-height: 1.5;
-  text-align: center;
+font-family: Arial, sans-serif;
+background: #f5f5f5;
+color: #222;
+font-size: 18px;
+line-height: 1.5;
+text-align: center;
 }
 
-
 /* =========================
-   HEADER
+HEADER
 ========================= */
 
 header {
-  width: 100%;
-  min-height: 70px;
-  padding: 14px 18px;
+width: 100%;
+min-height: 70px;
+padding: 14px 18px;
 
-  background: #111;
-  color: white;
+background: #111;
+color: white;
 
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+display: flex;
+justify-content: space-between;
+align-items: center;
 
-  position: relative;
-  z-index: 10;
+position: relative;
+z-index: 10;
 }
 
 header h1 {
-  margin: 0;
-  font-size: 24px;
+margin: 0;
+font-size: 24px;
 }
 
 header button {
-  width: auto;
-  min-height: 48px;
+width: auto;
+min-height: 48px;
 
-  margin: 0;
-  padding: 6px 14px;
+margin: 0;
+padding: 6px 14px;
 
-  font-size: 30px;
+font-size: 30px;
 
-  background: transparent;
-  color: white;
+background: transparent;
+color: white;
 }
 
-
 /* =========================
-   MAIN CONTENT
+MAIN CONTENT
 ========================= */
 
 main {
-  width: 100%;
-  max-width: 700px;
+width: 100%;
+max-width: 700px;
 
-  margin: 0 auto;
+margin: 0 auto;
 
-  padding: 20px 16px 40px;
+padding: 20px 16px 40px;
 }
 
 section {
-  width: 100%;
-  margin-bottom: 28px;
+width: 100%;
+margin-bottom: 28px;
 }
 
 h1 {
-  font-size: 30px;
+font-size: 30px;
 }
 
 h2 {
-  font-size: 24px;
-  margin: 20px 0 12px;
+font-size: 24px;
+margin: 20px 0 12px;
 }
 
 h3 {
-  font-size: 21px;
+font-size: 21px;
 }
 
 p {
-  font-size: 18px;
+font-size: 18px;
 }
 
-
 /* =========================
-   BUTTONS
+BUTTONS
 ========================= */
 
 button {
-  display: inline-block;
-  width: auto;
+display: inline-block;
+width: auto;
 
-  min-height: 52px;
+min-height: 52px;
 
-  padding: 13px 22px;
-  margin: 8px 4px;
+padding: 13px 22px;
+margin: 8px 4px;
 
-  background: #111;
-  color: white;
+background: #111;
+color: white;
 
-  font-family: Arial, sans-serif;
-  font-size: 18px;
-  font-weight: bold;
+font-family: Arial, sans-serif;
+font-size: 18px;
+font-weight: bold;
 
-  border: 0;
-  border-radius: 10px;
+border: 0;
+border-radius: 10px;
 
-  opacity: 1;
-  visibility: visible;
+opacity: 1;
+visibility: visible;
 
-  cursor: pointer;
+cursor: pointer;
 }
 
 button:hover {
-  background: #333;
-  color: white;
+background: #333;
+color: white;
 }
 
 button:active {
-  transform: scale(0.98);
+transform: scale(0.98);
 }
 
-
 /* =========================
-   INPUTS
+INPUTS
 ========================= */
 
 input,
 textarea,
 select {
-  width: 100%;
-  max-width: 600px;
+width: 100%;
+max-width: 600px;
 
-  min-height: 54px;
+min-height: 54px;
 
-  padding: 13px 15px;
-  margin: 6px auto;
+padding: 13px 15px;
+margin: 6px auto;
 
-  font-size: 18px;
+font-size: 18px;
 
-  border: 1px solid #ccc;
-  border-radius: 10px;
+border: 1px solid #ccc;
+border-radius: 10px;
 
-  background: white;
-  color: #222;
+background: white;
+color: #222;
 }
 
 textarea {
-  min-height: 120px;
-  resize: vertical;
+min-height: 120px;
+resize: vertical;
 }
 
-
 /* =========================
-   PRODUCTS & SERVICES
+PRODUCTS & SERVICES
 ========================= */
 
 #products,
 #services {
-  width: 100%;
+width: 100%;
 }
 
 #products > div,
 #services > div {
-  width: 100%;
+width: 100%;
 
-  background: white;
+background: white;
 
-  margin: 14px 0;
-  padding: 20px;
+margin: 14px 0;
+padding: 20px;
 
-  border-radius: 14px;
+border-radius: 14px;
 
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 
-  text-align: left;
+text-align: left;
 }
 
 #products h3,
 #services h3 {
-  margin-top: 0;
+margin-top: 0;
 }
 
 #products button,
 #services button {
-  width: 100%;
+width: 100%;
 }
 
-
 /* =========================
-   LISTS
+LISTS
 ========================= */
 
 ul {
-  list-style: none;
-  padding: 0;
+list-style: none;
+padding: 0;
 }
 
 li {
-  width: 100%;
-  max-width: 700px;
+width: 100%;
+max-width: 700px;
 
-  background: white;
+background: white;
 
-  margin: 12px auto;
-  padding: 18px;
+margin: 12px auto;
+padding: 18px;
 
-  border-radius: 12px;
+border-radius: 12px;
 
-  font-size: 18px;
+font-size: 18px;
 }
 
-
 /* =========================
-   WALLET BALANCE
+WALLET BALANCE
 ========================= */
 
 #walletBalance {
-  font-size: 30px;
-  font-weight: bold;
+font-size: 30px;
+font-weight: bold;
 
-  background: white;
+background: white;
 
-  padding: 20px;
+padding: 20px;
 
-  border-radius: 14px;
+border-radius: 14px;
 
-  margin: 10px 0;
+margin: 10px 0;
 }
 
-
 /* =========================
-   PROFILE CARD
+PROFILE CARD
 ========================= */
 
 .profile-card {
-  width: 100%;
+width: 100%;
 
-  background: white;
+background: white;
 
-  padding: 20px;
+padding: 20px;
 
-  border-radius: 14px;
+border-radius: 14px;
 
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-
 /* =========================
-   SIDE MENU
+SIDE MENU
 ========================= */
 
 #menu {
-  position: fixed !important;
+position: fixed !important;
 
-  top: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
+top: 0 !important;
+right: 0 !important;
+bottom: 0 !important;
 
-  width: min(330px, 85vw) !important;
-  height: 100vh !important;
+width: min(330px, 85vw) !important;
+height: 100vh !important;
 
-  margin: 0 !important;
-  padding: 26px 18px !important;
+margin: 0 !important;
+padding: 26px 18px !important;
 
-  background: #ffffff !important;
+background: #ffffff !important;
 
-  opacity: 1 !important;
+opacity: 1 !important;
 
-  color: #222 !important;
+color: #222 !important;
 
-  box-shadow: -6px 0 20px rgba(0, 0, 0, 0.3);
+box-shadow: -6px 0 20px rgba(0, 0, 0, 0.3);
 
-  border-left: 1px solid #ddd;
+border-left: 1px solid #ddd;
 
-  z-index: 999999 !important;
+z-index: 999999 !important;
 
-  text-align: left;
+text-align: left;
 
-  overflow-y: auto;
+overflow-y: auto;
 }
-
 
 /* MENU TITLE */
 
 #menu h3 {
-  color: #111;
+color: #111;
 
-  font-size: 25px;
+font-size: 25px;
 
-  margin: 2px 0 20px;
+margin: 2px 0 20px;
 
-  padding-bottom: 14px;
+padding-bottom: 14px;
 
-  border-bottom: 2px solid #eee;
+border-bottom: 2px solid #eee;
 }
-
 
 /* MENU ITEMS */
 
 #menu p {
-  color: #222 !important;
+color: #222 !important;
 
-  font-size: 18px;
+font-size: 18px;
 
-  min-height: 50px;
+min-height: 50px;
 
-  padding: 13px 10px;
+padding: 13px 10px;
 
-  margin: 0 0 5px 0;
+margin: 0 0 5px 0;
 
-  display: flex;
+display: flex;
 
-  align-items: center;
+align-items: center;
 
-  border-bottom: 1px solid #eee;
+border-bottom: 1px solid #eee;
 
-  cursor: pointer;
+cursor: pointer;
 }
-
 
 /* MENU LINKS */
 
 #menu a {
-  color: #222;
+color: #222;
 
-  text-decoration: none;
+text-decoration: none;
 
-  width: 100%;
+width: 100%;
 }
-
 
 /* MENU HOVER */
 
 #menu p:hover {
-  background: #f5f5f5;
+background: #f5f5f5;
 
-  border-radius: 8px;
+border-radius: 8px;
 }
-
 
 /* CLOSE */
 
 #menu p:last-child {
-  margin-top: 18px;
+margin-top: 18px;
 
-  background: #111;
+background: #111;
 
-  color: white !important;
+color: white !important;
 
-  border-radius: 9px;
+border-radius: 9px;
 
-  justify-content: center;
+justify-content: center;
 
-  border: none;
+border: none;
 }
 
-
 /* =========================
-   MOBILE
+MOBILE
 ========================= */
 
 @media (max-width: 600px) {
 
-  header h1 {
-    font-size: 21px;
-  }
-
-  main {
-    padding: 18px 14px 35px;
-  }
-
-  h2 {
-    font-size: 23px;
-  }
-
-  button {
-    min-height: 54px;
-    font-size: 18px;
-  }
-
-  input,
-  textarea,
-  select {
-    min-height: 54px;
-    font-size: 18px;
-  }
-
-  #menu {
-    width: 82vw !important;
-    padding: 24px 16px !important;
-  }
-
-  #menu p {
-    font-size: 18px;
-    min-height: 48px;
-    padding: 12px 8px;
-    margin-bottom: 4px;
-  }
-
+header h1 {
+font-size: 21px;
 }
 
+main {
+padding: 18px 14px 35px;
+}
+
+h2 {
+font-size: 23px;
+}
+
+button {
+min-height: 54px;
+font-size: 18px;
+}
+
+input,
+textarea,
+select {
+min-height: 54px;
+font-size: 18px;
+}
+
+#menu {
+width: 82vw !important;
+padding: 24px 16px !important;
+}
+
+#menu p {
+font-size: 18px;
+min-height: 48px;
+padding: 12px 8px;
+margin-bottom: 4px;
+}
+
+}
 
 #watermarkBox{
 display:none;
@@ -427,36 +412,9 @@ word-break:break-word;
 line-height:1.5;
 }
 
-
-
-/* Login button */
-
-body.landing-page > a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  text-decoration: none;
-}
-
-
-/* Make the three main buttons larger */
-
-body.landing-page > a button,
-body.landing-page > button {
-  min-height: 62px !important;
-
-  margin: 4px !important;
-  padding: 15px 24px !important;
-
-  font-size: 19px !important;
-  font-weight: 700;
-
-  border-radius: 12px !important;
-}
-
 /* =====================================================
    DELIGHT VENDOR LOGS - LANDING PAGE
+   FINAL MOBILE LAYOUT
 ===================================================== */
 
 body.landing-page {
@@ -465,7 +423,7 @@ body.landing-page {
   overflow: hidden;
 
   margin: 0;
-  padding: 35px 18px;
+  padding: 30px 16px;
 
   display: flex;
   flex-direction: column;
@@ -476,16 +434,13 @@ body.landing-page {
 }
 
 
-/* =========================
-   TITLE
-========================= */
+/* TITLE */
 
 body.landing-page > h1 {
   width: 100%;
+  margin: 0 0 12px !important;
 
-  margin: 0 0 10px !important;
-
-  font-size: 38px !important;
+  font-size: 36px !important;
   line-height: 1.2 !important;
   font-weight: 800 !important;
 
@@ -493,16 +448,13 @@ body.landing-page > h1 {
 }
 
 
-/* =========================
-   SUBTITLE
-========================= */
+/* SUBTITLE */
 
 body.landing-page > p {
   width: 100%;
+  margin: 0 0 28px !important;
 
-  margin: 0 0 25px !important;
-
-  font-size: 22px !important;
+  font-size: 21px !important;
   line-height: 1.4 !important;
 
   text-align: center;
@@ -510,59 +462,67 @@ body.landing-page > p {
 
 
 /* =========================
-   MAIN BUTTONS
+   BUTTONS
 ========================= */
 
+/* Login link */
 body.landing-page > a {
-  display: inline-block;
+  display: block !important;
 
-  margin: 0;
-  padding: 0;
+  width: 100% !important;
+  max-width: 500px !important;
+
+  margin: 0 0 14px !important;
+  padding: 0 !important;
 }
 
 
 /* Login */
-
 body.landing-page > a button {
+  display: block !important;
+
+  width: 100% !important;
   min-height: 64px !important;
 
-  margin: 0 5px 0 0 !important;
-
-  padding: 16px 27px !important;
+  margin: 0 !important;
+  padding: 16px 20px !important;
 
   font-size: 20px !important;
   font-weight: 700 !important;
 
-  border-radius: 12px !important;
+  border-radius: 13px !important;
 }
 
 
-/* Create Account + Fund Wallet */
-
+/* Create Account */
 body.landing-page > button:not(:last-child) {
+  display: block !important;
+
+  width: 100% !important;
+  max-width: 500px !important;
+
   min-height: 64px !important;
 
-  margin: 0 5px !important;
-
-  padding: 16px 25px !important;
+  margin: 0 0 14px !important;
+  padding: 16px 20px !important;
 
   font-size: 20px !important;
   font-weight: 700 !important;
 
-  border-radius: 12px !important;
+  border-radius: 13px !important;
 }
 
 
 /* =========================
-   CATEGORIES TITLE
+   CATEGORIES
 ========================= */
 
 body.landing-page > h2 {
   width: 100%;
 
-  margin: 32px 0 14px !important;
+  margin: 22px 0 14px !important;
 
-  font-size: 31px !important;
+  font-size: 30px !important;
   line-height: 1.2 !important;
   font-weight: 800 !important;
 
@@ -570,19 +530,16 @@ body.landing-page > h2 {
 }
 
 
-/* =========================
-   CATEGORY BOXES
-========================= */
-
 body.landing-page > ul {
   width: 100%;
-  max-width: 680px;
+  max-width: 650px;
 
   margin: 0 !important;
   padding: 0 !important;
 
   display: flex;
   flex-direction: column;
+
   gap: 10px;
 }
 
@@ -590,22 +547,22 @@ body.landing-page > ul {
 body.landing-page > ul li {
   width: 100% !important;
 
-  min-height: 70px !important;
+  min-height: 65px !important;
 
   margin: 0 !important;
-  padding: 18px 15px !important;
+  padding: 17px 15px !important;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  background: #ffffff;
+  background: #fff;
 
   border-radius: 14px;
 
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
 
-  font-size: 21px !important;
+  font-size: 20px !important;
   font-weight: 600 !important;
 
   text-align: center;
@@ -617,68 +574,58 @@ body.landing-page > ul li {
 ========================= */
 
 body.landing-page > button:last-child {
+  width: 100% !important;
+  max-width: 500px !important;
+
   min-height: 64px !important;
 
   margin: 20px 0 0 !important;
-
-  padding: 16px 30px !important;
+  padding: 16px 20px !important;
 
   font-size: 19px !important;
   font-weight: 700 !important;
 
-  border-radius: 12px !important;
+  border-radius: 13px !important;
 }
 
 
 /* =========================
-   MOBILE
+   PHONE
 ========================= */
 
 @media (max-width: 600px) {
 
   body.landing-page {
-    padding: 25px 14px;
+    padding: 24px 14px;
   }
 
   body.landing-page > h1 {
-    font-size: 35px !important;
+    font-size: 34px !important;
   }
 
   body.landing-page > p {
-    font-size: 21px !important;
-    margin-bottom: 22px !important;
+    font-size: 20px !important;
+    margin-bottom: 24px !important;
   }
 
-  /* Keep the 3 buttons together */
-  body.landing-page > a button {
-    min-height: 62px !important;
-    padding: 15px 20px !important;
-    font-size: 18px !important;
-  }
-
+  body.landing-page > a button,
   body.landing-page > button:not(:last-child) {
     min-height: 62px !important;
-    padding: 15px 20px !important;
-    font-size: 18px !important;
+    font-size: 19px !important;
   }
 
   body.landing-page > h2 {
-    margin-top: 28px !important;
-    font-size: 29px !important;
-  }
-
-  body.landing-page > ul {
-    gap: 9px;
+    font-size: 28px !important;
+    margin-top: 20px !important;
   }
 
   body.landing-page > ul li {
-    min-height: 66px !important;
-    font-size: 20px !important;
+    min-height: 62px !important;
+    font-size: 19px !important;
   }
 
   body.landing-page > button:last-child {
     min-height: 62px !important;
-    padding: 15px 25px !important;
     font-size: 18px !important;
   }
 }
@@ -691,38 +638,35 @@ body.landing-page > button:last-child {
 @media (max-width: 380px) {
 
   body.landing-page {
-    padding: 20px 10px;
+    padding: 18px 12px;
   }
 
   body.landing-page > h1 {
-    font-size: 31px !important;
+    font-size: 30px !important;
   }
 
   body.landing-page > p {
-    font-size: 19px !important;
+    font-size: 18px !important;
+    margin-bottom: 20px !important;
   }
 
   body.landing-page > a button,
   body.landing-page > button:not(:last-child) {
     min-height: 58px !important;
-    padding: 14px 15px !important;
-    font-size: 16px !important;
+    font-size: 17px !important;
   }
 
   body.landing-page > h2 {
-    font-size: 26px !important;
-    margin-top: 24px !important;
+    font-size: 25px !important;
   }
 
   body.landing-page > ul li {
-    min-height: 58px !important;
-    font-size: 18px !important;
+    min-height: 56px !important;
+    font-size: 17px !important;
   }
 
   body.landing-page > button:last-child {
-    min-height: 58px !important;
-    font-size: 16px !important;
+    min-height: 56px !important;
+    font-size: 17px !important;
   }
 }
-
-  
