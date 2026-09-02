@@ -1695,31 +1695,10 @@ let currentUserId = null;
 
 /* =====================================================
    VERIFICATION POPUP
+   ALWAYS SHOW ON PAGE LOAD / REFRESH
 ===================================================== */
 
-function getVerificationTipsKey() {
-
-  if (!currentUserId) {
-    return "delight_vendor_verification_tips_seen";
-  }
-
-  return
-    `delight_vendor_verification_tips_seen_${currentUserId}`;
-
-}
-
-
 function showVerificationTips() {
-
-  const key =
-    getVerificationTipsKey();
-
-  const alreadySeen =
-    localStorage.getItem(key);
-
-  if (alreadySeen === "yes") {
-    return;
-  }
 
   document
     .getElementById("verificationOverlay")
@@ -1730,20 +1709,11 @@ function showVerificationTips() {
 
 function closeVerificationTips() {
 
-  const key =
-    getVerificationTipsKey();
-
-  localStorage.setItem(
-    key,
-    "yes"
-  );
-
   document
     .getElementById("verificationOverlay")
     .classList.remove("show");
 
 }
-
 
 /* =====================================================
    PERSISTENT ORDERS
