@@ -427,73 +427,6 @@ word-break:break-word;
 line-height:1.5;
 }
 
-/* =====================================================
-   DELIGHT VENDOR LOGS - LANDING PAGE ONLY
-   FULL SCREEN MOBILE DESIGN
-===================================================== */
-
-body.landing-page {
-  width: 100%;
-  min-height: 100dvh;
-  height: 100dvh;
-
-  margin: 0;
-  padding: 28px 18px;
-
-  overflow: hidden;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-evenly;
-
-  background: #f5f5f5;
-}
-
-
-/* =========================
-   STORE TITLE
-========================= */
-
-body.landing-page > h1 {
-  width: 100%;
-  max-width: 700px;
-
-  margin: 0 !important;
-
-  font-size: 38px !important;
-  line-height: 1.15 !important;
-  font-weight: 800;
-
-  text-align: center;
-}
-
-
-/* =========================
-   SUBTITLE
-========================= */
-
-body.landing-page > p {
-  width: 100%;
-  max-width: 600px;
-
-  margin: 0 !important;
-
-  font-size: 21px !important;
-  line-height: 1.4;
-
-  text-align: center;
-}
-
-
-/* =========================
-   TOP BUTTONS
-========================= */
-
-body.landing-page > a,
-body.landing-page > button {
-  flex-shrink: 0;
-}
 
 
 /* Login button */
@@ -522,58 +455,145 @@ body.landing-page > button {
   border-radius: 12px !important;
 }
 
+/* =====================================================
+   DELIGHT VENDOR LOGS - LANDING PAGE
+===================================================== */
 
-/* Put the first 3 buttons close together */
+body.landing-page {
+  min-height: 100dvh;
+  height: 100dvh;
+  overflow: hidden;
 
-body.landing-page > a {
-  margin-right: 0;
+  margin: 0;
+  padding: 35px 18px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  background: #f5f5f5;
 }
 
 
 /* =========================
-   CATEGORIES
+   TITLE
 ========================= */
 
-body.landing-page > h2 {
+body.landing-page > h1 {
   width: 100%;
-  max-width: 700px;
 
-  margin: 8px 0 4px !important;
+  margin: 0 0 10px !important;
 
-  font-size: 30px !important;
+  font-size: 38px !important;
   line-height: 1.2 !important;
-  font-weight: 800;
+  font-weight: 800 !important;
 
   text-align: center;
 }
 
 
 /* =========================
-   CATEGORY LIST
+   SUBTITLE
+========================= */
+
+body.landing-page > p {
+  width: 100%;
+
+  margin: 0 0 25px !important;
+
+  font-size: 22px !important;
+  line-height: 1.4 !important;
+
+  text-align: center;
+}
+
+
+/* =========================
+   MAIN BUTTONS
+========================= */
+
+body.landing-page > a {
+  display: inline-block;
+
+  margin: 0;
+  padding: 0;
+}
+
+
+/* Login */
+
+body.landing-page > a button {
+  min-height: 64px !important;
+
+  margin: 0 5px 0 0 !important;
+
+  padding: 16px 27px !important;
+
+  font-size: 20px !important;
+  font-weight: 700 !important;
+
+  border-radius: 12px !important;
+}
+
+
+/* Create Account + Fund Wallet */
+
+body.landing-page > button:not(:last-child) {
+  min-height: 64px !important;
+
+  margin: 0 5px !important;
+
+  padding: 16px 25px !important;
+
+  font-size: 20px !important;
+  font-weight: 700 !important;
+
+  border-radius: 12px !important;
+}
+
+
+/* =========================
+   CATEGORIES TITLE
+========================= */
+
+body.landing-page > h2 {
+  width: 100%;
+
+  margin: 32px 0 14px !important;
+
+  font-size: 31px !important;
+  line-height: 1.2 !important;
+  font-weight: 800 !important;
+
+  text-align: center;
+}
+
+
+/* =========================
+   CATEGORY BOXES
 ========================= */
 
 body.landing-page > ul {
   width: 100%;
-  max-width: 650px;
+  max-width: 680px;
 
   margin: 0 !important;
   padding: 0 !important;
 
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 10px;
 }
 
-
-/* Category boxes */
 
 body.landing-page > ul li {
   width: 100% !important;
 
-  min-height: 64px !important;
+  min-height: 70px !important;
 
   margin: 0 !important;
-  padding: 17px 15px !important;
+  padding: 18px 15px !important;
 
   display: flex;
   align-items: center;
@@ -585,120 +605,124 @@ body.landing-page > ul li {
 
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
 
-  font-size: 20px !important;
-  font-weight: 600;
+  font-size: 21px !important;
+  font-weight: 600 !important;
 
   text-align: center;
 }
 
 
 /* =========================
-   WHATSAPP BUTTON
+   WHATSAPP
 ========================= */
 
 body.landing-page > button:last-child {
-  min-height: 62px !important;
+  min-height: 64px !important;
 
-  margin: 5px 0 0 !important;
-  padding: 15px 28px !important;
+  margin: 20px 0 0 !important;
 
-  font-size: 18px !important;
+  padding: 16px 30px !important;
+
+  font-size: 19px !important;
+  font-weight: 700 !important;
 
   border-radius: 12px !important;
 }
 
 
 /* =========================
-   PHONE SCREEN
+   MOBILE
 ========================= */
 
 @media (max-width: 600px) {
 
   body.landing-page {
-    padding: 24px 16px;
-
-    justify-content: space-evenly;
+    padding: 25px 14px;
   }
 
   body.landing-page > h1 {
-    font-size: 34px !important;
+    font-size: 35px !important;
   }
 
   body.landing-page > p {
-    font-size: 20px !important;
+    font-size: 21px !important;
+    margin-bottom: 22px !important;
   }
 
-  body.landing-page > a button,
-  body.landing-page > button {
-    min-height: 60px !important;
+  /* Keep the 3 buttons together */
+  body.landing-page > a button {
+    min-height: 62px !important;
+    padding: 15px 20px !important;
+    font-size: 18px !important;
+  }
 
-    padding: 14px 20px !important;
-
+  body.landing-page > button:not(:last-child) {
+    min-height: 62px !important;
+    padding: 15px 20px !important;
     font-size: 18px !important;
   }
 
   body.landing-page > h2 {
-    font-size: 28px !important;
+    margin-top: 28px !important;
+    font-size: 29px !important;
+  }
+
+  body.landing-page > ul {
+    gap: 9px;
   }
 
   body.landing-page > ul li {
-    min-height: 62px !important;
-
-    font-size: 19px !important;
+    min-height: 66px !important;
+    font-size: 20px !important;
   }
 
   body.landing-page > button:last-child {
-    min-height: 60px !important;
-    font-size: 17px !important;
+    min-height: 62px !important;
+    padding: 15px 25px !important;
+    font-size: 18px !important;
   }
 }
 
 
 /* =========================
-   VERY SMALL PHONES
+   SMALL PHONES
 ========================= */
 
 @media (max-width: 380px) {
 
   body.landing-page {
-    padding: 16px 12px;
+    padding: 20px 10px;
   }
 
   body.landing-page > h1 {
-    font-size: 30px !important;
+    font-size: 31px !important;
   }
 
   body.landing-page > p {
-    font-size: 18px !important;
+    font-size: 19px !important;
   }
 
   body.landing-page > a button,
-  body.landing-page > button {
-    min-height: 54px !important;
-
-    padding: 12px 15px !important;
-
+  body.landing-page > button:not(:last-child) {
+    min-height: 58px !important;
+    padding: 14px 15px !important;
     font-size: 16px !important;
   }
 
   body.landing-page > h2 {
-    font-size: 25px !important;
-  }
-
-  body.landing-page > ul {
-    gap: 7px;
+    font-size: 26px !important;
+    margin-top: 24px !important;
   }
 
   body.landing-page > ul li {
-    min-height: 54px !important;
-
-    font-size: 17px !important;
+    min-height: 58px !important;
+    font-size: 18px !important;
   }
 
   body.landing-page > button:last-child {
-    min-height: 54px !important;
-
+    min-height: 58px !important;
     font-size: 16px !important;
-    padding: 12px 18px !important;
   }
 }
+
+  
