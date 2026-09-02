@@ -412,47 +412,57 @@ word-break:break-word;
 line-height:1.5;
 }
 
-/* =====================================================
+
+  /* =====================================================
    DELIGHT VENDOR LOGS - LANDING PAGE
-   FINAL MOBILE LAYOUT
+   SPREAD OUT MOBILE LAYOUT
 ===================================================== */
 
-body.landing-page {
-  min-height: 100dvh;
-  height: 100dvh;
-  overflow: hidden;
+* {
+  box-sizing: border-box;
+}
 
+body.landing-page {
+  min-height: 100vh;
   margin: 0;
-  padding: 30px 16px;
+  padding: 0 16px 50px;
 
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 
   background: #f5f5f5;
+
+  overflow-x: hidden;
 }
 
 
-/* TITLE */
+/* =====================================================
+   STORE NAME - TOP AREA
+===================================================== */
 
 body.landing-page > h1 {
   width: 100%;
-  margin: 0 0 12px !important;
 
-  font-size: 36px !important;
-  line-height: 1.2 !important;
+  margin: 95px 0 0 !important;
+
+  font-size: 38px !important;
+  line-height: 1.15 !important;
   font-weight: 800 !important;
 
   text-align: center;
 }
 
 
-/* SUBTITLE */
+/* =====================================================
+   YOUR DIGITAL MARKETPLACE
+   SEPARATE FROM THE TITLE
+===================================================== */
 
 body.landing-page > p {
   width: 100%;
-  margin: 0 0 28px !important;
+
+  margin: 38px 0 0 !important;
 
   font-size: 21px !important;
   line-height: 1.4 !important;
@@ -461,23 +471,21 @@ body.landing-page > p {
 }
 
 
-/* =========================
-   BUTTONS
-========================= */
+/* =====================================================
+   LOGIN
+===================================================== */
 
-/* Login link */
 body.landing-page > a {
   display: block !important;
 
   width: 100% !important;
   max-width: 500px !important;
 
-  margin: 0 0 14px !important;
+  margin: 65px 0 0 !important;
   padding: 0 !important;
 }
 
 
-/* Login */
 body.landing-page > a button {
   display: block !important;
 
@@ -494,7 +502,10 @@ body.landing-page > a button {
 }
 
 
-/* Create Account */
+/* =====================================================
+   CREATE ACCOUNT AND FUND WALLET
+===================================================== */
+
 body.landing-page > button:not(:last-child) {
   display: block !important;
 
@@ -503,7 +514,7 @@ body.landing-page > button:not(:last-child) {
 
   min-height: 64px !important;
 
-  margin: 0 0 14px !important;
+  margin: 22px 0 0 !important;
   padding: 16px 20px !important;
 
   font-size: 20px !important;
@@ -513,14 +524,14 @@ body.landing-page > button:not(:last-child) {
 }
 
 
-/* =========================
-   CATEGORIES
-========================= */
+/* =====================================================
+   CATEGORIES TITLE
+===================================================== */
 
 body.landing-page > h2 {
   width: 100%;
 
-  margin: 22px 0 14px !important;
+  margin: 75px 0 28px !important;
 
   font-size: 30px !important;
   line-height: 1.2 !important;
@@ -529,6 +540,10 @@ body.landing-page > h2 {
   text-align: center;
 }
 
+
+/* =====================================================
+   CATEGORY LIST
+===================================================== */
 
 body.landing-page > ul {
   width: 100%;
@@ -540,13 +555,12 @@ body.landing-page > ul {
   display: flex;
   flex-direction: column;
 
-  gap: 10px;
+  gap: 16px;
 }
 
 
 body.landing-page > ul li {
   width: 100% !important;
-
   min-height: 65px !important;
 
   margin: 0 !important;
@@ -560,7 +574,7 @@ body.landing-page > ul li {
 
   border-radius: 14px;
 
-  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
 
   font-size: 20px !important;
   font-weight: 600 !important;
@@ -569,9 +583,9 @@ body.landing-page > ul li {
 }
 
 
-/* =========================
-   WHATSAPP
-========================= */
+/* =====================================================
+   CONTACT SUPPORT ON WHATSAPP - LOWER AREA
+===================================================== */
 
 body.landing-page > button:last-child {
   width: 100% !important;
@@ -579,7 +593,7 @@ body.landing-page > button:last-child {
 
   min-height: 64px !important;
 
-  margin: 20px 0 0 !important;
+  margin: 70px 0 0 !important;
   padding: 16px 20px !important;
 
   font-size: 19px !important;
@@ -589,23 +603,30 @@ body.landing-page > button:last-child {
 }
 
 
-/* =========================
+/* =====================================================
    PHONE
-========================= */
+===================================================== */
 
 @media (max-width: 600px) {
 
   body.landing-page {
-    padding: 24px 14px;
+    padding-left: 14px;
+    padding-right: 14px;
+    padding-bottom: 45px;
   }
 
   body.landing-page > h1 {
+    margin-top: 80px !important;
     font-size: 34px !important;
   }
 
   body.landing-page > p {
+    margin-top: 32px !important;
     font-size: 20px !important;
-    margin-bottom: 24px !important;
+  }
+
+  body.landing-page > a {
+    margin-top: 55px !important;
   }
 
   body.landing-page > a button,
@@ -615,8 +636,13 @@ body.landing-page > button:last-child {
   }
 
   body.landing-page > h2 {
+    margin-top: 65px !important;
+    margin-bottom: 24px !important;
     font-size: 28px !important;
-    margin-top: 20px !important;
+  }
+
+  body.landing-page > ul {
+    gap: 14px;
   }
 
   body.landing-page > ul li {
@@ -626,28 +652,30 @@ body.landing-page > button:last-child {
 
   body.landing-page > button:last-child {
     min-height: 62px !important;
+    margin-top: 60px !important;
     font-size: 18px !important;
   }
 }
 
 
-/* =========================
+/* =====================================================
    SMALL PHONES
-========================= */
+===================================================== */
 
 @media (max-width: 380px) {
 
-  body.landing-page {
-    padding: 18px 12px;
-  }
-
   body.landing-page > h1 {
+    margin-top: 60px !important;
     font-size: 30px !important;
   }
 
   body.landing-page > p {
+    margin-top: 26px !important;
     font-size: 18px !important;
-    margin-bottom: 20px !important;
+  }
+
+  body.landing-page > a {
+    margin-top: 45px !important;
   }
 
   body.landing-page > a button,
@@ -657,6 +685,7 @@ body.landing-page > button:last-child {
   }
 
   body.landing-page > h2 {
+    margin-top: 55px !important;
     font-size: 25px !important;
   }
 
@@ -667,6 +696,8 @@ body.landing-page > button:last-child {
 
   body.landing-page > button:last-child {
     min-height: 56px !important;
+    margin-top: 50px !important;
     font-size: 17px !important;
   }
 }
+  
