@@ -1502,7 +1502,6 @@ main {
 
 </section>
 
-
 <!-- ======================================
      CURRENT ORDER
 ====================================== -->
@@ -1511,58 +1510,72 @@ main {
   id="orderCard"
   class="order-card"
 >
+  <h2>Your Number</h2>
 
-<h2>Your Number</h2>
+  <div class="order-row">
+    <span>Service:</span>
+    <strong id="orderService"></strong>
+  </div>
 
-<div class="order-row">
-  <span>Service:</span>
-  <strong id="orderService"></strong>
-</div>
+  <div class="order-row">
+    <span>Country:</span>
+    <strong id="orderCountry"></strong>
+  </div>
 
-<div class="order-row">
-  <span>Country:</span>
-  <strong id="orderCountry"></strong>
-</div>
+  <div class="order-row">
+    <span>Provider:</span>
+    <strong id="orderOperator"></strong>
+  </div>
 
-<div class="order-row">
-  <span>Provider:</span>
-  <strong id="orderOperator"></strong>
-</div>
+  <div class="order-row">
+    <span>Number:</span>
+    <strong id="orderNumber"></strong>
+  </div>
 
-<div class="order-row">
-  <span>Number:</span>
-  <strong id="orderNumber"></strong>
-</div>
+  <div
+    id="otpBox"
+    class="otp"
+  >
+    Waiting for SMS...
+  </div>
 
-<div
-  id="otpBox"
-  class="otp"
->
-  Waiting for SMS...
-</div>
+  <div class="action-row">
 
-<div class="action-row">
+    <button
+      class="action-button check-button"
+      onclick="checkOrder()"
+    >
+      Get Code
+    </button>
 
-<button
-  class="action-button check-button"
-  onclick="checkOrder()"
->
-  Get Code
-</button>
+    <button
+      class="action-button cancel-button"
+      onclick="cancelOrder()"
+    >
+      Cancel
+    </button>
 
-<button
-  class="action-button cancel-button"
-  onclick="cancelOrder()"
->
-  Cancel
-</button>
-
-</div>
+  </div>
 
 </section>
 
-</main>
 
+<!-- ======================================
+     SAVED ORDERS
+====================================== -->
+
+<section
+  id="savedOrdersSection"
+  class="saved-orders-section"
+>
+
+<h2 class="saved-orders-title">
+  Your Virtual Number Orders
+</h2>
+
+<div id="savedOrdersList"></div>
+
+</section>
 
 <!-- ======================================
      COUNTRY PICKER
