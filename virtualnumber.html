@@ -1483,6 +1483,7 @@ main {
 
 </section>
 
+
 <!-- ======================================
      SAVED ORDERS
      DIRECTLY UNDER COUNTRY/SERVICE
@@ -1500,6 +1501,7 @@ main {
   <div id="savedOrdersList"></div>
 
 </section>
+
 
 <!-- ======================================
      CURRENT ORDER
@@ -1558,23 +1560,6 @@ main {
 
 </section>
 
-
-<!-- ======================================
-     SAVED ORDERS
-====================================== -->
-
-<section
-  id="savedOrdersSection"
-  class="saved-orders-section"
->
-
-<h2 class="saved-orders-title">
-  Your Virtual Number Orders
-</h2>
-
-<div id="savedOrdersList"></div>
-
-</section>
 
 <!-- ======================================
      COUNTRY PICKER
@@ -2078,14 +2063,6 @@ async function loadOrdersFromDatabase() {
     }
 
 
-    /*
-      DATABASE IS THE SOURCE FOR OLD ORDERS.
-
-      Merge them with local orders so an order
-      purchased earlier can appear again after
-      refreshing/re-entering the page.
-    */
-
     orders.forEach(
       dbOrder => {
 
@@ -2130,10 +2107,6 @@ async function loadOrdersFromDatabase() {
       }
     );
 
-
-    /*
-      NEWEST ORDER FIRST
-    */
 
     savedVirtualOrders.sort(
       (a, b) =>
@@ -2296,17 +2269,6 @@ function renderSavedVirtualOrders() {
         }
 
 
-        /*
-          IMPORTANT:
-
-          Any order that is NOT completed,
-          cancelled, timeout or banned
-          remains cancellable.
-
-          Therefore PENDING will ALWAYS
-          get Get Code + Cancel.
-        */
-
         const canCancel =
           canCancelSavedOrder(
             status
@@ -2425,10 +2387,6 @@ function renderSavedVirtualOrders() {
       .join("");
 
 
-  /*
-    GET CODE BUTTONS
-  */
-
   list
     .querySelectorAll(
       '[data-action="check"]'
@@ -2448,10 +2406,6 @@ function renderSavedVirtualOrders() {
 
     });
 
-
-  /*
-    CANCEL BUTTONS
-  */
 
   list
     .querySelectorAll(
@@ -2697,10 +2651,6 @@ async function checkSavedVirtualOrder(
       data?.sms;
 
 
-    /*
-      SMS RECEIVED
-    */
-
     if (sms?.code) {
 
       saveVirtualOrder({
@@ -2743,10 +2693,6 @@ async function checkSavedVirtualOrder(
 
     }
 
-
-    /*
-      CANCELLED / TIMEOUT
-    */
 
     if (
       status === "CANCELLED" ||
@@ -2795,10 +2741,6 @@ async function checkSavedVirtualOrder(
 
     }
 
-
-    /*
-      STILL PENDING
-    */
 
     document.getElementById(
       "otpBox"
@@ -4051,10 +3993,6 @@ function selectService(
     "show"
   );
 
-  /*
-    NO AUTO SCROLL
-  */
-
 }
 
 
@@ -4347,13 +4285,6 @@ async function buyNumber() {
     selectedOrderId =
       order.id;
 
-
-    /*
-      SAVE NEW ORDER.
-
-      unshift + created_at sorting means
-      newest purchase stays at the top.
-    */
 
     saveVirtualOrder({
 
@@ -4902,14 +4833,6 @@ document.getElementById(
 ===================================================== */
 
 (async function() {
-
-  /*
-    1. Load wallet/user
-    2. Load local orders
-    3. Load old database orders
-    4. Load countries
-    5. Show verification popup
-  */
 
   await loadWallet();
 
