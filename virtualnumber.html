@@ -650,7 +650,7 @@ main {
 
 
 /* ======================================
-   ORDER
+   CURRENT ORDER
 ====================================== */
 
 .order-card {
@@ -658,16 +658,18 @@ main {
 
   background: white;
 
-  padding: 22px;
+  padding: 24px;
 
-  border-radius: 24px;
+  border-radius: 28px;
 
   margin-top: 22px;
   margin-bottom: 22px;
 
+  border: 1px solid #e3e7ed;
+
   box-shadow:
-    0 4px 18px
-    rgba(0,0,0,.05);
+    0 10px 30px
+    rgba(16,24,40,.08);
 }
 
 .order-card.show {
@@ -675,14 +677,14 @@ main {
 }
 
 .order-card h2 {
-  margin-top: 0;
-  font-size: 21px;
+  margin: 0 0 20px;
+  font-size: 22px;
 }
 
 .order-row {
-  padding: 11px 0;
+  padding: 13px 0;
 
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #edf0f3;
 
   font-size: 15px;
 
@@ -691,44 +693,80 @@ main {
   gap: 15px;
 }
 
+.order-row:last-of-type {
+  border-bottom: none;
+}
+
+.order-row span {
+  color: #6b7280;
+}
+
 .order-row strong {
   text-align: right;
   word-break: break-word;
+  color: #111827;
 }
 
+
+/* CURRENT NUMBER */
+
+#orderNumber {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+
+/* CURRENT OTP */
+
 .otp {
-  font-size: 24px;
+  font-size: 28px;
 
   font-weight: 900;
 
   text-align: center;
 
-  padding: 16px;
+  padding: 20px 16px;
 
-  background: #f3f4f6;
+  background: #f8fafc;
 
-  border-radius: 15px;
+  border: 1px dashed #cbd5e1;
 
-  margin-top: 16px;
+  border-radius: 18px;
+
+  margin-top: 18px;
+
+  min-height: 66px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  letter-spacing: 2px;
 }
 
 .action-row {
-  display: flex;
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
   gap: 10px;
+
   margin-top: 16px;
 }
 
 .action-button {
-  flex: 1;
-
   border: none;
+
+  min-height: 50px;
 
   padding: 13px;
 
-  border-radius: 14px;
+  border-radius: 15px;
 
   font-weight: bold;
   cursor: pointer;
+
+  font-size: 16px;
 }
 
 .check-button {
@@ -737,29 +775,47 @@ main {
 }
 
 .cancel-button {
-  background: #ffe0e0;
-  color: #9b1c1c;
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.done-button {
+  width: 100%;
+
+  margin-top: 16px;
+
+  min-height: 50px;
+
+  border: none;
+
+  border-radius: 15px;
+
+  background: #18795f;
+
+  color: white;
+
+  font-size: 16px;
+
+  font-weight: bold;
+
+  cursor: pointer;
 }
 
 
 /* ======================================
-   SAVED ORDERS
+   SAVED ORDERS SECTION
 ====================================== */
 
 .saved-orders-section {
   display: none;
 
-  background: white;
+  background: transparent;
 
-  padding: 22px;
+  padding: 0;
 
-  border-radius: 24px;
+  border-radius: 0;
 
   margin-bottom: 22px;
-
-  box-shadow:
-    0 4px 18px
-    rgba(0,0,0,.05);
 }
 
 .saved-orders-section.show {
@@ -767,51 +823,77 @@ main {
 }
 
 .saved-orders-title {
-  margin: 0 0 15px;
+  margin: 0 0 14px;
 
-  font-size: 21px;
-  font-weight: 800;
+  font-size: 22px;
+  font-weight: 900;
+
+  color: #111827;
 }
 
+
+/* ======================================
+   SAVED ORDER CARD
+====================================== */
+
 .saved-order {
-  border: 1px solid #e1e5eb;
+  background: white;
 
-  border-radius: 17px;
+  border: 1px solid #e2e6ec;
 
-  padding: 16px;
+  border-radius: 26px;
 
-  margin-bottom: 12px;
+  padding: 20px;
 
-  background: #fff;
+  margin-bottom: 15px;
+
+  box-shadow:
+    0 8px 25px
+    rgba(16,24,40,.07);
+
+  overflow: hidden;
 }
 
 .saved-order:last-child {
   margin-bottom: 0;
 }
 
+
+/* HEADER */
+
 .saved-order-top {
   display: flex;
 
   justify-content: space-between;
 
-  align-items: flex-start;
+  align-items: center;
 
   gap: 12px;
 
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .saved-order-service {
-  font-size: 17px;
-  font-weight: 800;
+  font-size: 19px;
+  font-weight: 900;
+
+  color: #111827;
+
+  min-width: 0;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .saved-order-status {
+  flex-shrink: 0;
+
   font-size: 12px;
 
-  font-weight: 800;
+  font-weight: 900;
 
-  padding: 6px 9px;
+  padding: 7px 11px;
 
   border-radius: 999px;
 
@@ -838,12 +920,64 @@ main {
   background: #dbeafe;
 }
 
+
+/* NUMBER AREA */
+
+.saved-order-number-box {
+  background: #f8fafc;
+
+  border: 1px solid #e4e8ee;
+
+  border-radius: 20px;
+
+  padding: 17px 15px;
+
+  text-align: center;
+
+  margin-bottom: 15px;
+}
+
+.saved-order-number-label {
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 1px;
+
+  color: #6b7280;
+
+  text-transform: uppercase;
+
+  margin-bottom: 7px;
+}
+
+.saved-order-number {
+  font-size: 25px;
+
+  font-weight: 900;
+
+  color: #111827;
+
+  word-break: break-word;
+
+  line-height: 1.25;
+}
+
+
+/* DETAILS */
+
 .saved-order-details {
+  background: #fff;
+
+  border-top: 1px solid #edf0f3;
+
+  border-bottom: 1px solid #edf0f3;
+
+  padding: 4px 0;
+
   font-size: 14px;
 
-  line-height: 1.8;
-
-  color: #4b5563;
+  color: #6b7280;
 }
 
 .saved-order-details div {
@@ -851,7 +985,15 @@ main {
 
   justify-content: space-between;
 
+  align-items: flex-start;
+
   gap: 15px;
+
+  padding: 10px 0;
+}
+
+.saved-order-details div + div {
+  border-top: 1px solid #f0f2f5;
 }
 
 .saved-order-details strong {
@@ -860,44 +1002,130 @@ main {
   text-align: right;
 
   word-break: break-word;
+
+  font-weight: 800;
 }
 
-.saved-order-otp {
-  margin-top: 12px;
 
-  background: #f3f4f6;
+/* CODE AREA */
 
-  border-radius: 13px;
+.saved-order-code-box {
+  margin-top: 15px;
 
-  padding: 12px;
+  border-radius: 19px;
+
+  padding: 17px;
 
   text-align: center;
 
-  font-size: 21px;
+  background: #f8fafc;
+
+  border: 1px dashed #cbd5e1;
+}
+
+.saved-order-code-label {
+  font-size: 11px;
 
   font-weight: 900;
+
+  color: #6b7280;
+
+  letter-spacing: 1px;
+
+  text-transform: uppercase;
+
+  margin-bottom: 7px;
 }
 
-.saved-order-actions {
-  display: flex;
+.saved-order-code {
+  font-size: 28px;
 
-  gap: 9px;
+  font-weight: 900;
 
-  margin-top: 13px;
+  letter-spacing: 3px;
+
+  color: #111827;
+
+  word-break: break-word;
 }
 
-.saved-order-button {
-  flex: 1;
-
-  border: none;
-
-  padding: 11px;
-
-  border-radius: 12px;
+.saved-order-waiting {
+  font-size: 16px;
 
   font-weight: 700;
 
+  color: #64748b;
+
+  letter-spacing: 0;
+}
+
+
+/* COMPLETED CODE */
+
+.saved-order.completed-order
+.saved-order-code-box {
+  background: #ecfdf5;
+
+  border-color: #a7f3d0;
+}
+
+.saved-order.completed-order
+.saved-order-code {
+  color: #166534;
+}
+
+
+/* CANCELLED MESSAGE */
+
+.saved-order-cancelled-box {
+  margin-top: 15px;
+
+  padding: 15px;
+
+  border-radius: 17px;
+
+  background: #fff7f7;
+
+  border: 1px solid #fecaca;
+
+  color: #991b1b;
+
+  text-align: center;
+
+  font-size: 14px;
+
+  font-weight: 800;
+
+  line-height: 1.45;
+}
+
+
+/* ACTIONS */
+
+.saved-order-actions {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 10px;
+
+  margin-top: 15px;
+}
+
+.saved-order-button {
+  border: none;
+
+  min-height: 50px;
+
+  padding: 12px;
+
+  border-radius: 15px;
+
+  font-weight: 900;
+
   cursor: pointer;
+
+  font-size: 15px;
 }
 
 .saved-check-button {
@@ -906,16 +1134,43 @@ main {
 }
 
 .saved-cancel-button {
-  background: #ffe0e0;
-  color: #9b1c1c;
+  background: #fee2e2;
+  color: #991b1b;
 }
 
+.saved-done-button {
+  width: 100%;
+
+  margin-top: 15px;
+
+  min-height: 50px;
+
+  border: none;
+
+  border-radius: 15px;
+
+  background: #18795f;
+
+  color: white;
+
+  font-size: 15px;
+
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+/* DATE */
+
 .saved-order-date {
-  margin-top: 10px;
+  margin-top: 13px;
 
   color: #9ca3af;
 
   font-size: 12px;
+
+  text-align: center;
 }
 
 
@@ -1094,14 +1349,37 @@ main {
     font-size: 15px;
   }
 
+  .saved-order {
+    padding: 17px;
+    border-radius: 23px;
+  }
+
+  .saved-order-service {
+    font-size: 17px;
+  }
+
+  .saved-order-number {
+    font-size: 22px;
+  }
+
   .saved-order-details div {
     display: block;
   }
 
   .saved-order-details strong {
     display: block;
+
     text-align: left;
-    margin-top: 2px;
+
+    margin-top: 3px;
+  }
+
+  .saved-order-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .action-row {
+    grid-template-columns: 1fr 1fr;
   }
 
   .verification-overlay {
@@ -1486,7 +1764,7 @@ main {
 
 <!-- ======================================
      SAVED ORDERS
-     DIRECTLY UNDER COUNTRY/SERVICE
+     DIRECTLY UNDER SELECT DETAILS
 ====================================== -->
 
 <section
@@ -1511,6 +1789,7 @@ main {
   id="orderCard"
   class="order-card"
 >
+
   <h2>Your Number</h2>
 
   <div class="order-row">
@@ -1708,7 +1987,6 @@ let currentUserId = null;
 
 /* =====================================================
    VERIFICATION POPUP
-   SHOW EVERY PAGE LOAD
 ===================================================== */
 
 function showVerificationTips() {
@@ -1878,13 +2156,9 @@ function saveVirtualOrder(order) {
 
   else {
 
-    /* NEWEST ORDER ALWAYS GOES TOP */
-
     savedVirtualOrders.unshift(order);
 
   }
-
-  /* ALWAYS KEEP NEWEST FIRST */
 
   savedVirtualOrders.sort(
     (a, b) =>
@@ -1963,7 +2237,9 @@ function getOrderStatusInfo(status) {
       text:
         normalized === "TIMEOUT"
           ? "Timed Out"
-          : "Cancelled",
+          : normalized === "BANNED"
+            ? "Banned"
+            : "Cancelled",
 
       className:
         "status-cancelled"
@@ -2108,6 +2384,42 @@ async function loadOrdersFromDatabase() {
     );
 
 
+    /*
+      REMOVE ANY DUPLICATES BY ORDER ID
+    */
+
+    const uniqueOrders = new Map();
+
+    savedVirtualOrders.forEach(
+      order => {
+
+        if (
+          order &&
+          order.id !== undefined &&
+          order.id !== null
+        ) {
+
+          uniqueOrders.set(
+            String(order.id),
+            order
+          );
+
+        }
+
+      }
+    );
+
+
+    savedVirtualOrders =
+      Array.from(
+        uniqueOrders.values()
+      );
+
+
+    /*
+      NEWEST FIRST
+    */
+
     savedVirtualOrders.sort(
       (a, b) =>
         new Date(
@@ -2184,6 +2496,53 @@ function renderSavedVirtualOrders() {
     return;
 
   }
+
+
+  /*
+    DEDUPLICATE BEFORE DISPLAY
+  */
+
+  const uniqueOrders = new Map();
+
+  savedVirtualOrders.forEach(
+    order => {
+
+      if (
+        order &&
+        order.id !== undefined &&
+        order.id !== null
+      ) {
+
+        uniqueOrders.set(
+          String(order.id),
+          order
+        );
+
+      }
+
+    }
+  );
+
+
+  savedVirtualOrders =
+    Array.from(
+      uniqueOrders.values()
+    );
+
+
+  /*
+    NEWEST ORDER FIRST
+  */
+
+  savedVirtualOrders.sort(
+    (a, b) =>
+      new Date(
+        b.created_at || 0
+      ) -
+      new Date(
+        a.created_at || 0
+      )
+  );
 
 
   section.classList.add(
@@ -2269,6 +2628,19 @@ function renderSavedVirtualOrders() {
         }
 
 
+        const completed =
+          status === "RECEIVED" ||
+          status === "FINISHED" ||
+          status === "COMPLETED";
+
+
+        const terminal =
+          status === "CANCELED" ||
+          status === "CANCELLED" ||
+          status === "TIMEOUT" ||
+          status === "BANNED";
+
+
         const canCancel =
           canCancelSavedOrder(
             status
@@ -2278,7 +2650,11 @@ function renderSavedVirtualOrders() {
         return `
 
           <div
-            class="saved-order"
+            class="saved-order ${
+              completed
+                ? "completed-order"
+                : ""
+            }"
             data-saved-order-id="${escapeHTML(order.id)}"
           >
 
@@ -2297,75 +2673,133 @@ function renderSavedVirtualOrders() {
             </div>
 
 
+            <div class="saved-order-number-box">
+
+              <div class="saved-order-number-label">
+                Phone Number
+              </div>
+
+              <div class="saved-order-number">
+                ${escapeHTML(number)}
+              </div>
+
+            </div>
+
+
             <div class="saved-order-details">
 
               <div>
-                <span>Country:</span>
+
+                <span>
+                  Country
+                </span>
 
                 <strong>
                   ${escapeHTML(country)}
                 </strong>
+
               </div>
 
 
               <div>
-                <span>Provider:</span>
+
+                <span>
+                  Provider
+                </span>
 
                 <strong>
                   ${escapeHTML(operator)}
                 </strong>
-              </div>
 
-
-              <div>
-                <span>Number:</span>
-
-                <strong>
-                  ${escapeHTML(number)}
-                </strong>
               </div>
 
             </div>
 
 
             ${
-              otp
+              completed
                 ? `
-                  <div class="saved-order-otp">
-                    OTP: ${escapeHTML(otp)}
-                  </div>
-                `
-                : ""
-            }
 
+                  <div class="saved-order-code-box">
 
-            ${
-              canCancel
-                ? `
-                  <div class="saved-order-actions">
+                    <div class="saved-order-code-label">
+                      Verification Code
+                    </div>
 
-                    <button
-                      type="button"
-                      class="saved-order-button saved-check-button"
-                      data-action="check"
-                      data-order-id="${escapeHTML(order.id)}"
-                    >
-                      Get Code
-                    </button>
-
-
-                    <button
-                      type="button"
-                      class="saved-order-button saved-cancel-button"
-                      data-action="cancel"
-                      data-order-id="${escapeHTML(order.id)}"
-                    >
-                      Cancel
-                    </button>
+                    <div class="saved-order-code">
+                      ${escapeHTML(
+                        otp || "Code received"
+                      )}
+                    </div>
 
                   </div>
+
+
+                  <button
+                    type="button"
+                    class="saved-done-button"
+                    data-action="done"
+                    data-order-id="${escapeHTML(order.id)}"
+                  >
+                    ✓ Done
+                  </button>
+
                 `
-                : ""
+                : terminal
+                  ? `
+
+                    <div class="saved-order-cancelled-box">
+
+                      ${
+                        status === "TIMEOUT"
+                          ? "This number has timed out."
+                          : status === "BANNED"
+                            ? "This number was banned."
+                            : "This number has been cancelled."
+                      }
+
+                    </div>
+
+                  `
+                  : `
+
+                    <div class="saved-order-code-box">
+
+                      <div class="saved-order-code-label">
+                        Verification Code
+                      </div>
+
+                      <div class="saved-order-code saved-order-waiting">
+                        ⏳ Waiting for SMS...
+                      </div>
+
+                    </div>
+
+
+                    <div class="saved-order-actions">
+
+                      <button
+                        type="button"
+                        class="saved-order-button saved-check-button"
+                        data-action="check"
+                        data-order-id="${escapeHTML(order.id)}"
+                      >
+                        Get Code
+                      </button>
+
+
+                      <button
+                        type="button"
+                        class="saved-order-button saved-cancel-button"
+                        data-action="cancel"
+                        data-order-id="${escapeHTML(order.id)}"
+                      >
+                        Cancel
+                      </button>
+
+                    </div>
+
+                  `
             }
 
 
@@ -2387,6 +2821,10 @@ function renderSavedVirtualOrders() {
       .join("");
 
 
+  /*
+    CHECK BUTTONS
+  */
+
   list
     .querySelectorAll(
       '[data-action="check"]'
@@ -2397,15 +2835,38 @@ function renderSavedVirtualOrders() {
         "click",
         async function() {
 
-          await checkSavedVirtualOrder(
-            this.dataset.orderId
-          );
+          if (
+            this.disabled
+          ) {
+            return;
+          }
+
+          this.disabled = true;
+          this.textContent = "Checking...";
+
+          try {
+
+            await checkSavedVirtualOrder(
+              this.dataset.orderId
+            );
+
+          }
+
+          finally {
+
+            this.disabled = false;
+
+          }
 
         }
       );
 
     });
 
+
+  /*
+    CANCEL BUTTONS
+  */
 
   list
     .querySelectorAll(
@@ -2417,9 +2878,74 @@ function renderSavedVirtualOrders() {
         "click",
         async function() {
 
-          await cancelSavedVirtualOrder(
-            this.dataset.orderId
-          );
+          if (
+            this.disabled
+          ) {
+            return;
+          }
+
+          this.disabled = true;
+          this.textContent = "Cancelling...";
+
+          try {
+
+            await cancelSavedVirtualOrder(
+              this.dataset.orderId
+            );
+
+          }
+
+          finally {
+
+            this.disabled = false;
+
+          }
+
+        }
+      );
+
+    });
+
+
+  /*
+    DONE BUTTONS
+  */
+
+  list
+    .querySelectorAll(
+      '[data-action="done"]'
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        function() {
+
+          const orderId =
+            this.dataset.orderId;
+
+          selectedOrderId =
+            orderId;
+
+          const order =
+            getSavedVirtualOrder(
+              orderId
+            );
+
+          if (order) {
+
+            showSavedOrderInCurrentCard(
+              order
+            );
+
+            document.getElementById(
+              "orderCard"
+            ).scrollIntoView({
+              behavior: "smooth",
+              block: "center"
+            });
+
+          }
 
         }
       );
@@ -2430,7 +2956,7 @@ function renderSavedVirtualOrders() {
 
 
 /* =====================================================
-   UPDATE SAVED ORDER FROM API
+   UPDATE SAVED ORDER FROM RESPONSE
 ===================================================== */
 
 function updateSavedOrderFromResponse(
@@ -2697,7 +3223,8 @@ async function checkSavedVirtualOrder(
     if (
       status === "CANCELLED" ||
       status === "CANCELED" ||
-      status === "TIMEOUT"
+      status === "TIMEOUT" ||
+      status === "BANNED"
     ) {
 
       saveVirtualOrder({
@@ -2707,7 +3234,9 @@ async function checkSavedVirtualOrder(
         status:
           status === "TIMEOUT"
             ? "TIMEOUT"
-            : "CANCELED"
+            : status === "BANNED"
+              ? "BANNED"
+              : "CANCELED"
 
       });
 
@@ -3229,23 +3758,11 @@ async function loadWallet() {
       money(balance);
 
 
-    /*
-      LOAD LOCAL ORDERS FIRST
-    */
-
     loadSavedVirtualOrders();
 
 
-    /*
-      THEN LOAD REAL ORDERS FROM DATABASE
-    */
-
     await loadOrdersFromDatabase();
 
-
-    /*
-      POPUP ALWAYS SHOWS ON PAGE ENTRY
-    */
 
     showVerificationTips();
 
@@ -4572,6 +5089,9 @@ async function checkOrder() {
       stopOrderChecking();
 
 
+      renderSavedVirtualOrders();
+
+
       showMessage(
         "SMS code received.",
         "success"
@@ -4586,7 +5106,8 @@ async function checkOrder() {
     if (
       status === "CANCELLED" ||
       status === "CANCELED" ||
-      status === "TIMEOUT"
+      status === "TIMEOUT" ||
+      status === "BANNED"
     ) {
 
       stopOrderChecking();
@@ -4595,7 +5116,11 @@ async function checkOrder() {
       document.getElementById(
         "otpBox"
       ).textContent =
-        "Order cancelled";
+        status === "TIMEOUT"
+          ? "Timed Out"
+          : status === "BANNED"
+            ? "Banned"
+            : "Order cancelled";
 
 
       saveVirtualOrder({
@@ -4605,7 +5130,9 @@ async function checkOrder() {
         status:
           status === "TIMEOUT"
             ? "TIMEOUT"
-            : "CANCELED"
+            : status === "BANNED"
+              ? "BANNED"
+              : "CANCELED"
 
       });
 
@@ -4634,6 +5161,9 @@ async function checkOrder() {
       "otpBox"
     ).textContent =
       "Waiting for SMS...";
+
+
+    renderSavedVirtualOrders();
 
   }
 
@@ -4774,6 +5304,9 @@ async function cancelOrder() {
       );
 
     }
+
+
+    renderSavedVirtualOrders();
 
   }
 
