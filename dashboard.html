@@ -352,16 +352,16 @@ container.appendChild(card);
 function buyProduct(id){
 location.href="products.html?id="+encodeURIComponent(id);
 }
-
 async function startDashboard(){
 
-await loadWallet();
-
-await loadWatermark();
-
-await loadProducts();
+    await Promise.all([
+        loadProducts(),
+        loadWallet(),
+        loadWatermark()
+    ]);
 
 }
+
 
 startDashboard();
 </script>
