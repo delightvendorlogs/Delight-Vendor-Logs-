@@ -87,8 +87,8 @@ main{padding:15px;max-width:800px;margin:auto}
 </div>
 
 <input id="serviceSearch" class="search-box" type="search" placeholder="🔍 Search service..." oninput="filterServices()">
-
 <div id="products" class="products-grid">
+    Loading service...
 </div>
 </section>
 
@@ -354,14 +354,13 @@ location.href="products.html?id="+encodeURIComponent(id);
 }
 async function startDashboard(){
 
-    await Promise.all([
-        loadProducts(),
-        loadWallet(),
-        loadWatermark()
-    ]);
+await loadWallet();
+
+await loadWatermark();
+
+await loadProducts();
 
 }
-
 
 startDashboard();
 </script>
