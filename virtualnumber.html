@@ -2,1938 +2,728 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
->
-
-<title>Virtual Numbers - Delight Vendor Logs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Virtual Numbers</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
 * {
   box-sizing: border-box;
 }
 
+:root {
+  --bg: #f5f7fb;
+  --card: #ffffff;
+  --text: #101828;
+  --muted: #667085;
+  --border: #e4e7ec;
+  --primary: #12b76a;
+  --primary-dark: #079455;
+  --danger: #d92d20;
+  --warning: #f79009;
+  --shadow: 0 8px 30px rgba(16, 24, 40, .07);
+}
+
 body {
   margin: 0;
-  background: #f4f5f9;
-  color: #111827;
-  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, Arial, sans-serif;
 }
 
-
-/* ======================================
-   HEADER
-====================================== */
-
-header {
-  height: 122px;
-  background: #101828;
-  color: white;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  position: relative;
+button,
+input {
+  font: inherit;
 }
 
-header h1 {
-  margin: 0;
-  font-size: 30px;
-}
-
-.back-button {
-  position: absolute;
-  left: 25px;
-  top: 25px;
-
-  width: 58px;
-  height: 58px;
-
-  border: none;
-  border-radius: 18px;
-
-  background: #23324a;
-  color: white;
-
-  font-size: 28px;
+button {
   cursor: pointer;
 }
 
-.header-wallet {
-  position: absolute;
-  right: 18px;
-  top: 32px;
-
-  background: #1d2b41;
-  color: white;
-
-  border-radius: 17px;
-  overflow: hidden;
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(255,255,255,.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
 }
 
-.header-wallet a {
-  display: block;
-  color: white;
-  text-decoration: none;
-
-  padding: 14px 18px;
-
-  font-weight: bold;
-  font-size: 17px;
-}
-
-
-/* ======================================
-   MAIN
-====================================== */
-
-main {
-  width: 100%;
-  max-width: 760px;
+.header-inner {
+  max-width: 720px;
   margin: auto;
-  padding: 30px 24px 100px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
+.back {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  background: white;
+  border-radius: 12px;
+  font-size: 20px;
+}
 
-/* ======================================
-   BANNER
-====================================== */
+.title {
+  font-size: 17px;
+  font-weight: 800;
+}
 
-.banner {
-  background: linear-gradient(
-    135deg,
-    #1f2b40,
-    #26364e
-  );
+.wallet {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
 
+.container {
+  max-width: 720px;
+  margin: auto;
+  padding: 18px 15px 60px;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tab {
+  flex: 1;
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--muted);
+  border-radius: 12px;
+  padding: 11px 8px;
+  font-weight: 800;
+}
+
+.tab.active {
+  background: var(--text);
   color: white;
-  padding: 38px;
-  border-radius: 34px;
-  margin-bottom: 30px;
+  border-color: var(--text);
 }
 
-.banner h2 {
-  margin: 0 0 16px;
-  font-size: 32px;
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
 }
 
-.banner p {
-  margin: 0;
-  font-size: 22px;
-  line-height: 1.55;
-  color: #e4e9f0;
+.section-title {
+  font-size: 14px;
+  font-weight: 800;
+  margin-bottom: 9px;
 }
 
+.section-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
 
-/* ======================================
-   SMALL MESSAGE
-====================================== */
+.selector {
+  position: relative;
+}
+
+.selector-input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 13px 42px 13px 13px;
+  outline: none;
+  background: white;
+}
+
+.selector-input:focus {
+  border-color: var(--primary);
+}
+
+.selector-arrow {
+  position: absolute;
+  right: 14px;
+  top: 12px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: var(--shadow);
+  display: none;
+}
+
+.dropdown.open {
+  display: block;
+}
+
+.option {
+  padding: 13px;
+  border-bottom: 1px solid #f2f4f7;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.option:last-child {
+  border-bottom: 0;
+}
+
+.option:hover {
+  background: #f9fafb;
+}
+
+.disabled {
+  opacity: .5;
+  pointer-events: none;
+}
+
+.server-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.server {
+  border: 1.5px solid var(--border);
+  border-radius: 15px;
+  padding: 14px;
+  background: white;
+  transition: .15s;
+}
+
+.server.selected {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(18,183,106,.10);
+}
+
+.server-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.server-name {
+  font-weight: 800;
+}
+
+.server-stock {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.server-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.server-price {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.choose {
+  border: 0;
+  background: #eefbf4;
+  color: var(--primary-dark);
+  border-radius: 9px;
+  padding: 8px 11px;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.server.selected .choose {
+  background: var(--primary);
+  color: white;
+}
+
+.buy-area {
+  display: none;
+  margin-top: 14px;
+}
+
+.buy-price {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.buy-btn {
+  width: 100%;
+  border: 0;
+  background: var(--primary);
+  color: white;
+  padding: 14px;
+  border-radius: 13px;
+  font-weight: 900;
+}
+
+.buy-btn:disabled {
+  opacity: .6;
+}
+
+.order {
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 14px;
+  margin-top: 10px;
+}
+
+.order.current {
+  border-color: rgba(18,183,106,.35);
+}
+
+.order-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.order-number {
+  font-size: 17px;
+  font-weight: 900;
+  word-break: break-all;
+}
+
+.status {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #f2f4f7;
+  font-size: 10px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.status.waiting {
+  color: #b54708;
+  background: #fffaeb;
+}
+
+.status.received {
+  color: #027a48;
+  background: #ecfdf3;
+}
+
+.status.cancelled {
+  color: #667085;
+  background: #f2f4f7;
+}
+
+.order-meta {
+  margin-top: 9px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.otp {
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 13px;
+  background: #f8f9fc;
+  text-align: center;
+}
+
+.otp-label {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.otp-code {
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 5px;
+  margin-top: 4px;
+}
+
+.order-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.action {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: white;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.action.cancel {
+  color: var(--danger);
+}
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 25px 10px;
+  font-size: 13px;
+}
 
 .message {
-  display: none;
   position: fixed;
-
-  left: 50%;
-  bottom: 22px;
-
-  transform:
-    translateX(-50%)
-    translateY(30px);
-
-  width: calc(100% - 32px);
-  max-width: 700px;
-
-  z-index: 99999;
-
-  padding: 18px 54px 18px 20px;
-
-  border-radius: 18px;
-
-  font-size: 17px;
-  line-height: 1.45;
-  font-weight: 600;
-
-  box-shadow:
-    0 10px 35px
-    rgba(0,0,0,.22);
-
-  opacity: 0;
-  pointer-events: none;
-
-  transition:
-    opacity .25s ease,
-    transform .25s ease;
+  left: 15px;
+  right: 15px;
+  bottom: 18px;
+  z-index: 100;
+  max-width: 690px;
+  margin: auto;
+  padding: 14px;
+  border-radius: 13px;
+  background: #101828;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  display: none;
+  box-shadow: var(--shadow);
 }
 
 .message.show {
   display: block;
-  opacity: 1;
-  pointer-events: auto;
-
-  transform:
-    translateX(-50%)
-    translateY(0);
 }
 
-.message.error {
-  background: #ef4444;
-  color: white;
+.loading {
+  text-align: center;
+  color: var(--muted);
+  padding: 15px;
+  font-size: 12px;
 }
 
-.message.success {
-  background: #18795f;
-  color: white;
-}
-
-.message.info {
-  background: #1d4f91;
-  color: white;
-}
-
-.message.warning {
-  background: #ef4444;
-  color: white;
-}
-
-.message-icon {
-  display: inline-flex;
-
-  width: 26px;
-  height: 26px;
-
-  align-items: center;
-  justify-content: center;
-
-  margin-right: 10px;
-
-  border: 2px solid currentColor;
-  border-radius: 50%;
-
-  font-size: 17px;
-  font-weight: bold;
-  vertical-align: middle;
-}
-
-.message-close {
-  position: absolute;
-
-  right: 11px;
-  top: 50%;
-
-  transform: translateY(-50%);
-
-  width: 34px;
-  height: 34px;
-
-  border: none;
-  border-radius: 9px;
-
-  background: rgba(255,255,255,.14);
-  color: white;
-
-  font-size: 25px;
-  cursor: pointer;
-}
-
-
-/* ======================================
-   IMPORTANT VERIFICATION POPUP
-====================================== */
-
-.verification-overlay {
-  display: none;
-
+.modal-backdrop {
   position: fixed;
   inset: 0;
-
-  z-index: 100000;
-
-  background: rgba(17,24,39,.58);
-
+  z-index: 200;
+  background: rgba(16,24,40,.68);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 18px;
-
-  align-items: center;
-  justify-content: center;
 }
 
-.verification-overlay.show {
-  display: flex;
-}
-
-.verification-modal {
+.modal {
   width: 100%;
-  max-width: 640px;
-
-  max-height: calc(100vh - 36px);
-
+  max-width: 520px;
   background: white;
-
-  border-radius: 25px;
-
-  overflow: hidden;
-
-  box-shadow:
-    0 20px 60px
-    rgba(0,0,0,.28);
-}
-
-.verification-header {
-  min-height: 70px;
-
-  display: flex;
-  align-items: center;
-
-  padding: 16px 22px;
-
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.verification-header-icon {
-  font-size: 26px;
-  margin-right: 13px;
-}
-
-.verification-header h2 {
-  margin: 0;
-
-  font-size: 25px;
-
-  color: #111827;
-}
-
-.verification-close {
-  margin-left: auto;
-
-  width: 42px;
-  height: 42px;
-
-  border: none;
-
-  background: transparent;
-
-  color: #9ca3af;
-
-  font-size: 35px;
-
-  cursor: pointer;
-
-  line-height: 1;
-}
-
-.verification-content {
-  padding: 16px 22px 14px;
-}
-
-.verification-tips {
-  background: #f8f9fb;
-
-  border: 1px solid #e1e5eb;
-
   border-radius: 20px;
-
-  padding: 17px 19px;
-}
-
-.verification-tips h3 {
-  margin: 0 0 13px;
-
-  font-size: 20px;
-
-  color: #374151;
-}
-
-.tip-row {
-  display: flex;
-
-  gap: 11px;
-
-  margin-top: 11px;
-
-  color: #4b5563;
-
-  font-size: 16px;
-
-  line-height: 1.38;
-}
-
-.tip-icon {
-  flex-shrink: 0;
-
-  width: 27px;
-
-  font-size: 20px;
-
-  text-align: center;
-}
-
-.tip-row strong {
-  color: #374151;
-}
-
-.provider-tip {
-  margin-top: 14px;
-
-  background: #fffdf4;
-
-  border: 1px solid #f3e8b2;
-
-  border-radius: 18px;
-
-  padding: 15px 17px;
-
-  display: flex;
-
-  gap: 12px;
-
-  font-size: 16px;
-
-  line-height: 1.4;
-
-  color: #5b4a24;
-}
-
-.provider-tip-icon {
-  flex-shrink: 0;
-
-  font-size: 23px;
-}
-
-.verification-footer {
-  padding: 13px 22px 20px;
-
-  border-top: 1px solid #e5e7eb;
-}
-
-.proceed-button {
-  width: 100%;
-
-  border: none;
-
-  border-radius: 16px;
-
-  background: #101828;
-
-  color: white;
-
-  padding: 16px;
-
-  font-size: 18px;
-
-  font-weight: bold;
-
-  cursor: pointer;
-}
-
-
-/* ======================================
-   WALLET
-====================================== */
-
-.wallet-card {
-  background: white;
-  padding: 28px;
-  border-radius: 28px;
-  margin-bottom: 28px;
-
-  box-shadow:
-    0 4px 18px
-    rgba(0,0,0,.05);
-}
-
-.wallet-title {
-  font-size: 22px;
-  font-weight: bold;
-}
-
-.wallet-balance {
-  font-size: 42px;
-  font-weight: 900;
-  margin-top: 18px;
-}
-
-.wallet-fund-link {
-  display: inline-block;
-
-  margin-top: 18px;
-  padding: 13px 20px;
-
-  border-radius: 14px;
-
-  background: #101828;
-  color: white;
-
-  text-decoration: none;
-  font-weight: bold;
-}
-
-
-/* ======================================
-   MAIN CARD
-====================================== */
-
-.card {
-  background: white;
-
-  padding: 22px;
-
-  border-radius: 24px;
-
-  margin-bottom: 22px;
-
-  box-shadow:
-    0 4px 18px
-    rgba(0,0,0,.05);
-}
-
-.card h2 {
-  margin: 0 0 16px;
-  font-size: 21px;
-}
-
-
-/* ======================================
-   COUNTRY + SERVICE
-====================================== */
-
-.choice-row {
-  display: grid;
-
-  grid-template-columns: 1fr 1fr;
-
-  gap: 12px;
-}
-
-.choice-button {
-  width: 100%;
-
-  min-height: 72px;
-
-  border: 1px solid #dce1e8;
-  border-radius: 16px;
-
-  background: #fff;
-
-  padding: 12px 14px;
-
-  text-align: left;
-
-  cursor: pointer;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-
-  transition: .15s ease;
-}
-
-.choice-button:hover {
-  border-color: #101828;
-}
-
-.choice-label {
-  color: #6b7280;
-  font-size: 13px;
-  margin-bottom: 5px;
-}
-
-.choice-value {
-  color: #111827;
-  font-size: 16px;
-  font-weight: bold;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-
-/* ======================================
-   PROVIDERS
-====================================== */
-
-.provider-wrap {
-  display: none;
-  margin-top: 18px;
-}
-
-.provider-wrap.show {
-  display: block;
-}
-
-.provider-title {
-  margin: 0 0 10px;
-  font-size: 18px;
-}
-
-.operator-grid {
-  display: grid;
-
-  grid-template-columns:
-    repeat(auto-fit, minmax(145px, 1fr));
-
-  gap: 10px;
-}
-
-.operator-card {
-  border: 1px solid #d9dee6;
-
-  padding: 13px 14px;
-
-  border-radius: 15px;
-
-  cursor: pointer;
-  background: white;
-
-  transition: .15s ease;
-}
-
-.operator-card.selected {
-  border: 2px solid #101828;
-  background: #f8fafc;
-}
-
-.operator-name {
-  font-size: 15px;
-  font-weight: bold;
-}
-
-.operator-price {
-  margin-top: 6px;
-
-  font-size: 18px;
-  font-weight: 900;
-}
-
-.operator-stock {
-  margin-top: 5px;
-
-  color: #18795f;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-
-/* ======================================
-   BUY
-====================================== */
-
-.buy-button {
-  width: 100%;
-
-  border: none;
-
-  background: #18795f;
-  color: white;
-
-  padding: 15px;
-
-  border-radius: 15px;
-
-  font-size: 17px;
-  font-weight: bold;
-
-  cursor: pointer;
-
-  margin-top: 18px;
-}
-
-.buy-button:disabled {
-  opacity: .55;
-  cursor: not-allowed;
-}
-
-
-/* ======================================
-   CURRENT ORDER
-====================================== */
-
-.order-card {
-  display: none;
-
-  background: white;
-
-  padding: 24px;
-
-  border-radius: 28px;
-
-  margin-top: 22px;
-  margin-bottom: 22px;
-
-  border: 1px solid #e3e7ed;
-
-  box-shadow:
-    0 10px 30px
-    rgba(16,24,40,.08);
-}
-
-.order-card.show {
-  display: none;
-}
-
-.order-card h2 {
-  margin: 0 0 20px;
-  font-size: 22px;
-}
-
-.order-row {
-  padding: 13px 0;
-
-  border-bottom: 1px solid #edf0f3;
-
-  font-size: 15px;
-
-  display: flex;
-  justify-content: space-between;
-  gap: 15px;
-}
-
-.order-row:last-of-type {
-  border-bottom: none;
-}
-
-.order-row span {
-  color: #6b7280;
-}
-
-.order-row strong {
-  text-align: right;
-  word-break: break-word;
-  color: #111827;
-}
-
-
-/* CURRENT NUMBER */
-
-#orderNumber {
-  font-size: 18px;
-  font-weight: 900;
-}
-
-
-/* CURRENT OTP */
-
-.otp {
-  font-size: 28px;
-
-  font-weight: 900;
-
-  text-align: center;
-
-  padding: 20px 16px;
-
-  background: #f8fafc;
-
-  border: 1px dashed #cbd5e1;
-
-  border-radius: 18px;
-
-  margin-top: 18px;
-
-  min-height: 66px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  letter-spacing: 2px;
-}
-
-.action-row {
-  display: grid;
-
-  grid-template-columns: 1fr 1fr;
-
-  gap: 10px;
-
-  margin-top: 16px;
-}
-
-.action-button {
-  border: none;
-
-  min-height: 50px;
-
-  padding: 13px;
-
-  border-radius: 15px;
-
-  font-weight: bold;
-  cursor: pointer;
-
-  font-size: 16px;
-}
-
-.check-button {
-  background: #101828;
-  color: white;
-}
-
-.cancel-button {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.done-button {
-  width: 100%;
-
-  margin-top: 16px;
-
-  min-height: 50px;
-
-  border: none;
-
-  border-radius: 15px;
-
-  background: #18795f;
-
-  color: white;
-
-  font-size: 16px;
-
-  font-weight: bold;
-
-  cursor: pointer;
-}
-
-
-/* ======================================
-   SAVED ORDERS SECTION
-====================================== */
-
-.saved-orders-section {
-  display: none;
-
-  background: transparent;
-
-  padding: 0;
-
-  border-radius: 0;
-
-  margin-bottom: 22px;
-}
-
-.saved-orders-section.show {
-  display: block;
-}
-
-.saved-orders-title {
-  margin: 0 0 14px;
-
-  font-size: 22px;
-  font-weight: 900;
-
-  color: #111827;
-}
-
-
-/* ======================================
-   SAVED ORDER CARD
-====================================== */
-
-.saved-order {
-  background: white;
-
-  border: 1px solid #e2e6ec;
-
-  border-radius: 26px;
-
   padding: 20px;
-
-  margin-bottom: 15px;
-
-  box-shadow:
-    0 8px 25px
-    rgba(16,24,40,.07);
-
-  overflow: hidden;
+  max-height: 88vh;
+  overflow-y: auto;
 }
 
-.saved-order:last-child {
-  margin-bottom: 0;
-}
-
-
-/* HEADER */
-
-.saved-order-top {
+.modal-head {
   display: flex;
-
   justify-content: space-between;
-
   align-items: center;
-
-  gap: 12px;
-
-  margin-bottom: 16px;
 }
 
-.saved-order-service {
+.modal-title {
   font-size: 19px;
   font-weight: 900;
-
-  color: #111827;
-
-  min-width: 0;
-
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.saved-order-status {
-  flex-shrink: 0;
-
-  font-size: 12px;
-
-  font-weight: 900;
-
-  padding: 7px 11px;
-
-  border-radius: 999px;
-
-  white-space: nowrap;
+.close {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: #f2f4f7;
+  border-radius: 10px;
+  font-size: 18px;
 }
 
-.status-pending {
-  color: #92400e;
-  background: #fef3c7;
+.notice {
+  margin-top: 14px;
 }
 
-.status-completed {
-  color: #166534;
-  background: #dcfce7;
+.notice-item {
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  margin-bottom: 9px;
 }
 
-.status-cancelled {
-  color: #991b1b;
-  background: #fee2e2;
-}
-
-.status-info {
-  color: #1e40af;
-  background: #dbeafe;
-}
-
-
-/* NUMBER AREA */
-
-.saved-order-number-box {
-  background: #f8fafc;
-
-  border: 1px solid #e4e8ee;
-
-  border-radius: 20px;
-
-  padding: 17px 15px;
-
-  text-align: center;
-
-  margin-bottom: 15px;
-}
-
-.saved-order-number-label {
-  font-size: 11px;
-
-  font-weight: 800;
-
-  letter-spacing: 1px;
-
-  color: #6b7280;
-
-  text-transform: uppercase;
-
-  margin-bottom: 7px;
-}
-
-.saved-order-number {
-  font-size: 25px;
-
-  font-weight: 900;
-
-  color: #111827;
-
-  word-break: break-word;
-
-  line-height: 1.25;
-}
-
-
-/* DETAILS */
-
-.saved-order-details {
-  background: #fff;
-
-  border-top: 1px solid #edf0f3;
-
-  border-bottom: 1px solid #edf0f3;
-
-  padding: 4px 0;
-
-  font-size: 14px;
-
-  color: #6b7280;
-}
-
-.saved-order-details div {
-  display: flex;
-
-  justify-content: space-between;
-
-  align-items: flex-start;
-
-  gap: 15px;
-
-  padding: 10px 0;
-}
-
-.saved-order-details div + div {
-  border-top: 1px solid #f0f2f5;
-}
-
-.saved-order-details strong {
-  color: #111827;
-
-  text-align: right;
-
-  word-break: break-word;
-
-  font-weight: 800;
-}
-
-
-/* CODE AREA */
-
-.saved-order-code-box {
-  margin-top: 15px;
-
-  border-radius: 19px;
-
-  padding: 17px;
-
-  text-align: center;
-
-  background: #f8fafc;
-
-  border: 1px dashed #cbd5e1;
-}
-
-.saved-order-code-label {
-  font-size: 11px;
-
-  font-weight: 900;
-
-  color: #6b7280;
-
-  letter-spacing: 1px;
-
-  text-transform: uppercase;
-
-  margin-bottom: 7px;
-}
-
-.saved-order-code {
-  font-size: 28px;
-
-  font-weight: 900;
-
-  letter-spacing: 3px;
-
-  color: #111827;
-
-  word-break: break-word;
-}
-
-.saved-order-waiting {
-  font-size: 16px;
-
-  font-weight: 700;
-
-  color: #64748b;
-
-  letter-spacing: 0;
-}
-
-
-/* COMPLETED CODE */
-
-.saved-order.completed-order
-.saved-order-code-box {
-  background: #ecfdf5;
-
-  border-color: #a7f3d0;
-}
-
-.saved-order.completed-order
-.saved-order-code {
-  color: #166534;
-}
-
-
-/* CANCELLED MESSAGE */
-
-.saved-order-cancelled-box {
-  margin-top: 15px;
-
-  padding: 15px;
-
-  border-radius: 17px;
-
-  background: #fff7f7;
-
-  border: 1px solid #fecaca;
-
-  color: #991b1b;
-
-  text-align: center;
-
-  font-size: 14px;
-
-  font-weight: 800;
-
-  line-height: 1.45;
-}
-
-
-/* ACTIONS */
-
-.saved-order-actions {
-  display: grid;
-
-  grid-template-columns: 1fr 1fr;
-
-  gap: 10px;
-
-  margin-top: 15px;
-}
-
-.saved-order-button {
-  border: none;
-
-  min-height: 50px;
-
-  padding: 12px;
-
-  border-radius: 15px;
-
-  font-weight: 900;
-
-  cursor: pointer;
-
-  font-size: 15px;
-}
-
-.saved-check-button {
-  background: #101828;
-  color: white;
-}
-
-.saved-cancel-button {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.saved-done-button {
-  width: 100%;
-
-  margin-top: 15px;
-
-  min-height: 50px;
-
-  border: none;
-
-  border-radius: 15px;
-
-  background: #18795f;
-
-  color: white;
-
-  font-size: 15px;
-
-  font-weight: 900;
-
-  cursor: pointer;
-}
-
-
-/* DATE */
-
-.saved-order-date {
-  margin-top: 13px;
-
-  color: #9ca3af;
-
-  font-size: 12px;
-
-  text-align: center;
-}
-
-
-/* ======================================
-   FULL SCREEN PICKER
-====================================== */
-
-.picker {
-  display: none;
-
-  position: fixed;
-  inset: 0;
-
-  z-index: 9999;
-
-  background: #f4f5f9;
-
-  flex-direction: column;
-}
-
-.picker.show {
-  display: flex;
-}
-
-.picker-header {
-  height: 78px;
-
-  background: #101828;
-  color: white;
-
-  display: flex;
-  align-items: center;
-
-  padding: 0 18px;
-
-  gap: 15px;
-}
-
-.picker-back {
-  width: 46px;
-  height: 46px;
-
-  border: none;
-  border-radius: 14px;
-
-  background: #23324a;
-  color: white;
-
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.picker-title {
-  font-size: 21px;
-  font-weight: bold;
-}
-
-.picker-content {
-  flex: 1;
-
-  overflow-y: auto;
-
-  padding: 20px;
-}
-
-.search-box {
-  width: 100%;
-
-  padding: 16px;
-
-  border: 1px solid #d7dbe2;
-
-  border-radius: 16px;
-
-  font-size: 16px;
-
-  outline: none;
-
-  margin-bottom: 10px;
-
-  background: white;
-}
-
-.search-box:focus {
-  border-color: #111827;
-}
-
-.results {
+.notice-item strong {
   display: block;
+  font-size: 13px;
+  margin-bottom: 4px;
 }
 
-.result-item {
-  background: white;
-
-  border: 1px solid #e6e6e6;
-
-  padding: 15px 16px;
-
-  border-radius: 15px;
-
-  margin-top: 9px;
-
-  font-size: 16px;
-
-  font-weight: bold;
-
-  cursor: pointer;
+.notice-item span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
 }
 
-.result-item small {
-  display: block;
-
-  margin-top: 4px;
-
-  color: #777;
-
-  font-weight: normal;
+.continue {
+  width: 100%;
+  border: 0;
+  background: var(--primary);
+  color: white;
+  padding: 13px;
+  border-radius: 12px;
+  font-weight: 900;
+  margin-top: 7px;
 }
 
-
-/* ======================================
-   MOBILE
-====================================== */
-
-@media (max-width: 600px) {
-
-  header {
-    height: 123px;
-  }
-
-  header h1 {
-    font-size: 28px;
-  }
-
-  main {
-    padding: 30px 24px 110px;
-  }
-
-  .banner {
-    padding: 38px;
-    border-radius: 32px;
-  }
-
-  .banner h2 {
-    font-size: 31px;
-  }
-
-  .banner p {
-    font-size: 21px;
-  }
-
-  .wallet-card {
-    padding: 28px;
-  }
-
-  .wallet-balance {
-    font-size: 40px;
-  }
-
-  .choice-row {
-    grid-template-columns: 1fr;
-  }
-
-  .operator-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .message {
-    bottom: 16px;
-    width: calc(100% - 24px);
-    font-size: 16px;
-  }
-
-  .header-wallet a {
-    padding: 14px 14px;
-    font-size: 15px;
-  }
-
-  .saved-order {
-    padding: 17px;
-    border-radius: 23px;
-  }
-
-  .saved-order-service {
-    font-size: 17px;
-  }
-
-  .saved-order-number {
-    font-size: 22px;
-  }
-
-  .saved-order-details div {
-    display: block;
-  }
-
-  .saved-order-details strong {
-    display: block;
-
-    text-align: left;
-
-    margin-top: 3px;
-  }
-
-  .saved-order-actions {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .action-row {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .verification-overlay {
-    padding: 10px;
-  }
-
-  .verification-modal {
-    max-height: calc(100vh - 20px);
-    border-radius: 22px;
-  }
-
-  .verification-header {
-    min-height: 60px;
-    padding: 10px 16px;
-  }
-
-  .verification-header h2 {
-    font-size: 20px;
-  }
-
-  .verification-header-icon {
-    font-size: 22px;
-    margin-right: 9px;
-  }
-
-  .verification-close {
-    width: 34px;
-    height: 34px;
-    font-size: 29px;
-  }
-
-  .verification-content {
-    padding: 11px 16px 10px;
-  }
-
-  .verification-tips {
-    padding: 13px 14px;
-    border-radius: 17px;
-  }
-
-  .verification-tips h3 {
-    font-size: 17px;
-    margin-bottom: 8px;
-  }
-
-  .tip-row {
-    gap: 8px;
-    margin-top: 8px;
-    font-size: 14px;
-    line-height: 1.32;
-  }
-
-  .tip-icon {
-    width: 23px;
-    font-size: 17px;
-  }
-
-  .provider-tip {
-    margin-top: 10px;
-    padding: 11px 13px;
-    border-radius: 15px;
-    gap: 9px;
-    font-size: 14px;
-    line-height: 1.32;
-  }
-
-  .provider-tip-icon {
-    font-size: 20px;
-  }
-
-  .verification-footer {
-    padding: 10px 16px 14px;
-  }
-
-  .proceed-button {
-    padding: 13px;
-    font-size: 16px;
-    border-radius: 14px;
-  }
-
+.hidden {
+  display: none !important;
 }
 
+@media (min-width: 600px) {
+  .server-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
 </style>
 </head>
 
 <body>
 
+<div id="verificationModal" class="modal-backdrop">
+  <div class="modal">
 
-<!-- ======================================
-     IMPORTANT VERIFICATION POPUP
-====================================== -->
-
-<div
-  id="verificationOverlay"
-  class="verification-overlay"
->
-
-  <div class="verification-modal">
-
-    <div class="verification-header">
-
-      <div class="verification-header-icon">
-        📢
-      </div>
-
-      <h2>
-        Important Verification Tips
-      </h2>
-
-      <button
-        type="button"
-        class="verification-close"
-        onclick="closeVerificationTips()"
-      >
-        ×
-      </button>
-
+    <div class="modal-head">
+      <div class="modal-title">Important Verification</div>
+      <button class="close" onclick="closeVerification()">×</button>
     </div>
 
+    <div class="notice">
 
-    <div class="verification-content">
-
-      <div class="verification-tips">
-
-        <h3>
-          🛡️ Best Practices for Success
-        </h3>
-
-
-        <div class="tip-row">
-
-          <div class="tip-icon">🔄</div>
-
-          <div>
-            <strong>Fresh Installation:</strong>
-            Uninstall the app and clear cache before requesting a new number.
-          </div>
-
-        </div>
-
-
-        <div class="tip-row">
-
-          <div class="tip-icon">📱</div>
-
-          <div>
-            <strong>Official Apps Only:</strong>
-            Use the standard app version. Modified versions often fail verification.
-          </div>
-
-        </div>
-
-
-        <div class="tip-row">
-
-          <div class="tip-icon">🌐</div>
-
-          <div>
-            <strong>Location Match:</strong>
-            Ensure your device timezone and VPN location match the purchased number's country.
-          </div>
-
-        </div>
-
-
-        <div class="tip-row">
-
-          <div class="tip-icon">📶</div>
-
-          <div>
-            <strong>Stay Connected:</strong>
-            Keep the app open and maintain a stable connection while waiting.
-          </div>
-
-        </div>
-
+      <div class="notice-item">
+        <strong>Fresh Installation</strong>
+        <span>
+          Uninstall the app and clear its cache before requesting a new number.
+        </span>
       </div>
 
+      <div class="notice-item">
+        <strong>Official Apps Only</strong>
+        <span>
+          Use the standard official app version. Modified versions can often fail verification.
+        </span>
+      </div>
 
-      <div class="provider-tip">
+      <div class="notice-item">
+        <strong>Location Match</strong>
+        <span>
+          Keep your device settings and connection consistent with the country selected while waiting.
+        </span>
+      </div>
 
-        <div class="provider-tip-icon">
-          💡
-        </div>
+      <div class="notice-item">
+        <strong>Stay Connected</strong>
+        <span>
+          Keep the app open and maintain a stable internet connection while waiting for the code.
+        </span>
+      </div>
 
-        <div>
-
-          <strong>
-            If a provider does not receive a code, try another provider with a better success rate.
-          </strong>
-
-          Each server shows its own expiry time. Cancel early to receive a full refund if no code arrives.
-
-        </div>
-
+      <div class="notice-item">
+        <strong>Provider Tip</strong>
+        <span>
+          If a server does not receive a code, please try another server.
+          Each server shows its availability/expiry time.
+          Cancel when cancellation is available to receive your refund.
+        </span>
       </div>
 
     </div>
 
+    <button class="continue" onclick="closeVerification()">
+      Continue
+    </button>
 
-    <div class="verification-footer">
+  </div>
+</div>
 
-      <button
-        type="button"
-        class="proceed-button"
-        onclick="closeVerificationTips()"
-      >
-        I Understand, Proceed
-      </button>
+<header class="header">
+  <div class="header-inner">
 
+    <button class="back" onclick="history.back()">‹</button>
+
+    <div class="title">Virtual Numbers</div>
+
+    <div class="wallet" id="walletBalance">
+      ₦0
     </div>
 
   </div>
-
-</div>
-
-
-<header>
-
-<button
-  class="back-button"
-  onclick="history.back()"
->
-  ←
-</button>
-
-<h1>Virtual Numbers</h1>
-
-<div class="header-wallet">
-
-  <a href="wallet.html">
-    Fund Wallet
-  </a>
-
-</div>
-
 </header>
 
+<main class="container">
 
-<main>
-
-
-<section class="banner">
-
-<h2>Virtual Numbers</h2>
-
-<p>
-  Choose a country and service,
-  select an available provider,
-  and get your number instantly.
-</p>
-
-</section>
-
-
-<div
-  id="message"
-  class="message"
-  role="alert"
->
-
-<span
-  id="messageIcon"
-  class="message-icon"
->
-  !
-</span>
-
-<span id="messageText"></span>
-
-<button
-  type="button"
-  class="message-close"
-  onclick="hideMessage()"
->
-  ×
-</button>
-
-</div>
-
-
-<section class="wallet-card">
-
-<div class="wallet-title">
-  💰 Wallet Balance
-</div>
-
-<div
-  class="wallet-balance"
-  id="walletBalance"
->
-  ₦0
-</div>
-
-<a
-  href="wallet.html"
-  class="wallet-fund-link"
->
-  Fund Wallet
-</a>
-
-</section>
-
-
-<!-- ======================================
-     COUNTRY + SERVICE
-====================================== -->
-
-<section class="card">
-
-<h2>Select Number Details</h2>
-
-<div class="choice-row">
-
-<button
-  class="choice-button"
-  onclick="openCountryPicker()"
->
-
-<span class="choice-label">
-  COUNTRY
-</span>
-
-<span
-  class="choice-value"
-  id="countryValue"
->
-  Choose country
-</span>
-
-</button>
-
-
-<button
-  class="choice-button"
-  onclick="openServicePicker()"
->
-
-<span class="choice-label">
-  SERVICE
-</span>
-
-<span
-  class="choice-value"
-  id="serviceValue"
->
-  Choose service
-</span>
-
-</button>
-
-</div>
-
-
-<div
-  id="providerWrap"
-  class="provider-wrap"
->
-
-<h3 class="provider-title">
-  Choose Provider
-</h3>
-
-<div
-  id="operatorGrid"
-  class="operator-grid"
-></div>
-
-<button
-  id="buyButton"
-  class="buy-button"
-  onclick="buyNumber()"
-  disabled
->
-  🛒 Buy Number
-</button>
-
-</div>
-
-</section>
-
-
-<!-- ======================================
-     SAVED ORDERS
-     DIRECTLY UNDER SELECT DETAILS
-====================================== -->
-
-<section
-  id="savedOrdersSection"
-  class="saved-orders-section"
->
-
-  <h2 class="saved-orders-title">
-    Your Virtual Number Orders
-  </h2>
-
-  <div id="savedOrdersList"></div>
-
-</section>
-
-
-<!-- ======================================
-     CURRENT ORDER
-====================================== -->
-
-<section
-  id="orderCard"
-  class="order-card"
->
-
-  <h2>Your Number</h2>
-
-  <div class="order-row">
-    <span>Service:</span>
-    <strong id="orderService"></strong>
+  <div class="tabs">
+    <button class="tab active" data-version="V1">V1</button>
+    <button class="tab" data-version="V2">V2</button>
+    <button class="tab" data-version="V3">V3</button>
   </div>
 
-  <div class="order-row">
-    <span>Country:</span>
-    <strong id="orderCountry"></strong>
-  </div>
+  <!-- COUNTRY -->
 
-  <div class="order-row">
-    <span>Provider:</span>
-    <strong id="orderOperator"></strong>
-  </div>
+  <section class="card">
 
-  <div class="order-row">
-    <span>Number:</span>
-    <strong id="orderNumber"></strong>
-  </div>
+    <div class="section-title">
+      Country
+    </div>
 
-  <div
-    id="otpBox"
-    class="otp"
+    <div class="section-sub">
+      Select the country for your virtual number.
+    </div>
+
+    <div class="selector" id="countrySelector">
+
+      <input
+        id="countrySearch"
+        class="selector-input"
+        placeholder="Search country..."
+        autocomplete="off"
+      >
+
+      <span class="selector-arrow">⌄</span>
+
+      <div
+        id="countryDropdown"
+        class="dropdown"
+      ></div>
+
+    </div>
+
+  </section>
+
+  <!-- SERVICE -->
+
+  <section class="card">
+
+    <div class="section-title">
+      Service
+    </div>
+
+    <div class="section-sub">
+      Select the service you want to verify.
+    </div>
+
+    <div
+      class="selector disabled"
+      id="serviceSelector"
+    >
+
+      <input
+        id="serviceSearch"
+        class="selector-input"
+        placeholder="Select country first..."
+        autocomplete="off"
+      >
+
+      <span class="selector-arrow">⌄</span>
+
+      <div
+        id="serviceDropdown"
+        class="dropdown"
+      ></div>
+
+    </div>
+
+  </section>
+
+  <!-- SERVERS -->
+
+  <section
+    id="serverSection"
+    class="card hidden"
   >
-    Waiting for SMS...
-  </div>
 
-  <div class="action-row">
+    <div class="section-title">
+      Server / Operator
+    </div>
 
-    <button
-      class="action-button check-button"
-      onclick="checkOrder()"
+    <div class="section-sub">
+      Choose an available server.
+    </div>
+
+    <div
+      id="serverGrid"
+      class="server-grid"
+    ></div>
+
+    <div
+      id="buyArea"
+      class="buy-area"
     >
-      Get Code
-    </button>
 
-    <button
-      class="action-button cancel-button"
-      onclick="cancelOrder()"
-    >
-      Cancel
-    </button>
+      <div
+        id="buyPrice"
+        class="buy-price"
+      >
+        ₦0
+      </div>
 
-  </div>
+      <button
+        id="buyButton"
+        class="buy-btn"
+      >
+        Buy Number
+      </button>
 
-</section>
+    </div>
 
+  </section>
 
-<!-- ======================================
-     COUNTRY PICKER
-====================================== -->
+  <!-- CURRENT ORDER -->
 
-<div
-  id="countryPicker"
-  class="picker"
->
+  <section
+    id="currentSection"
+    class="card hidden"
+  >
 
-<div class="picker-header">
+    <div class="section-title">
+      Current / New Order
+    </div>
 
-<button
-  class="picker-back"
-  onclick="closeCountryPicker()"
->
-  ←
-</button>
+    <div id="currentOrder"></div>
 
-<div class="picker-title">
-  Choose Country
-</div>
+  </section>
 
-</div>
+  <!-- PREVIOUS ORDERS -->
 
-<div class="picker-content">
+  <section class="card">
 
-<input
-  id="countrySearch"
-  class="search-box"
-  type="search"
-  placeholder="Search country..."
-  autocomplete="off"
->
+    <div class="section-title">
+      Previous Orders
+    </div>
 
-<div
-  id="countryResults"
-  class="results"
-></div>
+    <div id="previousOrders">
+      <div class="loading">
+        Loading orders...
+      </div>
+    </div>
 
-</div>
+  </section>
 
-</div>
+</main>
 
-
-<!-- ======================================
-     SERVICE PICKER
-====================================== -->
-
-<div
-  id="servicePicker"
-  class="picker"
->
-
-<div class="picker-header">
-
-<button
-  class="picker-back"
-  onclick="closeServicePicker()"
->
-  ←
-</button>
-
-<div class="picker-title">
-  Choose Service
-</div>
-
-</div>
-
-<div class="picker-content">
-
-<input
-  id="serviceSearch"
-  class="search-box"
-  type="search"
-  placeholder="Search service..."
-  autocomplete="off"
->
-
-<div
-  id="serviceResults"
-  class="results"
-></div>
-
-</div>
-
-</div>
-
+<div id="message" class="message"></div>
 
 <script>
-
-/* =====================================================
-   SUPABASE
-===================================================== */
-
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
 
@@ -1943,3436 +733,1120 @@ const SUPABASE_KEY =
 const supabaseClient =
   window.supabase.createClient(
     SUPABASE_URL,
-    SUPABASE_KEY,
-    {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true
-      }
-    }
+    SUPABASE_KEY
   );
 
-
-/* =====================================================
-   EDGE FUNCTION
-===================================================== */
-
-const API_URL =
+const FUNCTION_URL =
   `${SUPABASE_URL}/functions/v1/numpool-api`;
 
-
-/* =====================================================
-   STATE
-===================================================== */
+let version = "V1";
 
 let countries = [];
-let selectedCountry = null;
-
 let services = [];
+let servers = [];
+let orders = [];
+
+let selectedCountry = null;
 let selectedService = null;
+let selectedServer = null;
 
-let selectedOperator = null;
+let polling = null;
 
-let selectedOrderId = null;
+const countrySearch =
+  document.getElementById("countrySearch");
 
-let orderCheckTimer = null;
+const countryDropdown =
+  document.getElementById("countryDropdown");
 
-let currentWalletBalance = 0;
+const serviceSearch =
+  document.getElementById("serviceSearch");
 
-let savedVirtualOrders = [];
+const serviceDropdown =
+  document.getElementById("serviceDropdown");
 
-let currentUserId = null;
+const serviceSelector =
+  document.getElementById("serviceSelector");
 
+const serverSection =
+  document.getElementById("serverSection");
 
-/* =====================================================
-   VERIFICATION POPUP
-===================================================== */
+const serverGrid =
+  document.getElementById("serverGrid");
 
-function showVerificationTips() {
+const buyArea =
+  document.getElementById("buyArea");
 
-  const overlay =
-    document.getElementById(
-      "verificationOverlay"
-    );
+const buyPrice =
+  document.getElementById("buyPrice");
 
-  if (overlay) {
-    overlay.classList.add("show");
-  }
+const buyButton =
+  document.getElementById("buyButton");
 
+const currentSection =
+  document.getElementById("currentSection");
+
+const currentOrder =
+  document.getElementById("currentOrder");
+
+const previousOrders =
+  document.getElementById("previousOrders");
+
+const walletBalance =
+  document.getElementById("walletBalance");
+
+function naira(value) {
+  return `₦${Math.ceil(Number(value) || 0).toLocaleString()}`;
 }
 
-
-function closeVerificationTips() {
-
-  const overlay =
-    document.getElementById(
-      "verificationOverlay"
-    );
-
-  if (overlay) {
-    overlay.classList.remove("show");
-  }
-
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
-
-/* =====================================================
-   LOCAL ORDER STORAGE
-===================================================== */
-
-function getSavedOrdersKey() {
-
-  if (!currentUserId) {
-    return null;
-  }
-
-  return `delight_vendor_virtual_orders_${currentUserId}`;
-
-}
-
-
-function loadSavedVirtualOrders() {
-
-  try {
-
-    const key =
-      getSavedOrdersKey();
-
-    if (!key) {
-
-      savedVirtualOrders = [];
-
-      renderSavedVirtualOrders();
-
-      return;
-
-    }
-
-    const saved =
-      localStorage.getItem(key);
-
-    if (!saved) {
-
-      savedVirtualOrders = [];
-
-    }
-
-    else {
-
-      const parsed =
-        JSON.parse(saved);
-
-      savedVirtualOrders =
-        Array.isArray(parsed)
-          ? parsed
-          : [];
-
-    }
-
-  }
-
-  catch (err) {
-
-    console.error(
-      "Saved orders:",
-      err
-    );
-
-    savedVirtualOrders = [];
-
-  }
-
-  renderSavedVirtualOrders();
-
-}
-
-
-/* =====================================================
-   SAVE LOCAL ORDERS
-===================================================== */
-
-function saveVirtualOrders() {
-
-  try {
-
-    const key =
-      getSavedOrdersKey();
-
-    if (!key) return;
-
-    localStorage.setItem(
-      key,
-      JSON.stringify(savedVirtualOrders)
-    );
-
-  }
-
-  catch (err) {
-
-    console.error(
-      "Save orders:",
-      err
-    );
-
-  }
-
-  renderSavedVirtualOrders();
-
-}
-
-
-/* =====================================================
-   SAVE / UPDATE ONE ORDER
-===================================================== */
-
-function saveVirtualOrder(order) {
-
-  if (
-    !order ||
-    order.id === undefined ||
-    order.id === null
-  ) {
-    return;
-  }
-
-  const orderId =
-    String(order.id);
-
-  const index =
-    savedVirtualOrders.findIndex(
-      item =>
-        String(item.id) === orderId
-    );
-
-  if (index >= 0) {
-
-    savedVirtualOrders[index] = {
-      ...savedVirtualOrders[index],
-      ...order
-    };
-
-  }
-
-  else {
-
-    savedVirtualOrders.unshift(order);
-
-  }
-
-  savedVirtualOrders.sort(
-    (a, b) =>
-      new Date(
-        b.created_at || 0
-      ) -
-      new Date(
-        a.created_at || 0
-      )
-  );
-
-  saveVirtualOrders();
-
-}
-
-
-function getSavedVirtualOrder(orderId) {
-
-  return savedVirtualOrders.find(
-    order =>
-      String(order.id) ===
-      String(orderId)
-  );
-
-}
-
-
-/* =====================================================
-   NORMALIZE STATUS
-===================================================== */
-
-function normalizeOrderStatus(status) {
-
-  return String(
-    status || "PENDING"
-  )
-    .trim()
-    .toUpperCase();
-
-}
-
-
-/* =====================================================
-   STATUS DISPLAY
-===================================================== */
-
-function getOrderStatusInfo(status) {
-
-  const normalized =
-    normalizeOrderStatus(status);
-
-
-  if (
-    normalized === "RECEIVED" ||
-    normalized === "FINISHED" ||
-    normalized === "COMPLETED"
-  ) {
-
-    return {
-      text: "Completed",
-      className: "status-completed"
-    };
-
-  }
-
-
-  if (
-    normalized === "CANCELED" ||
-    normalized === "CANCELLED" ||
-    normalized === "TIMEOUT" ||
-    normalized === "BANNED"
-  ) {
-
-    return {
-
-      text:
-        normalized === "TIMEOUT"
-          ? "Timed Out"
-          : normalized === "BANNED"
-            ? "Banned"
-            : "Cancelled",
-
-      className:
-        "status-cancelled"
-
-    };
-
-  }
-
-
-  return {
-
-    text: "Pending",
-
-    className:
-      "status-pending"
-
-  };
-
-}
-
-
-/* =====================================================
-   ACTIVE ORDER CAN ALWAYS BE CANCELLED
-===================================================== */
-
-function canCancelSavedOrder(status) {
-
-  const normalized =
-    normalizeOrderStatus(status);
-
-  const finishedStatuses = [
-
-    "RECEIVED",
-    "FINISHED",
-    "COMPLETED",
-
-    "CANCELED",
-    "CANCELLED",
-    "TIMEOUT",
-    "BANNED"
-
-  ];
-
-  return !finishedStatuses.includes(
-    normalized
-  );
-
-}
-
-
-/* =====================================================
-   LOAD ORDERS FROM DATABASE
-===================================================== */
-
-async function loadOrdersFromDatabase() {
-
-  if (!currentUserId) {
-    return;
-  }
-
-
-  try {
-
-    const {
-      data: orders,
-      error
-    } =
-      await supabaseClient
-        .from("virtual_number_orders")
-        .select("*")
-        .eq(
-          "user_id",
-          currentUserId
-        )
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
-        );
-
-
-    if (error) {
-
-      console.error(
-        "DATABASE ORDERS:",
-        error
-      );
-
-      return;
-
-    }
-
-
-    if (!Array.isArray(orders)) {
-      return;
-    }
-
-
-    orders.forEach(
-      dbOrder => {
-
-        const existingIndex =
-          savedVirtualOrders.findIndex(
-            localOrder =>
-              String(
-                localOrder.id
-              ) ===
-              String(
-                dbOrder.id
-              )
-          );
-
-
-        if (
-          existingIndex >= 0
-        ) {
-
-          savedVirtualOrders[
-            existingIndex
-          ] = {
-
-            ...savedVirtualOrders[
-              existingIndex
-            ],
-
-            ...dbOrder
-
-          };
-
-        }
-
-        else {
-
-          savedVirtualOrders.push(
-            dbOrder
-          );
-
-        }
-
-      }
-    );
-
-
-    /*
-      REMOVE ANY DUPLICATES BY ORDER ID
-    */
-
-    const uniqueOrders = new Map();
-
-    savedVirtualOrders.forEach(
-      order => {
-
-        if (
-          order &&
-          order.id !== undefined &&
-          order.id !== null
-        ) {
-
-          uniqueOrders.set(
-            String(order.id),
-            order
-          );
-
-        }
-
-      }
-    );
-
-
-    savedVirtualOrders =
-      Array.from(
-        uniqueOrders.values()
-      );
-
-
-    /*
-      NEWEST FIRST
-    */
-
-    savedVirtualOrders.sort(
-      (a, b) =>
-        new Date(
-          b.created_at || 0
-        ) -
-        new Date(
-          a.created_at || 0
-        )
-    );
-
-
-    const key =
-      getSavedOrdersKey();
-
-
-    if (key) {
-
-      localStorage.setItem(
-        key,
-        JSON.stringify(
-          savedVirtualOrders
-        )
-      );
-
-    }
-
-
-    renderSavedVirtualOrders();
-
-  }
-
-  catch (err) {
-
-    console.error(
-      "LOAD DATABASE ORDERS:",
-      err
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   RENDER SAVED ORDERS
-===================================================== */
-
-function renderSavedVirtualOrders() {
-
-  const section =
-    document.getElementById(
-      "savedOrdersSection"
-    );
-
-  const list =
-    document.getElementById(
-      "savedOrdersList"
-    );
-
-
-  if (!section || !list) {
-    return;
-  }
-
-
-  if (!savedVirtualOrders.length) {
-
-    section.classList.remove(
-      "show"
-    );
-
-    list.innerHTML = "";
-
-    return;
-
-  }
-
-
-  /*
-    DEDUPLICATE BEFORE DISPLAY
-  */
-
-  const uniqueOrders = new Map();
-
-  savedVirtualOrders.forEach(
-    order => {
-
-      if (
-        order &&
-        order.id !== undefined &&
-        order.id !== null
-      ) {
-
-        uniqueOrders.set(
-          String(order.id),
-          order
-        );
-
-      }
-
-    }
-  );
-
-
-  savedVirtualOrders =
-    Array.from(
-      uniqueOrders.values()
-    );
-
-
-  /*
-    NEWEST ORDER FIRST
-  */
-
-  savedVirtualOrders.sort(
-    (a, b) =>
-      new Date(
-        b.created_at || 0
-      ) -
-      new Date(
-        a.created_at || 0
-      )
-  );
-
-
-  section.classList.add(
-    "show"
-  );
-
-
-  list.innerHTML =
-    savedVirtualOrders
-      .map(order => {
-
-        const status =
-          normalizeOrderStatus(
-            order.status
-          );
-
-
-        const statusInfo =
-          getOrderStatusInfo(
-            status
-          );
-
-
-        const service =
-          order.service_name ||
-          order.service ||
-          "Virtual Number";
-
-
-        const country =
-          order.country_name ||
-          order.country ||
-          "—";
-
-
-        const operator =
-          order.operator ||
-          order.provider ||
-          "—";
-
-
-        const number =
-          order.number ||
-          order.phone ||
-          "Waiting...";
-
-
-        const otp =
-          order.otp_code ||
-          order.code ||
-          "";
-
-
-        let createdText = "";
-
-
-        if (order.created_at) {
-
-          try {
-
-            createdText =
-              new Date(
-                order.created_at
-              ).toLocaleString(
-                "en-NG",
-                {
-                  dateStyle:
-                    "medium",
-
-                  timeStyle:
-                    "short"
-                }
-              );
-
-          }
-
-          catch {
-
-            createdText = "";
-
-          }
-
-        }
-
-
-        const completed =
-          status === "RECEIVED" ||
-          status === "FINISHED" ||
-          status === "COMPLETED";
-
-
-        const terminal =
-          status === "CANCELED" ||
-          status === "CANCELLED" ||
-          status === "TIMEOUT" ||
-          status === "BANNED";
-
-
-        const canCancel =
-          canCancelSavedOrder(
-            status
-          );
-
-
-        return `
-
-          <div
-            class="saved-order ${
-              completed
-                ? "completed-order"
-                : ""
-            }"
-            data-saved-order-id="${escapeHTML(order.id)}"
-          >
-
-            <div class="saved-order-top">
-
-              <div class="saved-order-service">
-                ${escapeHTML(service)}
-              </div>
-
-              <div
-                class="saved-order-status ${statusInfo.className}"
-              >
-                ${statusInfo.text}
-              </div>
-
-            </div>
-
-
-            <div class="saved-order-number-box">
-
-              <div class="saved-order-number-label">
-                Phone Number
-              </div>
-
-              <div class="saved-order-number">
-                ${escapeHTML(number)}
-              </div>
-
-            </div>
-
-
-            <div class="saved-order-details">
-
-              <div>
-
-                <span>
-                  Country
-                </span>
-
-                <strong>
-                  ${escapeHTML(country)}
-                </strong>
-
-              </div>
-
-
-              <div>
-
-                <span>
-                  Provider
-                </span>
-
-                <strong>
-                  ${escapeHTML(operator)}
-                </strong>
-
-              </div>
-
-            </div>
-
-
-            ${
-              completed
-                ? `
-
-                  <div class="saved-order-code-box">
-
-                    <div class="saved-order-code-label">
-                      Verification Code
-                    </div>
-
-                    <div class="saved-order-code">
-                      ${escapeHTML(
-                        otp || "Code received"
-                      )}
-                    </div>
-
-                  </div>
-
-
-                  <button
-                    type="button"
-                    class="saved-done-button"
-                    data-action="done"
-                    data-order-id="${escapeHTML(order.id)}"
-                  >
-                    ✓ Done
-                  </button>
-
-                `
-                : terminal
-                  ? `
-
-                    <div class="saved-order-cancelled-box">
-
-                      ${
-                        status === "TIMEOUT"
-                          ? "This number has timed out."
-                          : status === "BANNED"
-                            ? "This number was banned."
-                            : "This number has been cancelled."
-                      }
-
-                    </div>
-
-                  `
-                  : `
-
-                    <div class="saved-order-code-box">
-
-                      <div class="saved-order-code-label">
-                        Verification Code
-                      </div>
-
-                      <div class="saved-order-code saved-order-waiting">
-                        ⏳ Waiting for SMS...
-                      </div>
-
-                    </div>
-
-
-                    <div class="saved-order-actions">
-
-                      <button
-                        type="button"
-                        class="saved-order-button saved-check-button"
-                        data-action="check"
-                        data-order-id="${escapeHTML(order.id)}"
-                      >
-                        Get Code
-                      </button>
-
-
-                      <button
-                        type="button"
-                        class="saved-order-button saved-cancel-button"
-                        data-action="cancel"
-                        data-order-id="${escapeHTML(order.id)}"
-                      >
-                        Cancel
-                      </button>
-
-                    </div>
-
-                  `
-            }
-
-
-            ${
-              createdText
-                ? `
-                  <div class="saved-order-date">
-                    ${escapeHTML(createdText)}
-                  </div>
-                `
-                : ""
-            }
-
-          </div>
-
-        `;
-
-      })
-      .join("");
-
-
-  /*
-    CHECK BUTTONS
-  */
-
-  list
-    .querySelectorAll(
-      '[data-action="check"]'
-    )
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        async function() {
-
-          if (
-            this.disabled
-          ) {
-            return;
-          }
-
-          this.disabled = true;
-          this.textContent = "Checking...";
-
-          try {
-
-            await checkSavedVirtualOrder(
-              this.dataset.orderId
-            );
-
-          }
-
-          finally {
-
-            this.disabled = false;
-
-          }
-
-        }
-      );
-
-    });
-
-
-  /*
-    CANCEL BUTTONS
-  */
-
-  list
-    .querySelectorAll(
-      '[data-action="cancel"]'
-    )
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        async function() {
-
-          if (
-            this.disabled
-          ) {
-            return;
-          }
-
-          this.disabled = true;
-          this.textContent = "Cancelling...";
-
-          try {
-
-            await cancelSavedVirtualOrder(
-              this.dataset.orderId
-            );
-
-          }
-
-          finally {
-
-            this.disabled = false;
-
-          }
-
-        }
-      );
-
-    });
-
-
-  /*
-    DONE BUTTONS
-  */
-
-  list
-    .querySelectorAll(
-      '[data-action="done"]'
-    )
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        function() {
-
-          const orderId =
-            this.dataset.orderId;
-
-          selectedOrderId =
-            orderId;
-
-          const order =
-            getSavedVirtualOrder(
-              orderId
-            );
-
-          if (order) {
-
-            showSavedOrderInCurrentCard(
-              order
-            );
-
-            document.getElementById(
-              "orderCard"
-            ).scrollIntoView({
-              behavior: "smooth",
-              block: "center"
-            });
-
-          }
-
-        }
-      );
-
-    });
-
-}
-
-
-/* =====================================================
-   UPDATE SAVED ORDER FROM RESPONSE
-===================================================== */
-
-function updateSavedOrderFromResponse(
-  orderId,
-  data
-) {
-
-  const oldOrder =
-    getSavedVirtualOrder(
-      orderId
-    ) || {
-      id: orderId
-    };
-
-
-  const apiOrder =
-    data?.order || {};
-
-
-  const updated = {
-
-    ...oldOrder,
-
-    ...apiOrder,
-
-    id:
-      orderId,
-
-
-    service_name:
-      apiOrder.service_name ||
-      apiOrder.service ||
-      oldOrder.service_name ||
-      oldOrder.service ||
-      "",
-
-
-    country_name:
-      apiOrder.country_name ||
-      apiOrder.country ||
-      oldOrder.country_name ||
-      oldOrder.country ||
-      "",
-
-
-    operator:
-      apiOrder.operator ||
-      oldOrder.operator ||
-      "",
-
-
-    number:
-      apiOrder.number ||
-      apiOrder.phone ||
-      oldOrder.number ||
-      "",
-
-
-    otp_code:
-      apiOrder.otp_code ||
-      data?.otp_code ||
-      data?.code ||
-      oldOrder.otp_code ||
-      "",
-
-
-    full_sms:
-      apiOrder.full_sms ||
-      data?.full_sms ||
-      oldOrder.full_sms ||
-      "",
-
-
-    status:
-      data?.status ||
-      apiOrder.status ||
-      oldOrder.status ||
-      "PENDING"
-
-  };
-
-
-  saveVirtualOrder(
-    updated
-  );
-
-}
-
-
-/* =====================================================
-   SHOW SAVED ORDER IN CURRENT CARD
-===================================================== */
-
-function showSavedOrderInCurrentCard(
-  order
-) {
-
-  if (!order) {
-    return;
-  }
-
-
-  selectedOrderId =
-    order.id;
-
-
-  document.getElementById(
-    "orderService"
-  ).textContent =
-    order.service_name ||
-    order.service ||
-    "Virtual Number";
-
-
-  document.getElementById(
-    "orderCountry"
-  ).textContent =
-    order.country_name ||
-    order.country ||
-    "—";
-
-
-  document.getElementById(
-    "orderOperator"
-  ).textContent =
-    order.operator ||
-    order.provider ||
-    "—";
-
-
-  document.getElementById(
-    "orderNumber"
-  ).textContent =
-    order.number ||
-    order.phone ||
-    "Waiting...";
-
-
-  document.getElementById(
-    "otpBox"
-  ).textContent =
-    order.otp_code
-      ? order.otp_code
-      : "Waiting for SMS...";
-
-
-  document.getElementById(
-    "orderCard"
-  ).classList.add(
-    "show"
-  );
-
-}
-
-
-/* =====================================================
-   CHECK SAVED ORDER
-===================================================== */
-
-async function checkSavedVirtualOrder(
-  orderId
-) {
-
-  const order =
-    getSavedVirtualOrder(
-      orderId
-    );
-
-
-  if (!order) {
-    return;
-  }
-
-
-  selectedOrderId =
-    orderId;
-
-
-  showSavedOrderInCurrentCard(
-    order
-  );
-
-
-  try {
-
-    const data =
-      await apiRequest({
-
-        action: "check",
-
-        order_id:
-          orderId
-
-      });
-
-
-    updateSavedOrderFromResponse(
-      orderId,
-      data
-    );
-
-
-    const updated =
-      getSavedVirtualOrder(
-        orderId
-      );
-
-
-    const status =
-      normalizeOrderStatus(
-        data?.status ||
-        updated?.status ||
-        ""
-      );
-
-
-    const sms =
-      data?.sms;
-
-
-    if (sms?.code) {
-
-      saveVirtualOrder({
-
-        ...updated,
-
-        otp_code:
-          sms.code,
-
-        full_sms:
-          sms.full ||
-          sms.text ||
-          updated?.full_sms ||
-          "",
-
-        status:
-          data.status ||
-          "RECEIVED"
-
-      });
-
-
-      showSavedOrderInCurrentCard(
-        getSavedVirtualOrder(
-          orderId
-        )
-      );
-
-
-      stopOrderChecking();
-
-
-      showMessage(
-        "SMS code received.",
-        "success"
-      );
-
-
-      return;
-
-    }
-
-
-    if (
-      status === "CANCELLED" ||
-      status === "CANCELED" ||
-      status === "TIMEOUT" ||
-      status === "BANNED"
-    ) {
-
-      saveVirtualOrder({
-
-        ...updated,
-
-        status:
-          status === "TIMEOUT"
-            ? "TIMEOUT"
-            : status === "BANNED"
-              ? "BANNED"
-              : "CANCELED"
-
-      });
-
-
-      showSavedOrderInCurrentCard(
-        getSavedVirtualOrder(
-          orderId
-        )
-      );
-
-
-      stopOrderChecking();
-
-
-      if (data.refunded) {
-
-        showMessage(
-          `Order cancelled. ${money(
-            data.refund_amount_ngn
-          )} refunded to your wallet.`,
-          "success"
-        );
-
-
-        await loadWallet();
-
-      }
-
-
-      return;
-
-    }
-
-
-    document.getElementById(
-      "otpBox"
-    ).textContent =
-      "Waiting for SMS...";
-
-
-    showMessage(
-      "No SMS yet. We are still waiting.",
-      "info"
-    );
-
-  }
-
-  catch (err) {
-
-    console.error(
-      "SAVED CHECK:",
-      err
-    );
-
-
-    showMessage(
-      err.message ||
-      "Unable to check SMS right now.",
-      "error"
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   CANCEL SAVED ORDER
-===================================================== */
-
-async function cancelSavedVirtualOrder(
-  orderId
-) {
-
-  const order =
-    getSavedVirtualOrder(
-      orderId
-    );
-
-
-  if (!order) {
-    return;
-  }
-
-
-  selectedOrderId =
-    orderId;
-
-
-  try {
-
-    const data =
-      await apiRequest({
-
-        action: "cancel",
-
-        order_id:
-          orderId
-
-      });
-
-
-    stopOrderChecking();
-
-
-    const updatedOrder = {
-
-      ...order,
-
-      ...(data?.order || {}),
-
-      id:
-        orderId,
-
-      status:
-        data?.status ||
-        "CANCELED"
-
-    };
-
-
-    saveVirtualOrder(
-      updatedOrder
-    );
-
-
-    showSavedOrderInCurrentCard(
-      updatedOrder
-    );
-
-
-    document.getElementById(
-      "otpBox"
-    ).textContent =
-      "Cancelled";
-
-
-    if (data.refunded) {
-
-      showMessage(
-        `Number cancelled. ${money(
-          data.refund_amount_ngn
-        )} refunded to your wallet.`,
-        "success"
-      );
-
-
-      await loadWallet();
-
-    }
-
-    else {
-
-      showMessage(
-        "Number cancelled successfully.",
-        "success"
-      );
-
-    }
-
-  }
-
-  catch (err) {
-
-    console.error(
-      "SAVED CANCEL:",
-      err
-    );
-
-
-    showMessage(
-      err.message ||
-      "Unable to cancel the number.",
-      "error"
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   MESSAGE
-===================================================== */
-
-function showMessage(
-  text,
-  type = "error"
-) {
-
+function showMessage(text) {
   const box =
-    document.getElementById(
-      "message"
-    );
+    document.getElementById("message");
 
-  const textBox =
-    document.getElementById(
-      "messageText"
-    );
+  box.textContent = text;
+  box.classList.add("show");
 
-  const icon =
-    document.getElementById(
-      "messageIcon"
-    );
+  clearTimeout(showMessage.timer);
 
-
-  textBox.textContent =
-    text;
-
-
-  if (type === "success") {
-
-    icon.textContent =
-      "✓";
-
-  }
-
-  else if (type === "info") {
-
-    icon.textContent =
-      "i";
-
-  }
-
-  else {
-
-    icon.textContent =
-      "!";
-
-  }
-
-
-  box.className =
-    `message show ${type}`;
-
+  showMessage.timer =
+    setTimeout(() => {
+      box.classList.remove("show");
+    }, 4500);
 }
 
-
-function hideMessage() {
-
-  document.getElementById(
-    "message"
-  ).className =
-    "message";
-
+function closeVerification() {
+  document
+    .getElementById("verificationModal")
+    .classList.add("hidden");
 }
 
-
-/* =====================================================
-   ESCAPE HTML
-===================================================== */
-
-function escapeHTML(
-  value
-) {
-
-  return String(
-    value ?? ""
-  )
-    .replaceAll(
-      "&",
-      "&amp;"
-    )
-    .replaceAll(
-      "<",
-      "&lt;"
-    )
-    .replaceAll(
-      ">",
-      "&gt;"
-    )
-    .replaceAll(
-      '"',
-      "&quot;"
-    )
-    .replaceAll(
-      "'",
-      "&#039;"
-    );
-
+function openVerification() {
+  document
+    .getElementById("verificationModal")
+    .classList.remove("hidden");
 }
 
+window.addEventListener(
+  "pageshow",
+  openVerification
+);
 
-/* =====================================================
-   MONEY
-===================================================== */
-
-function money(
-  value
-) {
-
-  return "₦" +
-    Number(
-      value || 0
-    )
-      .toLocaleString(
-        "en-NG",
-        {
-          maximumFractionDigits:
-            0
-        }
-      );
-
-}
-
-
-/* =====================================================
-   API REQUEST
-===================================================== */
-
-async function apiRequest(
-  payload,
-  timeout = 20000
-) {
-
+async function getSession() {
   const {
-    data: {
-      session
-    }
+    data,
+    error
   } =
-    await supabaseClient
-      .auth
-      .getSession();
+    await supabaseClient.auth.getSession();
 
-
-  if (!session) {
-
+  if (
+    error ||
+    !data.session
+  ) {
     window.location.href =
       "login.html";
 
-    throw new Error(
-      "Please login."
-    );
-
+    return null;
   }
 
-
-  const controller =
-    new AbortController();
-
-
-  const timer =
-    setTimeout(
-      () =>
-        controller.abort(),
-      timeout
-    );
-
-
-  try {
-
-    const response =
-      await fetch(
-        API_URL,
-        {
-
-          method:
-            "POST",
-
-          headers: {
-
-            "Content-Type":
-              "application/json",
-
-            "Authorization":
-              `Bearer ${session.access_token}`,
-
-            "apikey":
-              SUPABASE_KEY
-
-          },
-
-          body:
-            JSON.stringify(
-              payload
-            ),
-
-          signal:
-            controller.signal
-
-        }
-      );
-
-
-    let data;
-
-
-    try {
-
-      data =
-        await response.json();
-
-    }
-
-    catch {
-
-      throw new Error(
-        "Server returned an invalid response."
-      );
-
-    }
-
-
-    if (
-      !response.ok ||
-      data?.success === false
-    ) {
-
-      const err =
-        new Error(
-          data?.error ||
-          "Request failed."
-        );
-
-
-      err.code =
-        data?.code ||
-        "";
-
-
-      throw err;
-
-    }
-
-
-    return data;
-
-  }
-
-  catch (err) {
-
-    if (
-      err?.name ===
-      "AbortError"
-    ) {
-
-      throw new Error(
-        "Request timed out. Please try again."
-      );
-
-    }
-
-    throw err;
-
-  }
-
-  finally {
-
-    clearTimeout(
-      timer
-    );
-
-  }
-
+  return data.session;
 }
 
+async function api(action, payload = {}) {
+  const session =
+    await getSession();
 
-/* =====================================================
-   WALLET
-===================================================== */
+  if (!session) {
+    throw new Error("LOGIN_REQUIRED");
+  }
+
+  const response =
+    await fetch(FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+        "apikey":
+          SUPABASE_KEY,
+        "Authorization":
+          `Bearer ${session.access_token}`
+      },
+      body: JSON.stringify({
+        action,
+        version,
+        ...payload
+      })
+    });
+
+  let data;
+
+  try {
+    data =
+      await response.json();
+  } catch {
+    data = {};
+  }
+
+  if (!response.ok && !data.message) {
+    throw new Error(
+      "Request failed."
+    );
+  }
+
+  return data;
+}
 
 async function loadWallet() {
+  const {
+    data: sessionData
+  } =
+    await supabaseClient.auth.getSession();
 
-  try {
+  if (!sessionData.session) return;
 
-    const {
-      data: {
-        user
-      }
-    } =
-      await supabaseClient
-        .auth
-        .getUser();
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.rpc(
+      "get_my_wallet"
+    );
 
-
-    if (!user) {
-
-      window.location.href =
-        "login.html";
-
-      return;
-
-    }
-
-
-    currentUserId =
-      user.id;
-
-
-    const {
-      data: wallet,
-      error
-    } =
-      await supabaseClient
-        .rpc(
-          "ensure_my_wallet"
-        );
-
-
-    if (error) {
-      throw error;
-    }
-
-
-    const balance =
-      Number(
-        wallet?.balance ||
-        0
-      );
-
-
-    currentWalletBalance =
-      balance;
-
-
-    document.getElementById(
-      "walletBalance"
-    ).textContent =
-      money(balance);
-
-
-    loadSavedVirtualOrders();
-
-
-    await loadOrdersFromDatabase();
-
-
-    showVerificationTips();
-
+  if (!error) {
+    walletBalance.textContent =
+      naira(data || 0);
   }
-
-  catch (err) {
-
-    console.error(
-      "Wallet:",
-      err
-    );
-
-  }
-
 }
 
-
-/* =====================================================
-   COUNTRY PICKER
-===================================================== */
-
-function openCountryPicker() {
-
-  document.getElementById(
-    "countryPicker"
-  ).classList.add(
-    "show"
-  );
-
-
-  document.getElementById(
-    "countrySearch"
-  ).value =
-    "";
-
-
-  renderCountries(
-    ""
-  );
-
-
-  setTimeout(
-    () =>
-      document.getElementById(
-        "countrySearch"
-      ).focus(),
-    100
-  );
-
-}
-
-
-function closeCountryPicker() {
-
-  document.getElementById(
-    "countryPicker"
-  ).classList.remove(
-    "show"
-  );
-
-}
-
-
-/* =====================================================
-   SERVICE PICKER
-===================================================== */
-
-function openServicePicker() {
-
-  if (!selectedCountry) {
-
-    showMessage(
-      "Please choose a country first.",
-      "warning"
-    );
-
-    return;
-
-  }
-
-
-  document.getElementById(
-    "servicePicker"
-  ).classList.add(
-    "show"
-  );
-
-
-  document.getElementById(
-    "serviceSearch"
-  ).value =
-    "";
-
-
-  renderServices(
-    ""
-  );
-
-
-  setTimeout(
-    () =>
-      document.getElementById(
-        "serviceSearch"
-      ).focus(),
-    100
-  );
-
-}
-
-
-function closeServicePicker() {
-
-  document.getElementById(
-    "servicePicker"
-  ).classList.remove(
-    "show"
-  );
-
-}
-
-
-/* =====================================================
-   LOAD COUNTRIES
-===================================================== */
-
-async function loadCountries() {
-
-  const results =
-    document.getElementById(
-      "countryResults"
-    );
-
-
-  results.innerHTML =
-    `
-      <div class="result-item">
-        Loading countries...
-      </div>
-    `;
-
-
-  try {
-
-    const data =
-      await apiRequest(
-        {
-          action:
-            "countries"
-        },
-        15000
-      );
-
-
-    countries =
-      Array.isArray(
-        data.countries
-      )
-        ? data.countries
-        : [];
-
-  }
-
-  catch (err) {
-
-    console.error(
-      "Countries:",
-      err
-    );
-
-
-    countries = [
-
-      {
-        code:
-          "england",
-
-        name:
-          "United Kingdom (UK / England)",
-
-        iso:
-          "gb",
-
-        prefix:
-          "+44"
-      },
-
-
-      {
-        code:
-          "usa",
-
-        name:
-          "USA",
-
-        iso:
-          "us",
-
-        prefix:
-          "+1"
-      },
-
-
-      {
-        code:
-          "canada",
-
-        name:
-          "Canada",
-
-        iso:
-          "ca",
-
-        prefix:
-          "+1"
-      },
-
-
-      {
-        code:
-          "nigeria",
-
-        name:
-          "Nigeria",
-
-        iso:
-          "ng",
-
-        prefix:
-          "+234"
-      },
-
-
-      {
-        code:
-          "ghana",
-
-        name:
-          "Ghana",
-
-        iso:
-          "gh",
-
-        prefix:
-          "+233"
-      }
-
-    ];
-
-  }
-
-
-  renderCountries(
-    ""
-  );
-
-}
-
-
-/* =====================================================
-   RENDER COUNTRIES
-===================================================== */
-
-function renderCountries(
-  search
-) {
-
-  const results =
-    document.getElementById(
-      "countryResults"
-    );
-
-
-  const term =
-    String(
-      search || ""
-    )
-      .trim()
-      .toLowerCase();
-
-
-  const filtered =
-    countries.filter(
-      country => {
-
-        const name =
-          String(
-            country.name ||
-            ""
-          )
-            .toLowerCase();
-
-
-        const code =
-          String(
-            country.code ||
-            ""
-          )
-            .toLowerCase();
-
-
-        const iso =
-          String(
-            country.iso ||
-            ""
-          )
-            .toLowerCase();
-
-
-        const isEngland =
-          code ===
-            "england" ||
-
-          iso ===
-            "gb" ||
-
-          name.includes(
-            "england"
-          ) ||
-
-          name.includes(
-            "united kingdom"
-          ) ||
-
-          name.includes(
-            "uk"
-          );
-
-
-        const ukTerms = [
-
-          "uk",
-          "u.k",
-          "u.k.",
-          "united kingdom",
-          "britain",
-          "great britain",
-          "england"
-
-        ];
-
-
-        const matchesUK =
-          ukTerms.includes(
-            term
-          ) &&
-          isEngland;
-
-
-        return (
-
-          !term ||
-
-          matchesUK ||
-
-          name.includes(
-            term
-          ) ||
-
-          code.includes(
-            term
-          ) ||
-
-          iso.includes(
-            term
-          )
-
-        );
-
-      }
-    );
-
-
-  if (!filtered.length) {
-
-    results.innerHTML =
-      `
-        <div class="result-item">
-          Country not found.
-        </div>
-      `;
-
-    return;
-
-  }
-
-
-  results.innerHTML =
-    filtered
-      .slice(
-        0,
-        50
-      )
-      .map(
-        (
-          country,
-          index
-        ) => `
-
-          <div
-            class="result-item"
-            data-country-index="${index}"
-          >
-
-            ${escapeHTML(
-              country.name
-            )}
-
-            <small>
-              ${escapeHTML(
-                country.prefix ||
-                ""
-              )}
-            </small>
-
-          </div>
-
-        `
-      )
-      .join("");
-
-
-  results
-    .querySelectorAll(
-      "[data-country-index]"
-    )
-    .forEach(
-      (
-        item,
-        index
-      ) => {
-
-        item.onclick =
-          () =>
-            selectCountry(
-              filtered[index]
-            );
-
-      }
-    );
-
-}
-
-
-/* =====================================================
-   SELECT COUNTRY
-===================================================== */
-
-async function selectCountry(
-  country
-) {
-
-  selectedCountry =
-    country;
-
-
-  selectedService =
-    null;
-
-
-  selectedOperator =
-    null;
-
+function resetSelection() {
+  selectedCountry = null;
+  selectedService = null;
+  selectedServer = null;
 
   services = [];
+  servers = [];
 
+  countrySearch.value = "";
 
-  document.getElementById(
-    "countryValue"
-  ).textContent =
-    country.name;
+  serviceSearch.value = "";
+  serviceSearch.placeholder =
+    "Select country first...";
 
-
-  document.getElementById(
-    "serviceValue"
-  ).textContent =
-    "Choose service";
-
-
-  document.getElementById(
-    "providerWrap"
-  ).classList.remove(
-    "show"
+  serviceSelector.classList.add(
+    "disabled"
   );
 
-
-  document.getElementById(
-    "operatorGrid"
-  ).innerHTML =
-    "";
-
-
-  document.getElementById(
-    "buyButton"
-  ).disabled =
-    true;
-
-
-  closeCountryPicker();
-
-
-  showMessage(
-    "Loading services...",
-    "info"
+  serverSection.classList.add(
+    "hidden"
   );
 
+  buyArea.style.display =
+    "none";
 
-  await loadServices();
+  countryDropdown.classList.remove(
+    "open"
+  );
 
+  serviceDropdown.classList.remove(
+    "open"
+  );
 }
 
+async function loadCountries() {
+  resetSelection();
 
-/* =====================================================
-   LOAD SERVICES
-===================================================== */
-
-async function loadServices() {
-
-  if (!selectedCountry) {
-    return;
-  }
-
+  countryDropdown.innerHTML =
+    `<div class="loading">Loading countries...</div>`;
 
   try {
-
     const data =
-      await apiRequest({
+      await api("countries");
 
-        action:
-          "prices",
+    countries =
+      data.countries || [];
 
-        country:
-          selectedCountry.code
+    renderCountries(countries);
 
-      });
+  } catch (error) {
+    console.error(error);
 
+    countryDropdown.innerHTML =
+      `<div class="empty">Unable to load countries.</div>`;
+  }
+}
 
-    services =
-      Array.isArray(
-        data.services
-      )
-        ? data.services
-        : [];
+function renderCountries(list) {
+  if (!list.length) {
+    countryDropdown.innerHTML =
+      `<div class="empty">No countries available.</div>`;
+    return;
+  }
 
+  countryDropdown.innerHTML =
+    list.map(country => `
+      <div
+        class="option"
+        data-country="${escapeHtml(country.id)}"
+      >
+        ${escapeHtml(country.name)}
+      </div>
+    `).join("");
 
-    if (!services.length) {
+  countryDropdown
+    .querySelectorAll(".option")
+    .forEach(option => {
 
-      showMessage(
-        "No services are available for this country right now.",
-        "info"
+      option.addEventListener(
+        "click",
+        () => {
+
+          const id =
+            Number(
+              option.dataset.country
+            );
+
+          selectedCountry =
+            countries.find(
+              item =>
+                Number(item.id) === id
+            );
+
+          if (!selectedCountry)
+            return;
+
+          countrySearch.value =
+            selectedCountry.name;
+
+          countryDropdown.classList.remove(
+            "open"
+          );
+
+          loadServices();
+        }
       );
 
-    }
-
-    else {
-
-      hideMessage();
-
-    }
-
-  }
-
-  catch (err) {
-
-    console.error(
-      "Services:",
-      err
-    );
-
-
-    services = [];
-
-
-    showMessage(
-      "Service not available right now. Please try again later.",
-      "error"
-    );
-
-  }
-
+    });
 }
 
+async function loadServices() {
+  selectedService = null;
+  selectedServer = null;
 
-/* =====================================================
-   RENDER SERVICES
-===================================================== */
+  serverSection.classList.add(
+    "hidden"
+  );
 
-function renderServices(
-  search
-) {
+  serviceSelector.classList.remove(
+    "disabled"
+  );
 
-  const results =
-    document.getElementById(
-      "serviceResults"
-    );
+  serviceSearch.value = "";
+  serviceSearch.placeholder =
+    "Search service...";
 
+  serviceDropdown.classList.add(
+    "open"
+  );
 
-  const term =
-    String(
-      search || ""
-    )
-      .trim()
-      .toLowerCase();
+  serviceDropdown.innerHTML =
+    `<div class="loading">Loading services...</div>`;
 
+  try {
+    const data =
+      await api("services", {
+        country_id:
+          selectedCountry.id
+      });
 
-  const filtered =
-    services.filter(
-      service =>
+    services =
+      data.services || [];
 
-        !term ||
+    renderServices(services);
 
-        String(
-          service.service_name ||
-          ""
-        )
-          .toLowerCase()
-          .includes(
-            term
-          ) ||
+  } catch (error) {
+    console.error(error);
 
-        String(
-          service.service_code ||
-          ""
-        )
-          .toLowerCase()
-          .includes(
-            term
-          )
-    );
+    serviceDropdown.innerHTML =
+      `<div class="empty">Unable to load services.</div>`;
+  }
+}
 
-
-  if (!filtered.length) {
-
-    results.innerHTML =
-      `
-        <div class="result-item">
-          Service not found.
-        </div>
-      `;
-
+function renderServices(list) {
+  if (!list.length) {
+    serviceDropdown.innerHTML =
+      `<div class="empty">No services available.</div>`;
     return;
-
   }
 
+  serviceDropdown.innerHTML =
+    list.map(service => `
+      <div
+        class="option"
+        data-service="${escapeHtml(service.service_code)}"
+      >
+        <strong>
+          ${escapeHtml(service.service_name)}
+        </strong>
+        <div style="font-size:11px;color:#667085;margin-top:3px">
+          ${Number(service.stock).toLocaleString()} available
+        </div>
+      </div>
+    `).join("");
 
-  results.innerHTML =
-    filtered
-      .map(
-        (
-          service,
-          index
-        ) => {
+  serviceDropdown
+    .querySelectorAll(".option")
+    .forEach(option => {
 
-          const available =
-            Number(
-              service.stock ||
-              0
-            ) > 0;
+      option.addEventListener(
+        "click",
+        () => {
 
+          const code =
+            option.dataset.service;
 
-          return `
-
-            <div
-              class="result-item"
-              data-service-index="${index}"
-            >
-
-              ${escapeHTML(
-                service.service_name
-              )}
-
-              <small>
-                ${
-                  available
-                    ? money(
-                        service.best_price_ngn
-                      )
-                    : "Not available"
-                }
-              </small>
-
-            </div>
-
-          `;
-
-        }
-      )
-      .join("");
-
-
-  results
-    .querySelectorAll(
-      "[data-service-index]"
-    )
-    .forEach(
-      (
-        item,
-        index
-      ) => {
-
-        item.onclick =
-          () =>
-            selectService(
-              filtered[index]
+          selectedService =
+            services.find(
+              item =>
+                item.service_code === code
             );
 
-      }
-    );
+          if (!selectedService)
+            return;
 
+          serviceSearch.value =
+            selectedService.service_name;
+
+          serviceDropdown.classList.remove(
+            "open"
+          );
+
+          loadServers();
+        }
+      );
+
+    });
 }
 
+async function loadServers() {
+  selectedServer = null;
 
-/* =====================================================
-   SELECT SERVICE
-===================================================== */
-
-function selectService(
-  service
-) {
-
-  selectedService =
-    service;
-
-
-  selectedOperator =
-    null;
-
-
-  document.getElementById(
-    "serviceValue"
-  ).textContent =
-    service.service_name;
-
-
-  closeServicePicker();
-
-
-  renderProviders(
-    service
+  serverSection.classList.remove(
+    "hidden"
   );
 
+  serverGrid.innerHTML =
+    `<div class="loading">Loading servers...</div>`;
 
-  document.getElementById(
-    "providerWrap"
-  ).classList.add(
-    "show"
-  );
+  buyArea.style.display =
+    "none";
 
+  try {
+    const data =
+      await api("prices", {
+        country_id:
+          selectedCountry.id,
+        service_code:
+          selectedService.service_code
+      });
+
+    servers =
+      data.servers || [];
+
+    renderServers();
+
+  } catch (error) {
+    console.error(error);
+
+    serverGrid.innerHTML =
+      `<div class="empty">No server is available right now.</div>`;
+  }
 }
 
-
-/* =====================================================
-   RENDER PROVIDERS
-===================================================== */
-
-function renderProviders(
-  service
-) {
-
-  const options =
-    Array.isArray(
-      service.options
-    )
-      ? service.options
-      : [];
-
-
-  const available =
-    options.filter(
-      option =>
-        Number(
-          option.stock ||
-          0
-        ) > 0
-    );
-
-
-  const grid =
-    document.getElementById(
-      "operatorGrid"
-    );
-
-
-  const button =
-    document.getElementById(
-      "buyButton"
-    );
-
-
-  selectedOperator =
-    null;
-
-
-  button.disabled =
-    true;
-
-
-  if (!available.length) {
-
-    grid.innerHTML =
-      `
-        <div class="result-item">
-          Number not available right now.
-        </div>
-      `;
-
+function renderServers() {
+  if (!servers.length) {
+    serverGrid.innerHTML =
+      `<div class="empty">Number not available right now. Please try another server.</div>`;
     return;
-
   }
 
+  serverGrid.innerHTML =
+    servers.map((server, index) => `
+      <div
+        class="server"
+        data-server="${escapeHtml(server.server_id)}"
+      >
 
-  grid.innerHTML =
-    available
-      .map(
-        (
-          option,
-          index
-        ) => `
+        <div class="server-top">
 
-          <div
-            class="operator-card"
-            data-operator-index="${index}"
-          >
-
-            <div class="operator-name">
-
-              ${escapeHTML(
-                option.operator ||
-                `Provider ${index + 1}`
-              )}
-
-            </div>
-
-
-            <div class="operator-price">
-
-              ${money(
-                option.customer_price_ngn
-              )}
-
-            </div>
-
-
-            <div class="operator-stock">
-              Available
-            </div>
-
+          <div class="server-name">
+            ${escapeHtml(server.label || `Server ${index + 1}`)}
           </div>
 
-        `
-      )
-      .join("");
+        </div>
 
+        <div class="server-stock">
+          ${Number(server.stock).toLocaleString()} in stock
+        </div>
 
-  grid
-    .querySelectorAll(
-      "[data-operator-index]"
-    )
-    .forEach(
-      (
-        card,
-        index
-      ) => {
+        <div class="server-bottom">
 
-        card.onclick =
-          () =>
-            selectOperator(
-              available[index],
-              card
+          <div class="server-price">
+            ${naira(server.customer_price_ngn)}
+          </div>
+
+          <button class="choose">
+            Select
+          </button>
+
+        </div>
+
+      </div>
+    `).join("");
+
+  serverGrid
+    .querySelectorAll(".server")
+    .forEach(card => {
+
+      card.addEventListener(
+        "click",
+        () => {
+
+          const id =
+            card.dataset.server;
+
+          selectedServer =
+            servers.find(
+              server =>
+                String(server.server_id) ===
+                String(id)
             );
 
-      }
-    );
+          if (!selectedServer)
+            return;
 
+          serverGrid
+            .querySelectorAll(".server")
+            .forEach(item =>
+              item.classList.remove(
+                "selected"
+              )
+            );
+
+          card.classList.add(
+            "selected"
+          );
+
+          buyPrice.textContent =
+            naira(
+              selectedServer.customer_price_ngn
+            );
+
+          buyArea.style.display =
+            "block";
+        }
+      );
+
+    });
 }
-
-
-/* =====================================================
-   SELECT PROVIDER
-===================================================== */
-
-function selectOperator(
-  option,
-  element
-) {
-
-  selectedOperator =
-    option;
-
-
-  document
-    .querySelectorAll(
-      ".operator-card"
-    )
-    .forEach(
-      card =>
-        card.classList.remove(
-          "selected"
-        )
-    );
-
-
-  element.classList.add(
-    "selected"
-  );
-
-
-  document.getElementById(
-    "buyButton"
-  ).disabled =
-    false;
-
-}
-
-
-/* =====================================================
-   PRICE
-===================================================== */
-
-function getSelectedPrice() {
-
-  return Number(
-    selectedOperator?.customer_price_ngn ||
-    selectedService?.best_price_ngn ||
-    0
-  );
-
-}
-
-
-/* =====================================================
-   BUY NUMBER
-===================================================== */
 
 async function buyNumber() {
-
   if (
     !selectedCountry ||
     !selectedService ||
-    !selectedOperator
+    !selectedServer
   ) {
-
-    showMessage(
-      "Please select a country, service and provider.",
-      "warning"
-    );
-
     return;
-
   }
 
-
-  await loadWallet();
-
-
-  const price =
-    getSelectedPrice();
-
-
-  if (
-    price > 0 &&
-    currentWalletBalance <
-      price
-  ) {
-
-    const amountNeeded =
-      price -
-      currentWalletBalance;
-
-
-    showMessage(
-      `Insufficient balance. Please add ${money(
-        amountNeeded
-      )} to your wallet.`,
-      "warning"
-    );
-
-
-    return;
-
-  }
-
-
-  const button =
-    document.getElementById(
-      "buyButton"
-    );
-
-
-  button.disabled =
-    true;
-
-
-  button.textContent =
-    "Buying number...";
-
-
-  hideMessage();
-
+  buyButton.disabled = true;
+  buyButton.textContent =
+    "Processing...";
 
   try {
 
     const data =
-      await apiRequest(
-        {
+      await api("buy", {
+        country_id:
+          selectedCountry.id,
 
-          action:
-            "buy",
+        service_code:
+          selectedService.service_code,
 
-          country:
-            selectedCountry.code,
+        server_id:
+          selectedServer.server_id
+      });
 
-          service:
-            selectedService.service_code,
-
-          operator:
-            selectedOperator.operator
-
-        },
-
-        30000
+    if (!data.success) {
+      showMessage(
+        data.message ||
+        "Purchase could not be completed."
       );
-
-
-    if (!data?.order) {
-
-      throw new Error(
-        "Purchase failed."
-      );
-
+      return;
     }
 
-
-    const order =
-      data.order;
-
-
-    selectedOrderId =
-      order.id;
-
-
-    saveVirtualOrder({
-
-      id:
-        order.id,
-
-      service_name:
-        order.service_name ||
-        order.service ||
-        selectedService.service_name,
-
-      service:
-        order.service ||
-        selectedService.service_name,
-
-      country_name:
-        order.country_name ||
-        order.country ||
-        selectedCountry.name,
-
-      country:
-        order.country ||
-        selectedCountry.name,
-
-      operator:
-        order.operator ||
-        selectedOperator.operator,
-
-      number:
-        order.number ||
-        order.phone ||
-        "",
-
-      otp_code:
-        order.otp_code ||
-        "",
-
-      full_sms:
-        order.full_sms ||
-        "",
-
-      status:
-        order.status ||
-        "PENDING",
-
-      customer_price_ngn:
-        order.customer_price_ngn ||
-        price,
-
-      created_at:
-        order.created_at ||
-        new Date().toISOString()
-
-    });
-
-
-    document.getElementById(
-      "orderService"
-    ).textContent =
-      order.service ||
-      selectedService.service_name;
-
-
-    document.getElementById(
-      "orderCountry"
-    ).textContent =
-      order.country ||
-      selectedCountry.name;
-
-
-    document.getElementById(
-      "orderOperator"
-    ).textContent =
-      order.operator ||
-      selectedOperator.operator;
-
-
-    document.getElementById(
-      "orderNumber"
-    ).textContent =
-      order.number ||
-      order.phone ||
-      "Waiting...";
-
-
-    document.getElementById(
-      "otpBox"
-    ).textContent =
-      "Waiting for SMS...";
-
-
-    document.getElementById(
-      "orderCard"
-    ).classList.add(
-      "show"
-    );
-
-
     showMessage(
-      "Number purchased successfully.",
-      "success"
+      "Number successfully purchased."
     );
-
 
     await loadWallet();
+    await loadOrders();
 
+  } catch (error) {
 
-    renderSavedVirtualOrders();
-
-
-    startOrderChecking();
-
-  }
-
-  catch (err) {
-
-    console.error(
-      "BUY ERROR:",
-      err
-    );
-
-
-    if (
-      err.code ===
-      "USER_INSUFFICIENT_FUNDS"
-    ) {
-
-      await loadWallet();
-
-
-      const amountNeeded =
-        Math.max(
-          0,
-          getSelectedPrice() -
-          currentWalletBalance
-        );
-
-
-      showMessage(
-
-        amountNeeded > 0
-
-          ? `Insufficient balance. Please add ${money(
-              amountNeeded
-            )} to your wallet.`
-
-          : "Insufficient balance. Please fund your wallet.",
-
-        "warning"
-
-      );
-
-    }
-
-    else if (
-      err.code ===
-        "PROVIDER_INSUFFICIENT_BALANCE" ||
-
-      err.code ===
-        "PROVIDER_ACCOUNT_ERROR"
-    ) {
-
-      showMessage(
-        "Number is currently unavailable. Please contact support.",
-        "error"
-      );
-
-    }
-
-    else if (
-      err.code ===
-      "OUT_OF_STOCK"
-    ) {
-
-      showMessage(
-        "Number not available right now. Please try again later.",
-        "error"
-      );
-
-    }
-
-    else {
-
-      showMessage(
-        err.message ||
-        "Number purchase failed. Please try again.",
-        "error"
-      );
-
-    }
-
-  }
-
-  finally {
-
-    button.disabled =
-      !selectedOperator;
-
-
-    button.textContent =
-      "🛒 Buy Number";
-
-  }
-
-}
-
-
-/* =====================================================
-   CHECK CURRENT ORDER
-===================================================== */
-
-async function checkOrder() {
-
-  if (!selectedOrderId) {
-    return;
-  }
-
-
-  try {
-
-    const data =
-      await apiRequest({
-
-        action:
-          "check",
-
-        order_id:
-          selectedOrderId
-
-      });
-
-
-    updateSavedOrderFromResponse(
-      selectedOrderId,
-      data
-    );
-
-
-    const savedOrder =
-      getSavedVirtualOrder(
-        selectedOrderId
-      );
-
-
-    const status =
-      normalizeOrderStatus(
-        data.status ||
-        savedOrder?.status ||
-        ""
-      );
-
-
-    const sms =
-      data.sms;
-
-
-    if (sms?.code) {
-
-      document.getElementById(
-        "otpBox"
-      ).textContent =
-        sms.code;
-
-
-      saveVirtualOrder({
-
-        ...savedOrder,
-
-        otp_code:
-          sms.code,
-
-        full_sms:
-          sms.full ||
-          sms.text ||
-          savedOrder?.full_sms ||
-          "",
-
-        status:
-          data.status ||
-          "RECEIVED"
-
-      });
-
-
-      stopOrderChecking();
-
-
-      renderSavedVirtualOrders();
-
-
-      showMessage(
-        "SMS code received.",
-        "success"
-      );
-
-
-      return;
-
-    }
-
-
-    if (
-      status === "CANCELLED" ||
-      status === "CANCELED" ||
-      status === "TIMEOUT" ||
-      status === "BANNED"
-    ) {
-
-      stopOrderChecking();
-
-
-      document.getElementById(
-        "otpBox"
-      ).textContent =
-        status === "TIMEOUT"
-          ? "Timed Out"
-          : status === "BANNED"
-            ? "Banned"
-            : "Order cancelled";
-
-
-      saveVirtualOrder({
-
-        ...savedOrder,
-
-        status:
-          status === "TIMEOUT"
-            ? "TIMEOUT"
-            : status === "BANNED"
-              ? "BANNED"
-              : "CANCELED"
-
-      });
-
-
-      if (data.refunded) {
-
-        showMessage(
-          `Order cancelled. ${money(
-            data.refund_amount_ngn
-          )} refunded to your wallet.`,
-          "success"
-        );
-
-
-        await loadWallet();
-
-      }
-
-
-      return;
-
-    }
-
-
-    document.getElementById(
-      "otpBox"
-    ).textContent =
-      "Waiting for SMS...";
-
-
-    renderSavedVirtualOrders();
-
-  }
-
-  catch (err) {
-
-    console.error(
-      "CHECK:",
-      err
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   AUTO CHECK
-===================================================== */
-
-function startOrderChecking() {
-
-  stopOrderChecking();
-
-
-  orderCheckTimer =
-    setInterval(
-      checkOrder,
-      5000
-    );
-
-}
-
-
-function stopOrderChecking() {
-
-  if (orderCheckTimer) {
-
-    clearInterval(
-      orderCheckTimer
-    );
-
-    orderCheckTimer =
-      null;
-
-  }
-
-}
-
-
-/* =====================================================
-   CANCEL CURRENT ORDER
-===================================================== */
-
-async function cancelOrder() {
-
-  if (!selectedOrderId) {
-    return;
-  }
-
-
-  try {
-
-    const data =
-      await apiRequest({
-
-        action:
-          "cancel",
-
-        order_id:
-          selectedOrderId
-
-      });
-
-
-    stopOrderChecking();
-
-
-    const oldOrder =
-      getSavedVirtualOrder(
-        selectedOrderId
-      ) || {
-
-        id:
-          selectedOrderId
-
-      };
-
-
-    const updatedOrder = {
-
-      ...oldOrder,
-
-      ...(
-        data?.order ||
-        {}
-      ),
-
-      id:
-        selectedOrderId,
-
-      status:
-        data?.status ||
-        "CANCELED"
-
-    };
-
-
-    saveVirtualOrder(
-      updatedOrder
-    );
-
-
-    document.getElementById(
-      "otpBox"
-    ).textContent =
-      "Cancelled";
-
-
-    if (data.refunded) {
-
-      showMessage(
-        `Number cancelled. ${money(
-          data.refund_amount_ngn
-        )} refunded to your wallet.`,
-        "success"
-      );
-
-
-      await loadWallet();
-
-    }
-
-    else {
-
-      showMessage(
-        "Number cancelled successfully.",
-        "success"
-      );
-
-    }
-
-
-    renderSavedVirtualOrders();
-
-  }
-
-  catch (err) {
-
-    console.error(
-      "CANCEL:",
-      err
-    );
-
+    console.error(error);
 
     showMessage(
-      err.message ||
-      "Unable to cancel the number.",
-      "error"
+      "Purchase could not be completed. Please try again."
     );
 
-  }
+  } finally {
 
+    buyButton.disabled = false;
+    buyButton.textContent =
+      "Buy Number";
+  }
 }
 
+function statusText(status) {
+  if (status === "waiting")
+    return "Pending";
 
-/* =====================================================
-   SEARCH EVENTS
-===================================================== */
+  if (status === "received")
+    return "Completed";
 
-document.getElementById(
-  "countrySearch"
-).addEventListener(
+  if (
+    status === "cancelled" ||
+    status === "refunded"
+  )
+    return "Cancelled";
+
+  if (status === "failed")
+    return "Failed";
+
+  return status;
+}
+
+function statusClass(status) {
+  if (status === "waiting")
+    return "waiting";
+
+  if (status === "received")
+    return "received";
+
+  return "cancelled";
+}
+
+function renderOrder(order, isCurrent) {
+
+  const status =
+    statusText(order.status);
+
+  const statusCls =
+    statusClass(order.status);
+
+  const canCancel =
+    order.status === "waiting";
+
+  const canCheck =
+    order.status === "waiting";
+
+  const otp =
+    order.otp_code
+      ? escapeHtml(order.otp_code)
+      : "";
+
+  return `
+    <div class="order ${isCurrent ? "current" : ""}">
+
+      <div class="order-head">
+
+        <div class="order-number">
+          ${escapeHtml(order.number || "Number unavailable")}
+        </div>
+
+        <div class="status ${statusCls}">
+          ${status}
+        </div>
+
+      </div>
+
+      <div class="order-meta">
+
+        <div>
+          ${escapeHtml(order.service_name || order.service_code || "")}
+        </div>
+
+        <div>
+          ${escapeHtml(order.country_name || "")}
+        </div>
+
+        <div>
+          ${naira(order.customer_price_ngn)}
+        </div>
+
+      </div>
+
+      ${
+        otp
+          ? `
+            <div class="otp">
+              <div class="otp-label">
+                Verification Code
+              </div>
+              <div class="otp-code">
+                ${otp}
+              </div>
+            </div>
+          `
+          : order.status === "waiting"
+            ? `
+              <div class="otp">
+                <div class="otp-label">
+                  Waiting for SMS code...
+                </div>
+              </div>
+            `
+            : ""
+      }
+
+      ${
+        canCheck || canCancel
+          ? `
+            <div class="order-actions">
+
+              ${
+                canCheck
+                  ? `
+                    <button
+                      class="action"
+                      onclick="checkOrder(${Number(order.id)})"
+                    >
+                      Check Code
+                    </button>
+                  `
+                  : ""
+              }
+
+              ${
+                canCancel
+                  ? `
+                    <button
+                      class="action cancel"
+                      onclick="cancelOrder(${Number(order.id)})"
+                    >
+                      Cancel
+                    </button>
+                  `
+                  : ""
+              }
+
+            </div>
+          `
+          : ""
+      }
+
+    </div>
+  `;
+}
+
+function renderOrders() {
+
+  if (!orders.length) {
+
+    currentSection.classList.add(
+      "hidden"
+    );
+
+    previousOrders.innerHTML =
+      `<div class="empty">No previous orders yet.</div>`;
+
+    return;
+  }
+
+  const current =
+    orders[0];
+
+  currentSection.classList.remove(
+    "hidden"
+  );
+
+  currentOrder.innerHTML =
+    renderOrder(
+      current,
+      true
+    );
+
+  const old =
+    orders.slice(1);
+
+  if (!old.length) {
+
+    previousOrders.innerHTML =
+      `<div class="empty">No previous orders yet.</div>`;
+
+  } else {
+
+    previousOrders.innerHTML =
+      old.map(
+        order =>
+          renderOrder(
+            order,
+            false
+          )
+      ).join("");
+  }
+
+  startPolling();
+}
+
+async function loadOrders() {
+  try {
+
+    const data =
+      await api("orders");
+
+    orders =
+      data.orders || [];
+
+    renderOrders();
+
+  } catch (error) {
+
+    console.error(error);
+
+    previousOrders.innerHTML =
+      `<div class="empty">Unable to load orders.</div>`;
+  }
+}
+
+async function checkOrder(orderId) {
+
+  try {
+
+    const data =
+      await api("check", {
+        order_id:
+          orderId
+      });
+
+    if (
+      data.status === "received"
+    ) {
+
+      showMessage(
+        data.sms?.code
+          ? `Code received: ${data.sms.code}`
+          : "Code received."
+      );
+
+    } else if (
+      data.status === "cancelled"
+    ) {
+
+      showMessage(
+        data.message ||
+        "Number cancelled."
+      );
+
+    } else {
+
+      showMessage(
+        "No code yet. Keep the app open and wait."
+      );
+    }
+
+    await loadWallet();
+    await loadOrders();
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "Unable to check the code right now."
+    );
+  }
+}
+
+async function cancelOrder(orderId) {
+
+  const confirmed =
+    confirm(
+      "Cancel this number? If cancellation is available, the amount will be refunded to your wallet."
+    );
+
+  if (!confirmed)
+    return;
+
+  try {
+
+    const data =
+      await api("cancel", {
+        order_id:
+          orderId
+      });
+
+    showMessage(
+      data.message ||
+      "Number cancelled."
+    );
+
+    await loadWallet();
+    await loadOrders();
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "Unable to cancel right now. Please try again."
+    );
+  }
+}
+
+function startPolling() {
+
+  clearInterval(polling);
+
+  if (!orders.length)
+    return;
+
+  const current =
+    orders[0];
+
+  if (
+    current.status !==
+    "waiting"
+  ) {
+    return;
+  }
+
+  polling =
+    setInterval(
+      async () => {
+
+        try {
+
+          const data =
+            await api("check", {
+              order_id:
+                current.id
+            });
+
+          if (
+            data.status ===
+            "received"
+          ) {
+
+            clearInterval(
+              polling
+            );
+
+            await loadWallet();
+            await loadOrders();
+
+            if (data.sms?.code) {
+              showMessage(
+                `Code received: ${data.sms.code}`
+              );
+            } else {
+              showMessage(
+                "Code received."
+              );
+            }
+
+          } else if (
+            data.status ===
+            "cancelled"
+          ) {
+
+            clearInterval(
+              polling
+            );
+
+            await loadWallet();
+            await loadOrders();
+          }
+
+        } catch {
+          // Keep polling.
+        }
+
+      },
+      5000
+    );
+}
+
+countrySearch.addEventListener(
+  "focus",
+  () => {
+    countryDropdown.classList.add(
+      "open"
+    );
+  }
+);
+
+countrySearch.addEventListener(
   "input",
-  function() {
+  () => {
+
+    const query =
+      countrySearch.value
+        .trim()
+        .toLowerCase();
+
+    const filtered =
+      countries.filter(
+        country =>
+          country.name
+            .toLowerCase()
+            .includes(query)
+      );
 
     renderCountries(
-      this.value
+      filtered
     );
 
+    countryDropdown.classList.add(
+      "open"
+    );
   }
 );
 
+serviceSearch.addEventListener(
+  "focus",
+  () => {
 
-document.getElementById(
-  "serviceSearch"
-).addEventListener(
+    if (
+      selectedCountry
+    ) {
+      serviceDropdown.classList.add(
+        "open"
+      );
+    }
+  }
+);
+
+serviceSearch.addEventListener(
   "input",
-  function() {
+  () => {
+
+    if (!selectedCountry)
+      return;
+
+    const query =
+      serviceSearch.value
+        .trim()
+        .toLowerCase();
+
+    const filtered =
+      services.filter(
+        service =>
+          service.service_name
+            .toLowerCase()
+            .includes(query) ||
+          service.service_code
+            .toLowerCase()
+            .includes(query)
+      );
 
     renderServices(
-      this.value
+      filtered
     );
+
+    serviceDropdown.classList.add(
+      "open"
+    );
+  }
+);
+
+document.addEventListener(
+  "click",
+  event => {
+
+    if (
+      !event.target.closest(
+        "#countrySelector"
+      )
+    ) {
+      countryDropdown.classList.remove(
+        "open"
+      );
+    }
+
+    if (
+      !event.target.closest(
+        "#serviceSelector"
+      )
+    ) {
+      serviceDropdown.classList.remove(
+        "open"
+      );
+    }
 
   }
 );
 
+document
+  .querySelectorAll(".tab")
+  .forEach(tab => {
 
-/* =====================================================
-   START
-===================================================== */
+    tab.addEventListener(
+      "click",
+      async () => {
 
-(async function() {
+        document
+          .querySelectorAll(".tab")
+          .forEach(item =>
+            item.classList.remove(
+              "active"
+            )
+          );
+
+        tab.classList.add(
+          "active"
+        );
+
+        version =
+          tab.dataset.version ||
+          "V1";
+
+        await loadCountries();
+      }
+    );
+
+  });
+
+buyButton.addEventListener(
+  "click",
+  buyNumber
+);
+
+async function init() {
+
+  openVerification();
+
+  const session =
+    await getSession();
+
+  if (!session)
+    return;
 
   await loadWallet();
 
   await loadCountries();
 
-})();
+  await loadOrders();
+}
 
+init();
 </script>
 
 </body>
