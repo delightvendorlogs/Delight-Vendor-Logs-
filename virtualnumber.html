@@ -8,491 +8,482 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-* {
-  box-sizing: border-box;
-}
-
-:root {
-  --bg: #f5f7fb;
-  --card: #ffffff;
-  --text: #101828;
-  --muted: #667085;
-  --border: #e4e7ec;
-  --primary: #12b76a;
-  --primary-dark: #079455;
-  --danger: #d92d20;
-  --warning: #f79009;
-  --shadow: 0 8px 30px rgba(16, 24, 40, .07);
-}
+*{box-sizing:border-box}
 
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: Inter, Arial, sans-serif;
+:root{
+  --bg:#f5f7fb;
+  --card:#fff;
+  --text:#101828;
+  --muted:#667085;
+  --border:#e4e7ec;
+  --primary:#12b76a;
+  --primary-dark:#079455;
+  --danger:#d92d20;
+  --shadow:0 8px 30px rgba(16,24,40,.07)
 }
 
-button,
-input {
-  font: inherit;
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,Arial,sans-serif
 }
 
-button {
-  cursor: pointer;
-}
+button,input{font:inherit}
+button{cursor:pointer}
 
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: rgba(255,255,255,.96);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
+.header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border)
 }
 
-.header-inner {
-  max-width: 720px;
-  margin: auto;
-  padding: 14px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.header-inner{
+  max-width:720px;
+  margin:auto;
+  padding:14px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between
 }
 
-.back {
-  width: 40px;
-  height: 40px;
-  border: 1px solid var(--border);
-  background: white;
-  border-radius: 12px;
-  font-size: 20px;
+.back{
+  width:40px;
+  height:40px;
+  border:1px solid var(--border);
+  background:#fff;
+  border-radius:12px;
+  font-size:20px
 }
 
-.title {
-  font-size: 17px;
-  font-weight: 800;
+.title{
+  font-size:17px;
+  font-weight:800
 }
 
-.wallet {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--primary-dark);
+.wallet{
+  font-size:12px;
+  font-weight:700;
+  color:var(--primary-dark)
 }
 
-.container {
-  max-width: 720px;
-  margin: auto;
-  padding: 18px 15px 60px;
+.container{
+  max-width:720px;
+  margin:auto;
+  padding:18px 15px 60px
 }
 
-.tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
+.tabs{
+  display:flex;
+  gap:8px;
+  margin-bottom:16px
 }
 
-.tab {
-  flex: 1;
-  border: 1px solid var(--border);
-  background: white;
-  color: var(--muted);
-  border-radius: 12px;
-  padding: 11px 8px;
-  font-weight: 800;
+.tab{
+  flex:1;
+  border:1px solid var(--border);
+  background:#fff;
+  color:var(--muted);
+  border-radius:12px;
+  padding:11px 8px;
+  font-weight:800
 }
 
-.tab.active {
-  background: var(--text);
-  color: white;
-  border-color: var(--text);
+.tab.active{
+  background:var(--text);
+  color:#fff;
+  border-color:var(--text)
 }
 
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 16px;
-  margin-bottom: 14px;
-  box-shadow: var(--shadow);
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:14px;
+  box-shadow:var(--shadow)
 }
 
-.section-title {
-  font-size: 14px;
-  font-weight: 800;
-  margin-bottom: 9px;
+.section-title{
+  font-size:14px;
+  font-weight:800;
+  margin-bottom:9px
 }
 
-.section-sub {
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 12px;
+.section-sub{
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:12px
 }
 
-.selector {
-  position: relative;
+.selector{
+  position:relative
 }
 
-.selector-input {
-  width: 100%;
-  border: 1px solid var(--border);
-  border-radius: 13px;
-  padding: 13px 42px 13px 13px;
-  outline: none;
-  background: white;
+.selector-input{
+  width:100%;
+  border:1px solid var(--border);
+  border-radius:13px;
+  padding:13px 42px 13px 13px;
+  outline:none;
+  background:#fff
 }
 
-.selector-input:focus {
-  border-color: var(--primary);
+.selector-input:focus{
+  border-color:var(--primary)
 }
 
-.selector-arrow {
-  position: absolute;
-  right: 14px;
-  top: 12px;
-  color: var(--muted);
-  pointer-events: none;
+.selector-arrow{
+  position:absolute;
+  right:14px;
+  top:12px;
+  color:var(--muted);
+  pointer-events:none
 }
 
-.dropdown {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% + 6px);
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  max-height: 250px;
-  overflow-y: auto;
-  z-index: 10;
-  box-shadow: var(--shadow);
-  display: none;
+.dropdown{
+  position:absolute;
+  left:0;
+  right:0;
+  top:calc(100% + 6px);
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:14px;
+  max-height:250px;
+  overflow-y:auto;
+  z-index:50;
+  box-shadow:var(--shadow);
+  display:none
 }
 
-.dropdown.open {
-  display: block;
+.dropdown.open{
+  display:block
 }
 
-.option {
-  padding: 13px;
-  border-bottom: 1px solid #f2f4f7;
-  font-size: 13px;
-  cursor: pointer;
+.option{
+  padding:13px;
+  border-bottom:1px solid #f2f4f7;
+  font-size:13px;
+  cursor:pointer
 }
 
-.option:last-child {
-  border-bottom: 0;
+.option:last-child{
+  border-bottom:0
 }
 
-.option:hover {
-  background: #f9fafb;
+.option:hover{
+  background:#f9fafb
 }
 
-.disabled {
-  opacity: .5;
-  pointer-events: none;
+.disabled{
+  opacity:.5;
+  pointer-events:none
 }
 
-.server-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
+.server-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px
 }
 
-.server {
-  border: 1.5px solid var(--border);
-  border-radius: 15px;
-  padding: 14px;
-  background: white;
-  transition: .15s;
+.server{
+  border:1.5px solid var(--border);
+  border-radius:15px;
+  padding:14px;
+  background:#fff;
+  transition:.15s
 }
 
-.server.selected {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(18,183,106,.10);
+.server.selected{
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(18,183,106,.10)
 }
 
-.server-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.server-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center
 }
 
-.server-name {
-  font-weight: 800;
+.server-name{
+  font-weight:800
 }
 
-.server-stock {
-  color: var(--muted);
-  font-size: 12px;
-  margin-top: 8px;
+.server-stock{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:8px
 }
 
-.server-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 12px;
+.server-bottom{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:12px
 }
 
-.server-price {
-  font-size: 18px;
-  font-weight: 900;
+.server-price{
+  font-size:18px;
+  font-weight:900
 }
 
-.choose {
-  border: 0;
-  background: #eefbf4;
-  color: var(--primary-dark);
-  border-radius: 9px;
-  padding: 8px 11px;
-  font-weight: 800;
-  font-size: 12px;
+.choose{
+  border:0;
+  background:#eefbf4;
+  color:var(--primary-dark);
+  border-radius:9px;
+  padding:8px 11px;
+  font-weight:800;
+  font-size:12px
 }
 
-.server.selected .choose {
-  background: var(--primary);
-  color: white;
+.server.selected .choose{
+  background:var(--primary);
+  color:#fff
 }
 
-.buy-area {
-  display: none;
-  margin-top: 14px;
+.buy-area{
+  display:none;
+  margin-top:14px
 }
 
-.buy-price {
-  text-align: center;
-  font-size: 28px;
-  font-weight: 900;
-  margin-bottom: 12px;
+.buy-price{
+  text-align:center;
+  font-size:28px;
+  font-weight:900;
+  margin-bottom:12px
 }
 
-.buy-btn {
-  width: 100%;
-  border: 0;
-  background: var(--primary);
-  color: white;
-  padding: 14px;
-  border-radius: 13px;
-  font-weight: 900;
+.buy-btn{
+  width:100%;
+  border:0;
+  background:var(--primary);
+  color:#fff;
+  padding:14px;
+  border-radius:13px;
+  font-weight:900
 }
 
-.buy-btn:disabled {
-  opacity: .6;
+.buy-btn:disabled{
+  opacity:.6
 }
 
-.order {
-  border: 1px solid var(--border);
-  border-radius: 15px;
-  padding: 14px;
-  margin-top: 10px;
+.order{
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:14px;
+  margin-top:10px
 }
 
-.order.current {
-  border-color: rgba(18,183,106,.35);
+.order.current{
+  border-color:rgba(18,183,106,.35)
 }
 
-.order-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+.order-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px
 }
 
-.order-number {
-  font-size: 17px;
-  font-weight: 900;
-  word-break: break-all;
+.order-number{
+  font-size:17px;
+  font-weight:900;
+  word-break:break-all
 }
 
-.status {
-  padding: 5px 8px;
-  border-radius: 999px;
-  background: #f2f4f7;
-  font-size: 10px;
-  font-weight: 900;
-  white-space: nowrap;
+.status{
+  padding:5px 8px;
+  border-radius:999px;
+  background:#f2f4f7;
+  font-size:10px;
+  font-weight:900;
+  white-space:nowrap
 }
 
-.status.waiting {
-  color: #b54708;
-  background: #fffaeb;
+.status.waiting{
+  color:#b54708;
+  background:#fffaeb
 }
 
-.status.received {
-  color: #027a48;
-  background: #ecfdf3;
+.status.received{
+  color:#027a48;
+  background:#ecfdf3
 }
 
-.status.cancelled {
-  color: #667085;
-  background: #f2f4f7;
+.status.cancelled{
+  color:#667085;
+  background:#f2f4f7
 }
 
-.order-meta {
-  margin-top: 9px;
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.7;
+.order-meta{
+  margin-top:9px;
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.7
 }
 
-.otp {
-  margin-top: 12px;
-  padding: 14px;
-  border-radius: 13px;
-  background: #f8f9fc;
-  text-align: center;
+.otp{
+  margin-top:12px;
+  padding:14px;
+  border-radius:13px;
+  background:#f8f9fc;
+  text-align:center
 }
 
-.otp-label {
-  color: var(--muted);
-  font-size: 11px;
+.otp-label{
+  color:var(--muted);
+  font-size:11px
 }
 
-.otp-code {
-  font-size: 30px;
-  font-weight: 900;
-  letter-spacing: 5px;
-  margin-top: 4px;
+.otp-code{
+  font-size:30px;
+  font-weight:900;
+  letter-spacing:5px;
+  margin-top:4px
 }
 
-.order-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
+.order-actions{
+  display:flex;
+  gap:8px;
+  margin-top:12px
 }
 
-.action {
-  flex: 1;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: white;
-  font-size: 12px;
-  font-weight: 800;
+.action{
+  flex:1;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:#fff;
+  font-size:12px;
+  font-weight:800
 }
 
-.action.cancel {
-  color: var(--danger);
+.action.cancel{
+  color:var(--danger)
 }
 
-.empty {
-  text-align: center;
-  color: var(--muted);
-  padding: 25px 10px;
-  font-size: 13px;
+.empty{
+  text-align:center;
+  color:var(--muted);
+  padding:25px 10px;
+  font-size:13px
 }
 
-.message {
-  position: fixed;
-  left: 15px;
-  right: 15px;
-  bottom: 18px;
-  z-index: 100;
-  max-width: 690px;
-  margin: auto;
-  padding: 14px;
-  border-radius: 13px;
-  background: #101828;
-  color: white;
-  font-size: 13px;
-  font-weight: 700;
-  display: none;
-  box-shadow: var(--shadow);
+.message{
+  position:fixed;
+  left:15px;
+  right:15px;
+  bottom:18px;
+  z-index:100;
+  max-width:690px;
+  margin:auto;
+  padding:14px;
+  border-radius:13px;
+  background:#101828;
+  color:#fff;
+  font-size:13px;
+  font-weight:700;
+  display:none;
+  box-shadow:var(--shadow)
 }
 
-.message.show {
-  display: block;
+.message.show{
+  display:block
 }
 
-.loading {
-  text-align: center;
-  color: var(--muted);
-  padding: 15px;
-  font-size: 12px;
+.loading{
+  text-align:center;
+  color:var(--muted);
+  padding:15px;
+  font-size:12px
 }
 
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  background: rgba(16,24,40,.68);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px;
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:200;
+  background:rgba(16,24,40,.68);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px
 }
 
-.modal {
-  width: 100%;
-  max-width: 520px;
-  background: white;
-  border-radius: 20px;
-  padding: 20px;
-  max-height: 88vh;
-  overflow-y: auto;
+.modal{
+  width:100%;
+  max-width:520px;
+  background:#fff;
+  border-radius:20px;
+  padding:20px;
+  max-height:88vh;
+  overflow-y:auto
 }
 
-.modal-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center
 }
 
-.modal-title {
-  font-size: 19px;
-  font-weight: 900;
+.modal-title{
+  font-size:19px;
+  font-weight:900
 }
 
-.close {
-  width: 36px;
-  height: 36px;
-  border: 0;
-  background: #f2f4f7;
-  border-radius: 10px;
-  font-size: 18px;
+.close{
+  width:36px;
+  height:36px;
+  border:0;
+  background:#f2f4f7;
+  border-radius:10px;
+  font-size:18px
 }
 
-.notice {
-  margin-top: 14px;
+.notice{
+  margin-top:14px
 }
 
-.notice-item {
-  padding: 13px;
-  border: 1px solid var(--border);
-  border-radius: 13px;
-  margin-bottom: 9px;
+.notice-item{
+  padding:13px;
+  border:1px solid var(--border);
+  border-radius:13px;
+  margin-bottom:9px
 }
 
-.notice-item strong {
-  display: block;
-  font-size: 13px;
-  margin-bottom: 4px;
+.notice-item strong{
+  display:block;
+  font-size:13px;
+  margin-bottom:4px
 }
 
-.notice-item span {
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.55;
+.notice-item span{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.55
 }
 
-.continue {
-  width: 100%;
-  border: 0;
-  background: var(--primary);
-  color: white;
-  padding: 13px;
-  border-radius: 12px;
-  font-weight: 900;
-  margin-top: 7px;
+.continue{
+  width:100%;
+  border:0;
+  background:var(--primary);
+  color:#fff;
+  padding:13px;
+  border-radius:12px;
+  font-weight:900;
+  margin-top:7px
 }
 
-.hidden {
-  display: none !important;
+.hidden{
+  display:none!important
 }
 
-@media (min-width: 600px) {
-  .server-grid {
-    grid-template-columns: repeat(3, 1fr);
+@media(min-width:600px){
+  .server-grid{
+    grid-template-columns:repeat(3,1fr)
   }
 }
 </style>
@@ -500,12 +491,23 @@ button {
 
 <body>
 
+<!-- VERIFICATION POPUP -->
+
 <div id="verificationModal" class="modal-backdrop">
+
   <div class="modal">
 
     <div class="modal-head">
-      <div class="modal-title">Important Verification</div>
-      <button class="close" onclick="closeVerification()">×</button>
+      <div class="modal-title">
+        Important Verification
+      </div>
+
+      <button
+        class="close"
+        onclick="closeVerification()"
+      >
+        ×
+      </button>
     </div>
 
     <div class="notice">
@@ -549,33 +551,71 @@ button {
 
     </div>
 
-    <button class="continue" onclick="closeVerification()">
+    <button
+      class="continue"
+      onclick="closeVerification()"
+    >
       Continue
     </button>
 
   </div>
 </div>
 
+<!-- HEADER -->
+
 <header class="header">
+
   <div class="header-inner">
 
-    <button class="back" onclick="history.back()">‹</button>
+    <button
+      class="back"
+      onclick="history.back()"
+    >
+      ‹
+    </button>
 
-    <div class="title">Virtual Numbers</div>
+    <div class="title">
+      Virtual Numbers
+    </div>
 
-    <div class="wallet" id="walletBalance">
+    <div
+      class="wallet"
+      id="walletBalance"
+    >
       ₦0
     </div>
 
   </div>
+
 </header>
 
 <main class="container">
 
+  <!-- VERSION TABS -->
+
   <div class="tabs">
-    <button class="tab active" data-version="V1">V1</button>
-    <button class="tab" data-version="V2">V2</button>
-    <button class="tab" data-version="V3">V3</button>
+
+    <button
+      class="tab active"
+      data-version="V1"
+    >
+      V1
+    </button>
+
+    <button
+      class="tab"
+      data-version="V2"
+    >
+      V2
+    </button>
+
+    <button
+      class="tab"
+      data-version="V3"
+    >
+      V3
+    </button>
+
   </div>
 
   <!-- COUNTRY -->
@@ -590,7 +630,10 @@ button {
       Select the country for your virtual number.
     </div>
 
-    <div class="selector" id="countrySelector">
+    <div
+      class="selector"
+      id="countrySelector"
+    >
 
       <input
         id="countrySearch"
@@ -599,7 +642,9 @@ button {
         autocomplete="off"
       >
 
-      <span class="selector-arrow">⌄</span>
+      <span class="selector-arrow">
+        ⌄
+      </span>
 
       <div
         id="countryDropdown"
@@ -634,7 +679,9 @@ button {
         autocomplete="off"
       >
 
-      <span class="selector-arrow">⌄</span>
+      <span class="selector-arrow">
+        ⌄
+      </span>
 
       <div
         id="serviceDropdown"
@@ -645,7 +692,7 @@ button {
 
   </section>
 
-  <!-- SERVERS -->
+  <!-- SERVER -->
 
   <section
     id="serverSection"
@@ -712,18 +759,28 @@ button {
     </div>
 
     <div id="previousOrders">
+
       <div class="loading">
         Loading orders...
       </div>
+
     </div>
 
   </section>
 
 </main>
 
-<div id="message" class="message"></div>
+<div
+  id="message"
+  class="message"
+></div>
 
 <script>
+
+/* =========================
+   SUPABASE
+========================= */
+
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
 
@@ -739,6 +796,11 @@ const supabaseClient =
 const FUNCTION_URL =
   `${SUPABASE_URL}/functions/v1/numpool-api`;
 
+
+/* =========================
+   STATE
+========================= */
+
 let version = "V1";
 
 let countries = [];
@@ -752,104 +814,204 @@ let selectedServer = null;
 
 let polling = null;
 
+
+/* =========================
+   ELEMENTS
+========================= */
+
 const countrySearch =
-  document.getElementById("countrySearch");
+  document.getElementById(
+    "countrySearch"
+  );
 
 const countryDropdown =
-  document.getElementById("countryDropdown");
+  document.getElementById(
+    "countryDropdown"
+  );
 
 const serviceSearch =
-  document.getElementById("serviceSearch");
+  document.getElementById(
+    "serviceSearch"
+  );
 
 const serviceDropdown =
-  document.getElementById("serviceDropdown");
+  document.getElementById(
+    "serviceDropdown"
+  );
 
 const serviceSelector =
-  document.getElementById("serviceSelector");
+  document.getElementById(
+    "serviceSelector"
+  );
 
 const serverSection =
-  document.getElementById("serverSection");
+  document.getElementById(
+    "serverSection"
+  );
 
 const serverGrid =
-  document.getElementById("serverGrid");
+  document.getElementById(
+    "serverGrid"
+  );
 
 const buyArea =
-  document.getElementById("buyArea");
+  document.getElementById(
+    "buyArea"
+  );
 
 const buyPrice =
-  document.getElementById("buyPrice");
+  document.getElementById(
+    "buyPrice"
+  );
 
 const buyButton =
-  document.getElementById("buyButton");
+  document.getElementById(
+    "buyButton"
+  );
 
 const currentSection =
-  document.getElementById("currentSection");
+  document.getElementById(
+    "currentSection"
+  );
 
 const currentOrder =
-  document.getElementById("currentOrder");
+  document.getElementById(
+    "currentOrder"
+  );
 
 const previousOrders =
-  document.getElementById("previousOrders");
+  document.getElementById(
+    "previousOrders"
+  );
 
 const walletBalance =
-  document.getElementById("walletBalance");
+  document.getElementById(
+    "walletBalance"
+  );
 
-function naira(value) {
-  return `₦${Math.ceil(Number(value) || 0).toLocaleString()}`;
+
+/* =========================
+   HELPERS
+========================= */
+
+function naira(value){
+
+  const number =
+    Number(value);
+
+  if(
+    !Number.isFinite(number)
+  ){
+    return "₦0";
+  }
+
+  return `₦${Math.ceil(number).toLocaleString()}`;
 }
 
-function escapeHtml(value) {
+
+function numberValue(value){
+
+  const number =
+    Number(value);
+
+  return Number.isFinite(number)
+    ? number
+    : 0;
+}
+
+
+function escapeHtml(value){
+
   return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 }
 
-function showMessage(text) {
+
+function showMessage(text){
+
   const box =
-    document.getElementById("message");
+    document.getElementById(
+      "message"
+    );
 
-  box.textContent = text;
-  box.classList.add("show");
+  box.textContent =
+    text;
 
-  clearTimeout(showMessage.timer);
+  box.classList.add(
+    "show"
+  );
+
+  clearTimeout(
+    showMessage.timer
+  );
 
   showMessage.timer =
-    setTimeout(() => {
-      box.classList.remove("show");
-    }, 4500);
+    setTimeout(
+      () => {
+        box.classList.remove(
+          "show"
+        );
+      },
+      4500
+    );
 }
 
-function closeVerification() {
+
+/* =========================
+   VERIFICATION MODAL
+========================= */
+
+function closeVerification(){
+
   document
-    .getElementById("verificationModal")
-    .classList.add("hidden");
+    .getElementById(
+      "verificationModal"
+    )
+    .classList.add(
+      "hidden"
+    );
 }
 
-function openVerification() {
+
+function openVerification(){
+
   document
-    .getElementById("verificationModal")
-    .classList.remove("hidden");
+    .getElementById(
+      "verificationModal"
+    )
+    .classList.remove(
+      "hidden"
+    );
 }
+
 
 window.addEventListener(
   "pageshow",
   openVerification
 );
 
-async function getSession() {
+
+/* =========================
+   SESSION
+========================= */
+
+async function getSession(){
+
   const {
     data,
     error
   } =
     await supabaseClient.auth.getSession();
 
-  if (
+  if(
     error ||
     !data.session
-  ) {
+  ){
+
     window.location.href =
       "login.html";
 
@@ -859,42 +1021,68 @@ async function getSession() {
   return data.session;
 }
 
-async function api(action, payload = {}) {
+
+/* =========================
+   API
+========================= */
+
+async function api(
+  action,
+  payload = {}
+){
+
   const session =
     await getSession();
 
-  if (!session) {
-    throw new Error("LOGIN_REQUIRED");
+  if(!session){
+
+    throw new Error(
+      "LOGIN_REQUIRED"
+    );
   }
 
   const response =
-    await fetch(FUNCTION_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type":
-          "application/json",
-        "apikey":
-          SUPABASE_KEY,
-        "Authorization":
-          `Bearer ${session.access_token}`
-      },
-      body: JSON.stringify({
-        action,
-        version,
-        ...payload
-      })
-    });
+    await fetch(
+      FUNCTION_URL,
+      {
+        method:"POST",
 
-  let data;
+        headers:{
+          "Content-Type":
+            "application/json",
 
-  try {
+          "apikey":
+            SUPABASE_KEY,
+
+          "Authorization":
+            `Bearer ${session.access_token}`
+        },
+
+        body:JSON.stringify({
+          action,
+          version,
+          ...payload
+        })
+      }
+    );
+
+  let data = {};
+
+  try{
+
     data =
       await response.json();
-  } catch {
+
+  }catch{
+
     data = {};
   }
 
-  if (!response.ok && !data.message) {
+  if(
+    !response.ok &&
+    !data.message
+  ){
+
     throw new Error(
       "Request failed."
     );
@@ -903,13 +1091,23 @@ async function api(action, payload = {}) {
   return data;
 }
 
-async function loadWallet() {
+
+/* =========================
+   WALLET
+========================= */
+
+async function loadWallet(){
+
   const {
-    data: sessionData
+    data:sessionData
   } =
     await supabaseClient.auth.getSession();
 
-  if (!sessionData.session) return;
+  if(
+    !sessionData.session
+  ){
+    return;
+  }
 
   const {
     data,
@@ -919,13 +1117,20 @@ async function loadWallet() {
       "get_my_wallet"
     );
 
-  if (!error) {
+  if(!error){
+
     walletBalance.textContent =
       naira(data || 0);
   }
 }
 
-function resetSelection() {
+
+/* =========================
+   RESET
+========================= */
+
+function resetSelection(){
+
   selectedCountry = null;
   selectedService = null;
   selectedServer = null;
@@ -936,6 +1141,7 @@ function resetSelection() {
   countrySearch.value = "";
 
   serviceSearch.value = "";
+
   serviceSearch.placeholder =
     "Select country first...";
 
@@ -959,85 +1165,312 @@ function resetSelection() {
   );
 }
 
-async function loadCountries() {
+
+/* =========================
+   COUNTRY NORMALIZER
+========================= */
+
+function normalizeCountry(country){
+
+  const id =
+    country?.id ??
+    country?.ID ??
+    country?.country_id ??
+    country?.countryId;
+
+  const name =
+    country?.name ??
+    country?.eng ??
+    country?.en ??
+    country?.country ??
+    country?.title ??
+    country?.rus ??
+    country?.chn;
+
+  if(
+    id === undefined ||
+    id === null ||
+    !name
+  ){
+    return null;
+  }
+
+  return {
+    id,
+    name:String(name)
+  };
+}
+
+
+/* =========================
+   COUNTRY SEARCH ALIASES
+========================= */
+
+function countryMatches(
+  country,
+  query
+){
+
+  const name =
+    String(
+      country.name || ""
+    ).toLowerCase();
+
+  const q =
+    query
+      .trim()
+      .toLowerCase();
+
+  if(!q)
+    return true;
+
+  /* United States aliases */
+
+  if(
+    q === "us" ||
+    q === "usa" ||
+    q === "america" ||
+    q === "united states"
+  ){
+
+    return (
+      name.includes(
+        "united states"
+      ) ||
+      name === "usa" ||
+      name.includes(
+        "united states of america"
+      )
+    );
+  }
+
+  /* United Kingdom aliases */
+
+  if(
+    q === "uk" ||
+    q === "britain" ||
+    q === "great britain" ||
+    q === "england" ||
+    q === "united kingdom"
+  ){
+
+    return (
+      name.includes(
+        "united kingdom"
+      ) ||
+      name === "uk" ||
+      name.includes(
+        "great britain"
+      ) ||
+      name === "england"
+    );
+  }
+
+  return name.includes(q);
+}
+
+
+/* =========================
+   LOAD COUNTRIES
+========================= */
+
+async function loadCountries(){
+
   resetSelection();
 
   countryDropdown.innerHTML =
-    `<div class="loading">Loading countries...</div>`;
+    `
+      <div class="loading">
+        Loading countries...
+      </div>
+    `;
 
-  try {
+  try{
+
     const data =
-      await api("countries");
+      await api(
+        "countries"
+      );
+
+    const raw =
+      Array.isArray(
+        data.countries
+      )
+        ? data.countries
+        : [];
 
     countries =
-      data.countries || [];
+      raw
+        .map(
+          normalizeCountry
+        )
+        .filter(Boolean);
 
-    renderCountries(countries);
+    renderCountries(
+      countries
+    );
 
-  } catch (error) {
-    console.error(error);
+  }catch(error){
+
+    console.error(
+      "COUNTRIES ERROR:",
+      error
+    );
 
     countryDropdown.innerHTML =
-      `<div class="empty">Unable to load countries.</div>`;
+      `
+        <div class="empty">
+          Unable to load countries.
+        </div>
+      `;
+
+    showMessage(
+      "Unable to load countries right now."
+    );
   }
 }
 
-function renderCountries(list) {
-  if (!list.length) {
+
+/* =========================
+   RENDER COUNTRIES
+========================= */
+
+function renderCountries(
+  list
+){
+
+  if(!list.length){
+
     countryDropdown.innerHTML =
-      `<div class="empty">No countries available.</div>`;
+      `
+        <div class="empty">
+          No countries found.
+        </div>
+      `;
+
     return;
   }
 
   countryDropdown.innerHTML =
-    list.map(country => `
-      <div
-        class="option"
-        data-country="${escapeHtml(country.id)}"
-      >
-        ${escapeHtml(country.name)}
-      </div>
-    `).join("");
+    list
+      .map(
+        country => `
+          <div
+            class="option"
+            data-country="${escapeHtml(country.id)}"
+          >
+            ${escapeHtml(country.name)}
+          </div>
+        `
+      )
+      .join("");
 
   countryDropdown
-    .querySelectorAll(".option")
-    .forEach(option => {
+    .querySelectorAll(
+      ".option"
+    )
+    .forEach(
+      option => {
 
-      option.addEventListener(
-        "click",
-        () => {
+        option.addEventListener(
+          "click",
+          () => {
 
-          const id =
-            Number(
-              option.dataset.country
+            const id =
+              option.dataset.country;
+
+            selectedCountry =
+              countries.find(
+                item =>
+                  String(item.id) ===
+                  String(id)
+              );
+
+            if(
+              !selectedCountry
+            ){
+              return;
+            }
+
+            countrySearch.value =
+              selectedCountry.name;
+
+            countryDropdown.classList.remove(
+              "open"
             );
 
-          selectedCountry =
-            countries.find(
-              item =>
-                Number(item.id) === id
-            );
+            loadServices();
+          }
+        );
 
-          if (!selectedCountry)
-            return;
-
-          countrySearch.value =
-            selectedCountry.name;
-
-          countryDropdown.classList.remove(
-            "open"
-          );
-
-          loadServices();
-        }
-      );
-
-    });
+      }
+    );
 }
 
-async function loadServices() {
+
+/* =========================
+   SERVICE NORMALIZER
+========================= */
+
+function normalizeService(
+  service
+){
+
+  const code =
+    service?.service_code ??
+    service?.code ??
+    service?.service ??
+    service?.id;
+
+  const name =
+    service?.service_name ??
+    service?.name ??
+    service?.title ??
+    code;
+
+  if(
+    code === undefined ||
+    code === null ||
+    !name
+  ){
+    return null;
+  }
+
+  return {
+
+    service_code:
+      String(code),
+
+    service_name:
+      String(name),
+
+    /*
+      Do NOT assume the service
+      endpoint has stock.
+
+      Stock belongs to the
+      price/server response.
+    */
+
+    stock:
+      service?.stock ??
+      null
+
+  };
+}
+
+
+/* =========================
+   LOAD SERVICES
+========================= */
+
+async function loadServices(){
+
   selectedService = null;
   selectedServer = null;
+
+  services = [];
+  servers = [];
 
   serverSection.classList.add(
     "hidden"
@@ -1048,6 +1481,7 @@ async function loadServices() {
   );
 
   serviceSearch.value = "";
+
   serviceSearch.placeholder =
     "Search service...";
 
@@ -1056,85 +1490,162 @@ async function loadServices() {
   );
 
   serviceDropdown.innerHTML =
-    `<div class="loading">Loading services...</div>`;
-
-  try {
-    const data =
-      await api("services", {
-        country_id:
-          selectedCountry.id
-      });
-
-    services =
-      data.services || [];
-
-    renderServices(services);
-
-  } catch (error) {
-    console.error(error);
-
-    serviceDropdown.innerHTML =
-      `<div class="empty">Unable to load services.</div>`;
-  }
-}
-
-function renderServices(list) {
-  if (!list.length) {
-    serviceDropdown.innerHTML =
-      `<div class="empty">No services available.</div>`;
-    return;
-  }
-
-  serviceDropdown.innerHTML =
-    list.map(service => `
-      <div
-        class="option"
-        data-service="${escapeHtml(service.service_code)}"
-      >
-        <strong>
-          ${escapeHtml(service.service_name)}
-        </strong>
-        <div style="font-size:11px;color:#667085;margin-top:3px">
-          ${Number(service.stock).toLocaleString()} available
-        </div>
+    `
+      <div class="loading">
+        Loading services...
       </div>
-    `).join("");
+    `;
 
-  serviceDropdown
-    .querySelectorAll(".option")
-    .forEach(option => {
+  try{
 
-      option.addEventListener(
-        "click",
-        () => {
-
-          const code =
-            option.dataset.service;
-
-          selectedService =
-            services.find(
-              item =>
-                item.service_code === code
-            );
-
-          if (!selectedService)
-            return;
-
-          serviceSearch.value =
-            selectedService.service_name;
-
-          serviceDropdown.classList.remove(
-            "open"
-          );
-
-          loadServers();
+    const data =
+      await api(
+        "services",
+        {
+          country_id:
+            selectedCountry.id
         }
       );
 
-    });
+    const raw =
+      Array.isArray(
+        data.services
+      )
+        ? data.services
+        : [];
+
+    services =
+      raw
+        .map(
+          normalizeService
+        )
+        .filter(Boolean);
+
+    renderServices(
+      services
+    );
+
+  }catch(error){
+
+    console.error(
+      "SERVICES ERROR:",
+      error
+    );
+
+    serviceDropdown.innerHTML =
+      `
+        <div class="empty">
+          Unable to load services.
+        </div>
+      `;
+
+    showMessage(
+      "Unable to load services right now."
+    );
+  }
 }
 
-async function loadServers() {
+
+/* =========================
+   RENDER SERVICES
+========================= */
+
+function renderServices(
+  list
+){
+
+  if(!list.length){
+
+    serviceDropdown.innerHTML =
+      `
+        <div class="empty">
+          No services available.
+        </div>
+      `;
+
+    return;
+  }
+
+  /*
+    IMPORTANT:
+    We no longer display:
+    "NaN available"
+
+    because getServicesList
+    does not necessarily provide
+    stock.
+
+    Actual stock is loaded after
+    selecting the service.
+  */
+
+  serviceDropdown.innerHTML =
+    list
+      .map(
+        service => `
+          <div
+            class="option"
+            data-service="${escapeHtml(service.service_code)}"
+          >
+            <strong>
+              ${escapeHtml(service.service_name)}
+            </strong>
+          </div>
+        `
+      )
+      .join("");
+
+  serviceDropdown
+    .querySelectorAll(
+      ".option"
+    )
+    .forEach(
+      option => {
+
+        option.addEventListener(
+          "click",
+          () => {
+
+            const code =
+              option.dataset.service;
+
+            selectedService =
+              services.find(
+                item =>
+                  String(
+                    item.service_code
+                  ) ===
+                  String(code)
+              );
+
+            if(
+              !selectedService
+            ){
+              return;
+            }
+
+            serviceSearch.value =
+              selectedService.service_name;
+
+            serviceDropdown.classList.remove(
+              "open"
+            );
+
+            loadServers();
+          }
+        );
+
+      }
+    );
+}
+
+
+/* =========================
+   LOAD SERVERS / PRICES
+========================= */
+
+async function loadServers(){
+
   selectedServer = null;
 
   serverSection.classList.remove(
@@ -1142,152 +1653,241 @@ async function loadServers() {
   );
 
   serverGrid.innerHTML =
-    `<div class="loading">Loading servers...</div>`;
+    `
+      <div class="loading">
+        Loading servers...
+      </div>
+    `;
 
   buyArea.style.display =
     "none";
 
-  try {
+  try{
+
     const data =
-      await api("prices", {
-        country_id:
-          selectedCountry.id,
-        service_code:
-          selectedService.service_code
-      });
+      await api(
+        "prices",
+        {
+          country_id:
+            selectedCountry.id,
+
+          service_code:
+            selectedService.service_code
+        }
+      );
 
     servers =
-      data.servers || [];
+      Array.isArray(
+        data.servers
+      )
+        ? data.servers
+        : [];
 
     renderServers();
 
-  } catch (error) {
-    console.error(error);
+  }catch(error){
+
+    console.error(
+      "PRICES ERROR:",
+      error
+    );
 
     serverGrid.innerHTML =
-      `<div class="empty">No server is available right now.</div>`;
+      `
+        <div class="empty">
+          Number not available right now.
+          Please try another server.
+        </div>
+      `;
+
+    showMessage(
+      "Unable to load server prices right now."
+    );
   }
 }
 
-function renderServers() {
-  if (!servers.length) {
+
+/* =========================
+   RENDER SERVERS
+========================= */
+
+function renderServers(){
+
+  if(!servers.length){
+
     serverGrid.innerHTML =
-      `<div class="empty">Number not available right now. Please try another server.</div>`;
+      `
+        <div class="empty">
+          Number not available right now.
+          Please try another server.
+        </div>
+      `;
+
     return;
   }
 
   serverGrid.innerHTML =
-    servers.map((server, index) => `
-      <div
-        class="server"
-        data-server="${escapeHtml(server.server_id)}"
-      >
+    servers
+      .map(
+        (server,index) => {
 
-        <div class="server-top">
+          const stock =
+            numberValue(
+              server.stock
+            );
 
-          <div class="server-name">
-            ${escapeHtml(server.label || `Server ${index + 1}`)}
-          </div>
+          return `
+            <div
+              class="server"
+              data-server="${escapeHtml(server.server_id)}"
+            >
 
-        </div>
+              <div class="server-top">
 
-        <div class="server-stock">
-          ${Number(server.stock).toLocaleString()} in stock
-        </div>
+                <div class="server-name">
+                  ${escapeHtml(
+                    server.label ||
+                    `Server ${index + 1}`
+                  )}
+                </div>
 
-        <div class="server-bottom">
+              </div>
 
-          <div class="server-price">
-            ${naira(server.customer_price_ngn)}
-          </div>
+              <div class="server-stock">
 
-          <button class="choose">
-            Select
-          </button>
+                ${
+                  stock > 0
+                    ? `${stock.toLocaleString()} in stock`
+                    : "Currently unavailable"
+                }
 
-        </div>
+              </div>
 
-      </div>
-    `).join("");
+              <div class="server-bottom">
+
+                <div class="server-price">
+
+                  ${naira(
+                    server.customer_price_ngn
+                  )}
+
+                </div>
+
+                <button class="choose">
+                  Select
+                </button>
+
+              </div>
+
+            </div>
+          `;
+        }
+      )
+      .join("");
 
   serverGrid
-    .querySelectorAll(".server")
-    .forEach(card => {
+    .querySelectorAll(
+      ".server"
+    )
+    .forEach(
+      card => {
 
-      card.addEventListener(
-        "click",
-        () => {
+        card.addEventListener(
+          "click",
+          () => {
 
-          const id =
-            card.dataset.server;
+            const id =
+              card.dataset.server;
 
-          selectedServer =
-            servers.find(
-              server =>
-                String(server.server_id) ===
-                String(id)
-            );
+            selectedServer =
+              servers.find(
+                server =>
+                  String(
+                    server.server_id
+                  ) ===
+                  String(id)
+              );
 
-          if (!selectedServer)
-            return;
+            if(
+              !selectedServer
+            ){
+              return;
+            }
 
-          serverGrid
-            .querySelectorAll(".server")
-            .forEach(item =>
-              item.classList.remove(
-                "selected"
+            serverGrid
+              .querySelectorAll(
+                ".server"
               )
+              .forEach(
+                item =>
+                  item.classList.remove(
+                    "selected"
+                  )
+              );
+
+            card.classList.add(
+              "selected"
             );
 
-          card.classList.add(
-            "selected"
-          );
+            buyPrice.textContent =
+              naira(
+                selectedServer.customer_price_ngn
+              );
 
-          buyPrice.textContent =
-            naira(
-              selectedServer.customer_price_ngn
-            );
+            buyArea.style.display =
+              "block";
+          }
+        );
 
-          buyArea.style.display =
-            "block";
-        }
-      );
-
-    });
+      }
+    );
 }
 
-async function buyNumber() {
-  if (
+
+/* =========================
+   BUY
+========================= */
+
+async function buyNumber(){
+
+  if(
     !selectedCountry ||
     !selectedService ||
     !selectedServer
-  ) {
+  ){
     return;
   }
 
-  buyButton.disabled = true;
+  buyButton.disabled =
+    true;
+
   buyButton.textContent =
     "Processing...";
 
-  try {
+  try{
 
     const data =
-      await api("buy", {
-        country_id:
-          selectedCountry.id,
+      await api(
+        "buy",
+        {
+          country_id:
+            selectedCountry.id,
 
-        service_code:
-          selectedService.service_code,
+          service_code:
+            selectedService.service_code,
 
-        server_id:
-          selectedServer.server_id
-      });
+          server_id:
+            selectedServer.server_id
+        }
+      );
 
-    if (!data.success) {
+    if(!data.success){
+
       showMessage(
         data.message ||
         "Purchase could not be completed."
       );
+
       return;
     }
 
@@ -1298,77 +1898,133 @@ async function buyNumber() {
     await loadWallet();
     await loadOrders();
 
-  } catch (error) {
+  }catch(error){
 
-    console.error(error);
+    console.error(
+      "BUY ERROR:",
+      error
+    );
 
     showMessage(
       "Purchase could not be completed. Please try again."
     );
 
-  } finally {
+  }finally{
 
-    buyButton.disabled = false;
+    buyButton.disabled =
+      false;
+
     buyButton.textContent =
       "Buy Number";
   }
 }
 
-function statusText(status) {
-  if (status === "waiting")
+
+/* =========================
+   ORDER STATUS
+========================= */
+
+function statusText(
+  status
+){
+
+  if(
+    status === "waiting"
+  ){
     return "Pending";
+  }
 
-  if (status === "received")
+  if(
+    status === "received"
+  ){
     return "Completed";
+  }
 
-  if (
+  if(
     status === "cancelled" ||
     status === "refunded"
-  )
+  ){
     return "Cancelled";
+  }
 
-  if (status === "failed")
+  if(
+    status === "failed"
+  ){
     return "Failed";
+  }
 
   return status;
 }
 
-function statusClass(status) {
-  if (status === "waiting")
-    return "waiting";
 
-  if (status === "received")
+function statusClass(
+  status
+){
+
+  if(
+    status === "waiting"
+  ){
+    return "waiting";
+  }
+
+  if(
+    status === "received"
+  ){
     return "received";
+  }
 
   return "cancelled";
 }
 
-function renderOrder(order, isCurrent) {
+
+/* =========================
+   ORDER HTML
+========================= */
+
+function renderOrder(
+  order,
+  isCurrent
+){
 
   const status =
-    statusText(order.status);
+    statusText(
+      order.status
+    );
 
   const statusCls =
-    statusClass(order.status);
+    statusClass(
+      order.status
+    );
 
   const canCancel =
-    order.status === "waiting";
+    order.status ===
+    "waiting";
 
   const canCheck =
-    order.status === "waiting";
+    order.status ===
+    "waiting";
 
   const otp =
     order.otp_code
-      ? escapeHtml(order.otp_code)
+      ? escapeHtml(
+          order.otp_code
+        )
       : "";
 
   return `
-    <div class="order ${isCurrent ? "current" : ""}">
+    <div class="order ${
+      isCurrent
+        ? "current"
+        : ""
+    }">
 
       <div class="order-head">
 
         <div class="order-number">
-          ${escapeHtml(order.number || "Number unavailable")}
+          ${escapeHtml(
+            order.number ||
+            "Number unavailable"
+          )}
         </div>
 
         <div class="status ${statusCls}">
@@ -1380,15 +2036,24 @@ function renderOrder(order, isCurrent) {
       <div class="order-meta">
 
         <div>
-          ${escapeHtml(order.service_name || order.service_code || "")}
+          ${escapeHtml(
+            order.service_name ||
+            order.service_code ||
+            ""
+          )}
         </div>
 
         <div>
-          ${escapeHtml(order.country_name || "")}
+          ${escapeHtml(
+            order.country_name ||
+            ""
+          )}
         </div>
 
         <div>
-          ${naira(order.customer_price_ngn)}
+          ${naira(
+            order.customer_price_ngn
+          )}
         </div>
 
       </div>
@@ -1397,27 +2062,34 @@ function renderOrder(order, isCurrent) {
         otp
           ? `
             <div class="otp">
+
               <div class="otp-label">
                 Verification Code
               </div>
+
               <div class="otp-code">
                 ${otp}
               </div>
+
             </div>
           `
-          : order.status === "waiting"
+          :
+          order.status === "waiting"
             ? `
               <div class="otp">
+
                 <div class="otp-label">
                   Waiting for SMS code...
                 </div>
+
               </div>
             `
             : ""
       }
 
       ${
-        canCheck || canCancel
+        canCheck ||
+        canCancel
           ? `
             <div class="order-actions">
 
@@ -1456,16 +2128,29 @@ function renderOrder(order, isCurrent) {
   `;
 }
 
-function renderOrders() {
 
-  if (!orders.length) {
+/* =========================
+   RENDER ORDERS
+========================= */
+
+function renderOrders(){
+
+  if(!orders.length){
 
     currentSection.classList.add(
       "hidden"
     );
 
     previousOrders.innerHTML =
-      `<div class="empty">No previous orders yet.</div>`;
+      `
+        <div class="empty">
+          No previous orders yet.
+        </div>
+      `;
+
+    clearInterval(
+      polling
+    );
 
     return;
   }
@@ -1486,59 +2171,95 @@ function renderOrders() {
   const old =
     orders.slice(1);
 
-  if (!old.length) {
+  if(!old.length){
 
     previousOrders.innerHTML =
-      `<div class="empty">No previous orders yet.</div>`;
+      `
+        <div class="empty">
+          No previous orders yet.
+        </div>
+      `;
 
-  } else {
+  }else{
 
     previousOrders.innerHTML =
-      old.map(
-        order =>
-          renderOrder(
-            order,
-            false
-          )
-      ).join("");
+      old
+        .map(
+          order =>
+            renderOrder(
+              order,
+              false
+            )
+        )
+        .join("");
   }
 
   startPolling();
 }
 
-async function loadOrders() {
-  try {
+
+/* =========================
+   LOAD ORDERS
+========================= */
+
+async function loadOrders(){
+
+  try{
 
     const data =
-      await api("orders");
+      await api(
+        "orders"
+      );
 
     orders =
-      data.orders || [];
+      Array.isArray(
+        data.orders
+      )
+        ? data.orders
+        : [];
 
     renderOrders();
 
-  } catch (error) {
+  }catch(error){
 
-    console.error(error);
+    console.error(
+      "ORDERS ERROR:",
+      error
+    );
 
     previousOrders.innerHTML =
-      `<div class="empty">Unable to load orders.</div>`;
+      `
+        <div class="empty">
+          Unable to load orders.
+        </div>
+      `;
   }
 }
 
-async function checkOrder(orderId) {
 
-  try {
+/* =========================
+   CHECK ORDER
+========================= */
+
+async function checkOrder(
+  orderId
+){
+
+  try{
 
     const data =
-      await api("check", {
-        order_id:
-          orderId
-      });
+      await api(
+        "check",
+        {
+          order_id:
+            orderId
+        }
+      );
 
-    if (
-      data.status === "received"
-    ) {
+    if(
+      data.status ===
+      "received"
+    ){
 
       showMessage(
         data.sms?.code
@@ -1546,16 +2267,17 @@ async function checkOrder(orderId) {
           : "Code received."
       );
 
-    } else if (
-      data.status === "cancelled"
-    ) {
+    }else if(
+      data.status ===
+      "cancelled"
+    ){
 
       showMessage(
         data.message ||
         "Number cancelled."
       );
 
-    } else {
+    }else{
 
       showMessage(
         "No code yet. Keep the app open and wait."
@@ -1565,9 +2287,12 @@ async function checkOrder(orderId) {
     await loadWallet();
     await loadOrders();
 
-  } catch (error) {
+  }catch(error){
 
-    console.error(error);
+    console.error(
+      "CHECK ERROR:",
+      error
+    );
 
     showMessage(
       "Unable to check the code right now."
@@ -1575,23 +2300,33 @@ async function checkOrder(orderId) {
   }
 }
 
-async function cancelOrder(orderId) {
+
+/* =========================
+   CANCEL
+========================= */
+
+async function cancelOrder(
+  orderId
+){
 
   const confirmed =
     confirm(
       "Cancel this number? If cancellation is available, the amount will be refunded to your wallet."
     );
 
-  if (!confirmed)
+  if(!confirmed)
     return;
 
-  try {
+  try{
 
     const data =
-      await api("cancel", {
-        order_id:
-          orderId
-      });
+      await api(
+        "cancel",
+        {
+          order_id:
+            orderId
+        }
+      );
 
     showMessage(
       data.message ||
@@ -1601,9 +2336,12 @@ async function cancelOrder(orderId) {
     await loadWallet();
     await loadOrders();
 
-  } catch (error) {
+  }catch(error){
 
-    console.error(error);
+    console.error(
+      "CANCEL ERROR:",
+      error
+    );
 
     showMessage(
       "Unable to cancel right now. Please try again."
@@ -1611,20 +2349,27 @@ async function cancelOrder(orderId) {
   }
 }
 
-function startPolling() {
 
-  clearInterval(polling);
+/* =========================
+   POLLING
+========================= */
 
-  if (!orders.length)
+function startPolling(){
+
+  clearInterval(
+    polling
+  );
+
+  if(!orders.length)
     return;
 
   const current =
     orders[0];
 
-  if (
+  if(
     current.status !==
     "waiting"
-  ) {
+  ){
     return;
   }
 
@@ -1632,18 +2377,21 @@ function startPolling() {
     setInterval(
       async () => {
 
-        try {
+        try{
 
           const data =
-            await api("check", {
-              order_id:
-                current.id
-            });
+            await api(
+              "check",
+              {
+                order_id:
+                  current.id
+              }
+            );
 
-          if (
+          if(
             data.status ===
             "received"
-          ) {
+          ){
 
             clearInterval(
               polling
@@ -1652,20 +2400,25 @@ function startPolling() {
             await loadWallet();
             await loadOrders();
 
-            if (data.sms?.code) {
+            if(
+              data.sms?.code
+            ){
+
               showMessage(
                 `Code received: ${data.sms.code}`
               );
-            } else {
+
+            }else{
+
               showMessage(
                 "Code received."
               );
             }
 
-          } else if (
+          }else if(
             data.status ===
             "cancelled"
-          ) {
+          ){
 
             clearInterval(
               polling
@@ -1675,8 +2428,13 @@ function startPolling() {
             await loadOrders();
           }
 
-        } catch {
-          // Keep polling.
+        }catch(error){
+
+          console.error(
+            "POLL ERROR:",
+            error
+          );
+
         }
 
       },
@@ -1684,14 +2442,25 @@ function startPolling() {
     );
 }
 
+
+/* =========================
+   COUNTRY SEARCH
+========================= */
+
 countrySearch.addEventListener(
   "focus",
   () => {
+
     countryDropdown.classList.add(
       "open"
     );
+
+    renderCountries(
+      countries
+    );
   }
 );
+
 
 countrySearch.addEventListener(
   "input",
@@ -1705,9 +2474,10 @@ countrySearch.addEventListener(
     const filtered =
       countries.filter(
         country =>
-          country.name
-            .toLowerCase()
-            .includes(query)
+          countryMatches(
+            country,
+            query
+          )
       );
 
     renderCountries(
@@ -1720,26 +2490,40 @@ countrySearch.addEventListener(
   }
 );
 
+
+/* =========================
+   SERVICE SEARCH
+========================= */
+
 serviceSearch.addEventListener(
   "focus",
   () => {
 
-    if (
+    if(
       selectedCountry
-    ) {
+    ){
+
       serviceDropdown.classList.add(
         "open"
+      );
+
+      renderServices(
+        services
       );
     }
   }
 );
 
+
 serviceSearch.addEventListener(
   "input",
   () => {
 
-    if (!selectedCountry)
+    if(
+      !selectedCountry
+    ){
       return;
+    }
 
     const query =
       serviceSearch.value
@@ -1748,13 +2532,25 @@ serviceSearch.addEventListener(
 
     const filtered =
       services.filter(
-        service =>
-          service.service_name
-            .toLowerCase()
-            .includes(query) ||
-          service.service_code
-            .toLowerCase()
-            .includes(query)
+        service => {
+
+          const name =
+            String(
+              service.service_name ||
+              ""
+            ).toLowerCase();
+
+          const code =
+            String(
+              service.service_code ||
+              ""
+            ).toLowerCase();
+
+          return (
+            name.includes(query) ||
+            code.includes(query)
+          );
+        }
       );
 
     renderServices(
@@ -1767,25 +2563,32 @@ serviceSearch.addEventListener(
   }
 );
 
+
+/* =========================
+   OUTSIDE CLICK
+========================= */
+
 document.addEventListener(
   "click",
   event => {
 
-    if (
+    if(
       !event.target.closest(
         "#countrySelector"
       )
-    ) {
+    ){
+
       countryDropdown.classList.remove(
         "open"
       );
     }
 
-    if (
+    if(
       !event.target.closest(
         "#serviceSelector"
       )
-    ) {
+    ){
+
       serviceDropdown.classList.remove(
         "open"
       );
@@ -1794,49 +2597,71 @@ document.addEventListener(
   }
 );
 
+
+/* =========================
+   VERSION TABS
+========================= */
+
 document
-  .querySelectorAll(".tab")
-  .forEach(tab => {
+  .querySelectorAll(
+    ".tab"
+  )
+  .forEach(
+    tab => {
 
-    tab.addEventListener(
-      "click",
-      async () => {
+      tab.addEventListener(
+        "click",
+        async () => {
 
-        document
-          .querySelectorAll(".tab")
-          .forEach(item =>
-            item.classList.remove(
-              "active"
+          document
+            .querySelectorAll(
+              ".tab"
             )
+            .forEach(
+              item =>
+                item.classList.remove(
+                  "active"
+                )
+            );
+
+          tab.classList.add(
+            "active"
           );
 
-        tab.classList.add(
-          "active"
-        );
+          version =
+            tab.dataset.version ||
+            "V1";
 
-        version =
-          tab.dataset.version ||
-          "V1";
+          await loadCountries();
+        }
+      );
 
-        await loadCountries();
-      }
-    );
+    }
+  );
 
-  });
+
+/* =========================
+   BUY BUTTON
+========================= */
 
 buyButton.addEventListener(
   "click",
   buyNumber
 );
 
-async function init() {
+
+/* =========================
+   INIT
+========================= */
+
+async function init(){
 
   openVerification();
 
   const session =
     await getSession();
 
-  if (!session)
+  if(!session)
     return;
 
   await loadWallet();
@@ -1847,6 +2672,7 @@ async function init() {
 }
 
 init();
+
 </script>
 
 </body>
