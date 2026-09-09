@@ -2351,7 +2351,6 @@ async function checkOrder(
 
 }
 
-
 /* ============================================================
    CANCEL ORDER
 ============================================================ */
@@ -2372,6 +2371,9 @@ async function cancelOrder(
     document.getElementById(
       "currentOrder"
     );
+
+  // Preserve previous HTML in case cancellation fails
+  const previousHTML = current.innerHTML;
 
   current.innerHTML = `
     <div class="loading">
@@ -2395,19 +2397,17 @@ async function cancelOrder(
       "Number cancelled."
     );
 
+    // Refresh order list and wallet balance
     await loadOrders();
-
     await loadWallet();
 
   }catch(error){
 
-    current.innerHTML = `
-      <div class="empty">
-        ${escapeHTML(
-          error.message
-        )}
-      </div>
-    `;
+    // Alert the exact error from the backend (e.g. provider delay or auth failure)
+    alert("Cancellation failed: " + error.message);
+
+    // Reload orders from the database to restore UI state without needing page refresh
+    await loadOrders();
 
   }
 
