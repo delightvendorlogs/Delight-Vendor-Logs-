@@ -827,33 +827,38 @@ const supabaseClient =
     SUPABASE_KEY
   );
 
-
 /* ============================================================
-   API
+   API (UPDATED WITH AUTO-REFRESH)
 ============================================================ */
-
-const FUNCTION_URL =
-  `${SUPABASE_URL}/functions/v1/numpool-api`;
-
 
 async function api(
   action,
   payload = {}
 ){
 
-  const {
+  // 1. Get current session
+  let {
     data: sessionData
   } =
     await supabaseClient.auth.getSession();
 
-  const token =
-    sessionData?.session?.access_token;
+  let session = sessionData?.session;
 
-  if(!token){
-    throw new Error(
-      "Please log in again."
-    );
+  // 2. If session is missing or expired, attempt to refresh it
+  if (!session) {
+    const { data: refreshedData, error: refreshError } = 
+      await supabaseClient.auth.refreshSession();
+    
+    if (refreshError || !refreshedData?.session) {
+      alert("Your session has expired. Please log in again.");
+      window.location.href = "login.html"; // Redirect to your login page if unauthenticated
+      throw new Error("Please log in again.");
+    }
+    
+    session = refreshedData.session;
   }
+
+  const token = session.access_token;
 
   const response =
     await fetch(
