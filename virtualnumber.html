@@ -809,6 +809,62 @@ I Understand
 </div>
 
 
+<!-- NEW POST-PURCHASE PORTAL NOTICE -->
+
+<div
+  id="portalNoticePopup"
+  class="popup"
+  style="display:none;"
+>
+
+<div class="popup-card">
+
+<h2>⚠️ PORTAL NOTICE</h2>
+
+<div class="popup-item">
+
+If your purchased number does not receive a verification code:
+
+Turn on a VPN and connect to the same country as the number you purchased.
+
+</div>
+
+<div class="popup-item">
+
+<strong>Example:</strong>
+
+If you purchased a 🇺🇸 USA number, connect your VPN to the United States. You can use either a free or paid VPN.
+
+</div>
+
+<div class="popup-item">
+
+<strong>If the code still does not arrive:</strong>
+
+Uninstall and reinstall the app you are trying to register, then try the verification again with the country-matching VPN enabled.
+
+</div>
+
+<div class="popup-item">
+
+<strong>Please make sure:</strong>
+
+Please make sure your VPN country matches the country of your purchased number.
+
+</div>
+
+<button
+  class="popup-close"
+  onclick="closePortalNotice()"
+>
+I Understand
+</button>
+
+</div>
+
+</div>
+
+
 <script>
 
 /* ============================================================
@@ -1011,6 +1067,34 @@ function closeVerificationPopup(){
     )
     .style.display =
       "none";
+
+}
+
+
+/* ============================================================
+   PORTAL NOTICE
+============================================================ */
+
+function closePortalNotice(){
+
+  document
+    .getElementById(
+      "portalNoticePopup"
+    )
+    .style.display =
+      "none";
+
+}
+
+
+function showPortalNotice(){
+
+  document
+    .getElementById(
+      "portalNoticePopup"
+    )
+    .style.display =
+      "flex";
 
 }
 
@@ -2027,6 +2111,9 @@ async function buyNumber(){
 
     // Refresh live server stock/price.
     await loadServers();
+
+    // Show Portal Notice only after successful purchase.
+    showPortalNotice();
 
   }catch(error){
 
