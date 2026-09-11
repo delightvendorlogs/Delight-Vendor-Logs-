@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
 
 <meta
@@ -176,18 +175,82 @@ button {
 }
 
 .item h3 {
-  margin-top: 0;
+  margin: 0 0 10px;
+}
+
+.item p {
+  margin: 7px 0;
+  font-size: 14px;
 }
 
 .item-actions {
   display: flex;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 7px;
   margin-top: 12px;
+}
+
+.image-preview {
+  width: 100%;
+  max-height: 190px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-top: 10px;
+  background: #eee;
+}
+
+.image-picker {
+  border: 2px dashed #bbb;
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  margin-top: 6px;
+}
+
+.image-picker button {
+  margin-top: 5px;
+}
+
+#imagePreview {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-top: 10px;
+  display: none;
+}
+
+.badge {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 7px;
+  background: #eee;
+  font-size: 12px;
+  font-weight: bold;
+  margin: 3px 2px 3px 0;
+}
+
+.available {
+  background: #dff6e4;
+  color: #087f23;
+}
+
+.sold {
+  background: #ffe1e1;
+  color: #a00000;
+}
+
+.never {
+  background: #e4edff;
+  color: #174ea6;
 }
 
 .search {
   margin-bottom: 10px;
+}
+
+.hidden {
+  display: none !important;
 }
 
 .two-col {
@@ -200,40 +263,19 @@ button {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 18px;
-  margin-bottom: 18px;
 }
 
 .management-top-grid section {
   margin-bottom: 0;
 }
 
-.image-picker {
-  margin-top: 8px;
+.category-btn {
+  cursor: pointer;
 }
 
-.image-picker button {
-  width: 100%;
-}
-
-#imagePreview {
-  max-width: 180px;
-  max-height: 180px;
-  margin-top: 10px;
-  border-radius: 10px;
-  display: none;
-}
-
-.hidden {
-  display: none !important;
-}
-
-.editing-label {
-  background: #fff3cd;
-  color: #856404;
-  padding: 10px;
-  border-radius: 9px;
-  margin-top: 10px;
-  font-weight: bold;
+.category-btn.active {
+  background: #111;
+  color: white;
 }
 
 .top-buttons {
@@ -282,16 +324,13 @@ button {
 }
 
 </style>
-
 </head>
 
 <body>
 
 <header>
 
-<h1>
-⚡ Delight Vendor Logs — Admin
-</h1>
+<h1>⚡ Delight Vendor Logs — Admin</h1>
 
 <p id="adminStatus">
 Checking administrator access...
@@ -317,15 +356,11 @@ Checking administrator access...
 
 </header>
 
-
 <main>
-
 
 <section>
 
-<h2>
-📊 Store Overview
-</h2>
+<h2>📊 Store Overview</h2>
 
 <div class="dashboard-grid">
 
@@ -361,44 +396,29 @@ Never Sell Out
 
 </div>
 
-<p
-  id="refreshMessage"
-  class="message"
-></p>
+<p id="refreshMessage" class="message"></p>
 
 </section>
 
-
 <section>
 
-<h2>
-📂 Service Categories
-</h2>
+<h2>📂 Service Categories</h2>
 
 <p>
 These are the categories shown at the top of the customer dashboard.
 </p>
 
-<div
-  id="categoryBar"
-  class="category-bar"
-></div>
+<div id="categoryBar" class="category-bar"></div>
 
 </section>
 
-
 <div class="management-top-grid">
-
 
 <section>
 
-<h2>
-➕ Add Product / Service
-</h2>
+<h2>➕ Add Product / Service</h2>
 
-<label>
-Service Name
-</label>
+<label>Service Name</label>
 
 <input
   id="productName"
@@ -407,9 +427,7 @@ Service Name
 
 <br><br>
 
-<label>
-Price
-</label>
+<label>Price</label>
 
 <input
   id="productPrice"
@@ -421,17 +439,13 @@ Price
 
 <br><br>
 
-<label>
-Category
-</label>
+<label>Category</label>
 
 <select id="productCategory"></select>
 
 <br><br>
 
-<label>
-Description
-</label>
+<label>Description</label>
 
 <textarea
   id="productDescription"
@@ -440,9 +454,7 @@ Description
 
 <br><br>
 
-<label>
-Product Image
-</label>
+<label>Product Image</label>
 
 <div class="image-picker">
 
@@ -456,10 +468,10 @@ Product Image
 
 <button
   type="button"
-  class="gray"
+  class="blue"
   onclick="document.getElementById('productImageFile').click()"
 >
-🖼️ Choose Product Image
+📷 Choose Image From Gallery
 </button>
 
 <p
@@ -469,10 +481,7 @@ Product Image
 No image selected
 </p>
 
-<img
-  id="imagePreview"
-  alt="Product preview"
->
+<img id="imagePreview">
 
 </div>
 
@@ -487,9 +496,7 @@ No image selected
 
 <div>
 
-<label>
-Stock
-</label>
+<label>Stock</label>
 
 <input
   id="productStock"
@@ -500,12 +507,9 @@ Stock
 
 </div>
 
-
 <div>
 
-<label>
-Status
-</label>
+<label>Status</label>
 
 <select id="productStatus">
 
@@ -545,32 +549,12 @@ stock is 0.
 
 </p>
 
-<div
-  id="editingProductLabel"
-  class="editing-label hidden"
->
-✏️ Editing service
-</div>
-
-<div class="item-actions">
-
 <button
-  id="productSubmitButton"
   class="black"
   onclick="addProduct()"
 >
 ➕ Add Service
 </button>
-
-<button
-  id="cancelEditButton"
-  class="gray hidden"
-  onclick="cancelProductEdit()"
->
-✖ Cancel Edit
-</button>
-
-</div>
 
 <p
   id="productMessage"
@@ -579,61 +563,37 @@ stock is 0.
 
 </section>
 
-
 <section>
 
-<h2>
-📦 Add Inventory
-</h2>
+<h2>📦 Add Inventory</h2>
 
-<label>
-Select Service
-</label>
+<label>Select Service</label>
 
 <select id="inventoryProduct">
-
-<option value="">
-Loading services...
-</option>
-
+<option value="">Loading services...</option>
 </select>
 
 <br><br>
 
-<label>
-Delivery Information
-</label>
+<label>Delivery Information</label>
 
-<textarea
-  id="inventoryData"
-  placeholder="Enter the legitimate digital item/details to be delivered after purchase"
-></textarea>
+<textarea id="inventoryData" placeholder="Enter the legitimate digital item/details to be delivered after purchase"></textarea>
 
 <br><br>
 
-<button
-  class="black"
-  onclick="addInventory()"
->
+<button class="black" onclick="addInventory()">
 ➕ Add Inventory
 </button>
 
-<p
-  id="inventoryMessage"
-  class="message"
-></p>
+<p id="inventoryMessage" class="message"></p>
 
 </section>
 
-
 </div>
 
+<section id="productManagementSection">
 
-<section>
-
-<h2>
-🛍️ Product Management
-</h2>
+<h2>🛍️ Product Management</h2>
 
 <input
   id="productSearch"
@@ -652,12 +612,12 @@ Loading products...
 
 </section>
 
-
 <section>
 
-<h2>
-📦 Inventory Management
-</h2>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+<h2 style="margin:0;">📦 Inventory Management</h2>
+<button type="button" class="black" onclick="document.getElementById('inventoryProduct').scrollIntoView({behavior:'smooth',block:'center'});document.getElementById('inventoryData').focus();">➕ Add Inventory</button>
+</div>
 
 <input
   id="inventorySearch"
@@ -676,12 +636,9 @@ Loading inventory...
 
 </section>
 
-
 <section>
 
-<h2>
-🧾 Orders Management
-</h2>
+<h2>🧾 Orders Management</h2>
 
 <input
   id="orderSearch"
@@ -700,44 +657,28 @@ Loading orders...
 
 </section>
 
-
 <section>
 
-<h2>
-📱 Virtual Number Purchases
-</h2>
-
-<p style="color:#666;font-size:14px;">
-
-Virtual numbers purchased through the virtual-number system are
-shown here. A number with status <strong>received</strong> is treated
-as a completed purchase.
-
-</p>
+<h2>📱 Virtual Number Purchases</h2>
 
 <input
   id="virtualNumberSearch"
   class="search"
-  placeholder="🔍 Search virtual number purchase..."
+  placeholder="🔍 Search virtual number purchases..."
   oninput="renderVirtualNumberOrders()"
 >
 
 <div id="virtualNumberOrdersList">
 
-<div class="loading">
-Loading virtual number purchases...
-</div>
+<div class="loading">Loading virtual number purchases...</div>
 
 </div>
 
 </section>
 
-
 <section>
 
-<h2>
-👥 Manage Users
-</h2>
+<h2>👥 Manage Users</h2>
 
 <p style="color:#666;font-size:14px;">
 
@@ -763,7 +704,6 @@ Loading users...
 
 </section>
 
-
 <br>
 
 <button
@@ -773,27 +713,21 @@ Loading users...
 🏠 Back to Customer Dashboard
 </button>
 
-
 </main>
 
-
 <script>
-
 
 const SUPABASE_URL =
 "https://hkfhehbhmucymusaytoe.supabase.co";
 
-
 const SUPABASE_KEY =
 "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
-
 
 const supabaseClient =
 window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
-
 
 const CATEGORIES = [
 
@@ -810,33 +744,11 @@ const CATEGORIES = [
 
 ];
 
-
-const CATEGORY_ICONS = {
-
-"Home": "🏠",
-"All Social Logs": "📱",
-"Working Pictures": "🖼️",
-"Formats": "📄",
-"Working Links": "🔗",
-"Voice Cloner/Fake Video Call": "🎙️",
-"All Countries Number": "📞",
-"Streaming & More": "📺",
-"ESIMS": "📲",
-"VPN": "🔐"
-
-};
-
-
 let products = [];
 let inventory = [];
 let orders = [];
 let users = [];
-
 let virtualNumberOrders = [];
-
-let editingProductId = null;
-let selectedAdminCategory = "Home";
-
 
 function escapeHTML(value) {
 
@@ -849,20 +761,18 @@ return String(value ?? "")
 
 }
 
-
 function money(value) {
 
 return Number(value || 0)
 .toLocaleString(
-  "en-NG",
-  {
-    minimumFractionDigits:2,
-    maximumFractionDigits:2
-  }
+"en-NG",
+{
+minimumFractionDigits:2,
+maximumFractionDigits:2
+}
 );
 
 }
-
 
 /* IMAGE PICKER */
 
@@ -880,13 +790,8 @@ document.getElementById("imageName");
 if (!file) {
 
 preview.style.display = "none";
-
-name.textContent =
-"No image selected";
-
-document.getElementById(
-  "productImage"
-).value = "";
+name.textContent = "No image selected";
+document.getElementById("productImage").value = "";
 
 return;
 
@@ -894,9 +799,7 @@ return;
 
 if (!file.type.startsWith("image/")) {
 
-alert(
-"Please choose an image file."
-);
+alert("Please choose an image file.");
 
 event.target.value = "";
 
@@ -910,12 +813,9 @@ name.textContent =
 const reader =
 new FileReader();
 
-reader.onload =
-function(e) {
+reader.onload = function(e) {
 
-document.getElementById(
-  "productImage"
-).value =
+document.getElementById("productImage").value =
 e.target.result;
 
 preview.src =
@@ -930,15 +830,12 @@ reader.readAsDataURL(file);
 
 }
 
-
 /* ADMIN CHECK */
 
 async function checkAdmin() {
 
 const status =
-document.getElementById(
-  "adminStatus"
-);
+document.getElementById("adminStatus");
 
 try {
 
@@ -948,10 +845,7 @@ error
 } =
 await supabaseClient.auth.getUser();
 
-if (
-error ||
-!data?.user
-) {
+if (error || !data?.user) {
 
 status.textContent =
 "❌ You are not logged in.";
@@ -969,9 +863,7 @@ const {
 data: admin,
 error: adminError
 } =
-await supabaseClient.rpc(
-"is_admin"
-);
+await supabaseClient.rpc("is_admin");
 
 if (adminError) {
 
@@ -1010,20 +902,31 @@ return false;
 
 }
 
-
 /* CATEGORIES */
+
+let selectedAdminCategory = "Home";
+
+function filterAdminCategory(category, button) {
+
+selectedAdminCategory = category;
+
+const buttons = document.querySelectorAll("#categoryBar .category-btn");
+
+buttons.forEach(btn => btn.classList.remove("active"));
+
+if (button) button.classList.add("active");
+
+renderProducts();
+
+const section = document.getElementById("productManagementSection");
+if (section) section.scrollIntoView({behavior:"smooth", block:"start"});
+
+}
 
 function buildCategoryUI() {
 
-const bar =
-document.getElementById(
-  "categoryBar"
-);
-
-const select =
-document.getElementById(
-  "productCategory"
-);
+const bar = document.getElementById("categoryBar");
+const select = document.getElementById("productCategory");
 
 bar.innerHTML = "";
 select.innerHTML = "";
@@ -1032,56 +935,29 @@ CATEGORIES.forEach(category => {
 
 if (category !== "Home") {
 
-const option =
-document.createElement("option");
+const button = document.createElement("button");
+button.type = "button";
+button.className = "category-btn";
+button.textContent = category;
+button.onclick = () => filterAdminCategory(category, button);
+bar.appendChild(button);
 
-option.value =
-category;
-
-option.textContent =
-category;
-
+const option = document.createElement("option");
+option.value = category;
+option.textContent = category;
 select.appendChild(option);
 
 }
 
-const button =
-document.createElement("button");
-
-button.className =
-"category-btn" +
-(
-selectedAdminCategory === category
-? " active"
-: ""
-);
-
-button.innerHTML =
-`${CATEGORY_ICONS[category] || "📁"} ${escapeHTML(category)}`;
-
-button.onclick =
-function() {
-
-selectedAdminCategory =
-category;
-
-document
-.querySelectorAll(
-  ".category-btn"
-)
-.forEach(btn =>
-  btn.classList.remove("active")
-);
-
-button.classList.add("active");
-
-renderProducts();
-
-};
-
-bar.appendChild(button);
-
 });
+
+// Home means all services.
+const homeButton = document.createElement("button");
+homeButton.type = "button";
+homeButton.className = "category-btn active";
+homeButton.textContent = "Home";
+homeButton.onclick = () => filterAdminCategory("Home", homeButton);
+bar.prepend(homeButton);
 
 }
 
@@ -1091,9 +967,7 @@ bar.appendChild(button);
 async function loadProducts() {
 
 const container =
-document.getElementById(
-  "productsList"
-);
+document.getElementById("productsList");
 
 container.innerHTML =
 '<div class="loading">Loading products...</div>';
@@ -1105,12 +979,7 @@ error
 await supabaseClient
 .from("Product")
 .select("*")
-.order(
-  "id",
-  {
-    ascending:false
-  }
-);
+.order("id",{ascending:false});
 
 if (error) {
 
@@ -1125,104 +994,123 @@ return;
 
 }
 
-products =
-data || [];
+products = data || [];
 
 renderProducts();
 
 }
 
-
 function renderProducts() {
 
 const container =
-document.getElementById(
-  "productsList"
-);
+document.getElementById("productsList");
 
 const search =
-(
-document.getElementById(
-  "productSearch"
-).value || ""
-)
+(document.getElementById("productSearch").value || "")
 .toLowerCase()
 .trim();
 
-let list =
+const list =
 products.filter(product => {
 
-const matchesSearch =
-!search ||
+const categoryMatches =
+selectedAdminCategory === "Home" ||
+String(product.category || "").toLowerCase() === selectedAdminCategory.toLowerCase();
+
+if (!categoryMatches) return false;
+
+return !search ||
+
 String(product.name || "")
 .toLowerCase()
 .includes(search) ||
+
+String(product.category || "")
+.toLowerCase()
+.includes(search) ||
+
 String(product.description || "")
 .toLowerCase()
 .includes(search);
 
-const matchesCategory =
-selectedAdminCategory === "Home" ||
-product.category ===
-selectedAdminCategory;
-
-return (
-matchesSearch &&
-matchesCategory
-);
-
 });
-
 
 if (!list.length) {
 
 container.innerHTML =
-'<div class="loading">No products found.</div>';
+'<div class="loading">No services found.</div>';
 
 return;
 
 }
 
-
 container.innerHTML = "";
-
 
 list.forEach(product => {
 
-const box =
+const card =
 document.createElement("div");
 
-box.className =
-"item";
+card.className = "item";
 
+const trackStock =
+product.track_stock !== false;
 
-box.innerHTML = `
+const stock =
+Number(product.stock || 0);
+
+const sold =
+trackStock && stock <= 0;
+
+let statusHTML;
+
+if (product.status === "Unavailable") {
+
+statusHTML =
+'<span class="badge sold">Unavailable</span>';
+
+}
+
+else if (sold) {
+
+statusHTML =
+'<span class="badge sold">Sold Out</span>';
+
+}
+
+else if (!trackStock) {
+
+statusHTML =
+'<span class="badge never">Never Sell Out</span>';
+
+}
+
+else {
+
+statusHTML =
+'<span class="badge available">Available</span>';
+
+}
+
+card.innerHTML = `
 
 <h3>
-${escapeHTML(
-product.name ||
-"Unnamed Service"
-)}
+${escapeHTML(product.name || "Unnamed Service")}
 </h3>
 
-<p>
-<strong>ID:</strong>
-${escapeHTML(product.id)}
-</p>
+<span class="badge">
+ID: ${escapeHTML(product.id)}
+</span>
+
+<span class="badge">
+${escapeHTML(product.category || "Uncategorized")}
+</span>
+
+${statusHTML}
 
 <p>
 <strong>Price:</strong>
 ₦${money(product.price)}
-</p>
-
-<p>
-<strong>Category:</strong>
-${escapeHTML(product.category)}
-</p>
-
-<p>
-<strong>Status:</strong>
-${escapeHTML(product.status || "Available")}
 </p>
 
 <p>
@@ -1231,39 +1119,28 @@ ${escapeHTML(product.stock ?? 0)}
 </p>
 
 <p>
-<strong>Track Stock:</strong>
-${product.track_stock === false
-? "No"
-: "Yes"}
+<strong>Stock Tracking:</strong>
+${trackStock ? "ON" : "OFF — Never Sell Out"}
 </p>
 
-${
-product.description
-?
-`
+<p>
+<strong>Inventory Added:</strong>
+${inventory.filter(item => Number(item.product_id) === Number(product.id)).length} item(s)
+</p>
+
 <p>
 <strong>Description:</strong>
-${escapeHTML(
-product.description
-)}
+${escapeHTML(product.description || "No description")}
 </p>
-`
-:
-""
-}
 
 ${
 product.image_url
 ?
 `
 <img
+class="image-preview"
 src="${escapeHTML(product.image_url)}"
-style="
-max-width:160px;
-max-height:160px;
-border-radius:10px;
-margin-top:8px;
-"
+onerror="this.style.display='none'"
 >
 `
 :
@@ -1280,6 +1157,19 @@ onclick="editProduct(${Number(product.id)})"
 </button>
 
 <button
+class="gray"
+onclick="toggleStockMode(${Number(product.id)})"
+>
+${
+trackStock
+?
+"🔓 Make Never Sell Out"
+:
+"📦 Turn Stock Tracking On"
+}
+</button>
+
+<button
 class="red"
 onclick="deleteProduct(${Number(product.id)})"
 >
@@ -1287,128 +1177,82 @@ onclick="deleteProduct(${Number(product.id)})"
 </button>
 
 </div>
-
 `;
 
-container.appendChild(box);
+container.appendChild(card);
 
 });
 
 }
-
 
 /* ADD PRODUCT */
 
 async function addProduct() {
 
 const name =
-document.getElementById(
-  "productName"
-).value.trim();
+document.getElementById("productName").value.trim();
 
 const price =
 Number(
-document.getElementById(
-  "productPrice"
-).value
+document.getElementById("productPrice").value
 );
 
 const category =
-document.getElementById(
-  "productCategory"
-).value;
+document.getElementById("productCategory").value;
 
 const description =
-document.getElementById(
-  "productDescription"
-).value.trim();
+document.getElementById("productDescription").value.trim();
 
 const image_url =
-document.getElementById(
-  "productImage"
-).value;
+document.getElementById("productImage").value.trim();
 
 const stock =
 Number(
-document.getElementById(
-  "productStock"
-).value
+document.getElementById("productStock").value
 );
 
 const status =
-document.getElementById(
-  "productStatus"
-).value;
+document.getElementById("productStatus").value;
 
 const track_stock =
-document.getElementById(
-  "trackStock"
-).checked;
+document.getElementById("trackStock").checked;
 
 const message =
-document.getElementById(
-  "productMessage"
-);
-
+document.getElementById("productMessage");
 
 if (!name) {
 
 message.textContent =
-"❌ Enter a service name.";
+"Please enter a service name.";
 
 return;
 
 }
 
-
-if (
-!Number.isFinite(price) ||
-price < 0
-) {
+if (!Number.isFinite(price) || price < 0) {
 
 message.textContent =
-"❌ Invalid price.";
+"Please enter a valid price.";
 
 return;
 
 }
 
-
-if (
-!Number.isFinite(stock) ||
-stock < 0
-) {
+if (!category) {
 
 message.textContent =
-"❌ Invalid stock.";
+"Please select a category.";
 
 return;
 
 }
 
-
-if (
-!CATEGORIES.includes(category) ||
-category === "Home"
-) {
-
-message.textContent =
-"❌ Invalid category.";
-
-return;
-
-}
-
-
-message.textContent =
-editingProductId
-?
-"Saving changes..."
-:
-"Adding service...";
-
-
-const payload = {
+const {
+error
+} =
+await supabaseClient
+.from("Product")
+.insert({
 
 name,
 price,
@@ -1420,54 +1264,35 @@ status,
 track_stock,
 is_active:true
 
-};
+});
 
-
-let response;
-
-
-if (editingProductId) {
-
-response =
-await supabaseClient
-.from("Product")
-.update(payload)
-.eq(
-  "id",
-  editingProductId
-);
-
-}
-else {
-
-response =
-await supabaseClient
-.from("Product")
-.insert(payload);
-
-}
-
-
-if (response.error) {
+if (error) {
 
 message.textContent =
-"❌ " +
-response.error.message;
+"❌ " + error.message;
 
 return;
 
 }
 
-
 message.textContent =
-editingProductId
-?
-"✅ Service updated."
-:
-"✅ Service added.";
+"✅ Service added successfully.";
 
+document.getElementById("productName").value="";
+document.getElementById("productPrice").value="";
+document.getElementById("productDescription").value="";
+document.getElementById("productImage").value="";
+document.getElementById("productStock").value="0";
+document.getElementById("productStatus").value="Available";
+document.getElementById("trackStock").checked=true;
 
-cancelProductEdit();
+document.getElementById("imageName").textContent =
+"No image selected";
+
+document.getElementById("imagePreview").style.display =
+"none";
+
+document.getElementById("productImageFile").value="";
 
 await loadProducts();
 
@@ -1477,195 +1302,88 @@ await updateStatistics();
 
 }
 
-
 /* EDIT PRODUCT */
 
-function editProduct(id) {
+async function editProduct(id) {
 
 const product =
 products.find(
-p =>
-Number(p.id) ===
-Number(id)
+p => Number(p.id) === Number(id)
 );
 
-if (!product) {
+if (!product) return;
 
-alert(
-"Product could not be found."
+const name =
+prompt(
+"Service name:",
+product.name || ""
 );
+
+if (name === null) return;
+
+const priceInput =
+prompt(
+"Price:",
+product.price ?? 0
+);
+
+if (priceInput === null) return;
+
+const price =
+Number(priceInput);
+
+if (!Number.isFinite(price) || price < 0) {
+
+alert("Invalid price.");
 
 return;
 
 }
 
-
-editingProductId =
-product.id;
-
-
-document.getElementById(
-"productName"
-).value =
-product.name || "";
-
-
-document.getElementById(
-"productPrice"
-).value =
-product.price ?? 0;
-
-
-document.getElementById(
-"productCategory"
-).value =
-product.category ||
-CATEGORIES[1];
-
-
-document.getElementById(
-"productDescription"
-).value =
-product.description || "";
-
-
-document.getElementById(
-"productImage"
-).value =
-product.image_url || "";
-
-
-document.getElementById(
-"productStock"
-).value =
-product.stock ?? 0;
-
-
-document.getElementById(
-"productStatus"
-).value =
-product.status ||
-"Available";
-
-
-document.getElementById(
-"trackStock"
-).checked =
-product.track_stock !== false;
-
-
-document.getElementById(
-"editingProductLabel"
-).classList.remove(
-"hidden"
+const description =
+prompt(
+"Description:",
+product.description || ""
 );
 
+if (description === null) return;
 
-document.getElementById(
-"cancelEditButton"
-).classList.remove(
-"hidden"
+const category =
+prompt(
+"Category:",
+product.category || ""
 );
 
+if (category === null) return;
 
-document.getElementById(
-"productSubmitButton"
-).textContent =
-"💾 Save Changes";
+const {
+error
+} =
+await supabaseClient
+.from("Product")
+.update({
 
+name:name.trim(),
+price,
+description:description.trim(),
+category:category.trim()
 
-document.getElementById(
-"productMessage"
-).textContent =
-"";
+})
+.eq("id",id);
 
+if (error) {
 
-window.scrollTo({
-top:0,
-behavior:"smooth"
-});
+alert("❌ " + error.message);
+
+return;
 
 }
 
+await loadProducts();
 
-/* CANCEL EDIT */
-
-function cancelProductEdit() {
-
-editingProductId = null;
-
-document.getElementById(
-"productName"
-).value = "";
-
-document.getElementById(
-"productPrice"
-).value = "";
-
-document.getElementById(
-"productCategory"
-).value =
-CATEGORIES[1];
-
-document.getElementById(
-"productDescription"
-).value = "";
-
-document.getElementById(
-"productImage"
-).value = "";
-
-document.getElementById(
-"productStock"
-).value = 0;
-
-document.getElementById(
-"productStatus"
-).value =
-"Available";
-
-document.getElementById(
-"trackStock"
-).checked = true;
-
-document.getElementById(
-"productImageFile"
-).value = "";
-
-document.getElementById(
-"imagePreview"
-).style.display =
-"none";
-
-document.getElementById(
-"imageName"
-).textContent =
-"No image selected";
-
-document.getElementById(
-"editingProductLabel"
-).classList.add(
-"hidden"
-);
-
-document.getElementById(
-"cancelEditButton"
-).classList.add(
-"hidden"
-);
-
-document.getElementById(
-"productSubmitButton"
-).textContent =
-"➕ Add Service";
-
-document.getElementById(
-"productMessage"
-).textContent =
-"";
+await loadInventoryProductDropdown();
 
 }
-
 
 /* DELETE PRODUCT */
 
@@ -1677,30 +1395,21 @@ if (
 )
 ) return;
 
-
 const {
 error
 } =
 await supabaseClient
 .from("Product")
 .delete()
-.eq(
-"id",
-id
-);
-
+.eq("id",id);
 
 if (error) {
 
-alert(
-"❌ " +
-error.message
-);
+alert("❌ " + error.message);
 
 return;
 
 }
-
 
 await loadProducts();
 
@@ -1710,120 +1419,99 @@ await updateStatistics();
 
 }
 
+/* TOGGLE STOCK MODE */
 
-/* INVENTORY DROPDOWN */
+async function toggleStockMode(id) {
 
-async function loadInventoryProductDropdown() {
-
-const select =
-document.getElementById(
-"inventoryProduct"
+const product =
+products.find(
+p => Number(p.id) === Number(id)
 );
 
-select.innerHTML =
-'<option value="">Loading services...</option>';
+if (!product) return;
 
+const newValue =
+product.track_stock === false;
 
 const {
-data,
 error
 } =
 await supabaseClient
 .from("Product")
-.select("id,name")
-.eq(
-"is_active",
-true
-)
-.order(
-"id",
-{
-ascending:false
-}
-);
-
+.update({
+track_stock:newValue
+})
+.eq("id",id);
 
 if (error) {
 
-select.innerHTML =
-'<option value="">Unable to load services</option>';
+alert("❌ " + error.message);
 
 return;
 
 }
 
+await loadProducts();
+
+await updateStatistics();
+
+}
+
+/* INVENTORY */
+
+async function loadInventoryProductDropdown() {
+
+const select =
+document.getElementById("inventoryProduct");
 
 select.innerHTML =
-'<option value="">Select a service</option>';
+'<option value="">Select service...</option>';
 
-
-(data || []).forEach(product => {
+products.forEach(product => {
 
 const option =
-document.createElement(
-"option"
-);
+document.createElement("option");
 
 option.value =
 product.id;
 
 option.textContent =
-`${product.name} — ID ${product.id}`;
+`${product.name} — ₦${money(product.price)}`;
 
-select.appendChild(
-option
-);
+select.appendChild(option);
 
 });
 
 }
 
-
-/* ADD INVENTORY */
-
 async function addInventory() {
 
-const product_id =
-Number(
-document.getElementById(
-"inventoryProduct"
-).value
-);
+const productId =
+document.getElementById("inventoryProduct").value;
 
-const content =
-document.getElementById(
-"inventoryData"
-).value.trim();
+const deliveryData =
+document.getElementById("inventoryData").value.trim();
 
 const message =
-document.getElementById(
-"inventoryMessage"
-);
+document.getElementById("inventoryMessage");
 
-
-if (!product_id) {
+if (!productId) {
 
 message.textContent =
-"❌ Select a service.";
+"Please select a service.";
 
 return;
 
 }
 
-
-if (!content) {
+if (!deliveryData) {
 
 message.textContent =
-"❌ Enter delivery information.";
+"Please enter delivery information.";
 
 return;
 
 }
-
-
-message.textContent =
-"Adding inventory...";
-
 
 const {
 error
@@ -1831,51 +1519,40 @@ error
 await supabaseClient
 .from("product_inventory")
 .insert({
-product_id,
-content,
-status:"available"
-});
 
+product_id:Number(productId),
+delivery_data:deliveryData,
+status:"available"
+
+});
 
 if (error) {
 
 message.textContent =
-"❌ " +
-error.message;
+"❌ " + error.message;
 
 return;
 
 }
 
-
 message.textContent =
-"✅ Inventory added.";
+"✅ Inventory added successfully.";
 
-
-document.getElementById(
-"inventoryData"
-).value = "";
-
+document.getElementById("inventoryData").value="";
 
 await loadInventory();
 
-await updateStatistics();
+await loadProducts();
 
 }
-
-
-/* LOAD INVENTORY */
 
 async function loadInventory() {
 
 const container =
-document.getElementById(
-"inventoryList"
-);
+document.getElementById("inventoryList");
 
 container.innerHTML =
 '<div class="loading">Loading inventory...</div>';
-
 
 const {
 data,
@@ -1884,13 +1561,7 @@ error
 await supabaseClient
 .from("product_inventory")
 .select("*")
-.order(
-"id",
-{
-ascending:false
-}
-);
-
+.order("id",{ascending:false});
 
 if (error) {
 
@@ -1899,12 +1570,11 @@ container.innerHTML =
 escapeHTML(error.message) +
 '</div>';
 
-inventory = [];
+inventory=[];
 
 return;
 
 }
-
 
 inventory =
 data || [];
@@ -1913,57 +1583,43 @@ renderInventory();
 
 }
 
-
 function renderInventory() {
 
 const container =
-document.getElementById(
-"inventoryList"
-);
+document.getElementById("inventoryList");
 
 const search =
-(
-document.getElementById(
-"inventorySearch"
-).value || ""
-)
+(document.getElementById("inventorySearch").value || "")
 .toLowerCase()
 .trim();
-
 
 const list =
 inventory.filter(item => {
 
 const product =
 products.find(
-p =>
-Number(p.id) ===
-Number(item.product_id)
+p => Number(p.id) === Number(item.product_id)
 );
 
-const productName =
-product?.name || "";
+return !search ||
 
-
-return (
-!search ||
-productName
+String(item.id || "")
 .toLowerCase()
 .includes(search) ||
-String(
-item.content || ""
-)
+
+String(product?.name || "")
 .toLowerCase()
 .includes(search) ||
-String(
-item.status || ""
-)
+
+String(item.delivery_data || "")
 .toLowerCase()
-.includes(search)
-);
+.includes(search) ||
+
+String(item.status || "")
+.toLowerCase()
+.includes(search);
 
 });
-
 
 if (!list.length) {
 
@@ -1974,28 +1630,19 @@ return;
 
 }
 
-
-container.innerHTML = "";
-
+container.innerHTML="";
 
 list.forEach(item => {
 
 const product =
 products.find(
-p =>
-Number(p.id) ===
-Number(item.product_id)
+p => Number(p.id) === Number(item.product_id)
 );
-
 
 const box =
-document.createElement(
-"div"
-);
+document.createElement("div");
 
-box.className =
-"item";
-
+box.className="item";
 
 box.innerHTML = `
 
@@ -2005,51 +1652,53 @@ Inventory #${escapeHTML(item.id)}
 
 <p>
 <strong>Service:</strong>
-${escapeHTML(
-product?.name ||
-"Unknown Service"
-)}
-</p>
-
-<p>
-<strong>Product ID:</strong>
-${escapeHTML(item.product_id)}
+${escapeHTML(product?.name || item.product_id)}
 </p>
 
 <p>
 <strong>Status:</strong>
-${escapeHTML(
-item.status ||
-"unknown"
-)}
+${escapeHTML(item.status || "available")}
 </p>
 
 <p>
-<strong>Delivery Information:</strong>
+<strong>Delivery:</strong>
 </p>
 
 <div
 style="
 background:#eee;
-padding:12px;
-border-radius:9px;
+padding:10px;
+border-radius:8px;
 white-space:pre-wrap;
 word-break:break-word;
 "
 >
-${escapeHTML(
-item.content
-)}
+${escapeHTML(item.delivery_data || "")}
 </div>
 
 <div class="item-actions">
 
+${
+String(item.status || "").toLowerCase() === "available"
+?
+`
 <button
-class="blue"
-onclick="editInventory(${Number(item.id)})"
+class="red"
+onclick="setInventoryStatus(${Number(item.id)} ,'sold')"
 >
-✏️ Edit
+Mark Sold
 </button>
+`
+:
+`
+<button
+class="green"
+onclick="setInventoryStatus(${Number(item.id)} ,'available')"
+>
+Mark Available
+</button>
+`
+}
 
 <button
 class="red"
@@ -2068,135 +1717,29 @@ container.appendChild(box);
 
 }
 
-
-/* EDIT INVENTORY */
-
-function editInventory(id) {
-
-const item =
-inventory.find(
-entry =>
-Number(entry.id) ===
-Number(id)
-);
-
-if (!item) {
-
-alert(
-"Inventory item could not be found."
-);
-
-return;
-
-}
-
-
-const productIdInput =
-prompt(
-"Service/Product ID:\n\n" +
-products
-.map(
-p =>
-`${p.id} — ${p.name}`
-)
-.join("\n"),
-item.product_id ?? ""
-);
-
-
-if (
-productIdInput === null
-) return;
-
-
-const productId =
-Number(productIdInput);
-
-
-if (
-!products.some(
-p =>
-Number(p.id) ===
-productId
-)
-) {
-
-alert(
-"Invalid service/product ID."
-);
-
-return;
-
-}
-
-
-const content =
-prompt(
-"Delivery Information:",
-item.content || ""
-);
-
-
-if (
-content === null
-) return;
-
-
-const status =
-prompt(
-"Inventory Status (available or sold):",
-item.status ||
-"available"
-);
-
-
-if (
-status === null
-) return;
-
+async function setInventoryStatus(id,status) {
 
 const {
 error
 } =
 await supabaseClient
 .from("product_inventory")
-.update({
-
-product_id:
-productId,
-
-content:
-content.trim(),
-
-status:
-status.trim() ||
-"available"
-
-})
-.eq(
-"id",
-id
-);
-
+.update({status})
+.eq("id",id);
 
 if (error) {
 
-alert(
-"❌ " +
-error.message
-);
+alert("❌ " + error.message);
 
 return;
 
 }
 
-
 await loadInventory();
 
+await loadProducts();
+
 }
-
-
-/* DELETE INVENTORY */
 
 async function deleteInventory(id) {
 
@@ -2206,50 +1749,37 @@ if (
 )
 ) return;
 
-
 const {
 error
 } =
 await supabaseClient
 .from("product_inventory")
 .delete()
-.eq(
-"id",
-id
-);
-
+.eq("id",id);
 
 if (error) {
 
-alert(
-"❌ " +
-error.message
-);
+alert("❌ " + error.message);
 
 return;
 
 }
 
-
 await loadInventory();
 
-await updateStatistics();
+await loadProducts();
 
 }
-
 
 /* ORDERS */
 
 async function loadOrders() {
 
 const container =
-document.getElementById(
-"ordersList"
-);
+document.getElementById("ordersList");
 
 container.innerHTML =
 '<div class="loading">Loading orders...</div>';
-
 
 const {
 data,
@@ -2258,13 +1788,7 @@ error
 await supabaseClient
 .from("orders")
 .select("*")
-.order(
-"created_at",
-{
-ascending:false
-}
-);
-
+.order("created_at",{ascending:false});
 
 if (error) {
 
@@ -2273,12 +1797,11 @@ container.innerHTML =
 escapeHTML(error.message) +
 '</div>';
 
-orders = [];
+orders=[];
 
 return;
 
 }
-
 
 orders =
 data || [];
@@ -2287,45 +1810,44 @@ renderOrders();
 
 }
 
-
 function renderOrders() {
 
 const container =
-document.getElementById(
-"ordersList"
-);
+document.getElementById("ordersList");
 
 const search =
-(
-document.getElementById(
-"orderSearch"
-).value || ""
-)
+(document.getElementById("orderSearch").value || "")
 .toLowerCase()
 .trim();
-
 
 const list =
 orders.filter(order => {
 
-return (
-!search ||
+const product =
+products.find(
+p =>
+Number(p.id) === Number(order.product_id)
+);
+
+return !search ||
+
 String(order.id || "")
 .toLowerCase()
 .includes(search) ||
+
 String(order.user_id || "")
 .toLowerCase()
 .includes(search) ||
-String(order.product_name || "")
+
+String(product?.name || "")
 .toLowerCase()
 .includes(search) ||
+
 String(order.status || "")
 .toLowerCase()
-.includes(search)
-);
+.includes(search);
 
 });
-
 
 if (!list.length) {
 
@@ -2336,96 +1858,89 @@ return;
 
 }
 
-
-container.innerHTML = "";
-
+container.innerHTML="";
 
 list.forEach(order => {
 
-const box =
-document.createElement(
-"div"
+const product =
+products.find(
+p =>
+Number(p.id) === Number(order.product_id)
 );
 
-box.className =
-"item";
+const box =
+document.createElement("div");
 
+box.className="item";
+
+const status =
+String(order.status || "pending")
+.toLowerCase();
 
 box.innerHTML = `
 
 <h3>
-🧾 Order #${escapeHTML(order.id)}
+Order #${escapeHTML(order.id)}
 </h3>
 
 <p>
-<strong>User:</strong>
-${escapeHTML(
-order.user_id ||
-"Unknown"
-)}
+<strong>Customer:</strong>
+${escapeHTML(order.user_id)}
 </p>
 
 <p>
-<strong>Product:</strong>
-${escapeHTML(
-order.product_name ||
-"Unknown"
-)}
+<strong>Service:</strong>
+${escapeHTML(product?.name || order.product_id)}
 </p>
 
 <p>
 <strong>Amount:</strong>
-₦${money(
-order.amount
-)}
+₦${money(order.amount)}
 </p>
 
 <p>
 <strong>Status:</strong>
-${escapeHTML(
-order.status ||
-"unknown"
-)}
+${escapeHTML(status)}
 </p>
 
+<p>
+<strong>Created:</strong>
 ${
 order.created_at
 ?
-`
-<p>
-<strong>Date:</strong>
-${escapeHTML(
-new Date(
-order.created_at
+escapeHTML(
+new Date(order.created_at)
+.toLocaleString("en-NG")
 )
-.toLocaleString(
-"en-NG"
-)
-)}
+:
+"Unknown"
+}
 </p>
+
+<div class="item-actions">
+
+${
+status === "pending"
+?
+`
+<button
+class="green"
+onclick="setOrderStatus('${String(order.id).replace(/'/g,"\\'")}','delivered')"
+>
+✅ Mark Delivered
+</button>
 `
 :
 ""
 }
 
-<div class="item-actions">
-
 ${
-String(order.status || "")
-.toLowerCase() ===
-"pending"
+status !== "cancelled"
 ?
 `
 <button
-class="green"
-onclick="completePendingOrder('${String(order.id).replace(/'/g,"\\'")}' )"
->
-✅ Complete
-</button>
-
-<button
 class="red"
-onclick="cancelPendingOrder('${String(order.id).replace(/'/g,"\\'")}' )"
+onclick="setOrderStatus('${String(order.id).replace(/'/g,"\\'")}','cancelled')"
 >
 ❌ Cancel
 </button>
@@ -2444,117 +1959,38 @@ container.appendChild(box);
 
 }
 
-
-/* COMPLETE NORMAL ORDER */
-
-async function completePendingOrder(id) {
-
-if (
-!confirm(
-"Complete this order?"
-)
-) return;
-
-
-const order =
-orders.find(
-o =>
-String(o.id) ===
-String(id)
-);
-
-
-if (!order) {
-
-alert(
-"Order not found."
-);
-
-return;
-
-}
-
+async function setOrderStatus(id,status) {
 
 const {
 error
 } =
 await supabaseClient
 .from("orders")
-.update({
-status:"delivered"
-})
-.eq(
-"id",
-id
-);
-
+.update({status})
+.eq("id",id);
 
 if (error) {
 
-alert(
-"❌ " +
-error.message
-);
+alert("❌ " + error.message);
 
 return;
 
 }
 
-
 await loadOrders();
-
 await updateStatistics();
 
 }
-
-
-/* CANCEL NORMAL ORDER */
-
-async function cancelPendingOrder(id) {
-
-if (
-!confirm(
-"Cancel this order?"
-)
-) return;
-
-
-const {
-error
-} =
-await supabaseClient
-.from("orders")
-.update({
-status:"cancelled"
-})
-.eq(
-"id",
-id
-);
-
-
-if (error) {
-
-alert(
-"❌ " +
-error.message
-);
-
-return;
-
-}
-
-
-await loadOrders();
-
-await updateStatistics();
-
-}
-
 
 /* USERS */
 
 async function loadUsers() {
+
+const container =
+document.getElementById("usersList");
+
+container.innerHTML =
+'<div class="loading">Loading users...</div>';
 
 const {
 data,
@@ -2563,180 +1999,103 @@ error
 await supabaseClient
 .from("profiles")
 .select("*")
-.order(
-"created_at",
-{
-ascending:false
-}
-);
-
+.order("created_at",{ascending:false});
 
 if (error) {
 
-document.getElementById(
-"usersList"
-).innerHTML =
+container.innerHTML =
 '<div class="error">❌ User records could not be loaded.<br><br>' +
 escapeHTML(error.message) +
-'</div>';
+'<br><br>Your project needs a public <strong>profiles</strong> table for this section.</div>';
 
-users = [];
+users=[];
 
 return;
 
 }
 
-
 users =
 data || [];
 
-
-/*
-====================================================
-LOAD VIRTUAL NUMBER PURCHASES FOR EACH USER
-====================================================
-*/
-
-for (
-const user of users
-) {
+/* LOAD VIRTUAL NUMBER PURCHASES FOR EACH USER */
+for (const user of users) {
 
 const {
-data:
-virtualOrders,
-error:
-virtualError
+data: virtualNumberOrders,
+error: virtualNumberError
 } =
 await supabaseClient
-.from(
-"virtual_number_orders"
-)
+.from("virtual_number_orders")
 .select("*")
-.eq(
-"user_id",
-user.id
-)
-.order(
-"created_at",
-{
-ascending:false
-}
-);
+.eq("user_id", user.id)
+.order("created_at", {ascending:false});
 
-
-if (virtualError) {
-
+if (virtualNumberError) {
 console.error(
 "Virtual number orders for user could not be loaded:",
-virtualError
+virtualNumberError
 );
-
 }
-
 
 user.virtual_number_orders =
-virtualOrders || [];
+virtualNumberOrders || [];
 
 }
 
-
-/*
-====================================================
-LOAD ALL VIRTUAL NUMBER PURCHASES
-====================================================
-*/
-
+/* LOAD ALL VIRTUAL NUMBER PURCHASES FOR ADMIN */
 const {
-data:
-allVirtualOrders,
-error:
-allVirtualError
+data: allVirtualNumberOrders,
+error: allVirtualNumberOrdersError
 } =
 await supabaseClient
-.from(
-"virtual_number_orders"
-)
+.from("virtual_number_orders")
 .select("*")
-.order(
-"created_at",
-{
-ascending:false
-}
-);
+.order("created_at",{ascending:false});
 
-
-if (allVirtualError) {
-
+if (allVirtualNumberOrdersError) {
 console.error(
 "Virtual number purchases could not be loaded:",
-allVirtualError
+allVirtualNumberOrdersError
 );
-
 virtualNumberOrders = [];
-
 }
 else {
-
-virtualNumberOrders =
-allVirtualOrders || [];
-
+virtualNumberOrders = allVirtualNumberOrders || [];
 }
 
-
 renderUsers();
-
 renderVirtualNumberOrders();
 
 }
 
-
-/* RENDER USERS */
-
 function renderUsers() {
 
 const container =
-document.getElementById(
-"usersList"
-);
+document.getElementById("usersList");
 
 const search =
-(
-document.getElementById(
-"userSearch"
-).value || ""
-)
+(document.getElementById("userSearch").value || "")
 .toLowerCase()
 .trim();
-
 
 const list =
 users.filter(user => {
 
-return (
-!search ||
+return !search ||
 
-String(
-user.email || ""
-)
+String(user.email || "")
 .toLowerCase()
 .includes(search) ||
 
-String(
-user.full_name || ""
-)
+String(user.full_name || "")
 .toLowerCase()
 .includes(search) ||
 
-String(
-user.id || ""
-)
+String(user.id || "")
 .toLowerCase()
-.includes(search)
-
-);
+.includes(search);
 
 });
-
 
 if (!list.length) {
 
@@ -2747,41 +2106,24 @@ return;
 
 }
 
-
-container.innerHTML = "";
-
+container.innerHTML="";
 
 list.forEach(user => {
 
 const box =
-document.createElement(
-"div"
-);
+document.createElement("div");
 
-box.className =
-"item";
-
-
-const virtualPurchases =
-user.virtual_number_orders ||
-[];
-
+box.className="item";
 
 box.innerHTML = `
 
 <h3>
-👤 ${escapeHTML(
-user.full_name ||
-"User"
-)}
+👤 ${escapeHTML(user.full_name || "User")}
 </h3>
 
 <p>
 <strong>Email:</strong>
-${escapeHTML(
-user.email ||
-"Not available"
-)}
+${escapeHTML(user.email || "Not available")}
 </p>
 
 <p>
@@ -2796,12 +2138,8 @@ user.created_at
 <p>
 <strong>Joined:</strong>
 ${escapeHTML(
-new Date(
-user.created_at
-)
-.toLocaleString(
-"en-NG"
-)
+new Date(user.created_at)
+.toLocaleString("en-NG")
 )}
 </p>
 `
@@ -2809,126 +2147,29 @@ user.created_at
 ""
 }
 
-
-<p>
-<strong>📱 Virtual Number Purchases:</strong>
-${virtualPurchases.length}
-</p>
-
-
 ${
-virtualPurchases.length
-?
-`
+(user.virtual_number_orders || []).length
+? `
+<p>
+<strong>🛒 Virtual Number Purchases:</strong>
+${(user.virtual_number_orders || []).length}
+</p>
 
 <div style="margin-top:10px;">
-
-${virtualPurchases.map(
-v => `
-
-<div
-style="
-background:#eee;
-padding:12px;
-border-radius:9px;
-margin-top:8px;
-"
->
-
-<strong>
-📱 ${escapeHTML(
-v.service_name ||
-"Virtual Number"
-)}
-</strong>
-
-<br>
-
-Country:
-${escapeHTML(
-v.country_name ||
-"Unknown"
-)}
-
-<br>
-
-Amount:
-₦${money(
-v.customer_price_ngn ??
-v.amount ??
-0
-)}
-
-<br>
-
-Status:
-${escapeHTML(
-v.status ||
-"received"
-)}
-
-<br>
-
-${
-v.phone_number
-?
-`
-Number:
-${escapeHTML(
-v.phone_number
-)}
-<br>
-`
-:
-""
-}
-
-${
-v.otp_code
-?
-`
-OTP:
-${escapeHTML(
-v.otp_code
-)}
-<br>
-`
-:
-""
-}
-
-${
-v.created_at
-?
-`
-Date:
-${escapeHTML(
-new Date(
-v.created_at
-)
-.toLocaleString(
-"en-NG"
-)
-)}
-`
-:
-""
-}
-
+${(user.virtual_number_orders || []).map(v => `
+<div style="background:#eee;padding:12px;border-radius:9px;margin-top:8px;">
+<strong>📱 ${escapeHTML(v.service_name || "Virtual Number")}</strong><br>
+Country: ${escapeHTML(v.country_name || "Unknown")}<br>
+Amount: ₦${money(v.customer_price_ngn ?? v.amount ?? 0)}<br>
+Status: ${["received","completed"].includes(String(v.status || "").toLowerCase()) ? "✅ Completed" : escapeHTML(v.status || "Pending")}<br>
+${v.number ? `Number: ${escapeHTML(v.number)}<br>` : ""}
+${v.otp_code ? `OTP: ${escapeHTML(v.otp_code)}<br>` : ""}
+${v.created_at ? `Date: ${escapeHTML(new Date(v.created_at).toLocaleString("en-NG"))}` : ""}
 </div>
-
-`
-).join("")}
-
+`).join("")}
 </div>
-
 `
-:
-`
-<p style="color:#777;">
-No virtual number purchases.
-</p>
-`
+: ""
 }
 
 <div class="item-actions">
@@ -2938,23 +2179,13 @@ user.is_banned !== undefined
 ?
 `
 <button
-class="${
-user.is_banned
-? "green"
-: "red"
-}"
-onclick="
-toggleUserBan(
+class="${user.is_banned ? "green":"red"}"
+onclick="toggleUserBan(
 '${String(user.id).replace(/'/g,"\\'")}',
 ${!user.is_banned}
-)
-"
+)"
 >
-${
-user.is_banned
-? "🔓 Unban User"
-: "🚫 Ban User"
-}
+${user.is_banned ? "🔓 Unban User":"🚫 Ban User"}
 </button>
 `
 :
@@ -2971,204 +2202,54 @@ container.appendChild(box);
 
 }
 
-
-/*
-====================================================
-VIRTUAL NUMBER PURCHASE LIST
-====================================================
-*/
-
 function renderVirtualNumberOrders() {
 
 const container =
-document.getElementById(
-"virtualNumberOrdersList"
-);
+document.getElementById("virtualNumberOrdersList");
 
 if (!container) return;
 
-
 const search =
-(
-document.getElementById(
-"virtualNumberSearch"
-)?.value || ""
-)
+(document.getElementById("virtualNumberSearch")?.value || "")
 .toLowerCase()
 .trim();
 
-
 const list =
-(
-virtualNumberOrders || []
-)
-.filter(v => {
+(virtualNumberOrders || []).filter(v => {
 
-return (
-!search ||
-
-String(
-v.id || ""
-)
-.toLowerCase()
-.includes(search) ||
-
-String(
-v.user_id || ""
-)
-.toLowerCase()
-.includes(search) ||
-
-String(
-v.service_name || ""
-)
-.toLowerCase()
-.includes(search) ||
-
-String(
-v.country_name || ""
-)
-.toLowerCase()
-.includes(search) ||
-
-String(
-v.phone_number || ""
-)
-.toLowerCase()
-.includes(search) ||
-
-String(
-v.status || ""
-)
-.toLowerCase()
-.includes(search)
-);
+return !search ||
+String(v.id || "").toLowerCase().includes(search) ||
+String(v.user_id || "").toLowerCase().includes(search) ||
+String(v.service_name || "").toLowerCase().includes(search) ||
+String(v.country_name || "").toLowerCase().includes(search) ||
+String(v.number || "").toLowerCase().includes(search) ||
+String(v.status || "").toLowerCase().includes(search);
 
 });
 
-
 if (!list.length) {
-
 container.innerHTML =
 '<div class="loading">No virtual number purchases found.</div>';
-
 return;
-
 }
-
 
 container.innerHTML = "";
 
-
 list.forEach(v => {
 
-const box =
-document.createElement(
-"div"
-);
-
-box.className =
-"item";
-
+const box = document.createElement("div");
+box.className = "item";
 
 box.innerHTML = `
-
-<h3>
-📱 Virtual Number #
-${escapeHTML(v.id)}
-</h3>
-
-<p>
-<strong>Customer:</strong>
-${escapeHTML(
-v.user_id ||
-"Unknown"
-)}
-</p>
-
-<p>
-<strong>Service:</strong>
-${escapeHTML(
-v.service_name ||
-"Virtual Number"
-)}
-</p>
-
-<p>
-<strong>Country:</strong>
-${escapeHTML(
-v.country_name ||
-"Unknown"
-)}
-</p>
-
-<p>
-<strong>Amount:</strong>
-₦${money(
-v.customer_price_ngn ??
-v.amount ??
-0
-)}
-</p>
-
-<p>
-<strong>Status:</strong>
-${escapeHTML(
-v.status ||
-"received"
-)}
-</p>
-
-${
-v.phone_number
-?
-`
-<p>
-<strong>Number:</strong>
-${escapeHTML(
-v.phone_number
-)}
-</p>
-`
-:
-""
-}
-
-${
-v.otp_code
-?
-`
-<p>
-<strong>OTP:</strong>
-${escapeHTML(
-v.otp_code
-)}
-</p>
-`
-:
-""
-}
-
-${
-v.created_at
-?
-`
-<p>
-<strong>Created:</strong>
-${escapeHTML(
-new Date(
-v.created_at
-)
-.toLocaleString(
-"en-NG"
-)
-)}
-</p>
-`
-:
-""
-}
-
+<h3>📱 Virtual Number #${escapeHTML(v.id)}</h3>
+<p><strong>Customer:</strong> ${escapeHTML(v.user_id || "Unknown")}</p>
+<p><strong>Service:</strong> ${escapeHTML(v.service_name || "Virtual Number")}</p>
+<p><strong>Country:</strong> ${escapeHTML(v.country_name || "Unknown")}</p>
+<p><strong>Amount:</strong> ₦${money(v.customer_price_ngn ?? v.amount ?? 0)}</p>
+<p><strong>Status:</strong> ${["received","completed"].includes(String(v.status || "").toLowerCase()) ? "✅ Completed" : escapeHTML(v.status || "Pending")}</p>
+${v.number ? `<p><strong>Number:</strong> ${escapeHTML(v.number)}</p>` : ""}
+${v.otp_code ? `<p><strong>OTP:</strong> ${escapeHTML(v.otp_code)}</p>` : ""}
+${v.created_at ? `<p><strong>Created:</strong> ${escapeHTML(new Date(v.created_at).toLocaleString("en-NG"))}</p>` : ""}
 `;
 
 container.appendChild(box);
@@ -3176,7 +2257,6 @@ container.appendChild(box);
 });
 
 }
-
 
 /* REFRESH VIRTUAL NUMBER PURCHASES */
 
@@ -3187,47 +2267,26 @@ data,
 error
 } =
 await supabaseClient
-.from(
-"virtual_number_orders"
-)
+.from("virtual_number_orders")
 .select("*")
-.order(
-"created_at",
-{
-ascending:false
-}
-);
-
+.order("created_at", {ascending:false});
 
 if (error) {
-
 console.error(
 "Virtual number purchases load error:",
 error
 );
-
 virtualNumberOrders = [];
-
 }
 else {
-
-virtualNumberOrders =
-data || [];
-
+virtualNumberOrders = data || [];
 }
-
 
 renderVirtualNumberOrders();
 
 }
 
-
-/* USER BAN */
-
-async function toggleUserBan(
-id,
-banned
-) {
+async function toggleUserBan(id,banned) {
 
 const {
 error
@@ -3237,252 +2296,125 @@ await supabaseClient
 .update({
 is_banned:banned
 })
-.eq(
-"id",
-id
-);
-
+.eq("id",id);
 
 if (error) {
 
-alert(
-"❌ " +
-error.message
-);
+alert("❌ " + error.message);
 
 return;
 
 }
 
-
 await loadUsers();
 
 }
 
-
-/*
-====================================================
-STATISTICS
-====================================================
-*/
+/* STATISTICS */
 
 async function updateStatistics() {
 
-
 const {
-count:
-productsTotal
+count: productsTotal
 } =
 await supabaseClient
 .from("Product")
-.select(
-"*",
-{
-count:"exact",
-head:true
-}
-);
-
+.select("*",{count:"exact",head:true});
 
 const {
-count:
-inventoryTotal
+count: inventoryTotal
 } =
 await supabaseClient
 .from("product_inventory")
-.select(
-"*",
-{
-count:"exact",
-head:true
-}
-)
-.eq(
-"status",
-"available"
-);
-
+.select("*",{count:"exact",head:true})
+.eq("status","available");
 
 const {
-count:
-pendingTotal
+count: pendingTotal
 } =
 await supabaseClient
 .from("orders")
-.select(
-"*",
-{
-count:"exact",
-head:true
-}
-)
-.eq(
-"status",
-"pending"
-);
-
+.select("*",{count:"exact",head:true})
+.eq("status","pending");
 
 const {
-count:
-completedTotal
+count: completedTotal
 } =
 await supabaseClient
 .from("orders")
-.select(
-"*",
-{
-count:"exact",
-head:true
-}
-)
-.eq(
-"status",
-"delivered"
-);
+.select("*",{count:"exact",head:true})
+.eq("status","delivered");
 
-
-/*
-====================================================
-COUNT RECEIVED/COMPLETED VIRTUAL NUMBERS
-====================================================
-*/
-
+/* COUNT RECEIVED/COMPLETED VIRTUAL NUMBER PURCHASES */
 const {
-data:
-virtualOrders,
-error:
-virtualError
+data: virtualNumberOrders,
+error: virtualNumberError
 } =
 await supabaseClient
-.from(
-"virtual_number_orders"
-)
-.select(
-"status"
-);
+.from("virtual_number_orders")
+.select("status");
 
+let virtualNumberCompletedTotal = 0;
 
-let virtualNumberCompletedTotal =
-0;
-
-
-if (virtualError) {
-
+if (virtualNumberError) {
 console.error(
 "Virtual number purchase stats error:",
-virtualError
+virtualNumberError
 );
-
 }
 else {
-
 virtualNumberCompletedTotal =
-(
-virtualOrders || []
-)
-.filter(v => {
-
+(virtualNumberOrders || []).filter(v => {
 const status =
-String(
-v.status || ""
-)
-.toLowerCase();
-
-return (
-status === "received" ||
-status === "completed"
-);
-
-})
-.length;
-
+String(v.status || "").toLowerCase();
+return status === "received" || status === "completed";
+}).length;
 }
 
-
 const {
-count:
-neverTotal
+count: neverTotal
 } =
 await supabaseClient
 .from("Product")
-.select(
-"*",
-{
-count:"exact",
-head:true
-}
-)
-.eq(
-"track_stock",
-false
-);
+.select("*",{count:"exact",head:true})
+.eq("track_stock",false);
 
-
-document.getElementById(
-"productCount"
-)
+document.getElementById("productCount")
 .textContent =
 productsTotal ?? 0;
 
-
-document.getElementById(
-"inventoryCount"
-)
+document.getElementById("inventoryCount")
 .textContent =
 inventoryTotal ?? 0;
 
-
-document.getElementById(
-"pendingCount"
-)
+document.getElementById("pendingCount")
 .textContent =
 pendingTotal ?? 0;
 
-
-/*
-NORMAL COMPLETED ORDERS
-+
-VIRTUAL NUMBER RECEIVED/COMPLETED
-*/
-
-document.getElementById(
-"completedCount"
-)
+document.getElementById("completedCount")
 .textContent =
-(
-completedTotal ?? 0
-) +
+(completedTotal ?? 0) +
 virtualNumberCompletedTotal;
 
-
-document.getElementById(
-"neverSellOutCount"
-)
+document.getElementById("neverSellOutCount")
 .textContent =
 neverTotal ?? 0;
 
-
-document.getElementById(
-"userCount"
-)
+document.getElementById("userCount")
 .textContent =
 users.length || 0;
 
 }
 
-
-/* REFRESH EVERYTHING */
+/* REFRESH */
 
 async function refreshEverything() {
 
 const message =
-document.getElementById(
-"refreshMessage"
-);
+document.getElementById("refreshMessage");
 
 message.textContent =
 "🔄 Refreshing everything...";
-
 
 try {
 
@@ -3499,7 +2431,6 @@ await loadUsers();
 await loadVirtualNumberOrders();
 
 await updateStatistics();
-
 
 message.textContent =
 "✅ Everything refreshed successfully.";
@@ -3518,30 +2449,24 @@ error.message;
 
 }
 
-
-/* START ADMIN */
+/* START */
 
 async function startAdmin() {
 
 buildCategoryUI();
 
-
 const allowed =
 await checkAdmin();
 
-
 if (!allowed) return;
-
 
 await refreshEverything();
 
 }
-
 
 startAdmin();
 
 </script>
 
 </body>
-
 </html>
