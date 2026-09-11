@@ -105,6 +105,11 @@
       font-weight: 700;
     }
 
+    .refresh-btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
     .status {
       margin-top: 12px;
       font-size: 13px;
@@ -192,12 +197,6 @@
       color: white;
     }
 
-    .action-btn:disabled,
-    .refresh-btn:disabled {
-      opacity: .6;
-      cursor: not-allowed;
-    }
-
     .empty {
       background: white;
       padding: 35px 20px;
@@ -206,7 +205,7 @@
       color: #6b7280;
     }
 
-    /* Modal */
+    /* MODAL */
 
     .modal-overlay {
       display: none;
@@ -241,6 +240,7 @@
       color: #6b7280;
       font-size: 13px;
       margin-bottom: 18px;
+      line-height: 1.6;
     }
 
     .amount-label {
@@ -284,16 +284,19 @@
       color: #111827;
     }
 
-    .confirm-btn {
-      color: white;
-    }
-
     .confirm-add {
       background: #16a34a;
+      color: white;
     }
 
     .confirm-deduct {
       background: #dc2626;
+      color: white;
+    }
+
+    .confirm-btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
     }
 
     .error {
@@ -328,6 +331,7 @@
 
 <header>
   <div class="header-inner">
+
     <div>
       <div class="title">💰 Wallet Admin</div>
       <div class="subtitle">Delight Vendor Logs</div>
@@ -336,6 +340,7 @@
     <button class="back-btn" onclick="goBack()">
       Admin
     </button>
+
   </div>
 </header>
 
@@ -345,6 +350,7 @@
   <div class="top-card">
 
     <div class="top-row">
+
       <input
         type="text"
         id="searchInput"
@@ -360,14 +366,14 @@
       >
         Refresh
       </button>
+
     </div>
 
     <div id="status" class="status">
-      Loading users...
+      Checking admin access...
     </div>
 
   </div>
-
 
   <div id="users" class="users"></div>
 
@@ -410,10 +416,10 @@
 
       <button
         id="confirmBtn"
-        class="confirm-btn"
+        class="confirm-btn confirm-add"
         onclick="confirmAdjustment()"
       >
-        Confirm
+        Add Money
       </button>
 
     </div>
@@ -426,23 +432,35 @@
 <script>
 
   /* =====================================================
-     SUPABASE CONFIG
+     SUPABASE
      ===================================================== */
 
   const SUPABASE_URL =
     "https://hkfhehbhmucymusaytoe.supabase.co";
 
   /*
-     Use your normal Supabase anon/publishable key here.
-     DO NOT put the service-role key here.
+    PUT YOUR NORMAL SUPABASE PUBLISHABLE / ANON KEY HERE.
+
+    DO NOT PUT SERVICE ROLE KEY HERE.
   */
 
   const SUPABASE_ANON_KEY =
     "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
 
-  const { createClient } =
-    supabase.createClient(
+  /*
+    IMPORTANT:
+    The Supabase library is called "supabase".
+    The actual client is stored separately as "supabaseClient".
+  */
+
+  const {
+    createClient
+  } = window.supabase;
+
+
+  const supabaseClient =
+    createClient(
       SUPABASE_URL,
       SUPABASE_ANON_KEY
     );
@@ -460,68 +478,124 @@
 
 
   /* =====================================================
-     AUTH + ADMIN CHECK
+     CHECK LOGIN + ADMIN
      ===================================================== */
 
   async function checkAdminAccess() {
 
-    const {
-      data: {
-        session
+    try {
+
+      const {
+        data,
+        error
+      } = await supabaseClient.auth.getSession();
+
+
+      if (error) {
+        console.error(error);
+        showAccessDenied();
+        return false;
       }
-    } = await supabase.auth.getSession();
 
 
-    if (!session) {
+      const session =
+        data?.session;
 
-      window.location.href = "login.html";
+
+      if (!session) {
+
+        window.location.href =
+          "login.html";
+
+        return false;
+      }
+
+
+      /*
+        This checks your existing is_admin()
+        function on Supabase.
+      */
+
+      const {
+        data: isAdmin,
+        error: adminError
+      } =
+        await supabaseClient.rpc(
+          "is_admin"
+        );
+
+
+      if (
+        adminError ||
+        isAdmin !== true
+      ) {
+
+        console.error(adminError);
+
+        showAccessDenied();
+
+        return false;
+      }
+
+
+      return true;
+
+    } catch (error) {
+
+      console.error(error);
+
+      showAccessDenied();
 
       return false;
     }
+  }
 
 
-    const {
-      data,
-      error
-    } = await supabase.rpc("is_admin");
+  /* =====================================================
+     ACCESS DENIED
+     ===================================================== */
 
+  function showAccessDenied() {
 
-    if (error || data !== true) {
+    document.body.innerHTML = `
 
-      document.body.innerHTML = `
+      <div style="
+        min-height:100vh;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        font-family:Arial,sans-serif;
+        background:#f5f6f8;
+      ">
+
         <div style="
-          min-height:100vh;
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          padding:20px;
-          font-family:Arial;
-          background:#f5f6f8;
+          background:white;
+          padding:30px;
+          border-radius:15px;
+          text-align:center;
+          width:100%;
+          max-width:400px;
+          box-shadow:0 5px 25px rgba(0,0,0,.1);
         ">
-          <div style="
-            background:white;
-            padding:30px;
-            border-radius:15px;
-            text-align:center;
-            max-width:400px;
-            box-shadow:0 5px 25px rgba(0,0,0,.1);
-          ">
-            <div style="font-size:45px;">🔒</div>
-            <h2 style="margin:15px 0 8px;">
-              Access Denied
-            </h2>
-            <p style="color:#666;">
-              You are not authorized to access this page.
-            </p>
+
+          <div style="font-size:45px;">
+            🔒
           </div>
+
+          <h2 style="margin:15px 0 8px;">
+            Access Denied
+          </h2>
+
+          <p style="color:#666;">
+            You are not authorized to access this page.
+          </p>
+
         </div>
-      `;
 
-      return false;
-    }
+      </div>
 
-
-    return true;
+    `;
   }
 
 
@@ -532,10 +606,14 @@
   async function loadUsers() {
 
     const refreshBtn =
-      document.getElementById("refreshBtn");
+      document.getElementById(
+        "refreshBtn"
+      );
 
     const status =
-      document.getElementById("status");
+      document.getElementById(
+        "status"
+      );
 
 
     refreshBtn.disabled = true;
@@ -549,9 +627,10 @@
       const {
         data,
         error
-      } = await supabase.rpc(
-        "admin_list_wallet_users"
-      );
+      } =
+        await supabaseClient.rpc(
+          "admin_list_wallet_users"
+        );
 
 
       if (error) {
@@ -559,25 +638,52 @@
       }
 
 
-      users = data || [];
+      users =
+        Array.isArray(data)
+          ? data
+          : [];
+
 
       renderUsers();
 
 
       status.textContent =
-        `${users.length} user${users.length === 1 ? "" : "s"} found.`;
+        `${users.length} user${
+          users.length === 1
+            ? ""
+            : "s"
+        } found.`;
+
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        "Load users error:",
+        error
+      );
+
 
       status.textContent =
         "Unable to load users.";
 
-      document.getElementById("users").innerHTML = `
+
+      document.getElementById(
+        "users"
+      ).innerHTML = `
+
         <div class="empty">
-          ${escapeHtml(error.message || "Something went wrong.")}
+
+          Unable to load users.<br><br>
+
+          <small>
+            ${escapeHtml(
+              error.message ||
+              "Unknown error"
+            )}
+          </small>
+
         </div>
+
       `;
 
     } finally {
@@ -594,11 +700,15 @@
   function renderUsers() {
 
     const container =
-      document.getElementById("users");
+      document.getElementById(
+        "users"
+      );
 
     const search =
       document
-        .getElementById("searchInput")
+        .getElementById(
+          "searchInput"
+        )
         .value
         .trim()
         .toLowerCase();
@@ -608,16 +718,20 @@
       users.filter(user => {
 
         const name =
-          String(user.full_name || "")
-            .toLowerCase();
+          String(
+            user.full_name || ""
+          ).toLowerCase();
 
         const email =
-          String(user.email || "")
-            .toLowerCase();
+          String(
+            user.email || ""
+          ).toLowerCase();
 
         const id =
-          String(user.user_id || "")
-            .toLowerCase();
+          String(
+            user.user_id || ""
+          ).toLowerCase();
+
 
         return (
           name.includes(search) ||
@@ -631,13 +745,17 @@
     if (!filtered.length) {
 
       container.innerHTML = `
+
         <div class="empty">
+
           ${
             users.length
               ? "No user matches your search."
               : "No users found."
           }
+
         </div>
+
       `;
 
       return;
@@ -645,73 +763,94 @@
 
 
     container.innerHTML =
-      filtered.map(user => {
+      filtered
+        .map(user => {
 
-        const balance =
-          Number(user.balance || 0);
+          const balance =
+            Number(
+              user.balance || 0
+            );
 
 
-        return `
+          return `
 
-          <div class="user-card">
+            <div class="user-card">
 
-            <div class="user-top">
+              <div class="user-top">
 
-              <div>
+                <div>
 
-                <div class="user-name">
-                  ${escapeHtml(user.full_name || "No name")}
+                  <div class="user-name">
+                    ${escapeHtml(
+                      user.full_name ||
+                      "No name"
+                    )}
+                  </div>
+
+                  <div class="email">
+                    ${escapeHtml(
+                      user.email ||
+                      "No email"
+                    )}
+                  </div>
+
+                  <div class="user-id">
+                    ${escapeHtml(
+                      user.user_id
+                    )}
+                  </div>
+
                 </div>
 
-                <div class="email">
-                  ${escapeHtml(user.email || "No email")}
-                </div>
 
-                <div class="user-id">
-                  ${escapeHtml(user.user_id)}
+                <div class="balance-box">
+
+                  <div class="balance-label">
+                    WALLET BALANCE
+                  </div>
+
+                  <div class="balance">
+                    ₦${formatMoney(
+                      balance
+                    )}
+                  </div>
+
                 </div>
 
               </div>
 
 
-              <div class="balance-box">
+              <div class="actions">
 
-                <div class="balance-label">
-                  WALLET BALANCE
-                </div>
+                <button
+                  class="action-btn add-btn"
+                  onclick="openModal(
+                    '${user.user_id}',
+                    'add'
+                  )"
+                >
+                  + ADD
+                </button>
 
-                <div class="balance">
-                  ₦${formatMoney(balance)}
-                </div>
+
+                <button
+                  class="action-btn deduct-btn"
+                  onclick="openModal(
+                    '${user.user_id}',
+                    'deduct'
+                  )"
+                >
+                  − DEDUCT
+                </button>
 
               </div>
 
             </div>
 
+          `;
 
-            <div class="actions">
-
-              <button
-                class="action-btn add-btn"
-                onclick="openModal('${user.user_id}', 'add')"
-              >
-                + ADD
-              </button>
-
-              <button
-                class="action-btn deduct-btn"
-                onclick="openModal('${user.user_id}', 'deduct')"
-              >
-                − DEDUCT
-              </button>
-
-            </div>
-
-          </div>
-
-        `;
-
-      }).join("");
+        })
+        .join("");
   }
 
 
@@ -719,14 +858,20 @@
      OPEN MODAL
      ===================================================== */
 
-  function openModal(userId, action) {
+  function openModal(
+    userId,
+    action
+  ) {
 
     selectedUser =
       users.find(
-        user => user.user_id === userId
+        user =>
+          user.user_id === userId
       );
 
-    selectedAction = action;
+
+    selectedAction =
+      action;
 
 
     if (!selectedUser) {
@@ -735,19 +880,29 @@
 
 
     const modalTitle =
-      document.getElementById("modalTitle");
+      document.getElementById(
+        "modalTitle"
+      );
 
     const modalUser =
-      document.getElementById("modalUser");
+      document.getElementById(
+        "modalUser"
+      );
 
     const confirmBtn =
-      document.getElementById("confirmBtn");
+      document.getElementById(
+        "confirmBtn"
+      );
 
     const amountInput =
-      document.getElementById("amountInput");
+      document.getElementById(
+        "amountInput"
+      );
 
     const modalError =
-      document.getElementById("modalError");
+      document.getElementById(
+        "modalError"
+      );
 
 
     modalError.textContent = "";
@@ -779,20 +934,47 @@
     }
 
 
-    modalUser.innerHTML =
-      `<strong>${escapeHtml(selectedUser.full_name || "No name")}</strong><br>
-       ${escapeHtml(selectedUser.email || "")}<br>
-       Current balance: ₦${formatMoney(Number(selectedUser.balance || 0))}`;
+    modalUser.innerHTML = `
+
+      <strong>
+        ${escapeHtml(
+          selectedUser.full_name ||
+          "No name"
+        )}
+      </strong>
+
+      <br>
+
+      ${escapeHtml(
+        selectedUser.email ||
+        ""
+      )}
+
+      <br>
+
+      Current balance:
+      ₦${formatMoney(
+        Number(
+          selectedUser.balance || 0
+        )
+      )}
+
+    `;
 
 
     document
-      .getElementById("modalOverlay")
-      .classList.add("show");
+      .getElementById(
+        "modalOverlay"
+      )
+      .classList.add(
+        "show"
+      );
 
 
-    setTimeout(() => {
-      amountInput.focus();
-    }, 100);
+    setTimeout(
+      () => amountInput.focus(),
+      100
+    );
   }
 
 
@@ -803,8 +985,13 @@
   function closeModal() {
 
     document
-      .getElementById("modalOverlay")
-      .classList.remove("show");
+      .getElementById(
+        "modalOverlay"
+      )
+      .classList.remove(
+        "show"
+      );
+
 
     selectedUser = null;
 
@@ -813,31 +1000,62 @@
 
 
   /* =====================================================
-     CONFIRM ADD / DEDUCT
+     ADD / DEDUCT
      ===================================================== */
 
   async function confirmAdjustment() {
 
-    if (!selectedUser || !selectedAction) {
+    if (
+      !selectedUser ||
+      !selectedAction
+    ) {
       return;
     }
 
 
     const amountInput =
-      document.getElementById("amountInput");
+      document.getElementById(
+        "amountInput"
+      );
 
     const confirmBtn =
-      document.getElementById("confirmBtn");
+      document.getElementById(
+        "confirmBtn"
+      );
 
     const modalError =
-      document.getElementById("modalError");
+      document.getElementById(
+        "modalError"
+      );
 
 
     const amount =
-      Number(amountInput.value);
+      Number(
+        amountInput.value
+      );
 
 
-    if (!Number.isFinite(amount) || amount <= 0) {
+    if (
+      !Number.isFinite(amount) ||
+      amount <= 0
+    ) {
+
+      modalError.textContent =
+        "Please enter a valid amount.";
+
+      return;
+    }
+
+
+    /*
+      Prevent more than 2 decimal places.
+    */
+
+    if (
+      Math.round(
+        amount * 100
+      ) / 100 !== amount
+    ) {
 
       modalError.textContent =
         "Please enter a valid amount.";
@@ -857,12 +1075,16 @@
 
 
     const confirmed =
-      confirm(
+      window.confirm(
         `Are you sure you want to ${actionText} ₦${formattedAmount} ${
           selectedAction === "add"
             ? "to"
             : "from"
-        } ${selectedUser.full_name || selectedUser.email}?`
+        } ${
+          selectedUser.full_name ||
+          selectedUser.email ||
+          "this user"
+        }?`
       );
 
 
@@ -884,19 +1106,20 @@
       const {
         data,
         error
-      } = await supabase.rpc(
-        "admin_adjust_wallet",
-        {
-          p_user_id:
-            selectedUser.user_id,
+      } =
+        await supabaseClient.rpc(
+          "admin_adjust_wallet",
+          {
+            p_user_id:
+              selectedUser.user_id,
 
-          p_amount:
-            amount,
+            p_amount:
+              amount,
 
-          p_action:
-            selectedAction
-        }
-      );
+            p_action:
+              selectedAction
+          }
+        );
 
 
       if (error) {
@@ -905,19 +1128,22 @@
 
 
       /*
-        Update the displayed balance immediately.
+        Update local balance.
       */
 
       const updatedUser =
         users.find(
           user =>
-            user.user_id === selectedUser.user_id
+            user.user_id ===
+            selectedUser.user_id
         );
 
 
       if (updatedUser) {
+
         updatedUser.balance =
           Number(data || 0);
+
       }
 
 
@@ -926,18 +1152,29 @@
       renderUsers();
 
 
-      document.getElementById("status").textContent =
-        `Wallet updated successfully. New balance: ₦${formatMoney(Number(data || 0))}`;
+      document.getElementById(
+        "status"
+      ).textContent =
+        `Wallet updated successfully. New balance: ₦${formatMoney(
+          Number(data || 0)
+        )}`;
+
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        "Wallet adjustment error:",
+        error
+      );
+
 
       modalError.textContent =
         error.message ||
         "Unable to update wallet.";
 
+
       confirmBtn.disabled = false;
+
 
       confirmBtn.textContent =
         selectedAction === "add"
@@ -948,32 +1185,62 @@
 
 
   /* =====================================================
-     HELPERS
+     FORMAT MONEY
      ===================================================== */
 
-  function formatMoney(amount) {
+  function formatMoney(
+    amount
+  ) {
 
-    return Number(amount || 0)
-      .toLocaleString(
-        "en-NG",
-        {
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 2
-        }
+    return Number(
+      amount || 0
+    ).toLocaleString(
+      "en-NG",
+      {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      }
+    );
+  }
+
+
+  /* =====================================================
+     ESCAPE HTML
+     ===================================================== */
+
+  function escapeHtml(
+    value
+  ) {
+
+    return String(
+      value ?? ""
+    )
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+      .replace(
+        /</g,
+        "&lt;"
+      )
+      .replace(
+        />/g,
+        "&gt;"
+      )
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+      .replace(
+        /'/g,
+        "&#039;"
       );
   }
 
 
-  function escapeHtml(value) {
-
-    return String(value ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-
+  /* =====================================================
+     BACK TO ADMIN
+     ===================================================== */
 
   function goBack() {
 
@@ -983,7 +1250,7 @@
 
 
   /* =====================================================
-     START
+     START PAGE
      ===================================================== */
 
   (async function () {
@@ -991,9 +1258,11 @@
     const allowed =
       await checkAdminAccess();
 
+
     if (!allowed) {
       return;
     }
+
 
     await loadUsers();
 
