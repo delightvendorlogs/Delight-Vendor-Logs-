@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Delight Vendor Logs — View User</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f6f8;
+      color: #111;
+    }
+
+    .topbar {
+      background: #111;
+      color: white;
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .topbar-inner {
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .back-btn {
+      border: 0;
+      background: white;
+      color: #111;
+      padding: 9px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 15px 50px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    input {
+      flex: 1;
+      min-width: 220px;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 11px 16px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .primary {
+      background: #111;
+      color: white;
+    }
+
+    .secondary {
+      background: #eee;
+      color: #111;
+    }
+
+    .danger {
+      color: #b00020;
+      font-weight: 700;
+    }
+
+    .success {
+      color: #16803c;
+      font-weight: 700;
+    }
+
+    .user-header {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+    }
+
+    .info-box {
+      background: #f7f7f7;
+      padding: 14px;
+      border-radius: 10px;
+    }
+
+    .info-box small {
+      display: block;
+      color: #777;
+      margin-bottom: 5px;
+    }
+
+    .balance {
+      font-size: 25px;
+      font-weight: 800;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .tab {
+      background: #eee;
+      color: #111;
+    }
+
+    .tab.active {
+      background: #111;
+      color: white;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 800px;
+    }
+
+    th,
+    td {
+      padding: 11px 10px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f7f7f7;
+      font-size: 13px;
+    }
+
+    td {
+      font-size: 14px;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .status-waiting,
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-received,
+    .status-completed {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-cancelled,
+    .status-refunded,
+    .status-failed {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .status-other {
+      background: #e9ecef;
+      color: #444;
+    }
+
+    .empty {
+      padding: 25px;
+      text-align: center;
+      color: #777;
+    }
+
+    .loading {
+      padding: 25px;
+      text-align: center;
+    }
+
+    .error {
+      background: #ffe5e5;
+      color: #a00000;
+      padding: 13px;
+      border-radius: 9px;
+      margin-bottom: 15px;
+    }
+
+    .warning {
+      background: #fff8df;
+      color: #765900;
+      padding: 13px;
+      border-radius: 9px;
+      margin-bottom: 15px;
+    }
+
+    .user-list {
+      margin-top: 15px;
+    }
+
+    .user-item {
+      padding: 12px;
+      border: 1px solid #eee;
+      border-radius: 9px;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+
+    .user-item:hover {
+      background: #f7f7f7;
+    }
+
+    .user-item strong {
+      display: block;
+    }
+
+    .user-item small {
+      color: #777;
+    }
+
+    .virtual-card {
+      border: 1px solid #e5e5e5;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 12px;
+    }
+
+    .virtual-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 13px;
+      flex-wrap: wrap;
+    }
+
+    .virtual-title {
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .virtual-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    .virtual-field {
+      background: #f7f7f7;
+      padding: 10px;
+      border-radius: 8px;
+      word-break: break-word;
+    }
+
+    .virtual-field small {
+      display: block;
+      color: #777;
+      margin-bottom: 4px;
+    }
+
+    .sms-box {
+      margin-top: 12px;
+      padding: 12px;
+      background: #f5f5f5;
+      border-radius: 9px;
+      word-break: break-word;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 600px) {
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .container {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">⚡ Delight Vendor Logs — View User</div>
+      <button class="back-btn" onclick="goBack()">← Back</button>
+    </div>
+  </div>
+
+  <main class="container">
+
+    <!-- SEARCH -->
+    <section class="card">
+      <h2>View Customer</h2>
+
+      <div id="mainError"></div>
+
+      <div class="search-row">
+        <input
+          id="userSearch"
+          type="text"
+          placeholder="Search customer email or name..."
+          autocomplete="off"
+        >
+
+        <button class="primary" onclick="searchUsers()">
+          Search
+        </button>
+      </div>
+
+      <div id="userList" class="user-list"></div>
+    </section>
+
+    <!-- USER INFORMATION -->
+    <section id="userSection" class="card hidden">
+
+      <h2>Customer Account</h2>
+
+      <div class="user-header">
+
+        <div class="info-box">
+          <small>Name</small>
+          <strong id="userName">—</strong>
+        </div>
+
+        <div class="info-box">
+          <small>Email</small>
+          <strong id="userEmail">—</strong>
+        </div>
+
+        <div class="info-box">
+          <small>User ID</small>
+          <strong id="userId" style="word-break:break-all;">—</strong>
+        </div>
+
+        <div class="info-box">
+          <small>Wallet Balance</small>
+          <div class="balance" id="walletBalance">₦0</div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- CUSTOMER DATA -->
+    <section id="dataSection" class="card hidden">
+
+      <div class="tabs">
+
+        <button
+          class="tab active"
+          id="tabVirtual"
+          onclick="showTab('virtual')"
+        >
+          📱 All Countries Number
+        </button>
+
+        <button
+          class="tab"
+          id="tabTransactions"
+          onclick="showTab('transactions')"
+        >
+          💳 Transactions
+        </button>
+
+        <button
+          class="tab"
+          id="tabPurchases"
+          onclick="showTab('purchases')"
+        >
+          🛒 Purchases
+        </button>
+
+        <button
+          class="tab"
+          id="tabPending"
+          onclick="showTab('pending')"
+        >
+          ⏳ Pending
+        </button>
+
+      </div>
+
+      <!-- VIRTUAL NUMBERS -->
+      <div id="virtualTab">
+
+        <h2>All Countries Number</h2>
+
+        <div id="virtualOrders">
+          <div class="loading">Loading...</div>
+        </div>
+
+      </div>
+
+      <!-- TRANSACTIONS -->
+      <div id="transactionsTab" class="hidden">
+
+        <h2>Transactions</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+
+            <tbody id="transactionsBody"></tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- PURCHASES -->
+      <div id="purchasesTab" class="hidden">
+
+        <h2>Normal Purchases</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Product</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Content</th>
+              </tr>
+            </thead>
+
+            <tbody id="purchasesBody"></tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- PENDING -->
+      <div id="pendingTab" class="hidden">
+
+        <h2>Pending Orders</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Product</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody id="pendingBody"></tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+<script>
+  const SUPABASE_URL = "https://hkfhehbhmucymusaytoe.supabase.co";
+
+  const SUPABASE_ANON_KEY =
+    "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+  const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+  let selectedUserId = null;
+  let allUsers = [];
+  let currentTab = "virtual";
+
+
+  /*
+    ==========================================
+    PAGE START
+    ==========================================
+  */
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    await checkAdminAccess();
+
+    document
+      .getElementById("userSearch")
+      .addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+          searchUsers();
+        }
+      });
+
+    /*
+      If opened like:
+
+      view-user.html?user=USER_UUID
+
+      automatically load that customer.
+    */
+
+    const params = new URLSearchParams(window.location.search);
+    const userIdFromUrl = params.get("user");
+
+    if (userIdFromUrl) {
+      await loadSelectedUser(userIdFromUrl);
+    }
+  });
+
+
+  /*
+    ==========================================
+    ADMIN SECURITY
+    ==========================================
+  */
+
+  async function checkAdminAccess() {
+
+    try {
+
+      const {
+        data: {
+          session
+        }
+      } = await supabaseClient.auth.getSession();
+
+      if (!session) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      const {
+        data,
+        error
+      } = await supabaseClient.rpc("is_admin");
+
+      if (error) {
+        throw error;
+      }
+
+      if (!data) {
+        document.body.innerHTML = `
+          <div style="
+            padding:40px;
+            text-align:center;
+            font-family:Arial;
+          ">
+            <h2>Access Denied</h2>
+            <p>Admin access is required.</p>
+          </div>
+        `;
+
+        return;
+      }
+
+      /*
+        Load customer list after admin verification.
+      */
+      await loadUsers();
+
+    } catch (error) {
+
+      console.error(error);
+
+      document.body.innerHTML = `
+        <div style="
+          padding:40px;
+          text-align:center;
+          font-family:Arial;
+        ">
+          <h2>Access Denied</h2>
+          <p>${escapeHtml(error.message || "Unable to verify admin access.")}</p>
+        </div>
+      `;
+    }
+  }
+
+
+  /*
+    ==========================================
+    LOAD CUSTOMERS
+    ==========================================
+  */
+
+  async function loadUsers() {
+
+    const list = document.getElementById("userList");
+
+    list.innerHTML = `
+      <div class="loading">
+        Loading customers...
+      </div>
+    `;
+
+    const {
+      data,
+      error
+    } = await supabaseClient.rpc("admin_list_wallet_users");
+
+    if (error) {
+      console.error(error);
+
+      list.innerHTML = `
+        <div class="error">
+          ${escapeHtml(error.message)}
+        </div>
+      `;
+
+      return;
+    }
+
+    allUsers = data || [];
+
+    renderUsers(allUsers);
+  }
+
+
+  /*
+    ==========================================
+    SEARCH CUSTOMERS
+    ==========================================
+  */
+
+  function searchUsers() {
+
+    const search =
+      document
+        .getElementById("userSearch")
+        .value
+        .trim()
+        .toLowerCase();
+
+    if (!search) {
+      renderUsers(allUsers);
+      return;
+    }
+
+    const filtered = allUsers.filter(user => {
+
+      const email =
+        String(user.email || "").toLowerCase();
+
+      const name =
+        String(user.full_name || "").toLowerCase();
+
+      const id =
+        String(user.user_id || "").toLowerCase();
+
+      return (
+        email.includes(search) ||
+        name.includes(search) ||
+        id.includes(search)
+      );
+    });
+
+    renderUsers(filtered);
+  }
+
+
+  function renderUsers(users) {
+
+    const list = document.getElementById("userList");
+
+    if (!users || users.length === 0) {
+
+      list.innerHTML = `
+        <div class="empty">
+          No customer found.
+        </div>
+      `;
+
+      return;
+    }
+
+    list.innerHTML = users.map(user => `
+      <div
+        class="user-item"
+        onclick="loadSelectedUser('${escapeJs(user.user_id)}')"
+      >
+        <strong>
+          ${escapeHtml(user.full_name || "No name")}
+        </strong>
+
+        <small>
+          ${escapeHtml(user.email || "No email")}
+        </small>
+
+        <small>
+          Wallet: ₦${Number(user.balance || 0).toLocaleString()}
+        </small>
+      </div>
+    `).join("");
+  }
+
+
+  /*
+    ==========================================
+    LOAD SELECTED CUSTOMER
+    ==========================================
+  */
+
+  async function loadSelectedUser(userId) {
+
+    if (!userId) return;
+
+    selectedUserId = userId;
+
+    const user =
+      allUsers.find(
+        item => String(item.user_id) === String(userId)
+      );
+
+    document
+      .getElementById("userSection")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("dataSection")
+      .classList.remove("hidden");
+
+    document.getElementById("userId").textContent =
+      userId;
+
+    document.getElementById("userName").textContent =
+      user?.full_name || "No name";
+
+    document.getElementById("userEmail").textContent =
+      user?.email || "No email";
+
+    document.getElementById("walletBalance").textContent =
+      "₦" +
+      Number(user?.balance || 0).toLocaleString();
+
+    /*
+      Put selected user into URL.
+      This does NOT log in as the customer.
+    */
+
+    const newUrl =
+      window.location.pathname +
+      "?user=" +
+      encodeURIComponent(userId);
+
+    window.history.replaceState({}, "", newUrl);
+
+    await loadAllCustomerData();
+  }
+
+
+  /*
+    ==========================================
+    LOAD EVERYTHING
+    ==========================================
+  */
+
+  async function loadAllCustomerData() {
+
+    await Promise.all([
+      loadVirtualOrders(),
+      loadTransactions(),
+      loadPurchases(),
+      loadPending()
+    ]);
+  }
+
+
+  /*
+    ==========================================
+    VIRTUAL NUMBER ORDERS
+    ==========================================
+  */
+
+  async function loadVirtualOrders() {
+
+    const box =
+      document.getElementById("virtualOrders");
+
+    box.innerHTML =
+      `<div class="loading">Loading virtual-number orders...</div>`;
+
+    const {
+      data,
+      error
+    } = await supabaseClient.rpc(
+      "admin_list_virtual_number_orders"
+    );
+
+    if (error) {
+
+      console.error(error);
+
+      box.innerHTML = `
+        <div class="error">
+          ${escapeHtml(error.message)}
+        </div>
+      `;
+
+      return;
+    }
+
+    const orders =
+      (data || []).filter(
+        order =>
+          String(order.user_id) ===
+          String(selectedUserId)
+      );
+
+    if (orders.length === 0) {
+
+      box.innerHTML = `
+        <div class="empty">
+          This customer has no virtual-number orders.
+        </div>
+      `;
+
+      return;
+    }
+
+    box.innerHTML =
+      orders.map(renderVirtualOrder).join("");
+  }
+
+
+  function renderVirtualOrder(order) {
+
+    const status =
+      String(order.status || "unknown").toLowerCase();
+
+    const statusClass =
+      getStatusClass(status);
+
+    return `
+      <div class="virtual-card">
+
+        <div class="virtual-top">
+
+          <div class="virtual-title">
+            ${escapeHtml(
+              order.service_name ||
+              order.service_code ||
+              "Virtual Number"
+            )}
+          </div>
+
+          <span class="status ${statusClass}">
+            ${escapeHtml(order.status || "Unknown")}
+          </span>
+
+        </div>
+
+        <div class="virtual-grid">
+
+          <div class="virtual-field">
+            <small>Country</small>
+            ${escapeHtml(order.country_name || "—")}
+          </div>
+
+          <div class="virtual-field">
+            <small>Number</small>
+            ${escapeHtml(order.number || "—")}
+          </div>
+
+          <div class="virtual-field">
+            <small>Customer Price</small>
+            ₦${Number(
+              order.customer_price_ngn || 0
+            ).toLocaleString()}
+          </div>
+
+          <div class="virtual-field">
+            <small>Provider Cost</small>
+            ₦${Number(
+              order.provider_cost_ngn || 0
+            ).toLocaleString()}
+          </div>
+
+          <div class="virtual-field">
+            <small>Provider Order ID</small>
+            ${escapeHtml(
+              order.numpool_order_id || "—"
+            )}
+          </div>
+
+          <div class="virtual-field">
+            <small>OTP Code</small>
+            ${
+              order.otp_code
+                ? escapeHtml(order.otp_code)
+                : "Not received"
+            }
+          </div>
+
+          <div class="virtual-field">
+            <small>Purchased</small>
+            ${formatDate(order.purchased_at || order.created_at)}
+          </div>
+
+          <div class="virtual-field">
+            <small>Code Received</small>
+            ${formatDate(order.code_received_at)}
+          </div>
+
+          <div class="virtual-field">
+            <small>Cancelled</small>
+            ${formatDate(order.cancelled_at)}
+          </div>
+
+          <div class="virtual-field">
+            <small>Refunded</small>
+            ${formatDate(order.refunded_at)}
+          </div>
+
+        </div>
+
+        ${
+          order.full_sms
+            ? `
+              <div class="sms-box">
+                <strong>Full SMS</strong>
+                <br><br>
+                ${escapeHtml(order.full_sms)}
+              </div>
+            `
+            : ""
+        }
+
+        ${
+          status === "waiting"
+            ? `
+              <div class="warning" style="margin-top:12px;">
+                ⚠️ This order is still waiting for OTP.
+              </div>
+            `
+            : ""
+        }
+
+      </div>
+    `;
+  }
+
+
+  /*
+    ==========================================
+    TRANSACTIONS
+    ==========================================
+  */
+
+  async function loadTransactions() {
+
+    const body =
+      document.getElementById("transactionsBody");
+
+    body.innerHTML = `
+      <tr>
+        <td colspan="5">Loading...</td>
+      </tr>
+    `;
+
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("transactions")
+      .select(
+        "id,user_id,type,amount,status,description,created_at"
+      )
+      .eq("user_id", selectedUserId)
+      .order("created_at", {
+        ascending: false
+      });
+
+    if (error) {
+
+      body.innerHTML = `
+        <tr>
+          <td colspan="5" class="danger">
+            ${escapeHtml(error.message)}
+          </td>
+        </tr>
+      `;
+
+      return;
+ 
