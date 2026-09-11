@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Delight Vendor Logs — Wallet Admin</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f6f8;
+      color: #111827;
+      padding-bottom: 40px;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 18px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 10px rgba(0,0,0,.15);
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      opacity: .7;
+      margin-top: 4px;
+    }
+
+    .back-btn {
+      border: 1px solid rgba(255,255,255,.25);
+      background: transparent;
+      color: white;
+      padding: 9px 13px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 25px auto;
+      padding: 0 15px;
+    }
+
+    .top-card {
+      background: white;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    }
+
+    .top-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .search {
+      flex: 1;
+      padding: 13px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 9px;
+      outline: none;
+      font-size: 15px;
+    }
+
+    .search:focus {
+      border-color: #111827;
+    }
+
+    .refresh-btn {
+      padding: 13px 15px;
+      border: none;
+      border-radius: 9px;
+      background: #111827;
+      color: white;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .status {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .users {
+      display: grid;
+      gap: 14px;
+    }
+
+    .user-card {
+      background: white;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    }
+
+    .user-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      align-items: flex-start;
+    }
+
+    .user-name {
+      font-size: 17px;
+      font-weight: 800;
+      word-break: break-word;
+    }
+
+    .email {
+      color: #6b7280;
+      font-size: 13px;
+      margin-top: 4px;
+      word-break: break-word;
+    }
+
+    .user-id {
+      color: #9ca3af;
+      font-size: 11px;
+      margin-top: 8px;
+      word-break: break-all;
+    }
+
+    .balance-box {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .balance-label {
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 3px;
+    }
+
+    .balance {
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 17px;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 9px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .add-btn {
+      background: #16a34a;
+      color: white;
+    }
+
+    .deduct-btn {
+      background: #dc2626;
+      color: white;
+    }
+
+    .action-btn:disabled,
+    .refresh-btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    .empty {
+      background: white;
+      padding: 35px 20px;
+      border-radius: 14px;
+      text-align: center;
+      color: #6b7280;
+    }
+
+    /* Modal */
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      z-index: 100;
+      padding: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      width: 100%;
+      max-width: 400px;
+      border-radius: 15px;
+      padding: 22px;
+      box-shadow: 0 10px 40px rgba(0,0,0,.25);
+    }
+
+    .modal h2 {
+      font-size: 19px;
+      margin-bottom: 8px;
+    }
+
+    .modal-user {
+      color: #6b7280;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .amount-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    .amount-input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #d1d5db;
+      border-radius: 9px;
+      font-size: 18px;
+      outline: none;
+    }
+
+    .amount-input:focus {
+      border-color: #111827;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .cancel-btn,
+    .confirm-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 9px;
+      border: none;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .cancel-btn {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .confirm-btn {
+      color: white;
+    }
+
+    .confirm-add {
+      background: #16a34a;
+    }
+
+    .confirm-deduct {
+      background: #dc2626;
+    }
+
+    .error {
+      color: #dc2626;
+      font-size: 13px;
+      margin-top: 10px;
+      min-height: 18px;
+    }
+
+    @media (max-width: 600px) {
+      .user-top {
+        flex-direction: column;
+      }
+
+      .balance-box {
+        text-align: left;
+      }
+
+      .top-row {
+        flex-direction: column;
+      }
+
+      .search,
+      .refresh-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="title">💰 Wallet Admin</div>
+      <div class="subtitle">Delight Vendor Logs</div>
+    </div>
+
+    <button class="back-btn" onclick="goBack()">
+      Admin
+    </button>
+  </div>
+</header>
+
+
+<div class="container">
+
+  <div class="top-card">
+
+    <div class="top-row">
+      <input
+        type="text"
+        id="searchInput"
+        class="search"
+        placeholder="Search by name, email or user ID..."
+        oninput="renderUsers()"
+      >
+
+      <button
+        id="refreshBtn"
+        class="refresh-btn"
+        onclick="loadUsers()"
+      >
+        Refresh
+      </button>
+    </div>
+
+    <div id="status" class="status">
+      Loading users...
+    </div>
+
+  </div>
+
+
+  <div id="users" class="users"></div>
+
+</div>
+
+
+<!-- ADD / DEDUCT MODAL -->
+
+<div id="modalOverlay" class="modal-overlay">
+
+  <div class="modal">
+
+    <h2 id="modalTitle">Add Money</h2>
+
+    <div id="modalUser" class="modal-user"></div>
+
+    <label class="amount-label">
+      Amount (₦)
+    </label>
+
+    <input
+      id="amountInput"
+      class="amount-input"
+      type="number"
+      min="1"
+      step="0.01"
+      placeholder="Enter amount"
+    >
+
+    <div id="modalError" class="error"></div>
+
+    <div class="modal-actions">
+
+      <button
+        class="cancel-btn"
+        onclick="closeModal()"
+      >
+        Cancel
+      </button>
+
+      <button
+        id="confirmBtn"
+        class="confirm-btn"
+        onclick="confirmAdjustment()"
+      >
+        Confirm
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  /* =====================================================
+     SUPABASE CONFIG
+     ===================================================== */
+
+  const SUPABASE_URL =
+    "https://hkfhehbhmucymusaytoe.supabase.co";
+
+  /*
+     Use your normal Supabase anon/publishable key here.
+     DO NOT put the service-role key here.
+  */
+
+  const SUPABASE_ANON_KEY =
+    "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+
+  const { createClient } =
+    supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+
+  /* =====================================================
+     STATE
+     ===================================================== */
+
+  let users = [];
+
+  let selectedUser = null;
+
+  let selectedAction = null;
+
+
+  /* =====================================================
+     AUTH + ADMIN CHECK
+     ===================================================== */
+
+  async function checkAdminAccess() {
+
+    const {
+      data: {
+        session
+      }
+    } = await supabase.auth.getSession();
+
+
+    if (!session) {
+
+      window.location.href = "login.html";
+
+      return false;
+    }
+
+
+    const {
+      data,
+      error
+    } = await supabase.rpc("is_admin");
+
+
+    if (error || data !== true) {
+
+      document.body.innerHTML = `
+        <div style="
+          min-height:100vh;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          padding:20px;
+          font-family:Arial;
+          background:#f5f6f8;
+        ">
+          <div style="
+            background:white;
+            padding:30px;
+            border-radius:15px;
+            text-align:center;
+            max-width:400px;
+            box-shadow:0 5px 25px rgba(0,0,0,.1);
+          ">
+            <div style="font-size:45px;">🔒</div>
+            <h2 style="margin:15px 0 8px;">
+              Access Denied
+            </h2>
+            <p style="color:#666;">
+              You are not authorized to access this page.
+            </p>
+          </div>
+        </div>
+      `;
+
+      return false;
+    }
+
+
+    return true;
+  }
+
+
+  /* =====================================================
+     LOAD USERS
+     ===================================================== */
+
+  async function loadUsers() {
+
+    const refreshBtn =
+      document.getElementById("refreshBtn");
+
+    const status =
+      document.getElementById("status");
+
+
+    refreshBtn.disabled = true;
+
+    status.textContent =
+      "Loading users...";
+
+
+    try {
+
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        "admin_list_wallet_users"
+      );
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      users = data || [];
+
+      renderUsers();
+
+
+      status.textContent =
+        `${users.length} user${users.length === 1 ? "" : "s"} found.`;
+
+    } catch (error) {
+
+      console.error(error);
+
+      status.textContent =
+        "Unable to load users.";
+
+      document.getElementById("users").innerHTML = `
+        <div class="empty">
+          ${escapeHtml(error.message || "Something went wrong.")}
+        </div>
+      `;
+
+    } finally {
+
+      refreshBtn.disabled = false;
+    }
+  }
+
+
+  /* =====================================================
+     RENDER USERS
+     ===================================================== */
+
+  function renderUsers() {
+
+    const container =
+      document.getElementById("users");
+
+    const search =
+      document
+        .getElementById("searchInput")
+        .value
+        .trim()
+        .toLowerCase();
+
+
+    const filtered =
+      users.filter(user => {
+
+        const name =
+          String(user.full_name || "")
+            .toLowerCase();
+
+        const email =
+          String(user.email || "")
+            .toLowerCase();
+
+        const id =
+          String(user.user_id || "")
+            .toLowerCase();
+
+        return (
+          name.includes(search) ||
+          email.includes(search) ||
+          id.includes(search)
+        );
+
+      });
+
+
+    if (!filtered.length) {
+
+      container.innerHTML = `
+        <div class="empty">
+          ${
+            users.length
+              ? "No user matches your search."
+              : "No users found."
+          }
+        </div>
+      `;
+
+      return;
+    }
+
+
+    container.innerHTML =
+      filtered.map(user => {
+
+        const balance =
+          Number(user.balance || 0);
+
+
+        return `
+
+          <div class="user-card">
+
+            <div class="user-top">
+
+              <div>
+
+                <div class="user-name">
+                  ${escapeHtml(user.full_name || "No name")}
+                </div>
+
+                <div class="email">
+                  ${escapeHtml(user.email || "No email")}
+                </div>
+
+                <div class="user-id">
+                  ${escapeHtml(user.user_id)}
+                </div>
+
+              </div>
+
+
+              <div class="balance-box">
+
+                <div class="balance-label">
+                  WALLET BALANCE
+                </div>
+
+                <div class="balance">
+                  ₦${formatMoney(balance)}
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="actions">
+
+              <button
+                class="action-btn add-btn"
+                onclick="openModal('${user.user_id}', 'add')"
+              >
+                + ADD
+              </button>
+
+              <button
+                class="action-btn deduct-btn"
+                onclick="openModal('${user.user_id}', 'deduct')"
+              >
+                − DEDUCT
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+
+      }).join("");
+  }
+
+
+  /* =====================================================
+     OPEN MODAL
+     ===================================================== */
+
+  function openModal(userId, action) {
+
+    selectedUser =
+      users.find(
+        user => user.user_id === userId
+      );
+
+    selectedAction = action;
+
+
+    if (!selectedUser) {
+      return;
+    }
+
+
+    const modalTitle =
+      document.getElementById("modalTitle");
+
+    const modalUser =
+      document.getElementById("modalUser");
+
+    const confirmBtn =
+      document.getElementById("confirmBtn");
+
+    const amountInput =
+      document.getElementById("amountInput");
+
+    const modalError =
+      document.getElementById("modalError");
+
+
+    modalError.textContent = "";
+
+    amountInput.value = "";
+
+
+    if (action === "add") {
+
+      modalTitle.textContent =
+        "Add Money";
+
+      confirmBtn.textContent =
+        "Add Money";
+
+      confirmBtn.className =
+        "confirm-btn confirm-add";
+
+    } else {
+
+      modalTitle.textContent =
+        "Deduct Money";
+
+      confirmBtn.textContent =
+        "Deduct Money";
+
+      confirmBtn.className =
+        "confirm-btn confirm-deduct";
+    }
+
+
+    modalUser.innerHTML =
+      `<strong>${escapeHtml(selectedUser.full_name || "No name")}</strong><br>
+       ${escapeHtml(selectedUser.email || "")}<br>
+       Current balance: ₦${formatMoney(Number(selectedUser.balance || 0))}`;
+
+
+    document
+      .getElementById("modalOverlay")
+      .classList.add("show");
+
+
+    setTimeout(() => {
+      amountInput.focus();
+    }, 100);
+  }
+
+
+  /* =====================================================
+     CLOSE MODAL
+     ===================================================== */
+
+  function closeModal() {
+
+    document
+      .getElementById("modalOverlay")
+      .classList.remove("show");
+
+    selectedUser = null;
+
+    selectedAction = null;
+  }
+
+
+  /* =====================================================
+     CONFIRM ADD / DEDUCT
+     ===================================================== */
+
+  async function confirmAdjustment() {
+
+    if (!selectedUser || !selectedAction) {
+      return;
+    }
+
+
+    const amountInput =
+      document.getElementById("amountInput");
+
+    const confirmBtn =
+      document.getElementById("confirmBtn");
+
+    const modalError =
+      document.getElementById("modalError");
+
+
+    const amount =
+      Number(amountInput.value);
+
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+
+      modalError.textContent =
+        "Please enter a valid amount.";
+
+      return;
+    }
+
+
+    const actionText =
+      selectedAction === "add"
+        ? "add"
+        : "deduct";
+
+
+    const formattedAmount =
+      formatMoney(amount);
+
+
+    const confirmed =
+      confirm(
+        `Are you sure you want to ${actionText} ₦${formattedAmount} ${
+          selectedAction === "add"
+            ? "to"
+            : "from"
+        } ${selectedUser.full_name || selectedUser.email}?`
+      );
+
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    confirmBtn.disabled = true;
+
+    confirmBtn.textContent =
+      "Processing...";
+
+    modalError.textContent = "";
+
+
+    try {
+
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        "admin_adjust_wallet",
+        {
+          p_user_id:
+            selectedUser.user_id,
+
+          p_amount:
+            amount,
+
+          p_action:
+            selectedAction
+        }
+      );
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      /*
+        Update the displayed balance immediately.
+      */
+
+      const updatedUser =
+        users.find(
+          user =>
+            user.user_id === selectedUser.user_id
+        );
+
+
+      if (updatedUser) {
+        updatedUser.balance =
+          Number(data || 0);
+      }
+
+
+      closeModal();
+
+      renderUsers();
+
+
+      document.getElementById("status").textContent =
+        `Wallet updated successfully. New balance: ₦${formatMoney(Number(data || 0))}`;
+
+    } catch (error) {
+
+      console.error(error);
+
+      modalError.textContent =
+        error.message ||
+        "Unable to update wallet.";
+
+      confirmBtn.disabled = false;
+
+      confirmBtn.textContent =
+        selectedAction === "add"
+          ? "Add Money"
+          : "Deduct Money";
+    }
+  }
+
+
+  /* =====================================================
+     HELPERS
+     ===================================================== */
+
+  function formatMoney(amount) {
+
+    return Number(amount || 0)
+      .toLocaleString(
+        "en-NG",
+        {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 2
+        }
+      );
+  }
+
+
+  function escapeHtml(value) {
+
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+
+  function goBack() {
+
+    window.location.href =
+      "admin.html";
+  }
+
+
+  /* =====================================================
+     START
+     ===================================================== */
+
+  (async function () {
+
+    const allowed =
+      await checkAdminAccess();
+
+    if (!allowed) {
+      return;
+    }
+
+    await loadUsers();
+
+  })();
+
+</script>
+
+</body>
+</html>
