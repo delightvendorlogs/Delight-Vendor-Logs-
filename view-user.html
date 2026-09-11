@@ -1038,4 +1038,378 @@
       `;
 
       return;
- 
+    }
+
+    if (!data || data.length === 0) {
+
+      body.innerHTML = `
+        <tr>
+          <td colspan="5" class="empty">
+            No transactions found.
+          </td>
+        </tr>
+      `;
+
+      return;
+    }
+
+    body.innerHTML = data.map(item => `
+      <tr>
+
+        <td>
+          ${formatDate(item.created_at)}
+        </td>
+
+        <td>
+          ${escapeHtml(item.type || "—")}
+        </td>
+
+        <td>
+          ₦${Number(item.amount || 0).toLocaleString()}
+        </td>
+
+        <td>
+          <span class="status ${getStatusClass(
+            item.status
+          )}">
+            ${escapeHtml(item.status || "—")}
+          </span>
+        </td>
+
+        <td>
+          ${escapeHtml(item.description || "—")}
+        </td>
+
+      </tr>
+    `).join("");
+  }
+
+
+  /*
+    ==========================================
+    NORMAL PURCHASES
+    ==========================================
+  */
+
+  async function loadPurchases() {
+
+    const body =
+      document.getElementById("purchasesBody");
+
+    body.innerHTML = `
+      <tr>
+        <td colspan="5">Loading...</td>
+      </tr>
+    `;
+
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("purchases")
+      .select(
+        "id,product_id,product_name,amount,content,status,created_at"
+      )
+      .eq("user_id", selectedUserId)
+      .order("created_at", {
+        ascending: false
+      });
+
+    if (error) {
+
+      body.innerHTML = `
+        <tr>
+          <td colspan="5" class="danger">
+            ${escapeHtml(error.message)}
+          </td>
+        </tr>
+      `;
+
+      return;
+    }
+
+    if (!data || data.length === 0) {
+
+      body.innerHTML = `
+        <tr>
+          <td colspan="5" class="empty">
+            No normal purchases found.
+          </td>
+        </tr>
+      `;
+
+      return;
+    }
+
+    body.innerHTML = data.map(item => `
+      <tr>
+
+        <td>
+          ${formatDate(item.created_at)}
+        </td>
+
+        <td>
+          ${escapeHtml(item.product_name || "—")}
+        </td>
+
+        <td>
+          ₦${Number(item.amount || 0).toLocaleString()}
+        </td>
+
+        <td>
+          <span class="status ${getStatusClass(
+            item.status
+          )}">
+            ${escapeHtml(item.status || "—")}
+          </span>
+        </td>
+
+        <td style="max-width:300px;word-break:break-word;">
+          ${escapeHtml(item.content || "—")}
+        </td>
+
+      </tr>
+    `).join("");
+  }
+
+
+  /*
+    ==========================================
+    PENDING ORDERS
+    ==========================================
+  */
+
+  async function loadPending() {
+
+    const body =
+      document.getElementById("pendingBody");
+
+    body.innerHTML = `
+      <tr>
+        <td colspan="4">Loading...</td>
+      </tr>
+    `;
+
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("pending_orders")
+      .select(
+        "id,product_id,product_name,amount,status,created_at"
+      )
+      .eq("user_id", selectedUserId)
+      .order("created_at", {
+        ascending: false
+      });
+
+    if (error) {
+
+      body.innerHTML = `
+        <tr>
+          <td colspan="4" class="danger">
+            ${escapeHtml(error.message)}
+          </td>
+        </tr>
+      `;
+
+      return;
+    }
+
+    if (!data || data.length === 0) {
+
+      body.innerHTML = `
+        <tr>
+          <td colspan="4" class="empty">
+            No pending orders found.
+          </td>
+        </tr>
+      `;
+
+      return;
+    }
+
+    body.innerHTML = data.map(item => `
+      <tr>
+
+        <td>
+          ${formatDate(item.created_at)}
+        </td>
+
+        <td>
+          ${escapeHtml(item.product_name || "—")}
+        </td>
+
+        <td>
+          ₦${Number(item.amount || 0).toLocaleString()}
+        </td>
+
+        <td>
+          <span class="status ${getStatusClass(
+            item.status
+          )}">
+            ${escapeHtml(item.status || "—")}
+          </span>
+        </td>
+
+      </tr>
+    `).join("");
+  }
+
+
+  /*
+    ==========================================
+    TABS
+    ==========================================
+  */
+
+  function showTab(tab) {
+
+    currentTab = tab;
+
+    document
+      .getElementById("virtualTab")
+      .classList.toggle(
+        "hidden",
+        tab !== "virtual"
+      );
+
+    document
+      .getElementById("transactionsTab")
+      .classList.toggle(
+        "hidden",
+        tab !== "transactions"
+      );
+
+    document
+      .getElementById("purchasesTab")
+      .classList.toggle(
+        "hidden",
+        tab !== "purchases"
+      );
+
+    document
+      .getElementById("pendingTab")
+      .classList.toggle(
+        "hidden",
+        tab !== "pending"
+      );
+
+    document
+      .getElementById("tabVirtual")
+      .classList.toggle(
+        "active",
+        tab === "virtual"
+      );
+
+    document
+      .getElementById("tabTransactions")
+      .classList.toggle(
+        "active",
+        tab === "transactions"
+      );
+
+    document
+      .getElementById("tabPurchases")
+      .classList.toggle(
+        "active",
+        tab === "purchases"
+      );
+
+    document
+      .getElementById("tabPending")
+      .classList.toggle(
+        "active",
+        tab === "pending"
+      );
+  }
+
+
+  /*
+    ==========================================
+    HELPERS
+    ==========================================
+  */
+
+  function formatDate(value) {
+
+    if (!value) return "—";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return "—";
+    }
+
+    return date.toLocaleString();
+  }
+
+
+  function getStatusClass(status) {
+
+    const value =
+      String(status || "").toLowerCase();
+
+    if (
+      value === "waiting"
+    ) {
+      return "status-waiting";
+    }
+
+    if (
+      value === "pending"
+    ) {
+      return "status-pending";
+    }
+
+    if (
+      value === "received" ||
+      value === "completed"
+    ) {
+      return "status-completed";
+    }
+
+    if (
+      value === "cancelled" ||
+      value === "refunded" ||
+      value === "failed"
+    ) {
+      return "status-cancelled";
+    }
+
+    return "status-other";
+  }
+
+
+  function escapeHtml(value) {
+
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+
+  function escapeJs(value) {
+
+    return String(value ?? "")
+      .replace(/\\/g, "\\\\")
+      .replace(/'/g, "\\'");
+  }
+
+
+  function goBack() {
+
+    if (document.referrer) {
+      history.back();
+    } else {
+      window.location.href = "admin.html";
+    }
+  }
+
+</script>
+
+</body>
+</html>
