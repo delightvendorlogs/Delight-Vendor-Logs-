@@ -307,6 +307,7 @@ summary{
     </div>
 
 </div>
+
 <div class="card">
 
     <h2>📢 Dashboard Watermark</h2>
@@ -568,6 +569,12 @@ let inventory = [];
 let orders = [];
 let users = [];
 
+/* =========================
+   VIRTUAL NUMBER ORDERS
+========================= */
+
+let virtualNumberOrders = [];
+
 let categories = [
     "All Social Logs",
     "Working Pictures",
@@ -600,6 +607,148 @@ function money(value){
             maximumFractionDigits:2
         }
     );
+
+}
+
+/* =========================
+   VIRTUAL NUMBER HELPERS
+========================= */
+
+function isCompletedVirtualNumber(order){
+
+    const status =
+        String(order?.status || "")
+            .toLowerCase()
+            .trim();
+
+    return (
+        status === "received" ||
+        status === "completed"
+    );
+
+}
+
+function virtualNumberServiceName(order){
+
+    return (
+        order?.service_name ||
+        order?.service ||
+        order?.product_name ||
+        "Virtual Number"
+    );
+
+}
+
+function virtualNumberAmount(order){
+
+    return Number(
+        order?.customer_price_ngn ??
+        order?.price_ngn ??
+        order?.amount ??
+        order?.price ??
+        0
+    );
+
+}
+
+function virtualNumberDate(order){
+
+    return (
+        order?.created_at ||
+        order?.code_received_at ||
+        order?.updated_at ||
+        null
+    );
+
+}
+
+function virtualNumberDescription(order){
+
+    const service =
+        virtualNumberServiceName(order);
+
+    const country =
+        order?.country_name ||
+        order?.country ||
+        "";
+
+    if(country){
+
+        return (
+            "Virtual number: " +
+            service +
+            " - " +
+            country
+        );
+
+    }
+
+    return "Virtual number: " + service;
+
+}
+
+async function loadVirtualNumberOrders(){
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+            .from("virtual_number_orders")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
+
+        if(error){
+
+            console.error(
+                "Virtual number orders load error:",
+                error
+            );
+
+            virtualNumberOrders = [];
+
+            return;
+
+        }
+
+        virtualNumberOrders =
+            data || [];
+
+        console.log(
+            "✅ Virtual number orders loaded:",
+            virtualNumberOrders.length
+        );
+
+    }catch(error){
+
+        console.error(
+            "Unexpected virtual number orders error:",
+            error
+        );
+
+        virtualNumberOrders = [];
+
+    }
+
+}
+
+function getUserVirtualNumberOrders(userId){
+
+    return virtualNumberOrders.filter(order => {
+
+        return (
+            String(order.user_id || "") ===
+            String(userId || "")
+        );
+
+    });
 
 }
 
@@ -650,7 +799,8 @@ function buildCategoryUI(){
     });
 
 }
-    async function checkAdmin(){
+
+async function checkAdmin(){
 
     const statusBox =
         document.getElementById("adminStatus");
@@ -906,6 +1056,7 @@ function renderProducts(){
     });
 
 }
+
 async function addProduct(){
 
     const message =
@@ -1001,16 +1152,17 @@ async function addProduct(){
         ========================= */
 
         let imageUrl = null;
-        const {
-    data: { user },
-    error: authCheckError
-} = await supabaseClient.auth.getUser();
 
-console.log("AUTH USER:", user);
-console.log(
-    "AUTH CHECK ERROR:",
-    authCheckError
-);
+        const {
+            data: { user },
+            error: authCheckError
+        } = await supabaseClient.auth.getUser();
+
+        console.log("AUTH USER:", user);
+        console.log(
+            "AUTH CHECK ERROR:",
+            authCheckError
+        );
 
 
         if(file){
@@ -1231,7 +1383,7 @@ console.log(
 
     }
 
-        }
+}
 
 async function deleteProduct(id){
 
@@ -1423,8 +1575,9 @@ async function addInventory(){
     await loadProducts();
     await updateStats();
 
-    }
-    async function loadInventory(){
+}
+
+async function loadInventory(){
 
     const container =
         document.getElementById(
@@ -2092,12 +2245,6 @@ async function cancelPendingOrder(id){
             );
 
 
-            /*
-               Reload everything.
-               The pending order should disappear
-               because its status is now cancelled.
-            */
-
             await loadOrders();
 
             await updateStats();
@@ -2127,8 +2274,9 @@ async function cancelPendingOrder(id){
 
     }
 
-              }
-    async function loadUsers(){
+}
+
+async function loadUsers(){
 
     const container =
         document.getElementById(
@@ -2168,6 +2316,12 @@ async function cancelPendingOrder(id){
     }
 
     users = data || [];
+
+    /*
+     * Load virtual-number orders before
+     * building the user purchase history.
+     */
+    await loadVirtualNumberOrders();
 
     await loadUserDetails();
 
@@ -2216,24 +2370,38 @@ async function loadUserDetails(){
         user.purchases =
             purchases || [];
 
+        /*
+         * Virtual-number purchases are read
+         * directly from virtual_number_orders.
+         *
+         * Nothing is inserted into the normal
+         * purchases table.
+         */
+        user.virtual_number_purchases =
+            getUserVirtualNumberOrders(
+                user.id
+            ).filter(
+                isCompletedVirtualNumber
+            );
+
         const {
             data:transactions
         } =
-            await supabaseClient
-                .from("transactions")
-                .select(
-                    "id,type,amount,status,description,reference,zevpay_reference,created_at"
-                )
-                .eq(
-                    "user_id",
-                    user.id
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending:false
-                    }
-                );
+        await supabaseClient
+            .from("transactions")
+            .select(
+                "id,type,amount,status,description,reference,zevpay_reference,created_at"
+            )
+            .eq(
+                "user_id",
+                user.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
 
         user.transactions =
             transactions || [];
@@ -2241,21 +2409,21 @@ async function loadUserDetails(){
         const {
             data:pending
         } =
-            await supabaseClient
-                .from("pending_orders")
-                .select(
-                    "id,product_name,amount,status,created_at"
-                )
-                .eq(
-                    "user_id",
-                    user.id
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending:false
-                    }
-                );
+        await supabaseClient
+            .from("pending_orders")
+            .select(
+                "id,product_name,amount,status,created_at"
+            )
+            .eq(
+                "user_id",
+                user.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
 
         user.pending_orders =
             pending || [];
@@ -2323,11 +2491,22 @@ function renderUsers(){
         const purchases =
             user.purchases || [];
 
+        const virtualPurchases =
+            user.virtual_number_purchases || [];
+
         const transactions =
             user.transactions || [];
 
         const pending =
             user.pending_orders || [];
+
+        /*
+         * Normal purchases + completed virtual
+         * number purchases.
+         */
+        const totalPurchases =
+            purchases.length +
+            virtualPurchases.length;
 
         box.innerHTML = `
 
@@ -2375,7 +2554,7 @@ function renderUsers(){
             <div class="user-details">
 
                 🛒 Purchases:
-                <b>${purchases.length}</b>
+                <b>${totalPurchases}</b>
                 <br>
 
                 📜 Transactions:
@@ -2394,58 +2573,174 @@ function renderUsers(){
                 </summary>
 
                 ${
-                    purchases.length
+                    totalPurchases
                     ?
-                    purchases.map(p => `
+                    `
 
-                        <div class="user-details">
+                    ${
+                        purchases.map(p => `
 
-                            <b>
+                            <div class="user-details">
+
+                                <b>
+                                    ${escapeHTML(
+                                        p.product_name
+                                    )}
+                                </b>
+                                <br>
+
+                                Amount:
+                                ₦${money(p.amount)}
+                                <br>
+
+                                Status:
                                 ${escapeHTML(
-                                    p.product_name
+                                    p.status
                                 )}
-                            </b>
-                            <br>
+                                <br>
 
-                            Amount:
-                            ₦${money(p.amount)}
-                            <br>
-
-                            Status:
-                            ${escapeHTML(
-                                p.status
-                            )}
-                            <br>
-
-                            Date:
-                            ${
-                                p.created_at
-                                ? escapeHTML(
-                                    new Date(
-                                        p.created_at
-                                    ).toLocaleString(
-                                        "en-NG"
+                                Date:
+                                ${
+                                    p.created_at
+                                    ? escapeHTML(
+                                        new Date(
+                                            p.created_at
+                                        ).toLocaleString(
+                                            "en-NG"
+                                        )
                                     )
-                                )
-                                : "Unknown"
-                            }
+                                    : "Unknown"
+                                }
 
-                            <details>
+                                <details>
 
-                                <summary>
-                                    Delivery Information
-                                </summary>
+                                    <summary>
+                                        Delivery Information
+                                    </summary>
 
-                                ${escapeHTML(
-                                    p.content ||
-                                    ""
-                                )}
+                                    ${escapeHTML(
+                                        p.content ||
+                                        ""
+                                    )}
 
-                            </details>
+                                </details>
 
-                        </div>
+                            </div>
 
-                    `).join("")
+                        `).join("")
+                    }
+
+                    ${
+                        virtualPurchases.map(v => {
+
+                            const service =
+                                virtualNumberServiceName(v);
+
+                            const country =
+                                v.country_name ||
+                                v.country ||
+                                "Unknown";
+
+                            const phone =
+                                v.phone_number ||
+                                v.number ||
+                                v.phone ||
+                                "";
+
+                            const otp =
+                                v.otp_code ||
+                                v.code ||
+                                "";
+
+                            const amount =
+                                virtualNumberAmount(v);
+
+                            const status =
+                                v.status ||
+                                "received";
+
+                            const date =
+                                virtualNumberDate(v);
+
+                            return `
+
+                                <div class="user-details">
+
+                                    <b>
+                                        📱 ${escapeHTML(service)}
+                                    </b>
+
+                                    <br>
+
+                                    Type:
+                                    Virtual Number
+
+                                    <br>
+
+                                    Country:
+                                    ${escapeHTML(country)}
+
+                                    <br>
+
+                                    ${
+                                        phone
+                                        ?
+                                        `
+                                        Number:
+                                        ${escapeHTML(phone)}
+                                        <br>
+                                        `
+                                        :
+                                        ""
+                                    }
+
+                                    Amount:
+                                    ₦${money(amount)}
+
+                                    <br>
+
+                                    Status:
+                                    ${escapeHTML(status)}
+
+                                    <br>
+
+                                    ${
+                                        otp
+                                        ?
+                                        `
+                                        OTP:
+                                        <b>${escapeHTML(otp)}</b>
+                                        <br>
+                                        `
+                                        :
+                                        ""
+                                    }
+
+                                    ${
+                                        date
+                                        ?
+                                        `
+                                        Date:
+                                        ${escapeHTML(
+                                            new Date(
+                                                date
+                                            ).toLocaleString(
+                                                "en-NG"
+                                            )
+                                        )}
+                                        `
+                                        :
+                                        ""
+                                    }
+
+                                </div>
+
+                            `;
+
+                        }).join("")
+                    }
+
+                    `
                     :
                     '<p class="small">No purchases.</p>'
                 }
@@ -2638,6 +2933,9 @@ async function updateStats(){
 
     try{
 
+        /*
+         * Keep the original statistics.
+         */
         const [
 
             productsCount,
@@ -2710,6 +3008,25 @@ async function updateStats(){
 
         ]);
 
+        /*
+         * Load virtual-number orders separately.
+         * They are NOT inserted into purchases.
+         */
+        await loadVirtualNumberOrders();
+
+        const completedVirtualNumberCount =
+            virtualNumberOrders.filter(
+                isCompletedVirtualNumber
+            ).length;
+
+        /*
+         * Normal completed purchases +
+         * completed virtual-number purchases.
+         */
+        const totalCompleted =
+            completedCount +
+            completedVirtualNumberCount;
+
 
         const productsBox =
             document.getElementById(
@@ -2756,7 +3073,7 @@ async function updateStats(){
 
         if(completedBox)
             completedBox.textContent =
-                completedCount;
+                totalCompleted;
 
         if(usersBox)
             usersBox.textContent =
@@ -2774,6 +3091,8 @@ async function updateStats(){
                 inventoryCount,
                 pendingCount,
                 completedCount,
+                completedVirtualNumberCount,
+                totalCompleted,
                 usersCount,
                 neverSellOutCount
             }
@@ -3023,9 +3342,19 @@ async function refreshEverything(){
 
         await loadUsers();
 
+        await loadVirtualNumberOrders();
+
         await loadWatermark();
 
         await updateStats();
+
+        /*
+         * Reload user purchase history after
+         * the virtual-number list is refreshed.
+         */
+        await loadUserDetails();
+
+        renderUsers();
 
         if(message){
 
@@ -3092,11 +3421,22 @@ async function startAdmin(){
 
             loadUsers(),
 
+            loadVirtualNumberOrders(),
+
             loadWatermark(),
 
             updateStats()
 
         ]);
+
+        /*
+         * Make sure the virtual-number purchases
+         * are included in the user display after
+         * all data has finished loading.
+         */
+        await loadUserDetails();
+
+        renderUsers();
 
         const message =
             document.getElementById("refreshMessage");
@@ -3121,7 +3461,7 @@ async function startAdmin(){
         const message =
             document.getElementById("refreshMessage");
 
-                if(message){
+        if(message){
             message.textContent =
                 "❌ Dashboard loading failed: " +
                 error.message;
@@ -3137,7 +3477,6 @@ async function startAdmin(){
 /* Start the admin dashboard */
 startAdmin();
 
-    </script>
+</script>
 </body>
 </html>
-               
