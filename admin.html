@@ -1,3325 +1,3547 @@
-<!DOCTYPE html>  <html lang="en">  <head>  <meta charset="UTF-8">  <meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
+<!DOCTYPE html>
+<html lang="en">
 
-> 
+<head>
 
-<title>Admin - Delight Vendor Logs</title>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>  
-  
-* {  
-  box-sizing: border-box;  
-}  
-  
-body {  
-  margin: 0;  
-  font-family: Arial, sans-serif;  
-  background: #f3f3f3;  
-  color: #111;  
-}  
-  
-header {  
-  background: #111;  
-  color: white;  
-  padding: 20px 15px;  
-  position: sticky;  
-  top: 0;  
-  z-index: 50;  
-}  
-  
-header h1 {  
-  margin: 0 0 12px;  
-  font-size: 22px;  
-}  
-  
-header p {  
-  margin: 0;  
-  font-size: 13px;  
-  opacity: .8;  
-}  
-  
-main {  
-  max-width: 900px;  
-  margin: auto;  
-  padding: 15px;  
-}  
-  
-h2 {  
-  margin-top: 0;  
-}  
-  
-section {  
-  background: white;  
-  padding: 18px;  
-  margin-bottom: 18px;  
-  border-radius: 15px;  
-  box-shadow: 0 2px 9px rgba(0,0,0,.06);  
-}  
-  
-input,  
-select,  
-textarea {  
-  width: 100%;  
-  padding: 13px;  
-  border: 1px solid #ddd;  
-  border-radius: 10px;  
-  font-size: 15px;  
-  margin-top: 6px;  
-  background: white;  
-}  
-  
-textarea {  
-  min-height: 110px;  
-  resize: vertical;  
-}  
-  
-label {  
-  font-weight: bold;  
-  font-size: 14px;  
-}  
-  
-button {  
-  border: none;  
-  border-radius: 9px;  
-  padding: 12px 15px;  
-  font-weight: bold;  
-  cursor: pointer;  
-  font-size: 14px;  
-}  
-  
-.black {  
-  background: #111;  
-  color: white;  
-}  
-  
-.red {  
-  background: #b00020;  
-  color: white;  
-}  
-  
-.green {  
-  background: #087f23;  
-  color: white;  
-}  
-  
-.gray {  
-  background: #e9e9e9;  
-  color: #111;  
-}  
-  
-.blue {  
-  background: #1261a0;  
-  color: white;  
-}  
-  
-.message {  
-  margin-top: 10px;  
-  font-size: 14px;  
-  font-weight: bold;  
-}  
-  
-.dashboard-grid {  
-  display: grid;  
-  grid-template-columns: repeat(2, 1fr);  
-  gap: 10px;  
-}  
-  
-.stat {  
-  background: #f5f5f5;  
-  padding: 15px;  
-  border-radius: 12px;  
-}  
-  
-.stat strong {  
-  display: block;  
-  font-size: 25px;  
-  margin-top: 5px;  
-}  
-  
-.category-bar {  
-  display: flex;  
-  gap: 8px;  
-  overflow-x: auto;  
-  padding-bottom: 8px;  
-}  
-  
-.category-bar::-webkit-scrollbar {  
-  height: 4px;  
-}  
-  
-.category-btn {  
-  flex: 0 0 auto;  
-  background: #eee;  
-  border-radius: 20px;  
-}  
-  
-.category-btn.active {  
-  background: #111;  
-  color: white;  
-}  
-  
-.item {  
-  background: #fafafa;  
-  border: 1px solid #e5e5e5;  
-  border-radius: 13px;  
-  padding: 15px;  
-  margin-top: 12px;  
-}  
-  
-.item h3 {  
-  margin-top: 0;  
-}  
-  
-.item-actions {  
-  display: flex;  
-  gap: 8px;  
-  flex-wrap: wrap;  
-  margin-top: 12px;  
-}  
-  
-.search {  
-  margin-bottom: 10px;  
-}  
-  
-.two-col {  
-  display: grid;  
-  grid-template-columns: 1fr 1fr;  
-  gap: 12px;  
-}  
-  
-.management-top-grid {  
-  display: grid;  
-  grid-template-columns: 1fr 1fr;  
-  gap: 18px;  
-  margin-bottom: 18px;  
-}  
-  
-.management-top-grid section {  
-  margin-bottom: 0;  
-}  
-  
-.image-picker {  
-  margin-top: 8px;  
-}  
-  
-.image-picker button {  
-  width: 100%;  
-}  
-  
-#imagePreview {  
-  max-width: 180px;  
-  max-height: 180px;  
-  margin-top: 10px;  
-  border-radius: 10px;  
-  display: none;  
-}  
-  
-.hidden {  
-  display: none !important;  
-}  
-  
-.editing-label {  
-  background: #fff3cd;  
-  color: #856404;  
-  padding: 10px;  
-  border-radius: 9px;  
-  margin-top: 10px;  
-  font-weight: bold;  
-}  
-  
-.top-buttons {  
-  display: flex;  
-  gap: 8px;  
-  flex-wrap: wrap;  
-  margin-top: 12px;  
-}  
-  
-.loading {  
-  text-align: center;  
-  padding: 20px;  
-  color: #777;  
-}  
-  
-.error {  
-  background: #ffe5e5;  
-  color: #a00000;  
-  padding: 14px;  
-  border-radius: 10px;  
-  margin-top: 10px;  
-}  
-  
-.success {  
-  background: #e3f8e8;  
-  color: #087f23;  
-  padding: 14px;  
-  border-radius: 10px;  
-  margin-top: 10px;  
-}  
-  
-@media (max-width: 600px) {  
-  
-  .dashboard-grid {  
-    grid-template-columns: 1fr 1fr;  
-  }  
-  
-  .two-col {  
-    grid-template-columns: 1fr;  
-  }  
-  
-  .management-top-grid {  
-    grid-template-columns: 1fr;  
-  }  
-  
-}  
-  
-</style>  </head>  <body>  <header>  <h1>  
-⚡ Delight Vendor Logs — Admin  
-</h1>  <p id="adminStatus">  
-Checking administrator access...  
-</p>  <div class="top-buttons">  <button
-class="gray"
-onclick="refreshEverything()"
+<meta charset="UTF-8">
 
-> 
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 
+<title>Admin - Delight Vendor Logs</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f3f3;
+  color: #111;
+}
+
+header {
+  background: #111;
+  color: white;
+  padding: 20px 15px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+header h1 {
+  margin: 0 0 12px;
+  font-size: 22px;
+}
+
+header p {
+  margin: 0;
+  font-size: 13px;
+  opacity: .8;
+}
+
+main {
+  max-width: 900px;
+  margin: auto;
+  padding: 15px;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+section {
+  background: white;
+  padding: 18px;
+  margin-bottom: 18px;
+  border-radius: 15px;
+  box-shadow: 0 2px 9px rgba(0,0,0,.06);
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 15px;
+  margin-top: 6px;
+  background: white;
+}
+
+textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+label {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+button {
+  border: none;
+  border-radius: 9px;
+  padding: 12px 15px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.black {
+  background: #111;
+  color: white;
+}
+
+.red {
+  background: #b00020;
+  color: white;
+}
+
+.green {
+  background: #087f23;
+  color: white;
+}
+
+.gray {
+  background: #e9e9e9;
+  color: #111;
+}
+
+.blue {
+  background: #1261a0;
+  color: white;
+}
+
+.message {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.stat {
+  background: #f5f5f5;
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.stat strong {
+  display: block;
+  font-size: 25px;
+  margin-top: 5px;
+}
+
+.category-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.category-bar::-webkit-scrollbar {
+  height: 4px;
+}
+
+.category-btn {
+  flex: 0 0 auto;
+  background: #eee;
+  border-radius: 20px;
+}
+
+.category-btn.active {
+  background: #111;
+  color: white;
+}
+
+.item {
+  background: #fafafa;
+  border: 1px solid #e5e5e5;
+  border-radius: 13px;
+  padding: 15px;
+  margin-top: 12px;
+}
+
+.item h3 {
+  margin-top: 0;
+}
+
+.item-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.search {
+  margin-bottom: 10px;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.management-top-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.management-top-grid section {
+  margin-bottom: 0;
+}
+
+.image-picker {
+  margin-top: 8px;
+}
+
+.image-picker button {
+  width: 100%;
+}
+
+#imagePreview {
+  max-width: 180px;
+  max-height: 180px;
+  margin-top: 10px;
+  border-radius: 10px;
+  display: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.editing-label {
+  background: #fff3cd;
+  color: #856404;
+  padding: 10px;
+  border-radius: 9px;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.top-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #777;
+}
+
+.error {
+  background: #ffe5e5;
+  color: #a00000;
+  padding: 14px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.success {
+  background: #e3f8e8;
+  color: #087f23;
+  padding: 14px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+@media (max-width: 600px) {
+
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .management-top-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>
+⚡ Delight Vendor Logs — Admin
+</h1>
+
+<p id="adminStatus">
+Checking administrator access...
+</p>
+
+<div class="top-buttons">
+
+<button
+  class="gray"
+  onclick="refreshEverything()"
+>
 🔄 Refresh Everything
 </button>
 
 <button
-class="gray"
-onclick="location.href='dashboard.html'"
-
-> 
-
+  class="gray"
+  onclick="location.href='dashboard.html'"
+>
 🏠 Customer Dashboard
 </button>
 
-</div>  </header>  <main>  <section>  <h2>  
-📊 Store Overview  
-</h2>  <div class="dashboard-grid">  <div class="stat">  
-Products  
-<strong id="productCount">0</strong>  
-</div>  <div class="stat">  
-Available Inventory  
-<strong id="inventoryCount">0</strong>  
-</div>  <div class="stat">  
-Pending Orders  
-<strong id="pendingCount">0</strong>  
-</div>  <div class="stat">  
-Completed Orders  
-<strong id="completedCount">0</strong>  
-</div>  <div class="stat">  
-Users  
-<strong id="userCount">0</strong>  
-</div>  <div class="stat">  
-Never Sell Out  
-<strong id="neverSellOutCount">0</strong>  
-</div>  </div>  <p  
-  id="refreshMessage"  
-  class="message"  
-></p>  </section>  <section>  <h2>  
-📂 Service Categories  
-</h2>  <p>  
-These are the categories shown at the top of the customer dashboard.  
-</p>  <div  
-  id="categoryBar"  
-  class="category-bar"  
-></div>  </section>  <div class="management-top-grid">  <section>  <h2>  
-➕ Add Product / Service  
-</h2>  <label>  
-Service Name  
-</label>  <input
-id="productName"
-placeholder="Example: Facebook Working Log"
+</div>
 
-> 
+</header>
+
+
+<main>
+
+
+<section>
+
+<h2>
+📊 Store Overview
+</h2>
+
+<div class="dashboard-grid">
+
+<div class="stat">
+Products
+<strong id="productCount">0</strong>
+</div>
+
+<div class="stat">
+Available Inventory
+<strong id="inventoryCount">0</strong>
+</div>
+
+<div class="stat">
+Pending Orders
+<strong id="pendingCount">0</strong>
+</div>
+
+<div class="stat">
+Completed Orders
+<strong id="completedCount">0</strong>
+</div>
+
+<div class="stat">
+Users
+<strong id="userCount">0</strong>
+</div>
+
+<div class="stat">
+Never Sell Out
+<strong id="neverSellOutCount">0</strong>
+</div>
+
+</div>
+
+<p
+  id="refreshMessage"
+  class="message"
+></p>
+
+</section>
+
+
+<section>
+
+<h2>
+📂 Service Categories
+</h2>
+
+<p>
+These are the categories shown at the top of the customer dashboard.
+</p>
+
+<div
+  id="categoryBar"
+  class="category-bar"
+></div>
+
+</section>
+
+
+<div class="management-top-grid">
+
+
+<section>
+
+<h2>
+➕ Add Product / Service
+</h2>
+
+<label>
+Service Name
+</label>
+
+<input
+  id="productName"
+  placeholder="Example: Facebook Working Log"
+>
 
 <br><br>
 
-<label>  
-Price  
-</label>  <input
-id="productPrice"
-type="number"
-min="0"
-step="0.01"
-placeholder="Enter price"
+<label>
+Price
+</label>
 
-> 
-
-<br><br>
-
-<label>  
-Category  
-</label>  <select id="productCategory"></select>
+<input
+  id="productPrice"
+  type="number"
+  min="0"
+  step="0.01"
+  placeholder="Enter price"
+>
 
 <br><br>
 
-<label>  
-Description  
-</label>  <textarea  
-  id="productDescription"  
-  placeholder="Describe this service..."  
-></textarea>  <br><br>
+<label>
+Category
+</label>
 
-<label>  
-Product Image  
-</label>  <div class="image-picker">  <input
-id="productImageFile"
-type="file"
-accept="image/*"
-style="display:none"
-onchange="previewProductImage(event)"
+<select id="productCategory"></select>
 
-> 
+<br><br>
+
+<label>
+Description
+</label>
+
+<textarea
+  id="productDescription"
+  placeholder="Describe this service..."
+></textarea>
+
+<br><br>
+
+<label>
+Product Image
+</label>
+
+<div class="image-picker">
+
+<input
+  id="productImageFile"
+  type="file"
+  accept="image/*"
+  style="display:none"
+  onchange="previewProductImage(event)"
+>
 
 <button
-type="button"
-class="gray"
-onclick="document.getElementById('productImageFile').click()"
-
-> 
-
+  type="button"
+  class="gray"
+  onclick="document.getElementById('productImageFile').click()"
+>
 🖼️ Choose Product Image
 </button>
 
-<p  
-  id="imageName"  
-  style="font-size:13px;color:#666;"  
->  
-No image selected  
-</p>  <img
-id="imagePreview"
-alt="Product preview"
+<p
+  id="imageName"
+  style="font-size:13px;color:#666;"
+>
+No image selected
+</p>
 
-> 
+<img
+  id="imagePreview"
+  alt="Product preview"
+>
 
-</div>  <input
-id="productImage"
-type="hidden"
+</div>
 
-> 
+<input
+  id="productImage"
+  type="hidden"
+>
 
-<br>  <div class="two-col">  <div>  <label>  
-Stock  
-</label>  <input
-id="productStock"
-type="number"
-min="0"
-value="0"
+<br>
 
-> 
+<div class="two-col">
 
-</div>  <div>  <label>  
-Status  
-</label>  <select id="productStatus">  <option value="Available">  
-Available  
-</option>  <option value="Unavailable">  
-Unavailable  
-</option>  </select>  </div>  </div>  <br>  <label>  <input
-id="trackStock"
-type="checkbox"
-checked
-style="width:auto;"
+<div>
 
-> 
+<label>
+Stock
+</label>
+
+<input
+  id="productStock"
+  type="number"
+  min="0"
+  value="0"
+>
+
+</div>
+
+
+<div>
+
+<label>
+Status
+</label>
+
+<select id="productStatus">
+
+<option value="Available">
+Available
+</option>
+
+<option value="Unavailable">
+Unavailable
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+<br>
+
+<label>
+
+<input
+  id="trackStock"
+  type="checkbox"
+  checked
+  style="width:auto;"
+>
 
 Track stock / allow this service to become Sold Out
 
-</label>  <p style="font-size:13px;color:#666;">  Untick this for services that should remain available even when
+</label>
+
+<p style="font-size:13px;color:#666;">
+
+Untick this for services that should remain available even when
 stock is 0.
 
-</p>  <div  
-  id="editingProductLabel"  
-  class="editing-label hidden"  
->  
-✏️ Editing service  
-</div>  <div class="item-actions">  <button
-id="productSubmitButton"
-class="black"
-onclick="addProduct()"
+</p>
 
-> 
+<div
+  id="editingProductLabel"
+  class="editing-label hidden"
+>
+✏️ Editing service
+</div>
 
+<div class="item-actions">
+
+<button
+  id="productSubmitButton"
+  class="black"
+  onclick="addProduct()"
+>
 ➕ Add Service
 </button>
 
 <button
-id="cancelEditButton"
-class="gray hidden"
-onclick="cancelProductEdit()"
-
-> 
-
+  id="cancelEditButton"
+  class="gray hidden"
+  onclick="cancelProductEdit()"
+>
 ✖ Cancel Edit
 </button>
 
-</div>  <p  
-  id="productMessage"  
-  class="message"  
-></p>  </section>  <section>  <h2>  
-📦 Add Inventory  
-</h2>  <label>  
-Select Service  
-</label>  <select id="inventoryProduct">  <option value="">  
-Loading services...  
-</option>  </select>  <br><br>
+</div>
 
-<label>  
-Delivery Information  
-</label>  <textarea  
-  id="inventoryData"  
-  placeholder="Enter the legitimate digital item/details to be delivered after purchase"  
-></textarea>  <br><br>
+<p
+  id="productMessage"
+  class="message"
+></p>
+
+</section>
+
+
+<section>
+
+<h2>
+📦 Add Inventory
+</h2>
+
+<label>
+Select Service
+</label>
+
+<select id="inventoryProduct">
+
+<option value="">
+Loading services...
+</option>
+
+</select>
+
+<br><br>
+
+<label>
+Delivery Information
+</label>
+
+<textarea
+  id="inventoryData"
+  placeholder="Enter the legitimate digital item/details to be delivered after purchase"
+></textarea>
+
+<br><br>
 
 <button
-class="black"
-onclick="addInventory()"
-
-> 
-
+  class="black"
+  onclick="addInventory()"
+>
 ➕ Add Inventory
 </button>
 
-<p  
-  id="inventoryMessage"  
-  class="message"  
-></p>  </section>  </div>  <section>  <h2>  
-🛍️ Product Management  
-</h2>  <input
-id="productSearch"
-class="search"
-placeholder="🔍 Search service..."
-oninput="renderProducts()"
+<p
+  id="inventoryMessage"
+  class="message"
+></p>
 
-> 
+</section>
 
-<div id="productsList">  <div class="loading">  
-Loading products...  
-</div>  </div>  </section>  <section>  <h2>  
-📦 Inventory Management  
-</h2>  <input
-id="inventorySearch"
-class="search"
-placeholder="🔍 Search inventory..."
-oninput="renderInventory()"
 
-> 
+</div>
 
-<div id="inventoryList">  <div class="loading">  
-Loading inventory...  
-</div>  </div>  </section>  <section>  <h2>  
-🧾 Orders Management  
-</h2>  <input
-id="orderSearch"
-class="search"
-placeholder="🔍 Search orders..."
-oninput="renderOrders()"
 
-> 
+<section>
 
-<div id="ordersList">  <div class="loading">  
-Loading orders...  
-</div>  </div>  </section>  <section>  <h2>  
-📱 Virtual Number Purchases  
-</h2>  <p style="color:#666;font-size:14px;">  Virtual numbers purchased through the virtual-number system are
+<h2>
+🛍️ Product Management
+</h2>
+
+<input
+  id="productSearch"
+  class="search"
+  placeholder="🔍 Search service..."
+  oninput="renderProducts()"
+>
+
+<div id="productsList">
+
+<div class="loading">
+Loading products...
+</div>
+
+</div>
+
+</section>
+
+
+<section>
+
+<h2>
+📦 Inventory Management
+</h2>
+
+<input
+  id="inventorySearch"
+  class="search"
+  placeholder="🔍 Search inventory..."
+  oninput="renderInventory()"
+>
+
+<div id="inventoryList">
+
+<div class="loading">
+Loading inventory...
+</div>
+
+</div>
+
+</section>
+
+
+<section>
+
+<h2>
+🧾 Orders Management
+</h2>
+
+<input
+  id="orderSearch"
+  class="search"
+  placeholder="🔍 Search orders..."
+  oninput="renderOrders()"
+>
+
+<div id="ordersList">
+
+<div class="loading">
+Loading orders...
+</div>
+
+</div>
+
+</section>
+
+
+<section>
+
+<h2>
+📱 Virtual Number Purchases
+</h2>
+
+<p style="color:#666;font-size:14px;">
+
+Virtual numbers purchased through the virtual-number system are
 shown here. A number with status <strong>received</strong> is treated
 as a completed purchase.
 
-</p>  <input
-id="virtualNumberSearch"
-class="search"
-placeholder="🔍 Search virtual number purchase..."
-oninput="renderVirtualNumberOrders()"
+</p>
 
-> 
+<input
+  id="virtualNumberSearch"
+  class="search"
+  placeholder="🔍 Search virtual number purchase..."
+  oninput="renderVirtualNumberOrders()"
+>
 
-<div id="virtualNumberOrdersList">  <div class="loading">  
-Loading virtual number purchases...  
-</div>  </div>  </section>  <section>  <h2>  
-👥 Manage Users  
-</h2>  <p style="color:#666;font-size:14px;">  User management is displayed from your application's user/profile
+<div id="virtualNumberOrdersList">
+
+<div class="loading">
+Loading virtual number purchases...
+</div>
+
+</div>
+
+</section>
+
+
+<section>
+
+<h2>
+👥 Manage Users
+</h2>
+
+<p style="color:#666;font-size:14px;">
+
+User management is displayed from your application's user/profile
 records. Do not put a Supabase service-role key inside this page.
 
-</p>  <input
-id="userSearch"
-class="search"
-placeholder="🔍 Search user..."
-oninput="renderUsers()"
+</p>
 
-> 
+<input
+  id="userSearch"
+  class="search"
+  placeholder="🔍 Search user..."
+  oninput="renderUsers()"
+>
 
-<div id="usersList">  <div class="loading">  
-Loading users...  
-</div>  </div>  </section>  <br>  <button
-class="black"
-onclick="location.href='dashboard.html'"
+<div id="usersList">
 
-> 
+<div class="loading">
+Loading users...
+</div>
 
+</div>
+
+</section>
+
+
+<br>
+
+<button
+  class="black"
+  onclick="location.href='dashboard.html'"
+>
 🏠 Back to Customer Dashboard
 </button>
 
-</main>  <script>  
-  
-  
-const SUPABASE_URL =  
-"https://hkfhehbhmucymusaytoe.supabase.co";  
-  
-  
-const SUPABASE_KEY =  
-"sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";  
-  
-  
-const supabaseClient =  
-window.supabase.createClient(  
-  SUPABASE_URL,  
-  SUPABASE_KEY  
-);  
-  
-  
-const CATEGORIES = [  
-  
-"Home",  
-"All Social Logs",  
-"Working Pictures",  
-"Formats",  
-"Working Links",  
-"Voice Cloner/Fake Video Call",  
-"All Countries Number",  
-"Streaming & More",  
-"ESIMS",  
-"VPN"  
-  
-];  
-  
-  
-const CATEGORY_ICONS = {  
-  
-"Home": "🏠",  
-"All Social Logs": "📱",  
-"Working Pictures": "🖼️",  
-"Formats": "📄",  
-"Working Links": "🔗",  
-"Voice Cloner/Fake Video Call": "🎙️",  
-"All Countries Number": "📞",  
-"Streaming & More": "📺",  
-"ESIMS": "📲",  
-"VPN": "🔐"  
-  
-};  
-  
-  
-let products = [];  
-let inventory = [];  
-let orders = [];  
-let users = [];  
-  
-let virtualNumberOrders = [];  
-  
-let editingProductId = null;  
-let selectedAdminCategory = "Home";  
-  
-  
-function escapeHTML(value) {  
-  
-return String(value ?? "")  
-.replace(/&/g,"&amp;")  
-.replace(/</g,"&lt;")  
-.replace(/>/g,"&gt;")  
-.replace(/"/g,"&quot;")  
-.replace(/'/g,"&#039;");  
-  
-}  
-  
-  
-function money(value) {  
-  
-return Number(value || 0)  
-.toLocaleString(  
-  "en-NG",  
-  {  
-    minimumFractionDigits:2,  
-    maximumFractionDigits:2  
-  }  
-);  
-  
-}  
-  
-  
-/* IMAGE PICKER */  
-  
-function previewProductImage(event) {  
-  
-const file =  
-event.target.files[0];  
-  
-const preview =  
-document.getElementById("imagePreview");  
-  
-const name =  
-document.getElementById("imageName");  
-  
-if (!file) {  
-  
-preview.style.display = "none";  
-  
-name.textContent =  
-"No image selected";  
-  
-document.getElementById(  
-  "productImage"  
-).value = "";  
-  
-return;  
-  
-}  
-  
-if (!file.type.startsWith("image/")) {  
-  
-alert(  
-"Please choose an image file."  
-);  
-  
-event.target.value = "";  
-  
-return;  
-  
-}  
-  
-name.textContent =  
-"Selected: " + file.name;  
-  
-const reader =  
-new FileReader();  
-  
-reader.onload =  
-function(e) {  
-  
-document.getElementById(  
-  "productImage"  
-).value =  
-e.target.result;  
-  
-preview.src =  
-e.target.result;  
-  
-preview.style.display =  
-"block";  
-  
-};  
-  
-reader.readAsDataURL(file);  
-  
-}  
-  
-  
-/* ADMIN CHECK */  
-  
-async function checkAdmin() {  
-  
-const status =  
-document.getElementById(  
-  "adminStatus"  
-);  
-  
-try {  
-  
-const {  
-data,  
-error  
-} =  
-await supabaseClient.auth.getUser();  
-  
-if (  
-error ||  
-!data?.user  
-) {  
-  
-status.textContent =  
-"❌ You are not logged in.";  
-  
-setTimeout(  
-() => location.href="login.html",  
-1200  
-);  
-  
-return false;  
-  
-}  
-  
-const {  
-data: admin,  
-error: adminError  
-} =  
-await supabaseClient.rpc(  
-"is_admin"  
-);  
-  
-if (adminError) {  
-  
-status.textContent =  
-"❌ Admin verification failed: " +  
-adminError.message;  
-  
-return false;  
-  
-}  
-  
-if (!admin) {  
-  
-status.textContent =  
-"🚫 You are not an administrator.";  
-  
-return false;  
-  
-}  
-  
-status.textContent =  
-"✅ Administrator access confirmed.";  
-  
-return true;  
-  
-}  
-  
-catch(error) {  
-  
-status.textContent =  
-"❌ " + error.message;  
-  
-return false;  
-  
-}  
-  
-}  
-  
-  
-/* CATEGORIES */  
-  
-function buildCategoryUI() {  
-  
-const bar =  
-document.getElementById(  
-  "categoryBar"  
-);  
-  
-const select =  
-document.getElementById(  
-  "productCategory"  
-);  
-  
-bar.innerHTML = "";  
-select.innerHTML = "";  
-  
-CATEGORIES.forEach(category => {  
-  
-if (category !== "Home") {  
-  
-const option =  
-document.createElement("option");  
-  
-option.value =  
-category;  
-  
-option.textContent =  
-category;  
-  
-select.appendChild(option);  
-  
-}  
-  
-const button =  
-document.createElement("button");  
-  
-button.className =  
-"category-btn" +  
-(  
-selectedAdminCategory === category  
-? " active"  
-: ""  
-);  
-  
-button.innerHTML =  
-`${CATEGORY_ICONS[category] || "📁"} ${escapeHTML(category)}`;  
-  
-button.onclick =  
-function() {  
-  
-selectedAdminCategory =  
-category;  
-  
-document  
-.querySelectorAll(  
-  ".category-btn"  
-)  
-.forEach(btn =>  
-  btn.classList.remove("active")  
-);  
-  
-button.classList.add("active");  
-  
-renderProducts();  
-  
-};  
-  
-bar.appendChild(button);  
-  
-});  
-  
-}  
-  
-  
-/* PRODUCTS */  
-  
-async function loadProducts() {  
-  
-const container =  
-document.getElementById(  
-  "productsList"  
-);  
-  
-container.innerHTML =  
-'<div class="loading">Loading products...</div>';  
-  
-const {  
-data,  
-error  
-} =  
-await supabaseClient  
-.from("Product")  
-.select("*")  
-.order(  
-  "id",  
-  {  
-    ascending:false  
-  }  
-);  
-  
-if (error) {  
-  
-container.innerHTML =  
-'<div class="error">❌ Products could not be loaded.<br><br>' +  
-escapeHTML(error.message) +  
-'</div>';  
-  
-products = [];  
-  
-return;  
-  
-}  
-  
-products =  
-data || [];  
-  
-renderProducts();  
-  
-}  
-  
-  
-function renderProducts() {  
-  
-const container =  
-document.getElementById(  
-  "productsList"  
-);  
-  
-const search =  
-(  
-document.getElementById(  
-  "productSearch"  
-).value || ""  
-)  
-.toLowerCase()  
-.trim();  
-  
-let list =  
-products.filter(product => {  
-  
-const matchesSearch =  
-!search ||  
-String(product.name || "")  
-.toLowerCase()  
-.includes(search) ||  
-String(product.description || "")  
-.toLowerCase()  
-.includes(search);  
-  
-const matchesCategory =  
-selectedAdminCategory === "Home" ||  
-product.category ===  
-selectedAdminCategory;  
-  
-return (  
-matchesSearch &&  
-matchesCategory  
-);  
-  
-});  
-  
-  
-if (!list.length) {  
-  
-container.innerHTML =  
-'<div class="loading">No products found.</div>';  
-  
-return;  
-  
-}  
-  
-  
-container.innerHTML = "";  
-  
-  
-list.forEach(product => {  
-  
-const box =  
-document.createElement("div");  
-  
-box.className =  
-"item";  
-  
-  
-box.innerHTML = `  
-  
-<h3>  
-${escapeHTML(  
-product.name ||  
-"Unnamed Service"  
-)}  
-</h3>  
-  
-<p>  
-<strong>ID:</strong>  
-${escapeHTML(product.id)}  
-</p>  
-  
-<p>  
-<strong>Price:</strong>  
-₦${money(product.price)}  
-</p>  
-  
-<p>  
-<strong>Category:</strong>  
-${escapeHTML(product.category)}  
-</p>  
-  
-<p>  
-<strong>Status:</strong>  
-${escapeHTML(product.status || "Available")}  
-</p>  
-  
-<p>  
-<strong>Stock:</strong>  
-${escapeHTML(product.stock ?? 0)}  
-</p>  
-  
-<p>  
-<strong>Track Stock:</strong>  
-${product.track_stock === false  
-? "No"  
-: "Yes"}  
-</p>  
-  
-${  
-product.description  
-?  
-`  
-<p>  
-<strong>Description:</strong>  
-${escapeHTML(  
-product.description  
-)}  
-</p>  
-`  
-:  
-""  
-}  
-  
-${  
-product.image_url  
-?  
-`  
-<img  
-src="${escapeHTML(product.image_url)}"  
-style="  
-max-width:160px;  
-max-height:160px;  
-border-radius:10px;  
-margin-top:8px;  
-"  
->  
-`  
-:  
-""  
-}  
-  
-<div class="item-actions">  
-  
-<button  
-class="blue"  
-onclick="editProduct(${Number(product.id)})"  
->  
-✏️ Edit  
-</button>  
-  
-<button  
-class="red"  
-onclick="deleteProduct(${Number(product.id)})"  
->  
-🗑️ Delete  
-</button>  
-  
-</div>  
-  
-`;  
-  
-container.appendChild(box);  
-  
-});  
-  
-}  
-  
-  
-/* ADD PRODUCT */  
-  
-async function addProduct() {  
-  
-const name =  
-document.getElementById(  
-  "productName"  
-).value.trim();  
-  
-const price =  
-Number(  
-document.getElementById(  
-  "productPrice"  
-).value  
-);  
-  
-const category =  
-document.getElementById(  
-  "productCategory"  
-).value;  
-  
-const description =  
-document.getElementById(  
-  "productDescription"  
-).value.trim();  
-  
-const image_url =  
-document.getElementById(  
-  "productImage"  
-).value;  
-  
-const stock =  
-Number(  
-document.getElementById(  
-  "productStock"  
-).value  
-);  
-  
-const status =  
-document.getElementById(  
-  "productStatus"  
-).value;  
-  
-const track_stock =  
-document.getElementById(  
-  "trackStock"  
-).checked;  
-  
-const message =  
-document.getElementById(  
-  "productMessage"  
-);  
-  
-  
-if (!name) {  
-  
-message.textContent =  
-"❌ Enter a service name.";  
-  
-return;  
-  
-}  
-  
-  
-if (  
-!Number.isFinite(price) ||  
-price < 0  
-) {  
-  
-message.textContent =  
-"❌ Invalid price.";  
-  
-return;  
-  
-}  
-  
-  
-if (  
-!Number.isFinite(stock) ||  
-stock < 0  
-) {  
-  
-message.textContent =  
-"❌ Invalid stock.";  
-  
-return;  
-  
-}  
-  
-  
-if (  
-!CATEGORIES.includes(category) ||  
-category === "Home"  
-) {  
-  
-message.textContent =  
-"❌ Invalid category.";  
-  
-return;  
-  
-}  
-  
-  
-message.textContent =  
-editingProductId  
-?  
-"Saving changes..."  
-:  
-"Adding service...";  
-  
-  
-const payload = {  
-  
-name,  
-price,  
-category,  
-description,  
-image_url,  
-stock,  
-status,  
-track_stock,  
-is_active:true  
-  
-};  
-  
-  
-let response;  
-  
-  
-if (editingProductId) {  
-  
-response =  
-await supabaseClient  
-.from("Product")  
-.update(payload)  
-.eq(  
-  "id",  
-  editingProductId  
-);  
-  
-}  
-else {  
-  
-response =  
-await supabaseClient  
-.from("Product")  
-.insert(payload);  
-  
-}  
-  
-  
-if (response.error) {  
-  
-message.textContent =  
-"❌ " +  
-response.error.message;  
-  
-return;  
-  
-}  
-  
-  
-message.textContent =  
-editingProductId  
-?  
-"✅ Service updated."  
-:  
-"✅ Service added.";  
-  
-  
-cancelProductEdit();  
-  
-await loadProducts();  
-  
-await loadInventoryProductDropdown();  
-  
-await updateStatistics();  
-  
-}  
-  
-  
-/* EDIT PRODUCT */  
-  
-function editProduct(id) {  
-  
-const product =  
-products.find(  
-p =>  
-Number(p.id) ===  
-Number(id)  
-);  
-  
-if (!product) {  
-  
-alert(  
-"Product could not be found."  
-);  
-  
-return;  
-  
-}  
-  
-  
-editingProductId =  
-product.id;  
-  
-  
-document.getElementById(  
-"productName"  
-).value =  
-product.name || "";  
-  
-  
-document.getElementById(  
-"productPrice"  
-).value =  
-product.price ?? 0;  
-  
-  
-document.getElementById(  
-"productCategory"  
-).value =  
-product.category ||  
-CATEGORIES[1];  
-  
-  
-document.getElementById(  
-"productDescription"  
-).value =  
-product.description || "";  
-  
-  
-document.getElementById(  
-"productImage"  
-).value =  
-product.image_url || "";  
-  
-  
-document.getElementById(  
-"productStock"  
-).value =  
-product.stock ?? 0;  
-  
-  
-document.getElementById(  
-"productStatus"  
-).value =  
-product.status ||  
-"Available";  
-  
-  
-document.getElementById(  
-"trackStock"  
-).checked =  
-product.track_stock !== false;  
-  
-  
-document.getElementById(  
-"editingProductLabel"  
-).classList.remove(  
-"hidden"  
-);  
-  
-  
-document.getElementById(  
-"cancelEditButton"  
-).classList.remove(  
-"hidden"  
-);  
-  
-  
-document.getElementById(  
-"productSubmitButton"  
-).textContent =  
-"💾 Save Changes";  
-  
-  
-document.getElementById(  
-"productMessage"  
-).textContent =  
-"";  
-  
-  
-window.scrollTo({  
-top:0,  
-behavior:"smooth"  
-});  
-  
-}  
-  
-  
-/* CANCEL EDIT */  
-  
-function cancelProductEdit() {  
-  
-editingProductId = null;  
-  
-document.getElementById(  
-"productName"  
-).value = "";  
-  
-document.getElementById(  
-"productPrice"  
-).value = "";  
-  
-document.getElementById(  
-"productCategory"  
-).value =  
-CATEGORIES[1];  
-  
-document.getElementById(  
-"productDescription"  
-).value = "";  
-  
-document.getElementById(  
-"productImage"  
-).value = "";  
-  
-document.getElementById(  
-"productStock"  
-).value = 0;  
-  
-document.getElementById(  
-"productStatus"  
-).value =  
-"Available";  
-  
-document.getElementById(  
-"trackStock"  
-).checked = true;  
-  
-document.getElementById(  
-"productImageFile"  
-).value = "";  
-  
-document.getElementById(  
-"imagePreview"  
-).style.display =  
-"none";  
-  
-document.getElementById(  
-"imageName"  
-).textContent =  
-"No image selected";  
-  
-document.getElementById(  
-"editingProductLabel"  
-).classList.add(  
-"hidden"  
-);  
-  
-document.getElementById(  
-"cancelEditButton"  
-).classList.add(  
-"hidden"  
-);  
-  
-document.getElementById(  
-"productSubmitButton"  
-).textContent =  
-"➕ Add Service";  
-  
-document.getElementById(  
-"productMessage"  
-).textContent =  
-"";  
-  
-}  
-  
-  
-/* DELETE PRODUCT */  
-  
-async function deleteProduct(id) {  
-  
-if (  
-!confirm(  
-"Delete this service?"  
-)  
-) return;  
-  
-  
-const {  
-error  
-} =  
-await supabaseClient  
-.from("Product")  
-.delete()  
-.eq(  
-"id",  
-id  
-);  
-  
-  
-if (error) {  
-  
-alert(  
-"❌ " +  
-error.message  
-);  
-  
-return;  
-  
-}  
-  
-  
-await loadProducts();  
-  
-await loadInventoryProductDropdown();  
-  
-await updateStatistics();  
-  
-}  
-  
-  
-/* INVENTORY DROPDOWN */  
-  
-async function loadInventoryProductDropdown() {  
-  
-const select =  
-document.getElementById(  
-"inventoryProduct"  
-);  
-  
-select.innerHTML =  
-'<option value="">Loading services...</option>';  
-  
-  
-const {  
-data,  
-error  
-} =  
-await supabaseClient  
-.from("Product")  
-.select("id,name")  
-.eq(  
-"is_active",  
-true  
-)  
-.order(  
-"id",  
-{  
-ascending:false  
-}  
-);  
-  
-  
-if (error) {  
-  
-select.innerHTML =  
-'<option value="">Unable to load services</option>';  
-  
-return;  
-  
-}  
-  
-  
-select.innerHTML =  
-'<option value="">Select a service</option>';  
-  
-  
-(data || []).forEach(product => {  
-  
-const option =  
-document.createElement(  
-"option"  
-);  
-  
-option.value =  
-product.id;  
-  
-option.textContent =  
-`${product.name} — ID ${product.id}`;  
-  
-select.appendChild(  
-option  
-);  
-  
-});  
-  
-}  
-  
-  
-/* ADD INVENTORY */  
-  
-async function addInventory() {  
-  
-const product_id =  
-Number(  
-document.getElementById(  
-"inventoryProduct"  
-).value  
-);  
-  
-const content =  
-document.getElementById(  
-"inventoryData"  
-).value.trim();  
-  
-const message =  
-document.getElementById(  
-"inventoryMessage"  
-);  
-  
-  
-if (!product_id) {  
-  
-message.textContent =  
-"❌ Select a service.";  
-  
-return;  
-  
-}  
-  
-  
-if (!content) {  
-  
-message.textContent =  
-"❌ Enter delivery information.";  
-  
-return;  
-  
-}  
-  
-  
-message.textContent =  
-"Adding inventory...";  
-  
-  
-const {  
-error  
-} =  
-await supabaseClient  
-.from("product_inventory")  
-.insert({  
-product_id,  
-content,  
-status:"available"  
-});  
-  
-  
-if (error) {  
-  
-message.textContent =  
-"❌ " +  
-error.message;  
-  
-return;  
-  
-}  
-  
-  
-message.textContent =  
-"✅ Inventory added.";  
-  
-  
-document.getElementById(  
-"inventoryData"  
-).value = "";  
-  
-  
-await loadInventory();  
-  
-await updateStatistics();  
-  
-}  
-  
-  
-/* LOAD INVENTORY */  
-  
-async function loadInventory() {  
-  
-const container =  
-document.getElementById(  
-"inventoryList"  
-);  
-  
-container.innerHTML =  
-'<div class="loading">Loading inventory...</div>';  
-  
-  
-const {  
-data,  
-error  
-} =  
-await supabaseClient  
-.from("product_inventory")  
-.select("*")  
-.order(  
-"id",  
-{  
-ascending:false  
-}  
-);  
-  
-  
-if (error) {  
-  
-container.innerHTML =  
-'<div class="error">❌ Inventory could not be loaded.<br><br>' +  
-escapeHTML(error.message) +  
-'</div>';  
-  
-inventory = [];  
-  
-return;  
-  
-}  
-  
-  
-inventory =  
-data || [];  
-  
-renderInventory();  
-  
-}  
-  
-  
-function renderInventory() {  
-  
-const container =  
-document.getElementById(  
-"inventoryList"  
-);  
-  
-const search =  
-(  
-document.getElementById(  
-"inventorySearch"  
-).value || ""  
-)  
-.toLowerCase()  
-.trim();  
-  
-  
-const list =  
-inventory.filter(item => {  
-  
-const product =  
-products.find(  
-p =>  
-Number(p.id) ===  
-Number(item.product_id)  
-);  
-  
-const productName =  
-product?.name || "";  
-  
-  
-return (  
-!search ||  
-productName  
-.toLowerCase()  
-.includes(search) ||  
-String(  
-item.content || ""  
-)  
-.toLowerCase()  
-.includes(search) ||  
-String(  
-item.status || ""  
-)  
-.toLowerCase()  
-.includes(search)  
-);  
-  
-});  
-  
-  
-if (!list.length) {  
-  
-container.innerHTML =  
-'<div class="loading">No inventory found.</div>';  
-  
-return;  
-  
-}  
-  
-  
-container.innerHTML = "";  
-  
-  
-list.forEach(item => {  
-  
-const product =  
-products.find(  
-p =>  
-Number(p.id) ===  
-Number(item.product_id)  
-);  
-  
-  
-const box =  
-document.createElement(  
-"div"  
-);  
-  
-box.className =  
-"item";  
-  
-  
-box.innerHTML = `  
-  
-<h3>  
-Inventory #${escapeHTML(item.id)}  
-</h3>  
-  
-<p>  
-<strong>Service:</strong>  
-${escapeHTML(  
-product?.name ||  
-"Unknown Service"  
-)}  
-</p>  
-  
-<p>  
-<strong>Product ID:</strong>  
-${escapeHTML(item.product_id)}  
-</p>  
-  
-<p>  
-<strong>Status:</strong>  
-${escapeHTML(  
-item.status ||  
-"unknown"  
-)}  
-</p>  
-  
-<p>  
-<strong>Delivery Information:</strong>  
-</p>  
-  
-<div  
-style="  
-background:#eee;  
-padding:12px;  
-border-radius:9px;  
-white-space:pre-wrap;  
-word-break:break-word;  
-"  
->  
-${escapeHTML(  
-item.content  
-)}  
-</div>  
-  
-<div class="item-actions">  
-  
-<button  
-class="blue"  
-onclick="editInventory(${Number(item.id)})"  
->  
-✏️ Edit  
-</button>  
-  
-<button  
-class="red"  
-onclick="deleteInventory(${Number(item.id)})"  
->  
-🗑️ Delete  
-</button>  
-  
-</div>  
-  
-`;  
-  
-container.appendChild(box);  
-  
-});  
-  
-}  
-  
-  
-/* EDIT INVENTORY */  
-  
-function editInventory(id) {  
-  
-const item =  
-inventory.find(  
-entry =>  
-Number(entry.id) ===  
-Number(id)  
-);  
-  
-if (!item) {  
-  
-alert(  
-"Inventory item could not be found."  
-);  
-  
-return;  
-  
-}  
-  
-  
-const productIdInput =  
-prompt(  
-"Service/Product ID:\n\n" +  
-products  
-.map(  
-p =>  
-`${p.id} — ${p.name}`  
-)  
-.join("\n"),  
-item.product_id ?? ""  
-);  
-  
-  
-if (  
-productIdInput === null  
-) return;  
-  
-  
-const productId =  
-Number(productIdInput);  
-  
-  
-if (  
-!products.some(  
-p =>  
-Number(p.id) ===  
-productId  
-)  
-) {  
-  
-alert(  
-"Invalid service/product ID."  
-);  
-  
-return;  
-  
-}  
-  
-  
-const content =  
-prompt(  
-"Delivery Information:",  
-item.content || ""  
-);  
-  
-  
-if (  
-content === null  
-) return;  
-  
-  
-const status =  
-prompt(  
-"Inventory Status (available or sold):",  
-item.status ||  
-"available"  
-);  
-  
-  
-if (  
-status === null  
-) return;  
-  
-  
-const {  
-error  
-} =  
-await supabaseClient  
-.from("product_inventory")  
-.update({  
-  
-product_id:  
-productId,  
-  
-content:  
-content.trim(),  
-  
-status:  
-status.trim() ||  
-"available"  
-  
-})  
-.eq(  
-"id",  
-id  
-);  
-  
-  
-if (error) {  
-  
-alert(  
-"❌ " +  
-error.message  
-);  
-  
-return;  
-  
-}  
-  
-  
-await loadInventory();  
-  
-}  
-  
-  
-/* DELETE INVENTORY */  
-  
-async function deleteInventory(id) {  
-  
-if (  
-!confirm(  
-"Delete this inventory item?"  
-)  
-) return;  
-  
-  
-const {  
-error  
-} =  
-await supabaseClient  
-.from("product_inventory")  
-.delete()  
-.eq(  
-"id",  
-id  
-);  
-  
-  
-if (error) {  
-  
-alert(  
-"❌ " +  
-error.message  
-);  
-  
-return;  
-  
-}  
-  
-  
-await loadInventory();  
-  
-await updateStatistics();  
-  
-}  
-  
-  
-/* ORDERS */  
-  
-async function loadOrders() {  
-  
-const container =  
-document.getElementById(  
-"ordersList"  
-);  
-  
-container.innerHTML =  
-'<div class="loading">Loading orders...</div>';  
-  
-  
-const {  
-data,  
-error  
-} =  
-await supabaseClient  
-.from("orders")  
-.select("*")  
-.order(  
-"created_at",  
-{  
-ascending:false  
-}  
-);  
-  
-  
-if (error) {  
-  
-container.innerHTML =  
-'<div class="error">❌ Orders could not be loaded.<br><br>' +  
-escapeHTML(error.message) +  
-'</div>';  
-  
-orders = [];  
-  
-return;  
-  
-}  
-  
-  
-orders =  
-data || [];  
-  
-renderOrders();  
-  
-}  
-  
-  
-function renderOrders() {  
-  
-const container =  
-document.getElementById(  
-"ordersList"  
-);  
-  
-const search =  
-(  
-document.getElementById(  
-"orderSearch"  
-).value || ""  
-)  
-.toLowerCase()  
-.trim();  
-  
-  
-const list =  
-orders.filter(order => {  
-  
-return (  
-!search ||  
-String(order.id || "")  
-.toLowerCase()  
-.includes(search) ||  
-String(order.user_id || "")  
-.toLowerCase()  
-.includes(search) ||  
-String(order.product_name || "")  
-.toLowerCase()  
-.includes(search) ||  
-String(order.status || "")  
-.toLowerCase()  
-.includes(search)  
-);  
-  
-});  
-  
-  
-if (!list.length) {  
-  
-container.innerHTML =  
-'<div class="loading">No orders found.</div>';  
-  
-return;  
-  
-}  
-  
-  
-container.innerHTML = "";  
-  
-  
-list.forEach(order => {  
-  
-const box =  
-document.createElement(  
-"div"  
-);  
-  
-box.className =  
-"item";  
-  
-  
-box.innerHTML = `  
-  
-<h3>  
-🧾 Order #${escapeHTML(order.id)}  
-</h3>  
-  
-<p>  
-<strong>User:</strong>  
-${escapeHTML(  
-order.user_id ||  
-"Unknown"  
-)}  
-</p>  
-  
-<p>  
-<strong>Product:</strong>  
-${escapeHTML(  
-order.product_name ||  
-"Unknown"  
-)}  
-</p>  
-  
-<p>  
-<strong>Amount:</strong>  
-₦${money(  
-order.amount  
-)}  
-</p>  
-  
-<p>  
-<strong>Status:</strong>  
-${escapeHTML(  
-order.status ||  
-"unknown"  
-)}  
-</p>  
-  
-${  
-order.created_at  
-?  
-`  
-<p>  
-<strong>Date:</strong>  
-${escapeHTML(  
-new Date(  
-order.created_at  
-)  
-.toLocaleString(  
-"en-NG"  
-)  
-)}  
-</p>  
-`  
-:  
-""  
-}  
-  
-<div class="item-actions">  
-  
-${  
-String(order.status || "")  
-.toLowerCase() ===  
-"pending"  
-?  
-`  
-<button  
-class="green"  
-onclick="completePendingOrder('${String(order.id).replace(/'/g,"\\'")}' )"  
->  
-✅ Complete  
-</button>  
-  
-<button  
-class="red"  
-onclick="cancelPendingOrder('${String(order.id).replace(/'/g,"\\'")}' )"  
->  
-❌ Cancel  
-</button>  
-`  
-:  
-""  
-}  
-  
-</div>  
-  
-`;  
-  
-container.appendChild(box);  
-  
-});  
-  
-}  
-  
-  
-/* COMPLETE NORMAL ORDER */  
-  
-async function completePendingOrder(id) {  
-  
-if (  
-!confirm(  
-"Complete this order?"  
-)  
-) return;  
-  
-  
-const order =  
-orders.find(  
-o =>  
-String(o.id) ===  
-String(id)  
-);  
-  
-  
-if (!order) {  
-  
-alert(  
-"Order not found."  
-);  
-  
-return;  
-  
-}  
-  
-  
-const {  
-error  
-} =  
-await supabaseClient  
-.from("orders")  
-.update({  
-status:"delivered"  
-})  
-.eq(  
-"id",  
-id  
-);  
-  
-  
-if (error) {  
-  
-alert(  
-"❌ " +  
-error.message  
-);  
-  
-return;  
-  
-}  
-  
-  
-await loadOrders();  
-  
-await updateStatistics();  
-  
-}  
-  
-  
-/* CANCEL NORMAL ORDER */  
-  
-async function cancelPendingOrder(id) {  
-  
-if (  
-!confirm(  
-"Cancel this order?"  
-)  
-) return;  
-  
-  
-const {  
-error  
-} =  
-await supabaseClient  
-.from("orders")  
-.update({  
-status:"cancelled"  
-})  
-.eq(  
-"id",  
-id  
-);  
-  
-  
-if (error) {  
-  
-alert(  
-"❌ " +  
-error.message  
-);  
-  
-return;  
-  
-}  
-  
-  
-await loadOrders();  
-  
-await updateStatistics();  
-  
-}  
-  
-  
-/* USERS */  
-  
-async function loadUsers() {  
-  
-const {  
-data,  
-error  
-} =  
-await supabaseClient  
-.from("profiles")  
-.select("*")  
-.order(  
-"created_at",  
-{  
-ascending:false  
-}  
-);  
-  
-  
-if (error) {  
-  
-document.getElementById(  
-"usersList"  
-).innerHTML =  
-'<div class="error">❌ User records could not be loaded.<br><br>' +  
-escapeHTML(error.message) +  
-'</div>';  
-  
-users = [];  
-  
-return;  
-  
-}  
-  
-  
-users =  
-data || [];  
-  
-  
-/*  
-====================================================  
-LOAD VIRTUAL NUMBER PURCHASES FOR EACH USER  
-====================================================  
-*/  
-  
-for (  
-const user of users  
-) {  
-  
-const {  
-data:  
-virtualOrders,  
-error:  
-virtualError  
-} =  
-await supabaseClient  
-.from(  
-"virtual_number_orders"  
-)  
-.select("*")  
-.eq(  
-"user_id",  
-user.id  
-)  
-.order(  
-"created_at",  
-{  
-ascending:false  
-}  
-);  
-  
-  
-if (virtualError) {  
-  
-console.error(  
-"Virtual number orders for user could not be loaded:",  
-virtualError  
-);  
-  
-}  
-  
-  
-user.virtual_number_orders =  
-virtualOrders || [];  
-  
-}  
-  
-  
-/*  
-====================================================  
-LOAD ALL VIRTUAL NUMBER PURCHASES  
-====================================================  
-*/  
-  
-const {  
-data:  
-allVirtualOrders,  
-error:  
-allVirtualError  
-} =  
-await supabaseClient  
-.from(  
-"virtual_number_orders"  
-)  
-.select("*")  
-.order(  
-"created_at",  
-{  
-ascending:false  
-}  
-);  
-  
-  
-if (allVirtualError) {  
-  
-console.error(  
-"Virtual number purchases could not be loaded:",  
-allVirtualError  
-);  
-  
-virtualNumberOrders = [];  
-  
-}  
-else {  
-  
-virtualNumberOrders =  
-allVirtualOrders || [];  
-  
-}  
-  
-  
-renderUsers();  
-  
-renderVirtualNumberOrders();  
-  
-}  
-  
-  
-/* RENDER USERS */  
-  
-function renderUsers() {  
-  
-const container =  
-document.getElementById(  
-"usersList"  
-);  
-  
-const search =  
-(  
-document.getElementById(  
-"userSearch"  
-).value || ""  
-)  
-.toLowerCase()  
-.trim();  
-  
-  
-const list =  
-users.filter(user => {  
-  
-return (  
-!search ||  
-  
-String(  
-user.email || ""  
-)  
-.toLowerCase()  
-.includes(search) ||  
-  
-String(  
-user.full_name || ""  
-)  
-.toLowerCase()  
-.includes(search) ||  
-  
-String(  
-user.id || ""  
-)  
-.toLowerCase()  
-.includes(search)  
-  
-);  
-  
-});  
-  
-  
-if (!list.length) {  
-  
-container.innerHTML =  
-'<div class="loading">No users found.</div>';  
-  
-return;  
-  
-}  
-  
-  
-container.innerHTML = "";  
-  
-  
-list.forEach(user => {  
-  
-const box =  
-document.createElement(  
-"div"  
-);  
-  
-box.className =  
-"item";  
-  
-  
-const virtualPurchases =  
-user.virtual_number_orders ||  
-[];  
-  
-  
-box.innerHTML = `  
-  
-<h3>  
-👤 ${escapeHTML(  
-user.full_name ||  
-"User"  
-)}  
-</h3>  
-  
-<p>  
-<strong>Email:</strong>  
-${escapeHTML(  
-user.email ||  
-"Not available"  
-)}  
-</p>  
-  
-<p>  
-<strong>User ID:</strong>  
-${escapeHTML(user.id)}  
-</p>  
-  
-${  
-user.created_at  
-?  
-`  
-<p>  
-<strong>Joined:</strong>  
-${escapeHTML(  
-new Date(  
-user.created_at  
-)  
-.toLocaleString(  
-"en-NG"  
-)  
-)}  
-</p>  
-`  
-:  
-""  
-}  
-  
-  
-<p>  
-<strong>📱 Virtual Number Purchases:</strong>  
-${virtualPurchases.length}  
-</p>  
-  
-  
-${  
-virtualPurchases.length  
-?  
-`  
-  
-<div style="margin-top:10px;">  
-  
-${virtualPurchases.map(  
-v => `  
-  
-<div  
-style="  
-background:#eee;  
-padding:12px;  
-border-radius:9px;  
-margin-top:8px;  
-"  
->  
-  
-<strong>  
-📱 ${escapeHTML(  
-v.service_name ||  
-"Virtual Number"  
-)}  
-</strong>  
-  
-<br>  
-  
-Country:  
-${escapeHTML(  
-v.country_name ||  
-"Unknown"  
-)}  
-  
-<br>  
-  
-Amount:  
-₦${money(  
-v.customer_price_ngn ??  
-v.amount ??  
-0  
-)}  
-  
-<br>  
-  
-Status:  
-${escapeHTML(  
-v.status ||  
-"received"  
-)}  
-  
-<br>  
-  
-${  
-v.phone_number  
-?  
-`  
-Number:  
-${escapeHTML(  
-v.phone_number  
-)}  
-<br>  
-`  
-:  
-""  
-}  
-  
-${  
-v.otp_code  
-?  
-`  
-OTP:  
-${escapeHTML(  
-v.otp_code  
-)}  
-<br>  
-`  
-:  
-""  
-}  
-  
-${  
-v.created_at  
-?  
-`  
-Date:  
-${escapeHTML(  
-new Date(  
-v.created_at  
-)  
-.toLocaleString(  
-"en-NG"  
-)  
-)}  
-`  
-:  
-""  
-}  
-  
-</div>  
-  
-`  
-).join("")}  
-  
-</div>  
-  
-`  
-:  
-`  
-<p style="color:#777;">  
-No virtual number purchases.  
-</p>  
-`  
-}  
-  
-<div class="item-actions">  
-  
-${  
-user.is_banned !== undefined  
-?  
-`  
-<button  
-class="${  
-user.is_banned  
-? "green"  
-: "red"  
-}"  
-onclick="  
-toggleUserBan(  
-'${String(user.id).replace(/'/g,"\\'")}',  
-${!user.is_banned}  
-)  
-"  
->  
-${  
-user.is_banned  
-? "🔓 Unban User"  
-: "🚫 Ban User"  
-}  
-</button>  
-`  
-:  
-""  
-}  
-  
-</div>  
-  
-`;  
-  
-container.appendChild(box);  
-  
-});  
-  
-}  
-  
-  
-/*  
-====================================================  
-VIRTUAL NUMBER PURCHASE LIST  
-====================================================  
-*/  
-  
-function renderVirtualNumberOrders() {  
-  
-const container =  
-document.getElementById(  
-"virtualNumberOrdersList"  
-);  
-  
-if (!container) return;  
-  
-  
-const search =  
-(  
-document.getElementById(  
-"virtualNumberSearch"  
-)?.value || ""  
-)  
-.toLowerCase()  
-.trim();  
-  
-  
-const list =  
-(  
-virtualNumberOrders || []  
-)  
-.filter(v => {  
-  
-return (  
-!search ||  
-  
-String(  
-v.id || ""  
-)  
-.toLowerCase()  
-.includes(search) ||  
-  
-String(  
-v.user_id || ""  
-)  
-.toLowerCase()  
-.includes(search) ||  
-  
-String(  
-v.service_name || ""  
-)  
-.toLowerCase()  
-.includes(search) ||  
-  
-String(  
-v.country_name || ""  
-)  
-.toLowerCase()  
-.includes(search) ||  
-  
-String(  
-v.phone_number || ""  
-)  
-.toLowerCase()  
-.includes(search) ||  
-  
-String(  
-v.status || ""  
-)  
-.toLowerCase()  
-.includes(search)  
-);  
-  
-});  
-  
-  
-if (!list.length) {  
-  
-container.innerHTML =  
-'<div class="loading">No virtual number purchases found.</div>';  
-  
-return;  
-  
-}  
-  
-  
-container.innerHTML = "";  
-  
-  
-list.forEach(v => {  
-  
-const box =  
-document.createElement(  
-"div"  
-);  
-  
-box.className =  
-"item";  
-  
-  
-box.innerHTML = `  
-  
-<h3>  
-📱 Virtual Number #  
-${escapeHTML(v.id)}  
-</h3>  
-  
-<p>  
-<strong>Customer:</strong>  
-${escapeHTML(  
-v.user_id ||  
-"Unknown"  
-)}  
-</p>  
-  
-<p>  
-<strong>Service:</strong>  
-${escapeHTML(  
-v.service_name ||  
-"Virtual Number"  
-)}  
-</p>  
-  
-<p>  
-<strong>Country:</strong>  
-${escapeHTML(  
-v.country_name ||  
-"Unknown"  
-)}  
-</p>  
-  
-<p>  
-<strong>Amount:</strong>  
-₦${money(  
-v.customer_price_ngn ??  
-v.amount ??  
-0  
-)}  
-</p>  
-  
-<p>  
-<strong>Status:</strong>  
-${escapeHTML(  
-v.status ||  
-"received"  
-)}  
-</p>  
-  
-${  
-v.phone_number  
-?  
-`  
-<p>  
-<strong>Number:</strong>  
-${escapeHTML(  
-v.phone_number  
-)}  
-</p>  
-`  
-:  
-""  
-}  
-  
-${  
-v.otp_code  
-?  
-`  
-<p>  
-<strong>OTP:</strong>  
-${escapeHTML(  
-v.otp_code  
-)}  
-</p>  
-`  
-:  
-""  
-}  
-  
-${  
-v.created_at  
-?  
-`  
-<p>  
-<strong>Created:</strong>  
-${escapeHTML(  
-new Date(  
-v.created_at  
-)  
-.toLocaleString(  
-"en-NG"  
-)  
-)}  
-</p>  
-`  
-:  
-""  
-}  
-  
-`;  
-  
-container.appendChild(box);  
-  
-});  
-  
-}  
-  
-  
-/* REFRESH VIRTUAL NUMBER PURCHASES */  
-  
-async function loadVirtualNumberOrders() {  
-  
-const {  
-data,  
-error  
-} =  
-await supabaseClient  
-.from(  
-"virtual_number_orders"  
-)  
-.select("*")  
-.order(  
-"created_at",  
-{  
-ascending:false  
-}  
-);  
-  
-  
-if (error) {  
-  
-console.error(  
-"Virtual number purchases load error:",  
-error  
-);  
-  
-virtualNumberOrders = [];  
-  
-}  
-else {  
-  
-virtualNumberOrders =  
-data || [];  
-  
-}  
-  
-  
-renderVirtualNumberOrders();  
-  
-}  
-  
-  
-/* USER BAN */  
-  
-async function toggleUserBan(  
-id,  
-banned  
-) {  
-  
-const {  
-error  
-} =  
-await supabaseClient  
-.from("profiles")  
-.update({  
-is_banned:banned  
-})  
-.eq(  
-"id",  
-id  
-);  
-  
-  
-if (error) {  
-  
-alert(  
-"❌ " +  
-error.message  
-);  
-  
-return;  
-  
-}  
-  
-  
-await loadUsers();  
-  
-}  
-  
-  
-/*  
-====================================================  
-STATISTICS  
-====================================================  
-*/  
-  
-async function updateStatistics() {  
-  
-  
-const {  
-count:  
-productsTotal  
-} =  
-await supabaseClient  
-.from("Product")  
-.select(  
-"*",  
-{  
-count:"exact",  
-head:true  
-}  
-);  
-  
-  
-const {  
-count:  
-inventoryTotal  
-} =  
-await supabaseClient  
-.from("product_inventory")  
-.select(  
-"*",  
-{  
-count:"exact",  
-head:true  
-}  
-)  
-.eq(  
-"status",  
-"available"  
-);  
-  
-  
-const {  
-count:  
-pendingTotal  
-} =  
-await supabaseClient  
-.from("orders")  
-.select(  
-"*",  
-{  
-count:"exact",  
-head:true  
-}  
-)  
-.eq(  
-"status",  
-"pending"  
-);  
-  
-  
-const {  
-count:  
-completedTotal  
-} =  
-await supabaseClient  
-.from("orders")  
-.select(  
-"*",  
-{  
-count:"exact",  
-head:true  
-}  
-)  
-.eq(  
-"status",  
-"delivered"  
-);  
-  
-  
-/*  
-====================================================  
-COUNT RECEIVED/COMPLETED VIRTUAL NUMBERS  
-====================================================  
-*/  
-  
-const {  
-data:  
-virtualOrders,  
-error:  
-virtualError  
-} =  
-await supabaseClient  
-.from(  
-"virtual_number_orders"  
-)  
-.select(  
-"status"  
-);  
-  
-  
-let virtualNumberCompletedTotal =  
-0;  
-  
-  
-if (virtualError) {  
-  
-console.error(  
-"Virtual number purchase stats error:",  
-virtualError  
-);  
-  
-}  
-else {  
-  
-virtualNumberCompletedTotal =  
-(  
-virtualOrders || []  
-)  
-.filter(v => {  
-  
-const status =  
-String(  
-v.status || ""  
-)  
-.toLowerCase();  
-  
-return (  
-status === "received" ||  
-status === "completed"  
-);  
-  
-})  
-.length;  
-  
-}  
-  
-  
-const {  
-count:  
-neverTotal  
-} =  
-await supabaseClient  
-.from("Product")  
-.select(  
-"*",  
-{  
-count:"exact",  
-head:true  
-}  
-)  
-.eq(  
-"track_stock",  
-false  
-);  
-  
-  
-document.getElementById(  
-"productCount"  
-)  
-.textContent =  
-productsTotal ?? 0;  
-  
-  
-document.getElementById(  
-"inventoryCount"  
-)  
-.textContent =  
-inventoryTotal ?? 0;  
-  
-  
-document.getElementById(  
-"pendingCount"  
-)  
-.textContent =  
-pendingTotal ?? 0;  
-  
-  
-/*  
-NORMAL COMPLETED ORDERS  
-+  
-VIRTUAL NUMBER RECEIVED/COMPLETED  
-*/  
-  
-document.getElementById(  
-"completedCount"  
-)  
-.textContent =  
-(  
-completedTotal ?? 0  
-) +  
-virtualNumberCompletedTotal;  
-  
-  
-document.getElementById(  
-"neverSellOutCount"  
-)  
-.textContent =  
-neverTotal ?? 0;  
-  
-  
-document.getElementById(  
-"userCount"  
-)  
-.textContent =  
-users.length || 0;  
-  
-}  
-  
-  
-/* REFRESH EVERYTHING */  
-  
-async function refreshEverything() {  
-  
-const message =  
-document.getElementById(  
-"refreshMessage"  
-);  
-  
-message.textContent =  
-"🔄 Refreshing everything...";  
-  
-  
-try {  
-  
-await loadProducts();  
-  
-await loadInventoryProductDropdown();  
-  
-await loadInventory();  
-  
-await loadOrders();  
-  
-await loadUsers();  
-  
-await loadVirtualNumberOrders();  
-  
-await updateStatistics();  
-  
-  
-message.textContent =  
-"✅ Everything refreshed successfully.";  
-  
-}  
-  
-catch(error) {  
-  
-console.error(error);  
-  
-message.textContent =  
-"❌ Refresh failed: " +  
-error.message;  
-  
-}  
-  
-}  
-  
-  
-/* START ADMIN */  
-  
-async function startAdmin() {  
-  
-buildCategoryUI();  
-  
-  
-const allowed =  
-await checkAdmin();  
-  
-  
-if (!allowed) return;  
-  
-  
-await refreshEverything();  
-  
-}  
-  
-  
-startAdmin();  
-  
-</script>  </body>  </html>
+
+</main>
+
+
+<script>
+
+
+const SUPABASE_URL =
+"https://hkfhehbhmucymusaytoe.supabase.co";
+
+
+const SUPABASE_KEY =
+"sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+const CATEGORIES = [
+
+"Home",
+"All Social Logs",
+"Working Pictures",
+"Formats",
+"Working Links",
+"Voice Cloner/Fake Video Call",
+"All Countries Number",
+"Streaming & More",
+"ESIMS",
+"VPN"
+
+];
+
+
+const CATEGORY_ICONS = {
+
+"Home": "🏠",
+"All Social Logs": "📱",
+"Working Pictures": "🖼️",
+"Formats": "📄",
+"Working Links": "🔗",
+"Voice Cloner/Fake Video Call": "🎙️",
+"All Countries Number": "📞",
+"Streaming & More": "📺",
+"ESIMS": "📲",
+"VPN": "🔐"
+
+};
+
+
+let products = [];
+let inventory = [];
+let orders = [];
+let users = [];
+
+let virtualNumberOrders = [];
+
+let editingProductId = null;
+let selectedAdminCategory = "Home";
+
+
+function escapeHTML(value) {
+
+return String(value ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+function money(value) {
+
+return Number(value || 0)
+.toLocaleString(
+  "en-NG",
+  {
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+  }
+);
+
+}
+
+
+/* IMAGE PICKER */
+
+function previewProductImage(event) {
+
+const file =
+event.target.files[0];
+
+const preview =
+document.getElementById("imagePreview");
+
+const name =
+document.getElementById("imageName");
+
+if (!file) {
+
+preview.style.display = "none";
+
+name.textContent =
+"No image selected";
+
+document.getElementById(
+  "productImage"
+).value = "";
+
+return;
+
+}
+
+if (!file.type.startsWith("image/")) {
+
+alert(
+"Please choose an image file."
+);
+
+event.target.value = "";
+
+return;
+
+}
+
+name.textContent =
+"Selected: " + file.name;
+
+const reader =
+new FileReader();
+
+reader.onload =
+function(e) {
+
+document.getElementById(
+  "productImage"
+).value =
+e.target.result;
+
+preview.src =
+e.target.result;
+
+preview.style.display =
+"block";
+
+};
+
+reader.readAsDataURL(file);
+
+}
+
+
+/* ADMIN CHECK */
+
+async function checkAdmin() {
+
+const status =
+document.getElementById(
+  "adminStatus"
+);
+
+try {
+
+const {
+data,
+error
+} =
+await supabaseClient.auth.getUser();
+
+if (
+error ||
+!data?.user
+) {
+
+status.textContent =
+"❌ You are not logged in.";
+
+setTimeout(
+() => location.href="login.html",
+1200
+);
+
+return false;
+
+}
+
+const {
+data: admin,
+error: adminError
+} =
+await supabaseClient.rpc(
+"is_admin"
+);
+
+if (adminError) {
+
+status.textContent =
+"❌ Admin verification failed: " +
+adminError.message;
+
+return false;
+
+}
+
+if (!admin) {
+
+status.textContent =
+"🚫 You are not an administrator.";
+
+return false;
+
+}
+
+status.textContent =
+"✅ Administrator access confirmed.";
+
+return true;
+
+}
+
+catch(error) {
+
+status.textContent =
+"❌ " + error.message;
+
+return false;
+
+}
+
+}
+
+
+/* CATEGORIES */
+
+function buildCategoryUI() {
+
+const bar =
+document.getElementById(
+  "categoryBar"
+);
+
+const select =
+document.getElementById(
+  "productCategory"
+);
+
+bar.innerHTML = "";
+select.innerHTML = "";
+
+CATEGORIES.forEach(category => {
+
+if (category !== "Home") {
+
+const option =
+document.createElement("option");
+
+option.value =
+category;
+
+option.textContent =
+category;
+
+select.appendChild(option);
+
+}
+
+const button =
+document.createElement("button");
+
+button.className =
+"category-btn" +
+(
+selectedAdminCategory === category
+? " active"
+: ""
+);
+
+button.innerHTML =
+`${CATEGORY_ICONS[category] || "📁"} ${escapeHTML(category)}`;
+
+button.onclick =
+function() {
+
+selectedAdminCategory =
+category;
+
+document
+.querySelectorAll(
+  ".category-btn"
+)
+.forEach(btn =>
+  btn.classList.remove("active")
+);
+
+button.classList.add("active");
+
+renderProducts();
+
+};
+
+bar.appendChild(button);
+
+});
+
+}
+
+
+/* PRODUCTS */
+
+async function loadProducts() {
+
+const container =
+document.getElementById(
+  "productsList"
+);
+
+container.innerHTML =
+'<div class="loading">Loading products...</div>';
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("Product")
+.select("*")
+.order(
+  "id",
+  {
+    ascending:false
+  }
+);
+
+if (error) {
+
+container.innerHTML =
+'<div class="error">❌ Products could not be loaded.<br><br>' +
+escapeHTML(error.message) +
+'</div>';
+
+products = [];
+
+return;
+
+}
+
+products =
+data || [];
+
+renderProducts();
+
+}
+
+
+function renderProducts() {
+
+const container =
+document.getElementById(
+  "productsList"
+);
+
+const search =
+(
+document.getElementById(
+  "productSearch"
+).value || ""
+)
+.toLowerCase()
+.trim();
+
+let list =
+products.filter(product => {
+
+const matchesSearch =
+!search ||
+String(product.name || "")
+.toLowerCase()
+.includes(search) ||
+String(product.description || "")
+.toLowerCase()
+.includes(search);
+
+const matchesCategory =
+selectedAdminCategory === "Home" ||
+product.category ===
+selectedAdminCategory;
+
+return (
+matchesSearch &&
+matchesCategory
+);
+
+});
+
+
+if (!list.length) {
+
+container.innerHTML =
+'<div class="loading">No products found.</div>';
+
+return;
+
+}
+
+
+container.innerHTML = "";
+
+
+list.forEach(product => {
+
+const box =
+document.createElement("div");
+
+box.className =
+"item";
+
+
+box.innerHTML = `
+
+<h3>
+${escapeHTML(
+product.name ||
+"Unnamed Service"
+)}
+</h3>
+
+<p>
+<strong>ID:</strong>
+${escapeHTML(product.id)}
+</p>
+
+<p>
+<strong>Price:</strong>
+₦${money(product.price)}
+</p>
+
+<p>
+<strong>Category:</strong>
+${escapeHTML(product.category)}
+</p>
+
+<p>
+<strong>Status:</strong>
+${escapeHTML(product.status || "Available")}
+</p>
+
+<p>
+<strong>Stock:</strong>
+${escapeHTML(product.stock ?? 0)}
+</p>
+
+<p>
+<strong>Track Stock:</strong>
+${product.track_stock === false
+? "No"
+: "Yes"}
+</p>
+
+${
+product.description
+?
+`
+<p>
+<strong>Description:</strong>
+${escapeHTML(
+product.description
+)}
+</p>
+`
+:
+""
+}
+
+${
+product.image_url
+?
+`
+<img
+src="${escapeHTML(product.image_url)}"
+style="
+max-width:160px;
+max-height:160px;
+border-radius:10px;
+margin-top:8px;
+"
+>
+`
+:
+""
+}
+
+<div class="item-actions">
+
+<button
+class="blue"
+onclick="editProduct(${Number(product.id)})"
+>
+✏️ Edit
+</button>
+
+<button
+class="red"
+onclick="deleteProduct(${Number(product.id)})"
+>
+🗑️ Delete
+</button>
+
+</div>
+
+`;
+
+container.appendChild(box);
+
+});
+
+}
+
+
+/* ADD PRODUCT */
+
+async function addProduct() {
+
+const name =
+document.getElementById(
+  "productName"
+).value.trim();
+
+const price =
+Number(
+document.getElementById(
+  "productPrice"
+).value
+);
+
+const category =
+document.getElementById(
+  "productCategory"
+).value;
+
+const description =
+document.getElementById(
+  "productDescription"
+).value.trim();
+
+const image_url =
+document.getElementById(
+  "productImage"
+).value;
+
+const stock =
+Number(
+document.getElementById(
+  "productStock"
+).value
+);
+
+const status =
+document.getElementById(
+  "productStatus"
+).value;
+
+const track_stock =
+document.getElementById(
+  "trackStock"
+).checked;
+
+const message =
+document.getElementById(
+  "productMessage"
+);
+
+
+if (!name) {
+
+message.textContent =
+"❌ Enter a service name.";
+
+return;
+
+}
+
+
+if (
+!Number.isFinite(price) ||
+price < 0
+) {
+
+message.textContent =
+"❌ Invalid price.";
+
+return;
+
+}
+
+
+if (
+!Number.isFinite(stock) ||
+stock < 0
+) {
+
+message.textContent =
+"❌ Invalid stock.";
+
+return;
+
+}
+
+
+if (
+!CATEGORIES.includes(category) ||
+category === "Home"
+) {
+
+message.textContent =
+"❌ Invalid category.";
+
+return;
+
+}
+
+
+message.textContent =
+editingProductId
+?
+"Saving changes..."
+:
+"Adding service...";
+
+
+const payload = {
+
+name,
+price,
+category,
+description,
+image_url,
+stock,
+status,
+track_stock,
+is_active:true
+
+};
+
+
+let response;
+
+
+if (editingProductId) {
+
+response =
+await supabaseClient
+.from("Product")
+.update(payload)
+.eq(
+  "id",
+  editingProductId
+);
+
+}
+else {
+
+response =
+await supabaseClient
+.from("Product")
+.insert(payload);
+
+}
+
+
+if (response.error) {
+
+message.textContent =
+"❌ " +
+response.error.message;
+
+return;
+
+}
+
+
+message.textContent =
+editingProductId
+?
+"✅ Service updated."
+:
+"✅ Service added.";
+
+
+cancelProductEdit();
+
+await loadProducts();
+
+await loadInventoryProductDropdown();
+
+await updateStatistics();
+
+}
+
+
+/* EDIT PRODUCT */
+
+function editProduct(id) {
+
+const product =
+products.find(
+p =>
+Number(p.id) ===
+Number(id)
+);
+
+if (!product) {
+
+alert(
+"Product could not be found."
+);
+
+return;
+
+}
+
+
+editingProductId =
+product.id;
+
+
+document.getElementById(
+"productName"
+).value =
+product.name || "";
+
+
+document.getElementById(
+"productPrice"
+).value =
+product.price ?? 0;
+
+
+document.getElementById(
+"productCategory"
+).value =
+product.category ||
+CATEGORIES[1];
+
+
+document.getElementById(
+"productDescription"
+).value =
+product.description || "";
+
+
+document.getElementById(
+"productImage"
+).value =
+product.image_url || "";
+
+
+document.getElementById(
+"productStock"
+).value =
+product.stock ?? 0;
+
+
+document.getElementById(
+"productStatus"
+).value =
+product.status ||
+"Available";
+
+
+document.getElementById(
+"trackStock"
+).checked =
+product.track_stock !== false;
+
+
+document.getElementById(
+"editingProductLabel"
+).classList.remove(
+"hidden"
+);
+
+
+document.getElementById(
+"cancelEditButton"
+).classList.remove(
+"hidden"
+);
+
+
+document.getElementById(
+"productSubmitButton"
+).textContent =
+"💾 Save Changes";
+
+
+document.getElementById(
+"productMessage"
+).textContent =
+"";
+
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+}
+
+
+/* CANCEL EDIT */
+
+function cancelProductEdit() {
+
+editingProductId = null;
+
+document.getElementById(
+"productName"
+).value = "";
+
+document.getElementById(
+"productPrice"
+).value = "";
+
+document.getElementById(
+"productCategory"
+).value =
+CATEGORIES[1];
+
+document.getElementById(
+"productDescription"
+).value = "";
+
+document.getElementById(
+"productImage"
+).value = "";
+
+document.getElementById(
+"productStock"
+).value = 0;
+
+document.getElementById(
+"productStatus"
+).value =
+"Available";
+
+document.getElementById(
+"trackStock"
+).checked = true;
+
+document.getElementById(
+"productImageFile"
+).value = "";
+
+document.getElementById(
+"imagePreview"
+).style.display =
+"none";
+
+document.getElementById(
+"imageName"
+).textContent =
+"No image selected";
+
+document.getElementById(
+"editingProductLabel"
+).classList.add(
+"hidden"
+);
+
+document.getElementById(
+"cancelEditButton"
+).classList.add(
+"hidden"
+);
+
+document.getElementById(
+"productSubmitButton"
+).textContent =
+"➕ Add Service";
+
+document.getElementById(
+"productMessage"
+).textContent =
+"";
+
+}
+
+
+/* DELETE PRODUCT */
+
+async function deleteProduct(id) {
+
+if (
+!confirm(
+"Delete this service?"
+)
+) return;
+
+
+const {
+error
+} =
+await supabaseClient
+.from("Product")
+.delete()
+.eq(
+"id",
+id
+);
+
+
+if (error) {
+
+alert(
+"❌ " +
+error.message
+);
+
+return;
+
+}
+
+
+await loadProducts();
+
+await loadInventoryProductDropdown();
+
+await updateStatistics();
+
+}
+
+
+/* INVENTORY DROPDOWN */
+
+async function loadInventoryProductDropdown() {
+
+const select =
+document.getElementById(
+"inventoryProduct"
+);
+
+select.innerHTML =
+'<option value="">Loading services...</option>';
+
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("Product")
+.select("id,name")
+.eq(
+"is_active",
+true
+)
+.order(
+"id",
+{
+ascending:false
+}
+);
+
+
+if (error) {
+
+select.innerHTML =
+'<option value="">Unable to load services</option>';
+
+return;
+
+}
+
+
+select.innerHTML =
+'<option value="">Select a service</option>';
+
+
+(data || []).forEach(product => {
+
+const option =
+document.createElement(
+"option"
+);
+
+option.value =
+product.id;
+
+option.textContent =
+`${product.name} — ID ${product.id}`;
+
+select.appendChild(
+option
+);
+
+});
+
+}
+
+
+/* ADD INVENTORY */
+
+async function addInventory() {
+
+const product_id =
+Number(
+document.getElementById(
+"inventoryProduct"
+).value
+);
+
+const content =
+document.getElementById(
+"inventoryData"
+).value.trim();
+
+const message =
+document.getElementById(
+"inventoryMessage"
+);
+
+
+if (!product_id) {
+
+message.textContent =
+"❌ Select a service.";
+
+return;
+
+}
+
+
+if (!content) {
+
+message.textContent =
+"❌ Enter delivery information.";
+
+return;
+
+}
+
+
+message.textContent =
+"Adding inventory...";
+
+
+const {
+error
+} =
+await supabaseClient
+.from("product_inventory")
+.insert({
+product_id,
+content,
+status:"available"
+});
+
+
+if (error) {
+
+message.textContent =
+"❌ " +
+error.message;
+
+return;
+
+}
+
+
+message.textContent =
+"✅ Inventory added.";
+
+
+document.getElementById(
+"inventoryData"
+).value = "";
+
+
+await loadInventory();
+
+await updateStatistics();
+
+}
+
+
+/* LOAD INVENTORY */
+
+async function loadInventory() {
+
+const container =
+document.getElementById(
+"inventoryList"
+);
+
+container.innerHTML =
+'<div class="loading">Loading inventory...</div>';
+
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("product_inventory")
+.select("*")
+.order(
+"id",
+{
+ascending:false
+}
+);
+
+
+if (error) {
+
+container.innerHTML =
+'<div class="error">❌ Inventory could not be loaded.<br><br>' +
+escapeHTML(error.message) +
+'</div>';
+
+inventory = [];
+
+return;
+
+}
+
+
+inventory =
+data || [];
+
+renderInventory();
+
+}
+
+
+function renderInventory() {
+
+const container =
+document.getElementById(
+"inventoryList"
+);
+
+const search =
+(
+document.getElementById(
+"inventorySearch"
+).value || ""
+)
+.toLowerCase()
+.trim();
+
+
+const list =
+inventory.filter(item => {
+
+const product =
+products.find(
+p =>
+Number(p.id) ===
+Number(item.product_id)
+);
+
+const productName =
+product?.name || "";
+
+
+return (
+!search ||
+productName
+.toLowerCase()
+.includes(search) ||
+String(
+item.content || ""
+)
+.toLowerCase()
+.includes(search) ||
+String(
+item.status || ""
+)
+.toLowerCase()
+.includes(search)
+);
+
+});
+
+
+if (!list.length) {
+
+container.innerHTML =
+'<div class="loading">No inventory found.</div>';
+
+return;
+
+}
+
+
+container.innerHTML = "";
+
+
+list.forEach(item => {
+
+const product =
+products.find(
+p =>
+Number(p.id) ===
+Number(item.product_id)
+);
+
+
+const box =
+document.createElement(
+"div"
+);
+
+box.className =
+"item";
+
+
+box.innerHTML = `
+
+<h3>
+Inventory #${escapeHTML(item.id)}
+</h3>
+
+<p>
+<strong>Service:</strong>
+${escapeHTML(
+product?.name ||
+"Unknown Service"
+)}
+</p>
+
+<p>
+<strong>Product ID:</strong>
+${escapeHTML(item.product_id)}
+</p>
+
+<p>
+<strong>Status:</strong>
+${escapeHTML(
+item.status ||
+"unknown"
+)}
+</p>
+
+<p>
+<strong>Delivery Information:</strong>
+</p>
+
+<div
+style="
+background:#eee;
+padding:12px;
+border-radius:9px;
+white-space:pre-wrap;
+word-break:break-word;
+"
+>
+${escapeHTML(
+item.content
+)}
+</div>
+
+<div class="item-actions">
+
+<button
+class="blue"
+onclick="editInventory(${Number(item.id)})"
+>
+✏️ Edit
+</button>
+
+<button
+class="red"
+onclick="deleteInventory(${Number(item.id)})"
+>
+🗑️ Delete
+</button>
+
+</div>
+
+`;
+
+container.appendChild(box);
+
+});
+
+}
+
+
+/* EDIT INVENTORY */
+
+function editInventory(id) {
+
+const item =
+inventory.find(
+entry =>
+Number(entry.id) ===
+Number(id)
+);
+
+if (!item) {
+
+alert(
+"Inventory item could not be found."
+);
+
+return;
+
+}
+
+
+const productIdInput =
+prompt(
+"Service/Product ID:\n\n" +
+products
+.map(
+p =>
+`${p.id} — ${p.name}`
+)
+.join("\n"),
+item.product_id ?? ""
+);
+
+
+if (
+productIdInput === null
+) return;
+
+
+const productId =
+Number(productIdInput);
+
+
+if (
+!products.some(
+p =>
+Number(p.id) ===
+productId
+)
+) {
+
+alert(
+"Invalid service/product ID."
+);
+
+return;
+
+}
+
+
+const content =
+prompt(
+"Delivery Information:",
+item.content || ""
+);
+
+
+if (
+content === null
+) return;
+
+
+const status =
+prompt(
+"Inventory Status (available or sold):",
+item.status ||
+"available"
+);
+
+
+if (
+status === null
+) return;
+
+
+const {
+error
+} =
+await supabaseClient
+.from("product_inventory")
+.update({
+
+product_id:
+productId,
+
+content:
+content.trim(),
+
+status:
+status.trim() ||
+"available"
+
+})
+.eq(
+"id",
+id
+);
+
+
+if (error) {
+
+alert(
+"❌ " +
+error.message
+);
+
+return;
+
+}
+
+
+await loadInventory();
+
+}
+
+
+/* DELETE INVENTORY */
+
+async function deleteInventory(id) {
+
+if (
+!confirm(
+"Delete this inventory item?"
+)
+) return;
+
+
+const {
+error
+} =
+await supabaseClient
+.from("product_inventory")
+.delete()
+.eq(
+"id",
+id
+);
+
+
+if (error) {
+
+alert(
+"❌ " +
+error.message
+);
+
+return;
+
+}
+
+
+await loadInventory();
+
+await updateStatistics();
+
+}
+
+
+/* ORDERS */
+
+async function loadOrders() {
+
+const container =
+document.getElementById(
+"ordersList"
+);
+
+container.innerHTML =
+'<div class="loading">Loading orders...</div>';
+
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("orders")
+.select("*")
+.order(
+"created_at",
+{
+ascending:false
+}
+);
+
+
+if (error) {
+
+container.innerHTML =
+'<div class="error">❌ Orders could not be loaded.<br><br>' +
+escapeHTML(error.message) +
+'</div>';
+
+orders = [];
+
+return;
+
+}
+
+
+orders =
+data || [];
+
+renderOrders();
+
+}
+
+
+function renderOrders() {
+
+const container =
+document.getElementById(
+"ordersList"
+);
+
+const search =
+(
+document.getElementById(
+"orderSearch"
+).value || ""
+)
+.toLowerCase()
+.trim();
+
+
+const list =
+orders.filter(order => {
+
+return (
+!search ||
+String(order.id || "")
+.toLowerCase()
+.includes(search) ||
+String(order.user_id || "")
+.toLowerCase()
+.includes(search) ||
+String(order.product_name || "")
+.toLowerCase()
+.includes(search) ||
+String(order.status || "")
+.toLowerCase()
+.includes(search)
+);
+
+});
+
+
+if (!list.length) {
+
+container.innerHTML =
+'<div class="loading">No orders found.</div>';
+
+return;
+
+}
+
+
+container.innerHTML = "";
+
+
+list.forEach(order => {
+
+const box =
+document.createElement(
+"div"
+);
+
+box.className =
+"item";
+
+
+box.innerHTML = `
+
+<h3>
+🧾 Order #${escapeHTML(order.id)}
+</h3>
+
+<p>
+<strong>User:</strong>
+${escapeHTML(
+order.user_id ||
+"Unknown"
+)}
+</p>
+
+<p>
+<strong>Product:</strong>
+${escapeHTML(
+order.product_name ||
+"Unknown"
+)}
+</p>
+
+<p>
+<strong>Amount:</strong>
+₦${money(
+order.amount
+)}
+</p>
+
+<p>
+<strong>Status:</strong>
+${escapeHTML(
+order.status ||
+"unknown"
+)}
+</p>
+
+${
+order.created_at
+?
+`
+<p>
+<strong>Date:</strong>
+${escapeHTML(
+new Date(
+order.created_at
+)
+.toLocaleString(
+"en-NG"
+)
+)}
+</p>
+`
+:
+""
+}
+
+<div class="item-actions">
+
+${
+String(order.status || "")
+.toLowerCase() ===
+"pending"
+?
+`
+<button
+class="green"
+onclick="completePendingOrder('${String(order.id).replace(/'/g,"\\'")}' )"
+>
+✅ Complete
+</button>
+
+<button
+class="red"
+onclick="cancelPendingOrder('${String(order.id).replace(/'/g,"\\'")}' )"
+>
+❌ Cancel
+</button>
+`
+:
+""
+}
+
+</div>
+
+`;
+
+container.appendChild(box);
+
+});
+
+}
+
+
+/* COMPLETE NORMAL ORDER */
+
+async function completePendingOrder(id) {
+
+if (
+!confirm(
+"Complete this order?"
+)
+) return;
+
+
+const order =
+orders.find(
+o =>
+String(o.id) ===
+String(id)
+);
+
+
+if (!order) {
+
+alert(
+"Order not found."
+);
+
+return;
+
+}
+
+
+const {
+error
+} =
+await supabaseClient
+.from("orders")
+.update({
+status:"delivered"
+})
+.eq(
+"id",
+id
+);
+
+
+if (error) {
+
+alert(
+"❌ " +
+error.message
+);
+
+return;
+
+}
+
+
+await loadOrders();
+
+await updateStatistics();
+
+}
+
+
+/* CANCEL NORMAL ORDER */
+
+async function cancelPendingOrder(id) {
+
+if (
+!confirm(
+"Cancel this order?"
+)
+) return;
+
+
+const {
+error
+} =
+await supabaseClient
+.from("orders")
+.update({
+status:"cancelled"
+})
+.eq(
+"id",
+id
+);
+
+
+if (error) {
+
+alert(
+"❌ " +
+error.message
+);
+
+return;
+
+}
+
+
+await loadOrders();
+
+await updateStatistics();
+
+}
+
+
+/* USERS */
+
+async function loadUsers() {
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("profiles")
+.select("*")
+.order(
+"created_at",
+{
+ascending:false
+}
+);
+
+
+if (error) {
+
+document.getElementById(
+"usersList"
+).innerHTML =
+'<div class="error">❌ User records could not be loaded.<br><br>' +
+escapeHTML(error.message) +
+'</div>';
+
+users = [];
+
+return;
+
+}
+
+
+users =
+data || [];
+
+
+/*
+====================================================
+LOAD VIRTUAL NUMBER PURCHASES FOR EACH USER
+====================================================
+*/
+
+for (
+const user of users
+) {
+
+const {
+data:
+virtualOrders,
+error:
+virtualError
+} =
+await supabaseClient
+.from(
+"virtual_number_orders"
+)
+.select("*")
+.eq(
+"user_id",
+user.id
+)
+.order(
+"created_at",
+{
+ascending:false
+}
+);
+
+
+if (virtualError) {
+
+console.error(
+"Virtual number orders for user could not be loaded:",
+virtualError
+);
+
+}
+
+
+user.virtual_number_orders =
+virtualOrders || [];
+
+}
+
+
+/*
+====================================================
+LOAD ALL VIRTUAL NUMBER PURCHASES
+====================================================
+*/
+
+const {
+data:
+allVirtualOrders,
+error:
+allVirtualError
+} =
+await supabaseClient
+.from(
+"virtual_number_orders"
+)
+.select("*")
+.order(
+"created_at",
+{
+ascending:false
+}
+);
+
+
+if (allVirtualError) {
+
+console.error(
+"Virtual number purchases could not be loaded:",
+allVirtualError
+);
+
+virtualNumberOrders = [];
+
+}
+else {
+
+virtualNumberOrders =
+allVirtualOrders || [];
+
+}
+
+
+renderUsers();
+
+renderVirtualNumberOrders();
+
+}
+
+
+/* RENDER USERS */
+
+function renderUsers() {
+
+const container =
+document.getElementById(
+"usersList"
+);
+
+const search =
+(
+document.getElementById(
+"userSearch"
+).value || ""
+)
+.toLowerCase()
+.trim();
+
+
+const list =
+users.filter(user => {
+
+return (
+!search ||
+
+String(
+user.email || ""
+)
+.toLowerCase()
+.includes(search) ||
+
+String(
+user.full_name || ""
+)
+.toLowerCase()
+.includes(search) ||
+
+String(
+user.id || ""
+)
+.toLowerCase()
+.includes(search)
+
+);
+
+});
+
+
+if (!list.length) {
+
+container.innerHTML =
+'<div class="loading">No users found.</div>';
+
+return;
+
+}
+
+
+container.innerHTML = "";
+
+
+list.forEach(user => {
+
+const box =
+document.createElement(
+"div"
+);
+
+box.className =
+"item";
+
+
+const virtualPurchases =
+user.virtual_number_orders ||
+[];
+
+
+box.innerHTML = `
+
+<h3>
+👤 ${escapeHTML(
+user.full_name ||
+"User"
+)}
+</h3>
+
+<p>
+<strong>Email:</strong>
+${escapeHTML(
+user.email ||
+"Not available"
+)}
+</p>
+
+<p>
+<strong>User ID:</strong>
+${escapeHTML(user.id)}
+</p>
+
+${
+user.created_at
+?
+`
+<p>
+<strong>Joined:</strong>
+${escapeHTML(
+new Date(
+user.created_at
+)
+.toLocaleString(
+"en-NG"
+)
+)}
+</p>
+`
+:
+""
+}
+
+
+<p>
+<strong>📱 Virtual Number Purchases:</strong>
+${virtualPurchases.length}
+</p>
+
+
+${
+virtualPurchases.length
+?
+`
+
+<div style="margin-top:10px;">
+
+${virtualPurchases.map(
+v => `
+
+<div
+style="
+background:#eee;
+padding:12px;
+border-radius:9px;
+margin-top:8px;
+"
+>
+
+<strong>
+📱 ${escapeHTML(
+v.service_name ||
+"Virtual Number"
+)}
+</strong>
+
+<br>
+
+Country:
+${escapeHTML(
+v.country_name ||
+"Unknown"
+)}
+
+<br>
+
+Amount:
+₦${money(
+v.customer_price_ngn ??
+v.amount ??
+0
+)}
+
+<br>
+
+Status:
+${escapeHTML(
+v.status ||
+"received"
+)}
+
+<br>
+
+${
+v.phone_number
+?
+`
+Number:
+${escapeHTML(
+v.phone_number
+)}
+<br>
+`
+:
+""
+}
+
+${
+v.otp_code
+?
+`
+OTP:
+${escapeHTML(
+v.otp_code
+)}
+<br>
+`
+:
+""
+}
+
+${
+v.created_at
+?
+`
+Date:
+${escapeHTML(
+new Date(
+v.created_at
+)
+.toLocaleString(
+"en-NG"
+)
+)}
+`
+:
+""
+}
+
+</div>
+
+`
+).join("")}
+
+</div>
+
+`
+:
+`
+<p style="color:#777;">
+No virtual number purchases.
+</p>
+`
+}
+
+<div class="item-actions">
+
+${
+user.is_banned !== undefined
+?
+`
+<button
+class="${
+user.is_banned
+? "green"
+: "red"
+}"
+onclick="
+toggleUserBan(
+'${String(user.id).replace(/'/g,"\\'")}',
+${!user.is_banned}
+)
+"
+>
+${
+user.is_banned
+? "🔓 Unban User"
+: "🚫 Ban User"
+}
+</button>
+`
+:
+""
+}
+
+</div>
+
+`;
+
+container.appendChild(box);
+
+});
+
+}
+
+
+/*
+====================================================
+VIRTUAL NUMBER PURCHASE LIST
+====================================================
+*/
+
+function renderVirtualNumberOrders() {
+
+const container =
+document.getElementById(
+"virtualNumberOrdersList"
+);
+
+if (!container) return;
+
+
+const search =
+(
+document.getElementById(
+"virtualNumberSearch"
+)?.value || ""
+)
+.toLowerCase()
+.trim();
+
+
+const list =
+(
+virtualNumberOrders || []
+)
+.filter(v => {
+
+return (
+!search ||
+
+String(
+v.id || ""
+)
+.toLowerCase()
+.includes(search) ||
+
+String(
+v.user_id || ""
+)
+.toLowerCase()
+.includes(search) ||
+
+String(
+v.service_name || ""
+)
+.toLowerCase()
+.includes(search) ||
+
+String(
+v.country_name || ""
+)
+.toLowerCase()
+.includes(search) ||
+
+String(
+v.phone_number || ""
+)
+.toLowerCase()
+.includes(search) ||
+
+String(
+v.status || ""
+)
+.toLowerCase()
+.includes(search)
+);
+
+});
+
+
+if (!list.length) {
+
+container.innerHTML =
+'<div class="loading">No virtual number purchases found.</div>';
+
+return;
+
+}
+
+
+container.innerHTML = "";
+
+
+list.forEach(v => {
+
+const box =
+document.createElement(
+"div"
+);
+
+box.className =
+"item";
+
+
+box.innerHTML = `
+
+<h3>
+📱 Virtual Number #
+${escapeHTML(v.id)}
+</h3>
+
+<p>
+<strong>Customer:</strong>
+${escapeHTML(
+v.user_id ||
+"Unknown"
+)}
+</p>
+
+<p>
+<strong>Service:</strong>
+${escapeHTML(
+v.service_name ||
+"Virtual Number"
+)}
+</p>
+
+<p>
+<strong>Country:</strong>
+${escapeHTML(
+v.country_name ||
+"Unknown"
+)}
+</p>
+
+<p>
+<strong>Amount:</strong>
+₦${money(
+v.customer_price_ngn ??
+v.amount ??
+0
+)}
+</p>
+
+<p>
+<strong>Status:</strong>
+${escapeHTML(
+v.status ||
+"received"
+)}
+</p>
+
+${
+v.phone_number
+?
+`
+<p>
+<strong>Number:</strong>
+${escapeHTML(
+v.phone_number
+)}
+</p>
+`
+:
+""
+}
+
+${
+v.otp_code
+?
+`
+<p>
+<strong>OTP:</strong>
+${escapeHTML(
+v.otp_code
+)}
+</p>
+`
+:
+""
+}
+
+${
+v.created_at
+?
+`
+<p>
+<strong>Created:</strong>
+${escapeHTML(
+new Date(
+v.created_at
+)
+.toLocaleString(
+"en-NG"
+)
+)}
+</p>
+`
+:
+""
+}
+
+`;
+
+container.appendChild(box);
+
+});
+
+}
+
+
+/* REFRESH VIRTUAL NUMBER PURCHASES */
+
+async function loadVirtualNumberOrders() {
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from(
+"virtual_number_orders"
+)
+.select("*")
+.order(
+"created_at",
+{
+ascending:false
+}
+);
+
+
+if (error) {
+
+console.error(
+"Virtual number purchases load error:",
+error
+);
+
+virtualNumberOrders = [];
+
+}
+else {
+
+virtualNumberOrders =
+data || [];
+
+}
+
+
+renderVirtualNumberOrders();
+
+}
+
+
+/* USER BAN */
+
+async function toggleUserBan(
+id,
+banned
+) {
+
+const {
+error
+} =
+await supabaseClient
+.from("profiles")
+.update({
+is_banned:banned
+})
+.eq(
+"id",
+id
+);
+
+
+if (error) {
+
+alert(
+"❌ " +
+error.message
+);
+
+return;
+
+}
+
+
+await loadUsers();
+
+}
+
+
+/*
+====================================================
+STATISTICS
+====================================================
+*/
+
+async function updateStatistics() {
+
+
+const {
+count:
+productsTotal
+} =
+await supabaseClient
+.from("Product")
+.select(
+"*",
+{
+count:"exact",
+head:true
+}
+);
+
+
+const {
+count:
+inventoryTotal
+} =
+await supabaseClient
+.from("product_inventory")
+.select(
+"*",
+{
+count:"exact",
+head:true
+}
+)
+.eq(
+"status",
+"available"
+);
+
+
+const {
+count:
+pendingTotal
+} =
+await supabaseClient
+.from("orders")
+.select(
+"*",
+{
+count:"exact",
+head:true
+}
+)
+.eq(
+"status",
+"pending"
+);
+
+
+const {
+count:
+completedTotal
+} =
+await supabaseClient
+.from("orders")
+.select(
+"*",
+{
+count:"exact",
+head:true
+}
+)
+.eq(
+"status",
+"delivered"
+);
+
+
+/*
+====================================================
+COUNT RECEIVED/COMPLETED VIRTUAL NUMBERS
+====================================================
+*/
+
+const {
+data:
+virtualOrders,
+error:
+virtualError
+} =
+await supabaseClient
+.from(
+"virtual_number_orders"
+)
+.select(
+"status"
+);
+
+
+let virtualNumberCompletedTotal =
+0;
+
+
+if (virtualError) {
+
+console.error(
+"Virtual number purchase stats error:",
+virtualError
+);
+
+}
+else {
+
+virtualNumberCompletedTotal =
+(
+virtualOrders || []
+)
+.filter(v => {
+
+const status =
+String(
+v.status || ""
+)
+.toLowerCase();
+
+return (
+status === "received" ||
+status === "completed"
+);
+
+})
+.length;
+
+}
+
+
+const {
+count:
+neverTotal
+} =
+await supabaseClient
+.from("Product")
+.select(
+"*",
+{
+count:"exact",
+head:true
+}
+)
+.eq(
+"track_stock",
+false
+);
+
+
+document.getElementById(
+"productCount"
+)
+.textContent =
+productsTotal ?? 0;
+
+
+document.getElementById(
+"inventoryCount"
+)
+.textContent =
+inventoryTotal ?? 0;
+
+
+document.getElementById(
+"pendingCount"
+)
+.textContent =
+pendingTotal ?? 0;
+
+
+/*
+NORMAL COMPLETED ORDERS
++
+VIRTUAL NUMBER RECEIVED/COMPLETED
+*/
+
+document.getElementById(
+"completedCount"
+)
+.textContent =
+(
+completedTotal ?? 0
+) +
+virtualNumberCompletedTotal;
+
+
+document.getElementById(
+"neverSellOutCount"
+)
+.textContent =
+neverTotal ?? 0;
+
+
+document.getElementById(
+"userCount"
+)
+.textContent =
+users.length || 0;
+
+}
+
+
+/* REFRESH EVERYTHING */
+
+async function refreshEverything() {
+
+const message =
+document.getElementById(
+"refreshMessage"
+);
+
+message.textContent =
+"🔄 Refreshing everything...";
+
+
+try {
+
+await loadProducts();
+
+await loadInventoryProductDropdown();
+
+await loadInventory();
+
+await loadOrders();
+
+await loadUsers();
+
+await loadVirtualNumberOrders();
+
+await updateStatistics();
+
+
+message.textContent =
+"✅ Everything refreshed successfully.";
+
+}
+
+catch(error) {
+
+console.error(error);
+
+message.textContent =
+"❌ Refresh failed: " +
+error.message;
+
+}
+
+}
+
+
+/* START ADMIN */
+
+async function startAdmin() {
+
+buildCategoryUI();
+
+
+const allowed =
+await checkAdmin();
+
+
+if (!allowed) return;
+
+
+await refreshEverything();
+
+}
+
+
+startAdmin();
+
+</script>
+
+</body>
+
+</html>
