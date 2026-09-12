@@ -358,26 +358,21 @@ select:focus{
   color:#777;
 }
 
-}
 
-
-  color:#171717;
-}
-
-  /* ============================================================
-   BEAUTIFUL POPUP DESIGN - FIT EVERYTHING ON SCREEN
+/* ============================================================
+   BEAUTIFUL POPUP DESIGN - COMPACT / NO SCROLL
 ============================================================ */
 
 .popup{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.68);
+  background:rgba(0,0,0,.70);
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:10px;
+  padding:8px;
   z-index:9999;
   animation:popupFade .22s ease;
 }
@@ -394,10 +389,11 @@ select:focus{
 .popup-card{
   width:100%;
   max-width:500px;
+  max-height:calc(100dvh - 16px);
+  max-height:calc(100vh - 16px);
   background:#fff;
-  border-radius:22px;
+  border-radius:20px;
   padding:0;
-  max-height:calc(100vh - 20px);
   overflow:hidden;
   box-shadow:0 25px 70px rgba(0,0,0,.30);
   animation:popupSlide .25s ease;
@@ -405,7 +401,7 @@ select:focus{
 
 @keyframes popupSlide{
   from{
-    transform:translateY(15px) scale(.97);
+    transform:translateY(14px) scale(.97);
     opacity:0;
   }
   to{
@@ -414,22 +410,19 @@ select:focus{
   }
 }
 
-
-/* HEADER */
-
 .popup-header{
   display:flex;
   align-items:center;
   gap:9px;
-  padding:12px 15px;
+  padding:11px 13px;
   border-bottom:1px solid #eeeeee;
 }
 
 .popup-header-icon{
-  width:36px;
-  height:36px;
-  min-width:36px;
-  border-radius:11px;
+  width:34px;
+  height:34px;
+  min-width:34px;
+  border-radius:10px;
   background:#f1f3f5;
   display:flex;
   align-items:center;
@@ -446,9 +439,9 @@ select:focus{
 }
 
 .popup-x{
-  width:32px;
-  height:32px;
-  min-width:32px;
+  width:31px;
+  height:31px;
+  min-width:31px;
   border:0;
   border-radius:50%;
   background:#f3f4f6;
@@ -460,77 +453,78 @@ select:focus{
   justify-content:center;
 }
 
-
-/* TOP STICKER */
+.popup-x:hover{
+  background:#e5e7eb;
+}
 
 .popup-visual{
-  padding:11px 15px 5px;
+  padding:9px 13px 3px;
   text-align:center;
 }
 
 .popup-sticker{
-  width:52px;
-  height:52px;
+  width:48px;
+  height:48px;
   margin:0 auto;
-  border-radius:17px;
+  border-radius:15px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:27px;
+  font-size:25px;
   background:linear-gradient(
     135deg,
     #eef2ff,
     #f5f3ff
   );
-  box-shadow:0 6px 18px rgba(79,70,229,.12);
+  box-shadow:
+    0 5px 16px rgba(79,70,229,.11);
 }
 
-
-/* BODY */
-
 .popup-body{
-  padding:9px 15px 10px;
+  padding:8px 13px 10px;
 }
 
 .popup-section-title{
   display:flex;
   align-items:center;
   gap:7px;
-  margin-bottom:8px;
-  font-size:13.5px;
+  margin-bottom:7px;
+  font-size:13px;
   font-weight:800;
   color:#171717;
 }
 
 .popup-section-title span{
-  width:25px;
-  height:25px;
-  border-radius:8px;
+  width:24px;
+  height:24px;
+  border-radius:7px;
   background:#f1f5f9;
   display:flex;
   align-items:center;
   justify-content:center;
+  font-size:13px;
 }
-
-
-/* ITEM */
 
 .popup-item{
   margin:0 0 6px;
-  padding:8px 10px;
+  padding:8px 9px;
   background:#f7f8fa;
   border:1px solid #eceef1;
-  border-radius:12px;
+  border-radius:11px;
   display:flex;
-  gap:9px;
-  align-items:center;
+  gap:8px;
+  align-items:flex-start;
+}
+
+.popup-item:last-child{
+  margin-bottom:0;
 }
 
 .popup-item-icon{
-  width:30px;
-  height:30px;
-  min-width:30px;
-  border-radius:9px;
+  width:28px;
+  height:28px;
+  min-width:28px;
+  border-radius:8px;
   background:#fff;
   display:flex;
   align-items:center;
@@ -542,24 +536,21 @@ select:focus{
 .popup-item-content{
   flex:1;
   font-size:11.5px;
-  line-height:1.35;
+  line-height:1.38;
   color:#555;
 }
 
 .popup-item-content strong{
   display:block;
-  margin-bottom:1px;
+  margin-bottom:2px;
   color:#171717;
-  font-size:12.5px;
+  font-size:12px;
 }
-
-
-/* INTRO */
 
 .popup-intro{
   margin-bottom:7px;
-  padding:10px;
-  border-radius:12px;
+  padding:9px 10px;
+  border-radius:11px;
   background:#f5f7ff;
   border:1px solid #e4e8ff;
   color:#40445a;
@@ -567,30 +558,27 @@ select:focus{
   line-height:1.4;
 }
 
-
-/* WARNING */
-
 .popup-warning{
   margin-top:7px;
   padding:9px 10px;
-  border-radius:12px;
+  border-radius:11px;
   background:#fff8df;
   border:1px solid #f4df91;
   display:flex;
-  gap:9px;
-  align-items:center;
+  gap:8px;
+  align-items:flex-start;
 }
 
 .popup-warning-icon{
-  width:30px;
-  height:30px;
-  min-width:30px;
-  border-radius:9px;
+  width:28px;
+  height:28px;
+  min-width:28px;
+  border-radius:8px;
   background:#ffeaa7;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:16px;
+  font-size:15px;
 }
 
 .popup-warning-content{
@@ -602,49 +590,59 @@ select:focus{
 .popup-warning-content strong{
   display:block;
   color:#3f3207;
-  margin-bottom:1px;
+  margin-bottom:2px;
 }
 
-
-/* BUTTON */
-
 .popup-close{
-  width:calc(100% - 30px);
-  margin:2px 15px 13px;
+  width:calc(100% - 26px);
+  margin:0 13px 12px;
   border:0;
   background:#111827;
   color:#fff;
-  padding:12px;
-  border-radius:12px;
+  padding:11px;
+  border-radius:11px;
   font-size:13px;
   font-weight:800;
   cursor:pointer;
   box-shadow:0 6px 16px rgba(17,24,39,.16);
+  transition:.2s;
+}
+
+.popup-close:hover{
+  transform:translateY(-1px);
+  background:#000;
+}
+
+.popup-close:active{
+  transform:scale(.98);
 }
 
 
-/* MOBILE */
+/* ============================================================
+   SMALL PHONE HEIGHTS
+============================================================ */
 
-@media(max-width:520px){
+@media(max-width:480px){
 
   .popup{
-    padding:7px;
+    padding:6px;
   }
 
   .popup-card{
-    max-height:calc(100vh - 14px);
-    border-radius:19px;
+    max-height:calc(100dvh - 12px);
+    max-height:calc(100vh - 12px);
+    border-radius:18px;
   }
 
   .popup-header{
-    padding:10px 12px;
+    padding:9px 11px;
   }
 
   .popup-header-icon{
-    width:33px;
-    height:33px;
-    min-width:33px;
-    font-size:17px;
+    width:30px;
+    height:30px;
+    min-width:30px;
+    font-size:16px;
   }
 
   .popup-header h2{
@@ -652,86 +650,227 @@ select:focus{
   }
 
   .popup-x{
-    width:29px;
-    height:29px;
-    min-width:29px;
+    width:28px;
+    height:28px;
+    min-width:28px;
     font-size:18px;
   }
 
   .popup-visual{
-    padding:8px 12px 3px;
+    padding:6px 11px 2px;
   }
 
   .popup-sticker{
-    width:46px;
-    height:46px;
-    font-size:24px;
-    border-radius:15px;
+    width:42px;
+    height:42px;
+    border-radius:13px;
+    font-size:22px;
   }
 
   .popup-body{
-    padding:7px 12px 8px;
+    padding:6px 11px 8px;
   }
 
   .popup-section-title{
-    margin-bottom:6px;
-    font-size:12.5px;
+    margin-bottom:5px;
+    font-size:12px;
+  }
+
+  .popup-section-title span{
+    width:22px;
+    height:22px;
+    font-size:12px;
   }
 
   .popup-item{
-    padding:7px 8px;
     margin-bottom:5px;
-    gap:8px;
-    border-radius:11px;
+    padding:7px 8px;
+    border-radius:10px;
+    gap:7px;
   }
 
   .popup-item-icon{
-    width:27px;
-    height:27px;
-    min-width:27px;
+    width:26px;
+    height:26px;
+    min-width:26px;
     font-size:14px;
   }
 
   .popup-item-content{
-    font-size:10.5px;
-    line-height:1.3;
+    font-size:10.8px;
+    line-height:1.34;
   }
 
   .popup-item-content strong{
     font-size:11.5px;
+    margin-bottom:1px;
   }
 
   .popup-intro{
-    padding:8px;
-    font-size:10.5px;
-    line-height:1.3;
+    padding:8px 9px;
     margin-bottom:5px;
+    font-size:10.8px;
+    line-height:1.34;
   }
 
   .popup-warning{
-    padding:7px 8px;
-    gap:8px;
     margin-top:5px;
+    padding:8px 9px;
+    gap:7px;
   }
 
   .popup-warning-icon{
+    width:26px;
+    height:26px;
+    min-width:26px;
+    font-size:14px;
+  }
+
+  .popup-warning-content{
+    font-size:10.8px;
+    line-height:1.34;
+  }
+
+  .popup-close{
+    width:calc(100% - 22px);
+    margin:0 11px 9px;
+    padding:10px;
+    border-radius:10px;
+    font-size:12px;
+  }
+
+}
+
+
+/* ============================================================
+   VERY SHORT PHONE SCREENS
+============================================================ */
+
+@media(max-height:600px){
+
+  .popup-header{
+    padding:7px 10px;
+  }
+
+  .popup-header-icon{
     width:27px;
     height:27px;
     min-width:27px;
     font-size:14px;
   }
 
+  .popup-header h2{
+    font-size:14px;
+  }
+
+  .popup-x{
+    width:26px;
+    height:26px;
+    min-width:26px;
+    font-size:17px;
+  }
+
+  .popup-visual{
+    padding:4px 10px 1px;
+  }
+
+  .popup-sticker{
+    width:36px;
+    height:36px;
+    border-radius:11px;
+    font-size:19px;
+  }
+
+  .popup-body{
+    padding:4px 10px 6px;
+  }
+
+  .popup-section-title{
+    margin-bottom:4px;
+    font-size:11.5px;
+  }
+
+  .popup-item{
+    margin-bottom:4px;
+    padding:5px 7px;
+  }
+
+  .popup-item-icon{
+    width:23px;
+    height:23px;
+    min-width:23px;
+    font-size:12px;
+  }
+
+  .popup-item-content{
+    font-size:10px;
+    line-height:1.27;
+  }
+
+  .popup-item-content strong{
+    font-size:10.8px;
+  }
+
+  .popup-warning{
+    margin-top:4px;
+    padding:6px 7px;
+  }
+
+  .popup-warning-icon{
+    width:23px;
+    height:23px;
+    min-width:23px;
+    font-size:12px;
+  }
+
   .popup-warning-content{
-    font-size:10.5px;
-    line-height:1.3;
+    font-size:10px;
+    line-height:1.27;
   }
 
   .popup-close{
-    width:calc(100% - 24px);
-    margin:2px 12px 10px;
-    padding:11px;
-    border-radius:11px;
-    font-size:12.5px;
+    padding:8px;
+    margin-bottom:7px;
+    font-size:11.5px;
+  }
+
+}
+
+
+.menu{
+  position:fixed;
+  top:65px;
+  right:12px;
+  width:240px;
+  background:#fff;
+  border-radius:13px;
+  box-shadow:0 8px 30px rgba(0,0,0,.18);
+  z-index:500;
+  padding:8px;
+}
+
+.menu-item{
+  padding:13px;
+  border-radius:9px;
+  cursor:pointer;
+}
+
+.menu-item:hover{
+  background:#f2f2f2;
+}
+
+.menu-close{
+  color:#b00020;
+}
+
+@media(max-width:520px){
+
+  .server-grid{
+    grid-template-columns:1fr;
+  }
+
+  header h1{
+    font-size:17px;
   }
 
 }
@@ -1322,15 +1461,14 @@ const supabaseClient =
    API (UPDATED WITH AUTO-REFRESH)
 ============================================================ */
 
-  const FUNCTION_URL =
+const FUNCTION_URL =
   `${SUPABASE_URL}/functions/v1/numpool-api`;
-  
+
 async function api(
   action,
   payload = {}
 ){
 
-  // 1. Get current session
   let {
     data: sessionData
   } =
@@ -1338,17 +1476,16 @@ async function api(
 
   let session = sessionData?.session;
 
-  // 2. If session is missing or expired, attempt to refresh it
   if (!session) {
-    const { data: refreshedData, error: refreshError } = 
+    const { data: refreshedData, error: refreshError } =
       await supabaseClient.auth.refreshSession();
-    
+
     if (refreshError || !refreshedData?.session) {
       alert("Your session has expired. Please log in again.");
-      window.location.href = "login.html"; // Redirect to your login page if unauthenticated
+      window.location.href = "login.html";
       throw new Error("Please log in again.");
     }
-    
+
     session = refreshedData.session;
   }
 
@@ -2386,7 +2523,6 @@ function selectServer(
       server.stock
     );
 
-  // Never allow invalid prices.
   if(
     !Number.isFinite(
       price
@@ -2540,21 +2676,13 @@ async function buyNumber(){
       data.message ||
       "Number successfully purchased.";
 
-    /*
-      SHOW PORTAL NOTICE IMMEDIATELY
-      AFTER SUCCESSFUL PURCHASE.
-
-      This happens before the order/wallet/server
-      refreshes so the customer cannot interact
-      with or copy the purchased number first.
-    */
+    /* SHOW PORTAL NOTICE IMMEDIATELY AFTER SUCCESSFUL PURCHASE */
     showPortalNotice();
 
     await loadOrders();
 
     await loadWallet();
 
-    // Refresh live server stock/price.
     await loadServers();
 
   }catch(error){
@@ -2910,8 +3038,8 @@ async function cancelOrder(
       "currentOrder"
     );
 
-  // Preserve previous HTML in case cancellation fails
-  const previousHTML = current.innerHTML;
+  const previousHTML =
+    current.innerHTML;
 
   current.innerHTML = `
     <div class="loading">
@@ -2935,16 +3063,16 @@ async function cancelOrder(
       "Number cancelled."
     );
 
-    // Refresh order list and wallet balance
     await loadOrders();
     await loadWallet();
 
   }catch(error){
 
-    // Alert the exact error from the backend (e.g. provider delay or auth failure)
-    alert("Cancellation failed: " + error.message);
+    alert(
+      "Cancellation failed: " +
+      error.message
+    );
 
-    // Reload orders from the database to restore UI state without needing page refresh
     await loadOrders();
 
   }
@@ -3011,7 +3139,7 @@ async function loadWallet(){
 
 async function init(){
 
-  // Popup always appears on page load/refresh.
+  /* ALWAYS SHOW VERIFICATION POPUP ON EVERY PAGE LOAD/REFRESH */
   document
     .getElementById(
       "verificationPopup"
