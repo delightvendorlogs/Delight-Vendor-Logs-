@@ -94,6 +94,11 @@
       font-weight: 700;
     }
 
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
     .primary {
       background: #111;
       color: white;
@@ -102,6 +107,18 @@
     .secondary {
       background: #eee;
       color: #111;
+    }
+
+    .cancel-refund {
+      background: #b00020;
+      color: white;
+      margin-top: 12px;
+      width: 100%;
+      font-size: 14px;
+    }
+
+    .cancel-refund:hover {
+      background: #8d001a;
     }
 
     .danger {
@@ -240,6 +257,15 @@
       margin-bottom: 15px;
     }
 
+    .success-box {
+      background: #e8f7ed;
+      color: #146c32;
+      padding: 13px;
+      border-radius: 9px;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+
     .user-list {
       margin-top: 15px;
     }
@@ -343,11 +369,13 @@
 
     <!-- SEARCH -->
     <section class="card">
+
       <h2>View Customer</h2>
 
       <div id="mainError"></div>
 
       <div class="search-row">
+
         <input
           id="userSearch"
           type="text"
@@ -358,10 +386,13 @@
         <button class="primary" onclick="searchUsers()">
           Search
         </button>
+
       </div>
 
       <div id="userList" class="user-list"></div>
+
     </section>
+
 
     <!-- USER INFORMATION -->
     <section id="userSection" class="card hidden">
@@ -393,6 +424,7 @@
       </div>
 
     </section>
+
 
     <!-- CUSTOMER DATA -->
     <section id="dataSection" class="card hidden">
@@ -433,16 +465,22 @@
 
       </div>
 
+
       <!-- VIRTUAL NUMBERS -->
       <div id="virtualTab">
 
         <h2>All Countries Number</h2>
 
+        <div id="virtualMessage"></div>
+
         <div id="virtualOrders">
-          <div class="loading">Loading...</div>
+          <div class="loading">
+            Loading...
+          </div>
         </div>
 
       </div>
+
 
       <!-- TRANSACTIONS -->
       <div id="transactionsTab" class="hidden">
@@ -450,7 +488,9 @@
         <h2>Transactions</h2>
 
         <div class="table-wrap">
+
           <table>
+
             <thead>
               <tr>
                 <th>Date</th>
@@ -462,10 +502,13 @@
             </thead>
 
             <tbody id="transactionsBody"></tbody>
+
           </table>
+
         </div>
 
       </div>
+
 
       <!-- PURCHASES -->
       <div id="purchasesTab" class="hidden">
@@ -473,7 +516,9 @@
         <h2>Normal Purchases</h2>
 
         <div class="table-wrap">
+
           <table>
+
             <thead>
               <tr>
                 <th>Date</th>
@@ -485,10 +530,13 @@
             </thead>
 
             <tbody id="purchasesBody"></tbody>
+
           </table>
+
         </div>
 
       </div>
+
 
       <!-- PENDING -->
       <div id="pendingTab" class="hidden">
@@ -496,7 +544,9 @@
         <h2>Pending Orders</h2>
 
         <div class="table-wrap">
+
           <table>
+
             <thead>
               <tr>
                 <th>Date</th>
@@ -507,7 +557,9 @@
             </thead>
 
             <tbody id="pendingBody"></tbody>
+
           </table>
+
         </div>
 
       </div>
@@ -516,16 +568,21 @@
 
   </main>
 
+
 <script>
-  const SUPABASE_URL = "https://hkfhehbhmucymusaytoe.supabase.co";
+
+  const SUPABASE_URL =
+    "https://hkfhehbhmucymusaytoe.supabase.co";
 
   const SUPABASE_ANON_KEY =
     "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
-  const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
 
   let selectedUserId = null;
   let allUsers = [];
@@ -533,43 +590,55 @@
 
 
   /*
-    ==========================================
-    PAGE START
-    ==========================================
+  ==========================================
+  PAGE START
+  ==========================================
   */
 
-  document.addEventListener("DOMContentLoaded", async () => {
-    await checkAdminAccess();
+  document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
 
-    document
-      .getElementById("userSearch")
-      .addEventListener("keydown", function(event) {
-        if (event.key === "Enter") {
-          searchUsers();
-        }
-      });
+      await checkAdminAccess();
 
-    /*
-      If opened like:
+      document
+        .getElementById("userSearch")
+        .addEventListener(
+          "keydown",
+          function(event) {
 
-      view-user.html?user=USER_UUID
+            if (event.key === "Enter") {
+              searchUsers();
+            }
 
-      automatically load that customer.
-    */
+          }
+        );
 
-    const params = new URLSearchParams(window.location.search);
-    const userIdFromUrl = params.get("user");
 
-    if (userIdFromUrl) {
-      await loadSelectedUser(userIdFromUrl);
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+      const userIdFromUrl =
+        params.get("user");
+
+      if (userIdFromUrl) {
+
+        await loadSelectedUser(
+          userIdFromUrl
+        );
+
+      }
+
     }
-  });
+  );
 
 
   /*
-    ==========================================
-    ADMIN SECURITY
-    ==========================================
+  ==========================================
+  ADMIN SECURITY
+  ==========================================
   */
 
   async function checkAdminAccess() {
@@ -580,833 +649,1696 @@
         data: {
           session
         }
-      } = await supabaseClient.auth.getSession();
+      } =
+        await supabaseClient.auth.getSession();
+
 
       if (!session) {
-        window.location.href = "login.html";
+
+        window.location.href =
+          "login.html";
+
         return;
+
       }
+
 
       const {
         data,
         error
-      } = await supabaseClient.rpc("is_admin");
+      } =
+        await supabaseClient.rpc(
+          "is_admin"
+        );
+
 
       if (error) {
         throw error;
       }
 
+
       if (!data) {
+
         document.body.innerHTML = `
+
           <div style="
             padding:40px;
             text-align:center;
             font-family:Arial;
           ">
+
             <h2>Access Denied</h2>
-            <p>Admin access is required.</p>
+
+            <p>
+              Admin access is required.
+            </p>
+
           </div>
+
         `;
 
         return;
+
       }
 
-      /*
-        Load customer list after admin verification.
-      */
+
       await loadUsers();
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
       console.error(error);
 
       document.body.innerHTML = `
+
         <div style="
           padding:40px;
           text-align:center;
           font-family:Arial;
         ">
+
           <h2>Access Denied</h2>
-          <p>${escapeHtml(error.message || "Unable to verify admin access.")}</p>
+
+          <p>
+            ${escapeHtml(
+              error.message ||
+              "Unable to verify admin access."
+            )}
+          </p>
+
         </div>
+
       `;
+
     }
+
   }
 
 
   /*
-    ==========================================
-    LOAD CUSTOMERS
-    ==========================================
+  ==========================================
+  LOAD CUSTOMERS
+  ==========================================
   */
 
   async function loadUsers() {
 
-    const list = document.getElementById("userList");
+    const list =
+      document.getElementById(
+        "userList"
+      );
+
 
     list.innerHTML = `
+
       <div class="loading">
         Loading customers...
       </div>
+
     `;
+
 
     const {
       data,
       error
-    } = await supabaseClient.rpc("admin_list_wallet_users");
+    } =
+      await supabaseClient.rpc(
+        "admin_list_wallet_users"
+      );
+
 
     if (error) {
+
       console.error(error);
 
       list.innerHTML = `
+
         <div class="error">
-          ${escapeHtml(error.message)}
+          ${escapeHtml(
+            error.message
+          )}
         </div>
+
       `;
 
       return;
+
     }
 
-    allUsers = data || [];
 
-    renderUsers(allUsers);
+    allUsers =
+      data || [];
+
+    renderUsers(
+      allUsers
+    );
+
   }
 
 
   /*
-    ==========================================
-    SEARCH CUSTOMERS
-    ==========================================
+  ==========================================
+  SEARCH CUSTOMERS
+  ==========================================
   */
 
   function searchUsers() {
 
     const search =
       document
-        .getElementById("userSearch")
+        .getElementById(
+          "userSearch"
+        )
         .value
         .trim()
         .toLowerCase();
 
+
     if (!search) {
-      renderUsers(allUsers);
+
+      renderUsers(
+        allUsers
+      );
+
       return;
+
     }
 
-    const filtered = allUsers.filter(user => {
 
-      const email =
-        String(user.email || "").toLowerCase();
+    const filtered =
+      allUsers.filter(
+        user => {
 
-      const name =
-        String(user.full_name || "").toLowerCase();
+          const email =
+            String(
+              user.email || ""
+            ).toLowerCase();
 
-      const id =
-        String(user.user_id || "").toLowerCase();
+          const name =
+            String(
+              user.full_name || ""
+            ).toLowerCase();
 
-      return (
-        email.includes(search) ||
-        name.includes(search) ||
-        id.includes(search)
+          const id =
+            String(
+              user.user_id || ""
+            ).toLowerCase();
+
+
+          return (
+            email.includes(search) ||
+            name.includes(search) ||
+            id.includes(search)
+          );
+
+        }
       );
-    });
 
-    renderUsers(filtered);
+
+    renderUsers(
+      filtered
+    );
+
   }
 
 
   function renderUsers(users) {
 
-    const list = document.getElementById("userList");
+    const list =
+      document.getElementById(
+        "userList"
+      );
 
-    if (!users || users.length === 0) {
+
+    if (
+      !users ||
+      users.length === 0
+    ) {
 
       list.innerHTML = `
+
         <div class="empty">
           No customer found.
         </div>
+
       `;
 
       return;
+
     }
 
-    list.innerHTML = users.map(user => `
-      <div
-        class="user-item"
-        onclick="loadSelectedUser('${escapeJs(user.user_id)}')"
-      >
-        <strong>
-          ${escapeHtml(user.full_name || "No name")}
-        </strong>
 
-        <small>
-          ${escapeHtml(user.email || "No email")}
-        </small>
+    list.innerHTML =
+      users.map(
+        user => `
 
-        <small>
-          Wallet: ₦${Number(user.balance || 0).toLocaleString()}
-        </small>
-      </div>
-    `).join("");
+          <div
+            class="user-item"
+            onclick="loadSelectedUser('${escapeJs(user.user_id)}')"
+          >
+
+            <strong>
+              ${escapeHtml(
+                user.full_name ||
+                "No name"
+              )}
+            </strong>
+
+            <small>
+              ${escapeHtml(
+                user.email ||
+                "No email"
+              )}
+            </small>
+
+            <small>
+              Wallet:
+              ₦${Number(
+                user.balance || 0
+              ).toLocaleString()}
+            </small>
+
+          </div>
+
+        `
+      ).join("");
+
   }
 
 
   /*
-    ==========================================
-    LOAD SELECTED CUSTOMER
-    ==========================================
+  ==========================================
+  LOAD SELECTED CUSTOMER
+  ==========================================
   */
 
-  async function loadSelectedUser(userId) {
+  async function loadSelectedUser(
+    userId
+  ) {
 
     if (!userId) return;
 
-    selectedUserId = userId;
+
+    selectedUserId =
+      userId;
+
 
     const user =
       allUsers.find(
-        item => String(item.user_id) === String(userId)
+        item =>
+          String(
+            item.user_id
+          ) === String(userId)
       );
 
-    document
-      .getElementById("userSection")
-      .classList.remove("hidden");
 
     document
-      .getElementById("dataSection")
-      .classList.remove("hidden");
+      .getElementById(
+        "userSection"
+      )
+      .classList.remove(
+        "hidden"
+      );
 
-    document.getElementById("userId").textContent =
+
+    document
+      .getElementById(
+        "dataSection"
+      )
+      .classList.remove(
+        "hidden"
+      );
+
+
+    document
+      .getElementById(
+        "userId"
+      )
+      .textContent =
       userId;
 
-    document.getElementById("userName").textContent =
-      user?.full_name || "No name";
 
-    document.getElementById("userEmail").textContent =
-      user?.email || "No email";
+    document
+      .getElementById(
+        "userName"
+      )
+      .textContent =
+      user?.full_name ||
+      "No name";
 
-    document.getElementById("walletBalance").textContent =
+
+    document
+      .getElementById(
+        "userEmail"
+      )
+      .textContent =
+      user?.email ||
+      "No email";
+
+
+    document
+      .getElementById(
+        "walletBalance"
+      )
+      .textContent =
       "₦" +
-      Number(user?.balance || 0).toLocaleString();
+      Number(
+        user?.balance || 0
+      ).toLocaleString();
 
-    /*
-      Put selected user into URL.
-      This does NOT log in as the customer.
-    */
 
     const newUrl =
       window.location.pathname +
       "?user=" +
-      encodeURIComponent(userId);
+      encodeURIComponent(
+        userId
+      );
 
-    window.history.replaceState({}, "", newUrl);
+
+    window.history.replaceState(
+      {},
+      "",
+      newUrl
+    );
+
 
     await loadAllCustomerData();
+
   }
 
 
   /*
-    ==========================================
-    LOAD EVERYTHING
-    ==========================================
+  ==========================================
+  LOAD EVERYTHING
+  ==========================================
   */
 
   async function loadAllCustomerData() {
 
     await Promise.all([
+
       loadVirtualOrders(),
+
       loadTransactions(),
+
       loadPurchases(),
+
       loadPending()
+
     ]);
+
   }
 
 
   /*
-    ==========================================
-    VIRTUAL NUMBER ORDERS
-    ==========================================
+  ==========================================
+  VIRTUAL NUMBER ORDERS
+  ==========================================
   */
 
   async function loadVirtualOrders() {
 
     const box =
-      document.getElementById("virtualOrders");
+      document.getElementById(
+        "virtualOrders"
+      );
 
-    box.innerHTML =
-      `<div class="loading">Loading virtual-number orders...</div>`;
+
+    document
+      .getElementById(
+        "virtualMessage"
+      )
+      .innerHTML = "";
+
+
+    box.innerHTML = `
+
+      <div class="loading">
+        Loading virtual-number orders...
+      </div>
+
+    `;
+
 
     const {
       data,
       error
-    } = await supabaseClient.rpc(
-      "admin_list_virtual_number_orders"
-    );
+    } =
+      await supabaseClient.rpc(
+        "admin_list_virtual_number_orders"
+      );
+
 
     if (error) {
 
       console.error(error);
 
       box.innerHTML = `
+
         <div class="error">
-          ${escapeHtml(error.message)}
+          ${escapeHtml(
+            error.message
+          )}
         </div>
+
       `;
 
       return;
+
     }
+
 
     const orders =
       (data || []).filter(
         order =>
-          String(order.user_id) ===
-          String(selectedUserId)
+          String(
+            order.user_id
+          ) ===
+          String(
+            selectedUserId
+          )
       );
 
-    if (orders.length === 0) {
+
+    if (
+      orders.length === 0
+    ) {
 
       box.innerHTML = `
+
         <div class="empty">
           This customer has no virtual-number orders.
         </div>
+
       `;
 
       return;
+
     }
 
+
     box.innerHTML =
-      orders.map(renderVirtualOrder).join("");
+      orders
+        .map(
+          renderVirtualOrder
+        )
+        .join("");
+
   }
 
 
-  function renderVirtualOrder(order) {
+  /*
+  ==========================================
+  RENDER VIRTUAL ORDER
+  ==========================================
+  */
+
+  function renderVirtualOrder(
+    order
+  ) {
 
     const status =
-      String(order.status || "unknown").toLowerCase();
+      String(
+        order.status ||
+        "unknown"
+      ).toLowerCase();
+
 
     const statusClass =
-      getStatusClass(status);
+      getStatusClass(
+        status
+      );
+
+
+    const price =
+      Number(
+        order.customer_price_ngn ||
+        0
+      );
+
 
     return `
+
       <div class="virtual-card">
 
         <div class="virtual-top">
 
           <div class="virtual-title">
+
             ${escapeHtml(
               order.service_name ||
               order.service_code ||
               "Virtual Number"
             )}
+
           </div>
 
+
           <span class="status ${statusClass}">
-            ${escapeHtml(order.status || "Unknown")}
+
+            ${escapeHtml(
+              order.status ||
+              "Unknown"
+            )}
+
           </span>
 
         </div>
 
+
         <div class="virtual-grid">
 
           <div class="virtual-field">
-            <small>Country</small>
-            ${escapeHtml(order.country_name || "—")}
-          </div>
 
-          <div class="virtual-field">
-            <small>Number</small>
-            ${escapeHtml(order.number || "—")}
-          </div>
+            <small>
+              Country
+            </small>
 
-          <div class="virtual-field">
-            <small>Customer Price</small>
-            ₦${Number(
-              order.customer_price_ngn || 0
-            ).toLocaleString()}
-          </div>
-
-          <div class="virtual-field">
-            <small>Provider Cost</small>
-            ₦${Number(
-              order.provider_cost_ngn || 0
-            ).toLocaleString()}
-          </div>
-
-          <div class="virtual-field">
-            <small>Provider Order ID</small>
             ${escapeHtml(
-              order.numpool_order_id || "—"
+              order.country_name ||
+              "—"
             )}
+
           </div>
 
+
           <div class="virtual-field">
-            <small>OTP Code</small>
+
+            <small>
+              Number
+            </small>
+
+            ${escapeHtml(
+              order.number ||
+              "—"
+            )}
+
+          </div>
+
+
+          <div class="virtual-field">
+
+            <small>
+              Customer Price
+            </small>
+
+            ₦${price.toLocaleString()}
+
+          </div>
+
+
+          <div class="virtual-field">
+
+            <small>
+              Provider Cost
+            </small>
+
+            ₦${Number(
+              order.provider_cost_ngn ||
+              0
+            ).toLocaleString()}
+
+          </div>
+
+
+          <div class="virtual-field">
+
+            <small>
+              Provider Order ID
+            </small>
+
+            ${escapeHtml(
+              order.numpool_order_id ||
+              "—"
+            )}
+
+          </div>
+
+
+          <div class="virtual-field">
+
+            <small>
+              OTP Code
+            </small>
+
             ${
               order.otp_code
-                ? escapeHtml(order.otp_code)
+                ? escapeHtml(
+                    order.otp_code
+                  )
                 : "Not received"
             }
+
           </div>
 
-          <div class="virtual-field">
-            <small>Purchased</small>
-            ${formatDate(order.purchased_at || order.created_at)}
-          </div>
 
           <div class="virtual-field">
-            <small>Code Received</small>
-            ${formatDate(order.code_received_at)}
+
+            <small>
+              Purchased
+            </small>
+
+            ${formatDate(
+              order.purchased_at ||
+              order.created_at
+            )}
+
           </div>
 
-          <div class="virtual-field">
-            <small>Cancelled</small>
-            ${formatDate(order.cancelled_at)}
-          </div>
 
           <div class="virtual-field">
-            <small>Refunded</small>
-            ${formatDate(order.refunded_at)}
+
+            <small>
+              Code Received
+            </small>
+
+            ${formatDate(
+              order.code_received_at
+            )}
+
+          </div>
+
+
+          <div class="virtual-field">
+
+            <small>
+              Cancelled
+            </small>
+
+            ${formatDate(
+              order.cancelled_at
+            )}
+
+          </div>
+
+
+          <div class="virtual-field">
+
+            <small>
+              Refunded
+            </small>
+
+            ${formatDate(
+              order.refunded_at
+            )}
+
           </div>
 
         </div>
 
+
         ${
           order.full_sms
             ? `
+
               <div class="sms-box">
-                <strong>Full SMS</strong>
+
+                <strong>
+                  Full SMS
+                </strong>
+
                 <br><br>
-                ${escapeHtml(order.full_sms)}
+
+                ${escapeHtml(
+                  order.full_sms
+                )}
+
               </div>
+
             `
             : ""
         }
 
+
         ${
           status === "waiting"
             ? `
-              <div class="warning" style="margin-top:12px;">
+
+              <div class="warning"
+                   style="margin-top:12px;">
+
                 ⚠️ This order is still waiting for OTP.
+
               </div>
+
+
+              <button
+                class="cancel-refund"
+                id="cancelRefund_${escapeJs(order.id)}"
+                onclick="cancelAndRefund('${escapeJs(order.id)}', ${price})"
+              >
+
+                🔴 Cancel Order & Refund ₦${price.toLocaleString()}
+
+              </button>
+
+            `
+            : ""
+        }
+
+
+        ${
+          status === "cancelled"
+            ? `
+
+              <div class="success-box"
+                   style="margin-top:12px;">
+
+                ✅ Order cancelled and refund processed.
+
+              </div>
+
             `
             : ""
         }
 
       </div>
+
     `;
+
   }
 
 
   /*
-    ==========================================
-    TRANSACTIONS
-    ==========================================
+  ==========================================
+  CANCEL + REFUND
+  ==========================================
+  */
+
+  async function cancelAndRefund(
+    orderId,
+    displayedAmount
+  ) {
+
+    if (!orderId) {
+
+      alert(
+        "Order ID is missing."
+      );
+
+      return;
+
+    }
+
+
+    const amount =
+      Number(
+        displayedAmount || 0
+      );
+
+
+    const confirmed =
+      confirm(
+        "Cancel this waiting virtual-number order and refund ₦" +
+        amount.toLocaleString() +
+        " to the customer wallet?\n\n" +
+        "The provider order has already been cancelled."
+      );
+
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    const button =
+      document.getElementById(
+        "cancelRefund_" +
+        orderId
+      );
+
+
+    if (button) {
+
+      button.disabled = true;
+
+      button.textContent =
+        "Processing refund...";
+
+    }
+
+
+    try {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.rpc(
+          "admin_cancel_virtual_number_and_refund",
+          {
+            p_order_id:
+              orderId
+          }
+        );
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      if (
+        !data ||
+        data.success !== true
+      ) {
+
+        throw new Error(
+          "The cancellation/refund was not completed."
+        );
+
+      }
+
+
+      alert(
+        "Success!\n\n" +
+        "Order cancelled.\n" +
+        "Refunded: ₦" +
+        Number(
+          data.refund_amount || amount
+        ).toLocaleString() +
+        "\n\n" +
+        "The customer's wallet has been refunded."
+      );
+
+
+      /*
+        Reload customer list first so
+        wallet balance updates.
+      */
+
+      await loadUsers();
+
+
+      /*
+        Reload selected customer's data.
+      */
+
+      await loadSelectedUser(
+        selectedUserId
+      );
+
+
+      /*
+        Keep us on All Countries Number.
+      */
+
+      showTab(
+        "virtual"
+      );
+
+    }
+
+    catch (error) {
+
+      console.error(
+        "Cancel/refund error:",
+        error
+      );
+
+
+      alert(
+        "Cancellation/refund failed:\n\n" +
+        (
+          error.message ||
+          "Unknown error"
+        )
+      );
+
+
+      if (button) {
+
+        button.disabled = false;
+
+        button.textContent =
+          "🔴 Cancel Order & Refund ₦" +
+          amount.toLocaleString();
+
+      }
+
+    }
+
+  }
+
+
+  /*
+  ==========================================
+  TRANSACTIONS
+  ==========================================
   */
 
   async function loadTransactions() {
 
     const body =
-      document.getElementById("transactionsBody");
+      document.getElementById(
+        "transactionsBody"
+      );
+
 
     body.innerHTML = `
+
       <tr>
-        <td colspan="5">Loading...</td>
+        <td colspan="5">
+          Loading...
+        </td>
       </tr>
+
     `;
+
 
     const {
       data,
       error
-    } = await supabaseClient
-      .from("transactions")
-      .select(
-        "id,user_id,type,amount,status,description,created_at"
-      )
-      .eq("user_id", selectedUserId)
-      .order("created_at", {
-        ascending: false
-      });
+    } =
+      await supabaseClient
+
+        .from("transactions")
+
+        .select(
+          "id,user_id,type,amount,status,description,created_at"
+        )
+
+        .eq(
+          "user_id",
+          selectedUserId
+        )
+
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
+
 
     if (error) {
 
       body.innerHTML = `
+
         <tr>
-          <td colspan="5" class="danger">
-            ${escapeHtml(error.message)}
+
+          <td
+            colspan="5"
+            class="danger"
+          >
+
+            ${escapeHtml(
+              error.message
+            )}
+
           </td>
+
         </tr>
+
       `;
 
       return;
+
     }
 
-    if (!data || data.length === 0) {
+
+    if (
+      !data ||
+      data.length === 0
+    ) {
 
       body.innerHTML = `
+
         <tr>
-          <td colspan="5" class="empty">
+
+          <td
+            colspan="5"
+            class="empty"
+          >
+
             No transactions found.
+
           </td>
+
         </tr>
+
       `;
 
       return;
+
     }
 
-    body.innerHTML = data.map(item => `
-      <tr>
 
-        <td>
-          ${formatDate(item.created_at)}
-        </td>
+    body.innerHTML =
+      data.map(
+        item => `
 
-        <td>
-          ${escapeHtml(item.type || "—")}
-        </td>
+          <tr>
 
-        <td>
-          ₦${Number(item.amount || 0).toLocaleString()}
-        </td>
+            <td>
+              ${formatDate(
+                item.created_at
+              )}
+            </td>
 
-        <td>
-          <span class="status ${getStatusClass(
-            item.status
-          )}">
-            ${escapeHtml(item.status || "—")}
-          </span>
-        </td>
 
-        <td>
-          ${escapeHtml(item.description || "—")}
-        </td>
+            <td>
+              ${escapeHtml(
+                item.type ||
+                "—"
+              )}
+            </td>
 
-      </tr>
-    `).join("");
+
+            <td>
+              ₦${Number(
+                item.amount ||
+                0
+              ).toLocaleString()}
+            </td>
+
+
+            <td>
+
+              <span
+                class="status ${getStatusClass(
+                  item.status
+                )}"
+              >
+
+                ${escapeHtml(
+                  item.status ||
+                  "—"
+                )}
+
+              </span>
+
+            </td>
+
+
+            <td>
+
+              ${escapeHtml(
+                item.description ||
+                "—"
+              )}
+
+            </td>
+
+          </tr>
+
+        `
+      ).join("");
+
   }
 
 
   /*
-    ==========================================
-    NORMAL PURCHASES
-    ==========================================
+  ==========================================
+  NORMAL PURCHASES
+  ==========================================
   */
 
   async function loadPurchases() {
 
     const body =
-      document.getElementById("purchasesBody");
+      document.getElementById(
+        "purchasesBody"
+      );
+
 
     body.innerHTML = `
+
       <tr>
-        <td colspan="5">Loading...</td>
+
+        <td colspan="5">
+          Loading...
+        </td>
+
       </tr>
+
     `;
+
 
     const {
       data,
       error
-    } = await supabaseClient
-      .from("purchases")
-      .select(
-        "id,product_id,product_name,amount,content,status,created_at"
-      )
-      .eq("user_id", selectedUserId)
-      .order("created_at", {
-        ascending: false
-      });
+    } =
+      await supabaseClient
+
+        .from("purchases")
+
+        .select(
+          "id,product_id,product_name,amount,content,status,created_at"
+        )
+
+        .eq(
+          "user_id",
+          selectedUserId
+        )
+
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
+
 
     if (error) {
 
       body.innerHTML = `
+
         <tr>
-          <td colspan="5" class="danger">
-            ${escapeHtml(error.message)}
+
+          <td
+            colspan="5"
+            class="danger"
+          >
+
+            ${escapeHtml(
+              error.message
+            )}
+
           </td>
+
         </tr>
+
       `;
 
       return;
+
     }
 
-    if (!data || data.length === 0) {
+
+    if (
+      !data ||
+      data.length === 0
+    ) {
 
       body.innerHTML = `
+
         <tr>
-          <td colspan="5" class="empty">
+
+          <td
+            colspan="5"
+            class="empty"
+          >
+
             No normal purchases found.
+
           </td>
+
         </tr>
+
       `;
 
       return;
+
     }
 
-    body.innerHTML = data.map(item => `
-      <tr>
 
-        <td>
-          ${formatDate(item.created_at)}
-        </td>
+    body.innerHTML =
+      data.map(
+        item => `
 
-        <td>
-          ${escapeHtml(item.product_name || "—")}
-        </td>
+          <tr>
 
-        <td>
-          ₦${Number(item.amount || 0).toLocaleString()}
-        </td>
+            <td>
+              ${formatDate(
+                item.created_at
+              )}
+            </td>
 
-        <td>
-          <span class="status ${getStatusClass(
-            item.status
-          )}">
-            ${escapeHtml(item.status || "—")}
-          </span>
-        </td>
 
-        <td style="max-width:300px;word-break:break-word;">
-          ${escapeHtml(item.content || "—")}
-        </td>
+            <td>
+              ${escapeHtml(
+                item.product_name ||
+                "—"
+              )}
+            </td>
 
-      </tr>
-    `).join("");
+
+            <td>
+              ₦${Number(
+                item.amount ||
+                0
+              ).toLocaleString()}
+            </td>
+
+
+            <td>
+
+              <span
+                class="status ${getStatusClass(
+                  item.status
+                )}"
+              >
+
+                ${escapeHtml(
+                  item.status ||
+                  "—"
+                )}
+
+              </span>
+
+            </td>
+
+
+            <td
+              style="
+                max-width:300px;
+                word-break:break-word;
+              "
+            >
+
+              ${escapeHtml(
+                item.content ||
+                "—"
+              )}
+
+            </td>
+
+          </tr>
+
+        `
+      ).join("");
+
   }
 
 
   /*
-    ==========================================
-    PENDING ORDERS
-    ==========================================
+  ==========================================
+  PENDING ORDERS
+  ==========================================
   */
 
   async function loadPending() {
 
     const body =
-      document.getElementById("pendingBody");
+      document.getElementById(
+        "pendingBody"
+      );
+
 
     body.innerHTML = `
+
       <tr>
-        <td colspan="4">Loading...</td>
+
+        <td colspan="4">
+          Loading...
+        </td>
+
       </tr>
+
     `;
+
 
     const {
       data,
       error
-    } = await supabaseClient
-      .from("pending_orders")
-      .select(
-        "id,product_id,product_name,amount,status,created_at"
-      )
-      .eq("user_id", selectedUserId)
-      .order("created_at", {
-        ascending: false
-      });
+    } =
+      await supabaseClient
+
+        .from("pending_orders")
+
+        .select(
+          "id,product_id,product_name,amount,status,created_at"
+        )
+
+        .eq(
+          "user_id",
+          selectedUserId
+        )
+
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
+
 
     if (error) {
 
       body.innerHTML = `
+
         <tr>
-          <td colspan="4" class="danger">
-            ${escapeHtml(error.message)}
+
+          <td
+            colspan="4"
+            class="danger"
+          >
+
+            ${escapeHtml(
+              error.message
+            )}
+
           </td>
+
         </tr>
+
       `;
 
       return;
+
     }
 
-    if (!data || data.length === 0) {
+
+    if (
+      !data ||
+      data.length === 0
+    ) {
 
       body.innerHTML = `
+
         <tr>
-          <td colspan="4" class="empty">
+
+          <td
+            colspan="4"
+            class="empty"
+          >
+
             No pending orders found.
+
           </td>
+
         </tr>
+
       `;
 
       return;
+
     }
 
-    body.innerHTML = data.map(item => `
-      <tr>
 
-        <td>
-          ${formatDate(item.created_at)}
-        </td>
+    body.innerHTML =
+      data.map(
+        item => `
 
-        <td>
-          ${escapeHtml(item.product_name || "—")}
-        </td>
+          <tr>
 
-        <td>
-          ₦${Number(item.amount || 0).toLocaleString()}
-        </td>
+            <td>
+              ${formatDate(
+                item.created_at
+              )}
+            </td>
 
-        <td>
-          <span class="status ${getStatusClass(
-            item.status
-          )}">
-            ${escapeHtml(item.status || "—")}
-          </span>
-        </td>
 
-      </tr>
-    `).join("");
+            <td>
+              ${escapeHtml(
+                item.product_name ||
+                "—"
+              )}
+            </td>
+
+
+            <td>
+              ₦${Number(
+                item.amount ||
+                0
+              ).toLocaleString()}
+            </td>
+
+
+            <td>
+
+              <span
+                class="status ${getStatusClass(
+                  item.status
+                )}"
+              >
+
+                ${escapeHtml(
+                  item.status ||
+                  "—"
+                )}
+
+              </span>
+
+            </td>
+
+          </tr>
+
+        `
+      ).join("");
+
   }
 
 
   /*
-    ==========================================
-    TABS
-    ==========================================
+  ==========================================
+  TABS
+  ==========================================
   */
 
-  function showTab(tab) {
+  function showTab(
+    tab
+  ) {
 
-    currentTab = tab;
+    currentTab =
+      tab;
+
 
     document
-      .getElementById("virtualTab")
+      .getElementById(
+        "virtualTab"
+      )
       .classList.toggle(
         "hidden",
         tab !== "virtual"
       );
 
+
     document
-      .getElementById("transactionsTab")
+      .getElementById(
+        "transactionsTab"
+      )
       .classList.toggle(
         "hidden",
         tab !== "transactions"
       );
 
+
     document
-      .getElementById("purchasesTab")
+      .getElementById(
+        "purchasesTab"
+      )
       .classList.toggle(
         "hidden",
         tab !== "purchases"
       );
 
+
     document
-      .getElementById("pendingTab")
+      .getElementById(
+        "pendingTab"
+      )
       .classList.toggle(
         "hidden",
         tab !== "pending"
       );
 
+
     document
-      .getElementById("tabVirtual")
+      .getElementById(
+        "tabVirtual"
+      )
       .classList.toggle(
         "active",
         tab === "virtual"
       );
 
+
     document
-      .getElementById("tabTransactions")
+      .getElementById(
+        "tabTransactions"
+      )
       .classList.toggle(
         "active",
         tab === "transactions"
       );
 
+
     document
-      .getElementById("tabPurchases")
+      .getElementById(
+        "tabPurchases"
+      )
       .classList.toggle(
         "active",
         tab === "purchases"
       );
 
+
     document
-      .getElementById("tabPending")
+      .getElementById(
+        "tabPending"
+      )
       .classList.toggle(
         "active",
         tab === "pending"
       );
+
   }
 
 
   /*
-    ==========================================
-    HELPERS
-    ==========================================
+  ==========================================
+  HELPERS
+  ==========================================
   */
 
-  function formatDate(value) {
+  function formatDate(
+    value
+  ) {
 
-    if (!value) return "—";
-
-    const date = new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
+    if (!value) {
       return "—";
     }
 
+
+    const date =
+      new Date(value);
+
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+
+      return "—";
+
+    }
+
+
     return date.toLocaleString();
+
   }
 
 
-  function getStatusClass(status) {
+  function getStatusClass(
+    status
+  ) {
 
     const value =
-      String(status || "").toLowerCase();
+      String(
+        status || ""
+      ).toLowerCase();
+
 
     if (
       value === "waiting"
     ) {
+
       return "status-waiting";
+
     }
+
 
     if (
       value === "pending"
     ) {
+
       return "status-pending";
+
     }
+
 
     if (
       value === "received" ||
       value === "completed"
     ) {
+
       return "status-completed";
+
     }
+
 
     if (
       value === "cancelled" ||
       value === "refunded" ||
       value === "failed"
     ) {
+
       return "status-cancelled";
+
     }
 
+
     return "status-other";
+
   }
 
 
-  function escapeHtml(value) {
+  function escapeHtml(
+    value
+  ) {
 
-    return String(value ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+    return String(
+      value ?? ""
+    )
+
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+
+      .replace(
+        /</g,
+        "&lt;"
+      )
+
+      .replace(
+        />/g,
+        "&gt;"
+      )
+
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+
+      .replace(
+        /'/g,
+        "&#039;"
+      );
+
   }
 
 
-  function escapeJs(value) {
+  function escapeJs(
+    value
+  ) {
 
-    return String(value ?? "")
-      .replace(/\\/g, "\\\\")
-      .replace(/'/g, "\\'");
+    return String(
+      value ?? ""
+    )
+
+      .replace(
+        /\\/g,
+        "\\\\"
+      )
+
+      .replace(
+        /'/g,
+        "\\'"
+      );
+
   }
 
 
   function goBack() {
 
     if (document.referrer) {
+
       history.back();
-    } else {
-      window.location.href = "admin.html";
+
     }
+
+    else {
+
+      window.location.href =
+        "admin.html";
+
+    }
+
   }
 
 </script>
