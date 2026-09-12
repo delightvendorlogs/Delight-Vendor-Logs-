@@ -358,54 +358,299 @@ select:focus{
   color:#777;
 }
 
+
+/* ============================================================
+   BEAUTIFUL POPUP DESIGN
+============================================================ */
+
 .popup{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.72);
+  background:rgba(0,0,0,.68);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
   display:flex;
   align-items:center;
   justify-content:center;
   padding:15px;
   z-index:9999;
+  animation:popupFade .22s ease;
+}
+
+@keyframes popupFade{
+  from{
+    opacity:0;
+  }
+  to{
+    opacity:1;
+  }
 }
 
 .popup-card{
   width:100%;
   max-width:500px;
   background:#fff;
-  border-radius:17px;
-  padding:20px;
+  border-radius:24px;
+  padding:0;
   max-height:90vh;
   overflow:auto;
+  box-shadow:0 25px 70px rgba(0,0,0,.30);
+  animation:popupSlide .25s ease;
 }
 
-.popup-card h2{
-  margin-top:0;
+@keyframes popupSlide{
+  from{
+    transform:translateY(18px) scale(.97);
+    opacity:0;
+  }
+  to{
+    transform:translateY(0) scale(1);
+    opacity:1;
+  }
+}
+
+.popup-header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:18px 20px;
+  border-bottom:1px solid #eeeeee;
+}
+
+.popup-header-icon{
+  width:42px;
+  height:42px;
+  min-width:42px;
+  border-radius:13px;
+  background:#f1f3f5;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:21px;
+}
+
+.popup-header h2{
+  margin:0;
+  flex:1;
+  font-size:19px;
+  font-weight:800;
+  color:#111827;
+}
+
+.popup-x{
+  width:36px;
+  height:36px;
+  min-width:36px;
+  border:0;
+  border-radius:50%;
+  background:#f3f4f6;
+  color:#555;
+  font-size:21px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.popup-x:hover{
+  background:#e5e7eb;
+}
+
+.popup-visual{
+  padding:22px 20px 10px;
+  text-align:center;
+}
+
+.popup-sticker{
+  width:74px;
+  height:74px;
+  margin:0 auto;
+  border-radius:23px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:37px;
+  background:linear-gradient(
+    135deg,
+    #eef2ff,
+    #f5f3ff
+  );
+  box-shadow:
+    0 8px 25px rgba(79,70,229,.13);
+}
+
+.popup-body{
+  padding:16px 20px 20px;
+}
+
+.popup-section-title{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin-bottom:12px;
+  font-size:15px;
+  font-weight:800;
+  color:#171717;
+}
+
+.popup-section-title span{
+  width:30px;
+  height:30px;
+  border-radius:9px;
+  background:#f1f5f9;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
 .popup-item{
-  margin-top:13px;
-  padding:12px;
-  background:#f5f5f5;
-  border-radius:10px;
+  margin:0 0 10px;
+  padding:14px;
+  background:#f7f8fa;
+  border:1px solid #eceef1;
+  border-radius:15px;
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
 }
 
-.popup-item strong{
+.popup-item:last-child{
+  margin-bottom:0;
+}
+
+.popup-item-icon{
+  width:38px;
+  height:38px;
+  min-width:38px;
+  border-radius:11px;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:19px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+.popup-item-content{
+  flex:1;
+  font-size:13.5px;
+  line-height:1.55;
+  color:#555;
+}
+
+.popup-item-content strong{
   display:block;
-  margin-bottom:5px;
+  margin-bottom:3px;
+  color:#171717;
+  font-size:14px;
+}
+
+.popup-intro{
+  margin-bottom:13px;
+  padding:15px;
+  border-radius:16px;
+  background:#f5f7ff;
+  border:1px solid #e4e8ff;
+  color:#40445a;
+  font-size:13.5px;
+  line-height:1.55;
+}
+
+.popup-warning{
+  margin-top:14px;
+  padding:15px;
+  border-radius:16px;
+  background:#fff8df;
+  border:1px solid #f4df91;
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+}
+
+.popup-warning-icon{
+  width:38px;
+  height:38px;
+  min-width:38px;
+  border-radius:11px;
+  background:#ffeaa7;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+}
+
+.popup-warning-content{
+  font-size:13.5px;
+  line-height:1.55;
+  color:#5d4a12;
+}
+
+.popup-warning-content strong{
+  display:block;
+  color:#3f3207;
+  margin-bottom:4px;
 }
 
 .popup-close{
-  width:100%;
-  margin-top:15px;
+  width:calc(100% - 40px);
+  margin:0 20px 20px;
   border:0;
-  background:#111;
+  background:#111827;
   color:#fff;
-  padding:14px;
-  border-radius:10px;
-  font-weight:bold;
+  padding:15px;
+  border-radius:15px;
+  font-size:14px;
+  font-weight:800;
   cursor:pointer;
+  box-shadow:0 8px 20px rgba(17,24,39,.18);
+  transition:.2s;
 }
+
+.popup-close:hover{
+  transform:translateY(-1px);
+  background:#000;
+}
+
+.popup-close:active{
+  transform:scale(.98);
+}
+
+@media(max-width:480px){
+
+  .popup{
+    padding:12px;
+  }
+
+  .popup-card{
+    max-height:92vh;
+    border-radius:22px;
+  }
+
+  .popup-header{
+    padding:16px;
+  }
+
+  .popup-header h2{
+    font-size:17px;
+  }
+
+  .popup-body{
+    padding:16px;
+  }
+
+  .popup-item{
+    padding:12px;
+  }
+
+  .popup-close{
+    width:calc(100% - 32px);
+    margin-left:16px;
+    margin-right:16px;
+    margin-bottom:16px;
+  }
+
+}
+
 
 .menu{
   position:fixed;
@@ -755,9 +1000,53 @@ Loading orders...
 
 <div class="popup-card">
 
+<div class="popup-header">
+
+<div class="popup-header-icon">
+📢
+</div>
+
 <h2>Important Verification</h2>
 
+<button
+  class="popup-x"
+  onclick="closeVerificationPopup()"
+>
+×
+</button>
+
+</div>
+
+
+<div class="popup-visual">
+
+<div class="popup-sticker">
+🛡️
+</div>
+
+</div>
+
+
+<div class="popup-body">
+
+<div class="popup-section-title">
+
+<span>
+✨
+</span>
+
+Best Practices for Success
+
+</div>
+
+
 <div class="popup-item">
+
+<div class="popup-item-icon">
+🔄
+</div>
+
+<div class="popup-item-content">
 
 <strong>Fresh Installation</strong>
 
@@ -765,7 +1054,16 @@ Uninstall the app and clear its cache before requesting a new number.
 
 </div>
 
+</div>
+
+
 <div class="popup-item">
+
+<div class="popup-item-icon">
+📱
+</div>
+
+<div class="popup-item-content">
 
 <strong>Official Apps Only</strong>
 
@@ -773,7 +1071,16 @@ Use the standard official app version. Modified versions often fail verification
 
 </div>
 
+</div>
+
+
 <div class="popup-item">
+
+<div class="popup-item-icon">
+🌐
+</div>
+
+<div class="popup-item-content">
 
 <strong>Location Match</strong>
 
@@ -781,7 +1088,16 @@ Keep your device settings and connection consistent with the selected country wh
 
 </div>
 
+</div>
+
+
 <div class="popup-item">
+
+<div class="popup-item-icon">
+📶
+</div>
+
+<div class="popup-item-content">
 
 <strong>Stay Connected</strong>
 
@@ -789,13 +1105,27 @@ Keep the app open and maintain a stable connection.
 
 </div>
 
-<div class="popup-item">
+</div>
+
+
+<div class="popup-warning">
+
+<div class="popup-warning-icon">
+💡
+</div>
+
+<div class="popup-warning-content">
 
 <strong>Provider Tip</strong>
 
 If a server does not receive a code, please try another server. Each server shows its availability. Cancel when cancellation is available to receive your refund.
 
 </div>
+
+</div>
+
+</div>
+
 
 <button
   class="popup-close"
@@ -819,17 +1149,53 @@ I Understand
 
 <div class="popup-card">
 
-<h2>⚠️ PORTAL NOTICE</h2>
+<div class="popup-header">
 
-<div class="popup-item">
+<div class="popup-header-icon">
+⚠️
+</div>
+
+<h2>PORTAL NOTICE</h2>
+
+<button
+  class="popup-x"
+  onclick="closePortalNotice()"
+>
+×
+</button>
+
+</div>
+
+
+<div class="popup-visual">
+
+<div class="popup-sticker">
+🔐
+</div>
+
+</div>
+
+
+<div class="popup-body">
+
+<div class="popup-intro">
 
 If your purchased number does not receive a verification code:
+
+<br><br>
 
 Turn on a VPN and connect to the same country as the number you purchased.
 
 </div>
 
+
 <div class="popup-item">
+
+<div class="popup-item-icon">
+🇺🇸
+</div>
+
+<div class="popup-item-content">
 
 <strong>Example:</strong>
 
@@ -837,7 +1203,16 @@ If you purchased a 🇺🇸 USA number, connect your VPN to the United States. Y
 
 </div>
 
+</div>
+
+
 <div class="popup-item">
+
+<div class="popup-item-icon">
+🔄
+</div>
+
+<div class="popup-item-content">
 
 <strong>If the code still does not arrive:</strong>
 
@@ -845,13 +1220,27 @@ Uninstall and reinstall the app you are trying to register, then try the verific
 
 </div>
 
-<div class="popup-item">
+</div>
+
+
+<div class="popup-warning">
+
+<div class="popup-warning-icon">
+📍
+</div>
+
+<div class="popup-warning-content">
 
 <strong>Please make sure:</strong>
 
 Please make sure your VPN country matches the country of your purchased number.
 
 </div>
+
+</div>
+
+</div>
+
 
 <button
   class="popup-close"
@@ -2105,15 +2494,22 @@ async function buyNumber(){
       data.message ||
       "Number successfully purchased.";
 
+    /*
+      SHOW PORTAL NOTICE IMMEDIATELY
+      AFTER SUCCESSFUL PURCHASE.
+
+      This happens before the order/wallet/server
+      refreshes so the customer cannot interact
+      with or copy the purchased number first.
+    */
+    showPortalNotice();
+
     await loadOrders();
 
     await loadWallet();
 
     // Refresh live server stock/price.
     await loadServers();
-
-    // Show Portal Notice only after successful purchase.
-    showPortalNotice();
 
   }catch(error){
 
@@ -2445,6 +2841,7 @@ async function checkOrder(
   }
 
 }
+
 
 /* ============================================================
    CANCEL ORDER
