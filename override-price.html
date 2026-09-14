@@ -296,46 +296,19 @@ let editingId = null;
 /* =========================
    AUTH
 ========================= */
-
 async function checkAdmin() {
 
   try {
 
     const {
       data: { session },
-      error: sessionError
+      error
     } = await supabase.auth.getSession();
 
-    if (sessionError || !session) {
+    if (error || !session) {
 
       showAccessDenied(
         "Please login first."
-      );
-
-      return false;
-    }
-
-    /*
-      We still keep the frontend admin check
-      for quick protection.
-
-      The backend also performs its own admin
-      authorization, so the browser cannot bypass it.
-    */
-
-    const {
-      data,
-      error
-    } = await supabase
-      .from("admin_users")
-      .select("user_id")
-      .eq("user_id", session.user.id)
-      .maybeSingle();
-
-    if (error || !data) {
-
-      showAccessDenied(
-        "You are not authorized to use this page."
       );
 
       return false;
@@ -345,10 +318,13 @@ async function checkAdmin() {
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "checkAdmin:",
+      error
+    );
 
     showAccessDenied(
-      "Unable to verify administrator access."
+      "Unable to verify login session."
     );
 
     return false;
