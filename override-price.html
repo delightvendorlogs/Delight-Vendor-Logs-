@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Markup Manager — Delight Vendor Logs</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #111;
+    }
+
+    .header {
+      background: #111;
+      color: #fff;
+      padding: 18px 20px;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 25px auto;
+      padding: 0 16px 40px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 15px rgba(0,0,0,.07);
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    select,
+    input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #d5d9dd;
+      border-radius: 9px;
+      font-size: 15px;
+      background: #fff;
+    }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 12px 18px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .save-btn {
+      background: #111;
+      color: #fff;
+      width: 100%;
+      font-size: 16px;
+    }
+
+    .save-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .cancel-btn {
+      background: #ddd;
+      color: #111;
+      margin-top: 10px;
+      width: 100%;
+      display: none;
+    }
+
+    .status {
+      margin-top: 12px;
+      padding: 11px;
+      border-radius: 8px;
+      display: none;
+      font-weight: 600;
+    }
+
+    .success {
+      background: #e7f8ed;
+      color: #147a38;
+    }
+
+    .error {
+      background: #ffe9e9;
+      color: #b42318;
+    }
+
+    .rule {
+      border: 1px solid #e1e4e8;
+      border-radius: 11px;
+      padding: 15px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .rule-title {
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .rule-meta {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .rule-percent {
+      font-size: 20px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 7px;
+    }
+
+    .edit-btn {
+      background: #eee;
+    }
+
+    .delete-btn {
+      background: #ffe2e2;
+      color: #b00000;
+    }
+
+    .empty {
+      text-align: center;
+      color: #777;
+      padding: 20px;
+    }
+
+    .loading {
+      color: #777;
+      font-size: 14px;
+    }
+
+    @media (max-width: 650px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .rule {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .actions {
+        width: 100%;
+      }
+
+      .actions button {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    ⚡ Delight Vendor Logs — Markup Manager
+  </div>
+
+  <div class="container">
+
+    <!-- ADD / EDIT -->
+    <div class="card">
+      <h2 id="formTitle">Add Markup Rule</h2>
+
+      <div class="grid">
+
+        <div class="field">
+          <label>Country</label>
+          <select id="countrySelect">
+            <option value="">Loading countries...</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Service</label>
+          <select id="serviceSelect">
+            <option value="">Select country first</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="field">
+        <label>Markup Percentage</label>
+        <input
+          id="markupInput"
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder="Example: 100"
+        />
+      </div>
+
+      <button class="save-btn" id="saveBtn" onclick="saveRule()">
+        Save Markup
+      </button>
+
+      <button class="cancel-btn" id="cancelBtn" onclick="cancelEdit()">
+        Cancel Edit
+      </button>
+
+      <div id="status" class="status"></div>
+    </div>
+
+
+    <!-- EXISTING RULES -->
+    <div class="card">
+      <h2>Current Markup Rules</h2>
+
+      <div id="rulesList">
+        <div class="loading">Loading rules...</div>
+      </div>
+    </div>
+
+  </div>
+
+
+<script>
+const SUPABASE_URL = "https://hkfhehbhmucymusaytoe.supabase.co";
+
+const SUPABASE_ANON_KEY =
+  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+const FUNCTION_URL =
+  `${SUPABASE_URL}/functions/v1/numpool-api`;
+
+const { createClient } =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+
+let countries = [];
+let services = [];
+let rules = [];
+let editingId = null;
+
+
+/* =========================
+   AUTH
+========================= */
+
+async function checkAdmin() {
+
+  const {
+    data: { session }
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    document.body.innerHTML = `
+      <div style="
+        padding:40px;
+        text-align:center;
+        font-family:Arial;
+      ">
+        <h2>Access Denied</h2>
+        <p>Please login first.</p>
+      </div>
+    `;
+    return false;
+  }
+
+  const { data, error } = await supabase
+    .from("admin_users")
+    .select("user_id")
+    .eq("user_id", session.user.id)
+    .maybeSingle();
+
+  if (error || !data) {
+    document.body.innerHTML = `
+      <div style="
+        padding:40px;
+        text-align:center;
+        font-family:Arial;
+      ">
+        <h2>Access Denied</h2>
+        <p>You are not authorized to use this page.</p>
+      </div>
+    `;
+    return false;
+  }
+
+  return true;
+}
+
+
+/* =========================
+   API
+========================= */
+
+async function api(action, payload = {}) {
+
+  const {
+    data: { session }
+  } = await supabase.auth.getSession();
+
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(session?.access_token
+        ? {
+            "Authorization":
+              `Bearer ${session.access_token}`
+          }
+        : {})
+    },
+    body: JSON.stringify({
+      action,
+      version: "1.0.0",
+      ...payload
+    })
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data?.error ||
+      data?.message ||
+      "API request failed"
+    );
+  }
+
+  return data;
+}
+
+
+/* =========================
+   STATUS MESSAGE
+========================= */
+
+function showStatus(message, type = "success") {
+
+  const box = document.getElementById("status");
+
+  box.textContent = message;
+  box.className = `status ${type}`;
+  box.style.display = "block";
+
+  setTimeout(() => {
+    box.style.display = "none";
+  }, 3500);
+}
+
+
+/* =========================
+   LOAD COUNTRIES
+========================= */
+
+async function loadCountries() {
+
+  const select =
+    document.getElementById("countrySelect");
+
+  try {
+
+    const data = await api("countries");
+
+    countries =
+      Array.isArray(data.countries)
+        ? data.countries
+        : [];
+
+    select.innerHTML = `
+      <option value="">Select country</option>
+      <option value="overall">Overall</option>
+    `;
+
+    countries.forEach(country => {
+
+      if (
+        country.id === undefined ||
+        country.id === null
+      ) return;
+
+      const option =
+        document.createElement("option");
+
+      option.value = String(country.id);
+      option.textContent =
+        country.name || `Country ${country.id}`;
+
+      select.appendChild(option);
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    select.innerHTML = `
+      <option value="">Unable to load countries</option>
+    `;
+
+    showStatus(
+      "Could not load countries.",
+      "error"
+    );
+  }
+}
+
+
+/* =========================
+   LOAD SERVICES
+========================= */
+
+async function loadServices(countryId) {
+
+  const select =
+    document.getElementById("serviceSelect");
+
+  services = [];
+
+  select.innerHTML = `
+    <option value="">Loading services...</option>
+  `;
+
+  if (!countryId) {
+
+    select.innerHTML = `
+      <option value="">Select country first</option>
+    `;
+
+    return;
+  }
+
+  try {
+
+    let data;
+
+    /*
+      For Overall country we still need a service list.
+      We use the first available country to retrieve
+      the service catalogue.
+    */
+
+    if (countryId === "overall") {
+
+      if (!countries.length) {
+        select.innerHTML = `
+          <option value="">No services available</option>
+        `;
+        return;
+      }
+
+      const firstCountry =
+        countries.find(
+          c => c.id !== undefined && c.id !== null
+        );
+
+      if (!firstCountry) {
+        select.innerHTML = `
+          <option value="">No services available</option>
+        `;
+        return;
+      }
+
+      data = await api("services", {
+        country_id: firstCountry.id
+      });
+
+    } else {
+
+      data = await api("services", {
+        country_id: Number(countryId)
+      });
+
+    }
+
+    services =
+      Array.isArray(data.services)
+        ? data.services
+        : [];
+
+    select.innerHTML = `
+      <option value="">Select service</option>
+      <option value="overall">Overall</option>
+    `;
+
+    services.forEach(service => {
+
+      const code =
+        service.service_code ||
+        service.code;
+
+      if (!code) return;
+
+      const option =
+        document.createElement("option");
+
+      option.value = code;
+
+      option.textContent =
+        service.service_name ||
+        service.name ||
+        code;
+
+      select.appendChild(option);
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    select.innerHTML = `
+      <option value="">Unable to load services</option>
+    `;
+
+    showStatus(
+      "Could not load services.",
+      "error"
+    );
+  }
+}
+
+
+/* =========================
+   COUNTRY CHANGE
+========================= */
+
+document
+  .getElementById("countrySelect")
+  .addEventListener("change", event => {
+
+    loadServices(event.target.value);
+
+  });
+
+
+/* =========================
+   LOAD RULES
+========================= */
+
+async function loadRules() {
+
+  const container =
+    document.getElementById("rulesList");
+
+  container.innerHTML =
+    `<div class="loading">Loading rules...</div>`;
+
+  const {
+    data,
+    error
+  } = await supabase
+    .from("virtual_number_markup_rules")
+    .select("*")
+    .eq("is_active", true)
+    .order("id", { ascending: false });
+
+  if (error) {
+
+    console.error(error);
+
+    container.innerHTML = `
+      <div class="empty">
+        Unable to load markup rules.
+      </div>
+    `;
+
+    return;
+  }
+
+  rules = data || [];
+
+  if (!rules.length) {
+
+    container.innerHTML = `
+      <div class="empty">
+        No custom markup rules yet.<br>
+        The system is currently using the existing
+        default markup.
+      </div>
+    `;
+
+    return;
+  }
+
+  container.innerHTML = "";
+
+  rules.forEach(rule => {
+
+    const countryName =
+      getCountryName(rule.country_id);
+
+    const serviceName =
+      getServiceName(rule.service_code);
+
+    const countryLabel =
+      rule.country_id === null
+        ? "Overall"
+        : countryName;
+
+    const serviceLabel =
+      rule.service_code === null
+        ? "Overall"
+        : serviceName;
+
+    const div =
+      document.createElement("div");
+
+    div.className = "rule";
+
+    div.innerHTML = `
+      <div>
+        <div class="rule-title">
+          ${escapeHtml(countryLabel)}
+          +
+          ${escapeHtml(serviceLabel)}
+        </div>
+
+        <div class="rule-meta">
+          ${rule.country_id === null
+            ? "All countries"
+            : "Specific country"}
+          ·
+          ${rule.service_code === null
+            ? "All services"
+            : "Specific service"}
+        </div>
+      </div>
+
+      <div style="text-align:right">
+        <div class="rule-percent">
+          ${Number(rule.markup_percent)}%
+        </div>
+
+        <div class="actions">
+          <button
+            class="edit-btn"
+            onclick="editRule(${rule.id})"
+          >
+            Edit
+          </button>
+
+          <button
+            class="delete-btn"
+            onclick="deleteRule(${rule.id})"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+
+/* =========================
+   COUNTRY NAME
+========================= */
+
+function getCountryName(id) {
+
+  if (id === null || id === undefined) {
+    return "Overall";
+  }
+
+  const country =
+    countries.find(
+      c => Number(c.id) === Number(id)
+    );
+
+  return country?.name ||
+    `Country ${id}`;
+}
+
+
+/* =========================
+   SERVICE NAME
+========================= */
+
+function getServiceName(code) {
+
+  if (!code) {
+    return "Overall";
+  }
+
+  const service =
+    services.find(
+      s =>
+        (s.service_code || s.code) === code
+    );
+
+  return service?.service_name ||
+    service?.name ||
+    code;
+}
+
+
+/* =========================
+   SAVE RULE
+========================= */
+
+async function saveRule() {
+
+  const countryValue =
+    document.getElementById("countrySelect").value;
+
+  const serviceValue =
+    document.getElementById("serviceSelect").value;
+
+  const markupValue =
+    document.getElementById("markupInput").value.trim();
+
+  if (!countryValue) {
+
+    showStatus(
+      "Please select a country.",
+      "error"
+    );
+
+    return;
+  }
+
+  if (!serviceValue) {
+
+    showStatus(
+      "Please select a service.",
+      "error"
+    );
+
+    return;
+  }
+
+  if (
+    markupValue === "" ||
+    !Number.isFinite(Number(markupValue)) ||
+    Number(markupValue) < 0
+  ) {
+
+    showStatus(
+      "Enter a valid markup percentage.",
+      "error"
+    );
+
+    return;
+  }
+
+  const markup =
+    Number(markupValue);
+
+  const countryId =
+    countryValue === "overall"
+      ? null
+      : Number(countryValue);
+
+  const serviceCode =
+    serviceValue === "overall"
+      ? null
+      : serviceValue;
+
+
+  /*
+    Prevent duplicate active rules for
+    the same country/service combination.
+  */
+
+  let duplicateQuery =
+    supabase
+      .from("virtual_number_markup_rules")
+      .select("id")
+      .eq("is_active", true);
+
+  if (countryId === null) {
+    duplicateQuery =
+      duplicateQuery.is("country_id", null);
+  } else {
+    duplicateQuery =
+      duplicateQuery.eq("country_id", countryId);
+  }
+
+  if (serviceCode === null) {
+    duplicateQuery =
+      duplicateQuery.is("service_code", null);
+  } else {
+    duplicateQuery =
+      duplicateQuery.eq("service_code", serviceCode);
+  }
+
+  const {
+    data: duplicates,
+    error: duplicateError
+  } = await duplicateQuery;
+
+  if (duplicateError) {
+
+    console.error(duplicateError);
+
+    showStatus(
+      "Could not check existing rules.",
+      "error"
+    );
+
+    return;
+  }
+
+  const existing =
+    (duplicates || []).find(
+      row => row.id !== editingId
+    );
+
+
+  if (existing) {
+
+    const {
+      error
+    } = await supabase
+      .from("virtual_number_markup_rules")
+      .update({
+        markup_percent: markup,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", existing.id);
+
+    if (error) {
+
+      console.error(error);
+
+      showStatus(
+        "Could not update the existing rule.",
+        "error"
+      );
+
+      return;
+    }
+
+    if (editingId !== null) {
+
+      await supabase
+        .from("virtual_number_markup_rules")
+        .update({
+          is_active: false,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", editingId);
+    }
+
+    showStatus(
+      "Markup rule updated.",
+      "success"
+    );
+
+  } else {
+
+    if (editingId !== null) {
+
+      const {
+        error
+      } = await supabase
+        .from("virtual_number_markup_rules")
+        .update({
+          country_id: countryId,
+          service_code: serviceCode,
+          markup_percent: markup,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", editingId);
+
+      if (error) {
+
+        console.error(error);
+
+        showStatus(
+          "Could not update markup.",
+          "error"
+        );
+
+        return;
+      }
+
+      showStatus(
+        "Markup rule updated.",
+        "success"
+      );
+
+    } else {
+
+      const {
+        error
+      } = await supabase
+        .from("virtual_number_markup_rules")
+        .insert({
+          country_id: countryId,
+          service_code: serviceCode,
+          markup_percent: markup,
+          is_active: true
+        });
+
+      if (error) {
+
+        console.error(error);
+
+        showStatus(
+          "Could not save markup.",
+          "error"
+        );
+
+        return;
+      }
+
+      showStatus(
+        "Markup rule saved.",
+        "success"
+      );
+    }
+  }
+
+  resetForm();
+  await loadRules();
+}
+
+
+/* =========================
+   EDIT RULE
+========================= */
+
+async function editRule(id) {
+
+  const rule =
+    rules.find(r => Number(r.id) === Number(id));
+
+  if (!rule) return;
+
+  editingId = rule.id;
+
+  const countrySelect =
+    document.getElementById("countrySelect");
+
+  const serviceSelect =
+    document.getElementById("serviceSelect");
+
+  countrySelect.value =
+    rule.country_id === null
+      ? "overall"
+      : String(rule.country_id);
+
+  await loadServices(countrySelect.value);
+
+  serviceSelect.value =
+    rule.service_code === null
+      ? "overall"
+      : rule.service_code;
+
+  document.getElementById("markupInput").value =
+    rule.markup_percent;
+
+  document.getElementById("formTitle").textContent =
+    "Edit Markup Rule";
+
+  document.getElementById("saveBtn").textContent =
+    "Update Markup";
+
+  document.getElementById("cancelBtn").style.display =
+    "block";
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+
+/* =========================
+   CANCEL EDIT
+========================= */
+
+function cancelEdit() {
+
+  resetForm();
+}
+
+
+/* =========================
+   RESET FORM
+========================= */
+
+function resetForm() {
+
+  editingId = null;
+
+  document.getElementById("countrySelect").value =
+    "";
+
+  document.getElementById("serviceSelect").innerHTML =
+    `<option value="">Select country first</option>`;
+
+  document.getElementById("markupInput").value =
+    "";
+
+  document.getElementById("formTitle").textContent =
+    "Add Markup Rule";
+
+  document.getElementById("saveBtn").textContent =
+    "Save Markup";
+
+  document.getElementById("cancelBtn").style.display =
+    "none";
+}
+
+
+/* =========================
+   DELETE RULE
+========================= */
+
+async function deleteRule(id) {
+
+  const rule =
+    rules.find(r => Number(r.id) === Number(id));
+
+  if (!rule) return;
+
+  const countryName =
+    getCountryName(rule.country_id);
+
+  const serviceName =
+    getServiceName(rule.service_code);
+
+  const confirmed =
+    confirm(
+      `Delete markup rule:\n\n` +
+      `${countryName} + ${serviceName}\n` +
+      `${rule.markup_percent}%`
+    );
+
+  if (!confirmed) return;
+
+  const {
+    error
+  } = await supabase
+    .from("virtual_number_markup_rules")
+    .update({
+      is_active: false,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", id);
+
+  if (error) {
+
+    console.error(error);
+
+    showStatus(
+      "Could not delete rule.",
+      "error"
+    );
+
+    return;
+  }
+
+  showStatus(
+    "Markup rule deleted.",
+    "success"
+  );
+
+  await loadRules();
+}
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+/* =========================
+   START
+========================= */
+
+(async function init() {
+
+  const isAdmin =
+    await checkAdmin();
+
+  if (!isAdmin) return;
+
+  await loadCountries();
+  await loadRules();
+
+})();
+</script>
+
+</body>
+</html>
