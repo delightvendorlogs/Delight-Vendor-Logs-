@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
   <title>Markup Manager — Delight Vendor Logs</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -80,16 +84,16 @@
       cursor: pointer;
     }
 
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
     .save-btn {
       background: #111;
       color: #fff;
       width: 100%;
       font-size: 16px;
-    }
-
-    .save-btn:disabled {
-      opacity: .5;
-      cursor: not-allowed;
     }
 
     .cancel-btn {
@@ -168,6 +172,21 @@
     .loading {
       color: #777;
       font-size: 14px;
+      padding: 10px 0;
+    }
+
+    .access-box {
+      padding: 40px;
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+
+    .access-box h2 {
+      margin-bottom: 10px;
+    }
+
+    .access-box p {
+      color: #666;
     }
 
     @media (max-width: 650px) {
@@ -201,30 +220,48 @@
 
     <!-- ADD / EDIT -->
     <div class="card">
-      <h2 id="formTitle">Add Markup Rule</h2>
+
+      <h2 id="formTitle">
+        Add Markup Rule
+      </h2>
 
       <div class="grid">
 
         <div class="field">
-          <label>Country</label>
+
+          <label>
+            Country
+          </label>
 
           <select id="countrySelect">
-            <option value="">Loading countries...</option>
+            <option value="">
+              Loading countries...
+            </option>
           </select>
+
         </div>
 
         <div class="field">
-          <label>Service</label>
+
+          <label>
+            Service
+          </label>
 
           <select id="serviceSelect">
-            <option value="">Select country first</option>
+            <option value="">
+              Select country first
+            </option>
           </select>
+
         </div>
 
       </div>
 
       <div class="field">
-        <label>Markup Percentage</label>
+
+        <label>
+          Markup Percentage
+        </label>
 
         <input
           id="markupInput"
@@ -233,6 +270,7 @@
           step="0.01"
           placeholder="Example: 100"
         />
+
       </div>
 
       <button
@@ -251,25 +289,39 @@
         Cancel Edit
       </button>
 
-      <div id="status" class="status"></div>
+      <div
+        id="status"
+        class="status"
+      ></div>
+
     </div>
 
 
     <!-- EXISTING RULES -->
     <div class="card">
-      <h2>Current Markup Rules</h2>
+
+      <h2>
+        Current Markup Rules
+      </h2>
 
       <div id="rulesList">
+
         <div class="loading">
           Loading rules...
         </div>
+
       </div>
+
     </div>
 
   </div>
 
 
 <script>
+
+/* =========================================================
+   SUPABASE
+========================================================= */
 
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
@@ -280,7 +332,18 @@ const SUPABASE_ANON_KEY =
 const FUNCTION_URL =
   `${SUPABASE_URL}/functions/v1/numpool-api`;
 
-const { createClient } =
+
+/*
+  IMPORTANT:
+
+  "supabase" = Supabase library loaded from CDN.
+
+  "supabaseClient" = actual initialized client.
+
+  All auth/database calls below use supabaseClient.
+*/
+
+const supabaseClient =
   supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
@@ -293,19 +356,64 @@ let rules = [];
 let editingId = null;
 
 
-/* =========================
-   AUTH
-========================= */
+/* =========================================================
+   ACCESS DENIED
+========================================================= */
+
+function showAccessDenied(message) {
+
+  document.body.innerHTML = `
+    <div class="access-box">
+
+      <h2>
+        Access Denied
+      </h2>
+
+      <p>
+        ${escapeHtml(message)}
+      </p>
+
+    </div>
+  `;
+}
+
+
+/* =========================================================
+   AUTH CHECK
+========================================================= */
+
 async function checkAdmin() {
 
   try {
 
     const {
-      data: { session },
+      data,
       error
-    } = await supabase.auth.getSession();
+    } =
+      await supabaseClient.auth.getSession();
 
-    if (error || !session) {
+
+    if (error) {
+
+      console.error(
+        "Supabase session error:",
+        error
+      );
+
+      showAccessDenied(
+        "Unable to verify login session: " +
+        error.message
+      );
+
+      return false;
+    }
+
+
+    const session =
+      data?.session;
+
+
+    if (!session) {
 
       showAccessDenied(
         "Please login first."
@@ -314,7 +422,18 @@ async function checkAdmin() {
       return false;
     }
 
+
+    /*
+      We only verify that the user has
+      a valid logged-in session here.
+
+      The backend performs the real
+      admin authorization for markup
+      operations.
+    */
+
     return true;
+
 
   } catch (error) {
 
@@ -324,7 +443,11 @@ async function checkAdmin() {
     );
 
     showAccessDenied(
-      "Unable to verify login session."
+      "Unable to verify login session: " +
+      (
+        error?.message ||
+        "Unknown error"
+      )
     );
 
     return false;
@@ -332,84 +455,113 @@ async function checkAdmin() {
 }
 
 
-/* =========================
-   ACCESS DENIED
-========================= */
-
-function showAccessDenied(message) {
-
-  document.body.innerHTML = `
-    <div style="
-      padding:40px;
-      text-align:center;
-      font-family:Arial;
-    ">
-      <h2>Access Denied</h2>
-      <p>${escapeHtml(message)}</p>
-    </div>
-  `;
-}
-
-
-/* =========================
+/* =========================================================
    API
-========================= */
+========================================================= */
 
-async function api(action, payload = {}) {
+async function api(
+  action,
+  payload = {}
+) {
 
   const {
-    data: { session }
-  } = await supabase.auth.getSession();
+    data,
+    error
+  } =
+    await supabaseClient.auth.getSession();
 
-  if (!session) {
-    throw new Error("Your session has expired. Please login again.");
+
+  if (error) {
+
+    throw new Error(
+      error.message ||
+      "Unable to get login session."
+    );
   }
 
-  const response = await fetch(
-    FUNCTION_URL,
-    {
-      method: "POST",
 
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization":
-          `Bearer ${session.access_token}`
-      },
+  const session =
+    data?.session;
 
-      body: JSON.stringify({
-        action,
-        version: "1.0.0",
-        ...payload
-      })
-    }
-  );
 
-  let data = {};
+  if (!session) {
+
+    throw new Error(
+      "Your login session has expired. Please login again."
+    );
+  }
+
+
+  const response =
+    await fetch(
+      FUNCTION_URL,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+
+          "Authorization":
+            `Bearer ${session.access_token}`
+        },
+
+        body:
+          JSON.stringify({
+            action,
+            version: "1.0.0",
+            ...payload
+          })
+      }
+    );
+
+
+  let result;
+
 
   try {
-    data = await response.json();
+
+    result =
+      await response.json();
+
   } catch {
+
     throw new Error(
       `Server returned an invalid response (${response.status}).`
     );
   }
 
-  if (!response.ok || data?.success === false) {
+
+  if (!response.ok) {
 
     throw new Error(
-      data?.error ||
-      data?.message ||
+      result?.error ||
+      result?.message ||
       `API request failed (${response.status}).`
     );
   }
 
-  return data;
+
+  if (
+    result &&
+    result.success === false
+  ) {
+
+    throw new Error(
+      result.error ||
+      result.message ||
+      "API request failed."
+    );
+  }
+
+
+  return result;
 }
 
 
-/* =========================
-   STATUS MESSAGE
-========================= */
+/* =========================================================
+   STATUS
+========================================================= */
 
 function showStatus(
   message,
@@ -417,28 +569,38 @@ function showStatus(
 ) {
 
   const box =
-    document.getElementById("status");
+    document.getElementById(
+      "status"
+    );
 
-  box.textContent = message;
+
+  box.textContent =
+    message;
+
 
   box.className =
     `status ${type}`;
 
+
   box.style.display =
     "block";
 
-  setTimeout(() => {
 
-    box.style.display =
-      "none";
+  setTimeout(
+    () => {
 
-  }, 4000);
+      box.style.display =
+        "none";
+
+    },
+    4000
+  );
 }
 
 
-/* =========================
+/* =========================================================
    LOAD COUNTRIES
-========================= */
+========================================================= */
 
 async function loadCountries() {
 
@@ -447,21 +609,29 @@ async function loadCountries() {
       "countrySelect"
     );
 
+
   select.innerHTML = `
     <option value="">
       Loading countries...
     </option>
   `;
 
+
   try {
 
     const data =
-      await api("countries");
+      await api(
+        "countries"
+      );
+
 
     countries =
-      Array.isArray(data.countries)
+      Array.isArray(
+        data?.countries
+      )
         ? data.countries
         : [];
+
 
     select.innerHTML = `
       <option value="">
@@ -473,29 +643,41 @@ async function loadCountries() {
       </option>
     `;
 
-    countries.forEach(country => {
 
-      if (
-        country.id === undefined ||
-        country.id === null
-      ) {
-        return;
-      }
+    countries.forEach(
+      country => {
 
-      const option =
-        document.createElement(
-          "option"
+        if (
+          country.id === undefined ||
+          country.id === null
+        ) {
+          return;
+        }
+
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+
+        option.value =
+          String(
+            country.id
+          );
+
+
+        option.textContent =
+          country.name ||
+          `Country ${country.id}`;
+
+
+        select.appendChild(
+          option
         );
+      }
+    );
 
-      option.value =
-        String(country.id);
-
-      option.textContent =
-        country.name ||
-        `Country ${country.id}`;
-
-      select.appendChild(option);
-    });
 
     if (!countries.length) {
 
@@ -510,6 +692,7 @@ async function loadCountries() {
       `;
     }
 
+
   } catch (error) {
 
     console.error(
@@ -517,11 +700,13 @@ async function loadCountries() {
       error
     );
 
+
     select.innerHTML = `
       <option value="">
         Unable to load countries
       </option>
     `;
+
 
     showStatus(
       error.message ||
@@ -532,9 +717,9 @@ async function loadCountries() {
 }
 
 
-/* =========================
+/* =========================================================
    LOAD SERVICES
-========================= */
+========================================================= */
 
 async function loadServices(
   countryId
@@ -545,7 +730,9 @@ async function loadServices(
       "serviceSelect"
     );
 
+
   services = [];
+
 
   if (!countryId) {
 
@@ -558,25 +745,28 @@ async function loadServices(
     return;
   }
 
+
   select.innerHTML = `
     <option value="">
       Loading services...
     </option>
   `;
 
+
   try {
 
     let requestCountryId;
 
-    /*
-      The backend services endpoint needs
-      a real country.
 
-      For Overall we use the first available
-      country only to obtain the service catalogue.
+    /*
+      For Overall we only need a country
+      to obtain the available service
+      catalogue.
     */
 
-    if (countryId === "overall") {
+    if (
+      countryId === "overall"
+    ) {
 
       const firstCountry =
         countries.find(
@@ -585,24 +775,35 @@ async function loadServices(
             country.id !== null
         );
 
+
       if (!firstCountry) {
 
         select.innerHTML = `
           <option value="">
             No services available
           </option>
+
+          <option value="overall">
+            Overall
+          </option>
         `;
 
         return;
       }
 
+
       requestCountryId =
-        Number(firstCountry.id);
+        Number(
+          firstCountry.id
+        );
+
 
     } else {
 
       requestCountryId =
-        Number(countryId);
+        Number(
+          countryId
+        );
     }
 
 
@@ -617,7 +818,9 @@ async function loadServices(
 
 
     services =
-      Array.isArray(data.services)
+      Array.isArray(
+        data?.services
+      )
         ? data.services
         : [];
 
@@ -633,31 +836,40 @@ async function loadServices(
     `;
 
 
-    services.forEach(service => {
+    services.forEach(
+      service => {
 
-      const code =
-        service.service_code ||
-        service.code;
+        const code =
+          service.service_code ||
+          service.code;
 
-      if (!code) {
-        return;
-      }
 
-      const option =
-        document.createElement(
-          "option"
+        if (!code) {
+          return;
+        }
+
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+
+        option.value =
+          code;
+
+
+        option.textContent =
+          service.service_name ||
+          service.name ||
+          code;
+
+
+        select.appendChild(
+          option
         );
-
-      option.value =
-        code;
-
-      option.textContent =
-        service.service_name ||
-        service.name ||
-        code;
-
-      select.appendChild(option);
-    });
+      }
+    );
 
 
     if (!services.length) {
@@ -673,6 +885,7 @@ async function loadServices(
       `;
     }
 
+
   } catch (error) {
 
     console.error(
@@ -680,11 +893,13 @@ async function loadServices(
       error
     );
 
+
     select.innerHTML = `
       <option value="">
         Unable to load services
       </option>
     `;
+
 
     showStatus(
       error.message ||
@@ -695,12 +910,14 @@ async function loadServices(
 }
 
 
-/* =========================
+/* =========================================================
    COUNTRY CHANGE
-========================= */
+========================================================= */
 
 document
-  .getElementById("countrySelect")
+  .getElementById(
+    "countrySelect"
+  )
   .addEventListener(
     "change",
     event => {
@@ -713,9 +930,9 @@ document
   );
 
 
-/* =========================
+/* =========================================================
    LOAD MARKUP RULES
-========================= */
+========================================================= */
 
 async function loadRules() {
 
@@ -724,28 +941,35 @@ async function loadRules() {
       "rulesList"
     );
 
+
   container.innerHTML = `
     <div class="loading">
       Loading rules...
     </div>
   `;
 
+
   try {
 
     /*
       IMPORTANT:
 
-      Rules now come through numpool-api.
-      The browser no longer reads the
-      markup table directly.
+      No direct table query here.
+
+      The backend handles the
+      markup table.
     */
 
     const data =
-      await api("markup_rules");
+      await api(
+        "markup_rules"
+      );
 
 
     rules =
-      Array.isArray(data.rules)
+      Array.isArray(
+        data?.rules
+      )
         ? data.rules
         : [];
 
@@ -754,9 +978,14 @@ async function loadRules() {
 
       container.innerHTML = `
         <div class="empty">
-          No custom markup rules yet.<br>
+
+          No custom markup rules yet.
+
+          <br>
+
           The system is currently using
           the default markup.
+
         </div>
       `;
 
@@ -764,96 +993,131 @@ async function loadRules() {
     }
 
 
-    container.innerHTML = "";
+    container.innerHTML =
+      "";
 
 
-    rules.forEach(rule => {
+    rules.forEach(
+      rule => {
 
-      const countryName =
-        getCountryName(
-          rule.country_id
+        const countryName =
+          getCountryName(
+            rule.country_id
+          );
+
+
+        const serviceName =
+          getServiceName(
+            rule.service_code
+          );
+
+
+        const countryLabel =
+          rule.country_id === null
+            ? "Overall"
+            : countryName;
+
+
+        const serviceLabel =
+          rule.service_code === null
+            ? "Overall"
+            : serviceName;
+
+
+        const div =
+          document.createElement(
+            "div"
+          );
+
+
+        div.className =
+          "rule";
+
+
+        div.innerHTML = `
+
+          <div>
+
+            <div class="rule-title">
+
+              ${escapeHtml(
+                countryLabel
+              )}
+
+              +
+
+              ${escapeHtml(
+                serviceLabel
+              )}
+
+            </div>
+
+
+            <div class="rule-meta">
+
+              ${
+                rule.country_id === null
+                  ? "All countries"
+                  : "Specific country"
+              }
+
+              ·
+
+              ${
+                rule.service_code === null
+                  ? "All services"
+                  : "Specific service"
+              }
+
+            </div>
+
+          </div>
+
+
+          <div style="text-align:right">
+
+            <div class="rule-percent">
+
+              ${Number(
+                rule.markup_percent
+              )}%
+
+            </div>
+
+
+            <div class="actions">
+
+              <button
+                class="edit-btn"
+                onclick="editRule(
+                  ${Number(rule.id)}
+                )"
+              >
+                Edit
+              </button>
+
+
+              <button
+                class="delete-btn"
+                onclick="deleteRule(
+                  ${Number(rule.id)}
+                )"
+              >
+                Delete
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+
+
+        container.appendChild(
+          div
         );
-
-      const serviceName =
-        getServiceName(
-          rule.service_code
-        );
-
-
-      const countryLabel =
-        rule.country_id === null
-          ? "Overall"
-          : countryName;
-
-
-      const serviceLabel =
-        rule.service_code === null
-          ? "Overall"
-          : serviceName;
-
-
-      const div =
-        document.createElement(
-          "div"
-        );
-
-      div.className =
-        "rule";
-
-
-      div.innerHTML = `
-        <div>
-          <div class="rule-title">
-            ${escapeHtml(countryLabel)}
-            +
-            ${escapeHtml(serviceLabel)}
-          </div>
-
-          <div class="rule-meta">
-            ${
-              rule.country_id === null
-                ? "All countries"
-                : "Specific country"
-            }
-            ·
-            ${
-              rule.service_code === null
-                ? "All services"
-                : "Specific service"
-            }
-          </div>
-        </div>
-
-        <div style="text-align:right">
-
-          <div class="rule-percent">
-            ${Number(rule.markup_percent)}%
-          </div>
-
-          <div class="actions">
-
-            <button
-              class="edit-btn"
-              onclick="editRule(${Number(rule.id)})"
-            >
-              Edit
-            </button>
-
-            <button
-              class="delete-btn"
-              onclick="deleteRule(${Number(rule.id)})"
-            >
-              Delete
-            </button>
-
-          </div>
-
-        </div>
-      `;
-
-
-      container.appendChild(div);
-    });
+      }
+    );
 
 
   } catch (error) {
@@ -863,19 +1127,29 @@ async function loadRules() {
       error
     );
 
+
     rules = [];
 
+
     container.innerHTML = `
+
       <div class="empty">
-        Unable to load markup rules.<br>
+
+        Unable to load markup rules.
+
+        <br>
+
         <small>
           ${escapeHtml(
             error.message ||
             "API request failed."
           )}
         </small>
+
       </div>
+
     `;
+
 
     showStatus(
       error.message ||
@@ -886,11 +1160,13 @@ async function loadRules() {
 }
 
 
-/* =========================
+/* =========================================================
    COUNTRY NAME
-========================= */
+========================================================= */
 
-function getCountryName(id) {
+function getCountryName(
+  id
+) {
 
   if (
     id === null ||
@@ -899,12 +1175,14 @@ function getCountryName(id) {
     return "Overall";
   }
 
+
   const country =
     countries.find(
       c =>
         Number(c.id) ===
         Number(id)
     );
+
 
   return (
     country?.name ||
@@ -913,22 +1191,28 @@ function getCountryName(id) {
 }
 
 
-/* =========================
+/* =========================================================
    SERVICE NAME
-========================= */
+========================================================= */
 
-function getServiceName(code) {
+function getServiceName(
+  code
+) {
 
   if (!code) {
     return "Overall";
   }
 
+
   const service =
     services.find(
       s =>
-        (s.service_code ||
-          s.code) === code
+        (
+          s.service_code ||
+          s.code
+        ) === code
     );
+
 
   return (
     service?.service_name ||
@@ -938,9 +1222,9 @@ function getServiceName(code) {
 }
 
 
-/* =========================
+/* =========================================================
    SAVE RULE
-========================= */
+========================================================= */
 
 async function saveRule() {
 
@@ -1008,13 +1292,17 @@ async function saveRule() {
 
 
   const markup =
-    Number(markupValue);
+    Number(
+      markupValue
+    );
 
 
   const countryId =
     countryValue === "overall"
       ? null
-      : Number(countryValue);
+      : Number(
+          countryValue
+        );
 
 
   const serviceCode =
@@ -1024,22 +1312,25 @@ async function saveRule() {
 
 
   /*
-    Only these two rule types are allowed:
+    Allowed combinations:
 
     Overall + Overall
 
     OR
 
-    Specific Country + Specific Service
-
-    No country-only or service-only rules.
+    Specific Country +
+    Specific Service
   */
 
   if (
-    (countryId === null &&
-      serviceCode !== null) ||
-    (countryId !== null &&
-      serviceCode === null)
+    (
+      countryId === null &&
+      serviceCode !== null
+    ) ||
+    (
+      countryId !== null &&
+      serviceCode === null
+    )
   ) {
 
     showStatus(
@@ -1053,6 +1344,7 @@ async function saveRule() {
 
   saveBtn.disabled =
     true;
+
 
   saveBtn.textContent =
     editingId !== null
@@ -1068,7 +1360,7 @@ async function saveRule() {
         {
           id:
             editingId !== null
-              ? editingId
+              ? Number(editingId)
               : null,
 
           country_id:
@@ -1084,7 +1376,7 @@ async function saveRule() {
 
 
     showStatus(
-      data.message ||
+      data?.message ||
       (
         editingId !== null
           ? "Markup rule updated."
@@ -1096,6 +1388,7 @@ async function saveRule() {
 
     resetForm();
 
+
     await loadRules();
 
 
@@ -1105,6 +1398,7 @@ async function saveRule() {
       "saveRule:",
       error
     );
+
 
     showStatus(
       error.message ||
@@ -1118,19 +1412,20 @@ async function saveRule() {
     saveBtn.disabled =
       false;
 
+
     saveBtn.textContent =
-      editingId !== null
-        ? "Update Markup"
-        : "Save Markup";
+      "Save Markup";
   }
 }
 
 
-/* =========================
+/* =========================================================
    EDIT RULE
-========================= */
+========================================================= */
 
-async function editRule(id) {
+async function editRule(
+  id
+) {
 
   const rule =
     rules.find(
@@ -1139,13 +1434,14 @@ async function editRule(id) {
         Number(id)
     );
 
+
   if (!rule) {
     return;
   }
 
 
   editingId =
-    rule.id;
+    Number(rule.id);
 
 
   const countrySelect =
@@ -1210,9 +1506,9 @@ async function editRule(id) {
 }
 
 
-/* =========================
+/* =========================================================
    CANCEL EDIT
-========================= */
+========================================================= */
 
 function cancelEdit() {
 
@@ -1220,9 +1516,9 @@ function cancelEdit() {
 }
 
 
-/* =========================
+/* =========================================================
    RESET FORM
-========================= */
+========================================================= */
 
 function resetForm() {
 
@@ -1238,12 +1534,13 @@ function resetForm() {
 
   document.getElementById(
     "serviceSelect"
-  ).innerHTML =
-    `
-      <option value="">
-        Select country first
-      </option>
-    `;
+  ).innerHTML = `
+
+    <option value="">
+      Select country first
+    </option>
+
+  `;
 
 
   document.getElementById(
@@ -1271,11 +1568,13 @@ function resetForm() {
 }
 
 
-/* =========================
+/* =========================================================
    DELETE RULE
-========================= */
+========================================================= */
 
-async function deleteRule(id) {
+async function deleteRule(
+  id
+) {
 
   const rule =
     rules.find(
@@ -1283,6 +1582,7 @@ async function deleteRule(id) {
         Number(r.id) ===
         Number(id)
     );
+
 
   if (!rule) {
     return;
@@ -1336,6 +1636,7 @@ async function deleteRule(id) {
       Number(editingId) ===
       Number(id)
     ) {
+
       resetForm();
     }
 
@@ -1350,6 +1651,7 @@ async function deleteRule(id) {
       error
     );
 
+
     showStatus(
       error.message ||
       "Could not delete rule.",
@@ -1359,11 +1661,13 @@ async function deleteRule(id) {
 }
 
 
-/* =========================
+/* =========================================================
    ESCAPE HTML
-========================= */
+========================================================= */
 
-function escapeHtml(value) {
+function escapeHtml(
+  value
+) {
 
   return String(
     value ?? ""
@@ -1391,26 +1695,24 @@ function escapeHtml(value) {
 }
 
 
-/* =========================
+/* =========================================================
    START
-========================= */
+========================================================= */
 
 (async function init() {
 
-  const isAdmin =
+  const isLoggedIn =
     await checkAdmin();
 
 
-  if (!isAdmin) {
+  if (!isLoggedIn) {
     return;
   }
 
 
   /*
-    Load both independently.
-
-    So if one endpoint fails,
-    the other can still work.
+    Countries and rules load
+    independently.
   */
 
   await Promise.allSettled([
