@@ -74,6 +74,42 @@ main{
   padding:15px;
 }
 
+.provider-tabs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-bottom:15px;
+}
+
+.provider-tab{
+  border:1px solid #ddd;
+  background:#fff;
+  color:#111;
+  padding:13px 9px;
+  border-radius:12px;
+  font-weight:bold;
+  cursor:pointer;
+  text-align:left;
+}
+
+.provider-tab small{
+  display:block;
+  margin-top:4px;
+  font-size:11px;
+  color:#777;
+  font-weight:normal;
+}
+
+.provider-tab.active{
+  background:#111;
+  color:#fff;
+  border-color:#111;
+}
+
+.provider-tab.active small{
+  color:#ccc;
+}
+
 .version-tabs{
   display:flex;
   gap:7px;
@@ -297,7 +333,8 @@ select:focus{
   font-weight:bold;
 }
 
-.status.pending{
+.status.pending,
+.status.waiting{
   background:#fff1c7;
 }
 
@@ -358,11 +395,6 @@ select:focus{
   color:#777;
 }
 
-
-/* ============================================================
-   BEAUTIFUL POPUP DESIGN - COMPACT / NO SCROLL
-============================================================ */
-
 .popup{
   position:fixed;
   inset:0;
@@ -378,12 +410,8 @@ select:focus{
 }
 
 @keyframes popupFade{
-  from{
-    opacity:0;
-  }
-  to{
-    opacity:1;
-  }
+  from{opacity:0;}
+  to{opacity:1;}
 }
 
 .popup-card{
@@ -453,10 +481,6 @@ select:focus{
   justify-content:center;
 }
 
-.popup-x:hover{
-  background:#e5e7eb;
-}
-
 .popup-visual{
   padding:9px 13px 3px;
   text-align:center;
@@ -471,13 +495,8 @@ select:focus{
   align-items:center;
   justify-content:center;
   font-size:25px;
-  background:linear-gradient(
-    135deg,
-    #eef2ff,
-    #f5f3ff
-  );
-  box-shadow:
-    0 5px 16px rgba(79,70,229,.11);
+  background:linear-gradient(135deg,#eef2ff,#f5f3ff);
+  box-shadow:0 5px 16px rgba(79,70,229,.11);
 }
 
 .popup-body{
@@ -604,23 +623,54 @@ select:focus{
   font-size:13px;
   font-weight:800;
   cursor:pointer;
-  box-shadow:0 6px 16px rgba(17,24,39,.16);
-  transition:.2s;
 }
 
-.popup-close:hover{
-  transform:translateY(-1px);
-  background:#000;
+.menu{
+  position:fixed;
+  top:65px;
+  right:12px;
+  width:240px;
+  background:#fff;
+  border-radius:13px;
+  box-shadow:0 8px 30px rgba(0,0,0,.18);
+  z-index:500;
+  padding:8px;
 }
 
-.popup-close:active{
-  transform:scale(.98);
+.menu-item{
+  padding:13px;
+  border-radius:9px;
+  cursor:pointer;
 }
 
+.menu-item:hover{
+  background:#f2f2f2;
+}
 
-/* ============================================================
-   SMALL PHONE HEIGHTS
-============================================================ */
+.menu-close{
+  color:#b00020;
+}
+
+@media(max-width:520px){
+
+  .server-grid{
+    grid-template-columns:1fr;
+  }
+
+  header h1{
+    font-size:17px;
+  }
+
+  .provider-tab{
+    font-size:12px;
+    padding:11px 8px;
+  }
+
+  .provider-tab small{
+    font-size:10px;
+  }
+
+}
 
 @media(max-width:480px){
 
@@ -676,34 +726,14 @@ select:focus{
     font-size:12px;
   }
 
-  .popup-section-title span{
-    width:22px;
-    height:22px;
-    font-size:12px;
-  }
-
   .popup-item{
     margin-bottom:5px;
     padding:7px 8px;
-    border-radius:10px;
-    gap:7px;
-  }
-
-  .popup-item-icon{
-    width:26px;
-    height:26px;
-    min-width:26px;
-    font-size:14px;
   }
 
   .popup-item-content{
     font-size:10.8px;
     line-height:1.34;
-  }
-
-  .popup-item-content strong{
-    font-size:11.5px;
-    margin-bottom:1px;
   }
 
   .popup-intro{
@@ -716,14 +746,6 @@ select:focus{
   .popup-warning{
     margin-top:5px;
     padding:8px 9px;
-    gap:7px;
-  }
-
-  .popup-warning-icon{
-    width:26px;
-    height:26px;
-    min-width:26px;
-    font-size:14px;
   }
 
   .popup-warning-content{
@@ -735,142 +757,7 @@ select:focus{
     width:calc(100% - 22px);
     margin:0 11px 9px;
     padding:10px;
-    border-radius:10px;
     font-size:12px;
-  }
-
-}
-
-
-/* ============================================================
-   VERY SHORT PHONE SCREENS
-============================================================ */
-
-@media(max-height:600px){
-
-  .popup-header{
-    padding:7px 10px;
-  }
-
-  .popup-header-icon{
-    width:27px;
-    height:27px;
-    min-width:27px;
-    font-size:14px;
-  }
-
-  .popup-header h2{
-    font-size:14px;
-  }
-
-  .popup-x{
-    width:26px;
-    height:26px;
-    min-width:26px;
-    font-size:17px;
-  }
-
-  .popup-visual{
-    padding:4px 10px 1px;
-  }
-
-  .popup-sticker{
-    width:36px;
-    height:36px;
-    border-radius:11px;
-    font-size:19px;
-  }
-
-  .popup-body{
-    padding:4px 10px 6px;
-  }
-
-  .popup-section-title{
-    margin-bottom:4px;
-    font-size:11.5px;
-  }
-
-  .popup-item{
-    margin-bottom:4px;
-    padding:5px 7px;
-  }
-
-  .popup-item-icon{
-    width:23px;
-    height:23px;
-    min-width:23px;
-    font-size:12px;
-  }
-
-  .popup-item-content{
-    font-size:10px;
-    line-height:1.27;
-  }
-
-  .popup-item-content strong{
-    font-size:10.8px;
-  }
-
-  .popup-warning{
-    margin-top:4px;
-    padding:6px 7px;
-  }
-
-  .popup-warning-icon{
-    width:23px;
-    height:23px;
-    min-width:23px;
-    font-size:12px;
-  }
-
-  .popup-warning-content{
-    font-size:10px;
-    line-height:1.27;
-  }
-
-  .popup-close{
-    padding:8px;
-    margin-bottom:7px;
-    font-size:11.5px;
-  }
-
-}
-
-
-.menu{
-  position:fixed;
-  top:65px;
-  right:12px;
-  width:240px;
-  background:#fff;
-  border-radius:13px;
-  box-shadow:0 8px 30px rgba(0,0,0,.18);
-  z-index:500;
-  padding:8px;
-}
-
-.menu-item{
-  padding:13px;
-  border-radius:9px;
-  cursor:pointer;
-}
-
-.menu-item:hover{
-  background:#f2f2f2;
-}
-
-.menu-close{
-  color:#b00020;
-}
-
-@media(max-width:520px){
-
-  .server-grid{
-    grid-template-columns:1fr;
-  }
-
-  header h1{
-    font-size:17px;
   }
 
 }
@@ -887,18 +774,15 @@ select:focus{
 
 <div class="header-right">
 
-<div
-  id="walletMini"
-  class="wallet-mini"
->
-  ₦0
+<div id="walletMini" class="wallet-mini">
+₦0
 </div>
 
 <button
   class="menu-button"
   onclick="toggleMenu()"
 >
-  ☰
+☰
 </button>
 
 </div>
@@ -908,9 +792,37 @@ select:focus{
 
 <main>
 
+<!-- PROVIDER -->
+
+<div class="provider-tabs">
+
+<button
+  id="smsbowerProviderTab"
+  class="provider-tab active"
+  onclick="changeProvider('smsbower')"
+>
+  All Country Number 1
+  <small>SMSBower</small>
+</button>
+
+<button
+  id="fivesimProviderTab"
+  class="provider-tab"
+  onclick="changeProvider('fivesim')"
+>
+  All Country Number 2
+  <small>5SIM</small>
+</button>
+
+</div>
+
+
 <!-- VERSION -->
 
-<div class="version-tabs">
+<div
+  id="versionTabs"
+  class="version-tabs"
+>
 
 <button
   class="version-tab active"
@@ -954,7 +866,7 @@ V3
   type="search"
   placeholder="Search country..."
   autocomplete="off"
-  oninput="filterCountries()"
+  oninput="filterCountries"
 >
 
 </div>
@@ -1071,9 +983,7 @@ Buy Number
 
 <h2>Current / New Order</h2>
 
-<div
-  id="currentOrder"
->
+<div id="currentOrder">
 
 <div class="empty">
 No current order.
@@ -1090,9 +1000,7 @@ No current order.
 
 <h2>Previous Orders</h2>
 
-<div
-  id="previousOrders"
->
+<div id="previousOrders">
 
 <div class="loading">
 Loading orders...
@@ -1202,7 +1110,6 @@ Loading orders...
 
 </div>
 
-
 <div class="popup-visual">
 
 <div class="popup-sticker">
@@ -1211,19 +1118,15 @@ Loading orders...
 
 </div>
 
-
 <div class="popup-body">
 
 <div class="popup-section-title">
 
-<span>
-✨
-</span>
+<span>✨</span>
 
 Best Practices for Success
 
 </div>
-
 
 <div class="popup-item">
 
@@ -1241,7 +1144,6 @@ Uninstall the app and clear its cache before requesting a new number.
 
 </div>
 
-
 <div class="popup-item">
 
 <div class="popup-item-icon">
@@ -1257,7 +1159,6 @@ Use the standard official app version. Modified versions often fail verification
 </div>
 
 </div>
-
 
 <div class="popup-item">
 
@@ -1275,7 +1176,6 @@ Keep your device settings and connection consistent with the selected country wh
 
 </div>
 
-
 <div class="popup-item">
 
 <div class="popup-item-icon">
@@ -1291,7 +1191,6 @@ Keep the app open and maintain a stable connection.
 </div>
 
 </div>
-
 
 <div class="popup-warning">
 
@@ -1311,7 +1210,6 @@ If a server does not receive a code, please try another server. Each server show
 
 </div>
 
-
 <button
   class="popup-close"
   onclick="closeVerificationPopup()"
@@ -1324,7 +1222,7 @@ I Understand
 </div>
 
 
-<!-- NEW POST-PURCHASE PORTAL NOTICE -->
+<!-- PORTAL NOTICE -->
 
 <div
   id="portalNoticePopup"
@@ -1351,7 +1249,6 @@ I Understand
 
 </div>
 
-
 <div class="popup-visual">
 
 <div class="popup-sticker">
@@ -1359,7 +1256,6 @@ I Understand
 </div>
 
 </div>
-
 
 <div class="popup-body">
 
@@ -1372,7 +1268,6 @@ If your purchased number does not receive a verification code:
 Turn on a VPN and connect to the same country as the number you purchased.
 
 </div>
-
 
 <div class="popup-item">
 
@@ -1390,7 +1285,6 @@ If you purchased a 🇺🇸 USA number, connect your VPN to the United States. Y
 
 </div>
 
-
 <div class="popup-item">
 
 <div class="popup-item-icon">
@@ -1406,7 +1300,6 @@ Uninstall and reinstall the app you are trying to register, then try the verific
 </div>
 
 </div>
-
 
 <div class="popup-warning">
 
@@ -1425,7 +1318,6 @@ Please make sure your VPN country matches the country of your purchased number.
 </div>
 
 </div>
-
 
 <button
   class="popup-close"
@@ -1457,12 +1349,26 @@ const supabaseClient =
     SUPABASE_KEY
   );
 
+
 /* ============================================================
-   API (UPDATED WITH AUTO-REFRESH)
+   PROVIDER
 ============================================================ */
 
-const FUNCTION_URL =
+let provider = "smsbower";
+
+const SMSBOWER_FUNCTION_URL =
   `${SUPABASE_URL}/functions/v1/numpool-api`;
+
+const FIVESIM_FUNCTION_URL =
+  `${SUPABASE_URL}/functions/v1/fivesim-api`;
+
+let FUNCTION_URL =
+  SMSBOWER_FUNCTION_URL;
+
+
+/* ============================================================
+   API
+============================================================ */
 
 async function api(
   action,
@@ -1474,22 +1380,42 @@ async function api(
   } =
     await supabaseClient.auth.getSession();
 
-  let session = sessionData?.session;
+  let session =
+    sessionData?.session;
 
-  if (!session) {
-    const { data: refreshedData, error: refreshError } =
+  if(!session){
+
+    const {
+      data: refreshedData,
+      error: refreshError
+    } =
       await supabaseClient.auth.refreshSession();
 
-    if (refreshError || !refreshedData?.session) {
-      alert("Your session has expired. Please log in again.");
-      window.location.href = "login.html";
-      throw new Error("Please log in again.");
+    if(
+      refreshError ||
+      !refreshedData?.session
+    ){
+
+      alert(
+        "Your session has expired. Please log in again."
+      );
+
+      window.location.href =
+        "login.html";
+
+      throw new Error(
+        "Please log in again."
+      );
+
     }
 
-    session = refreshedData.session;
+    session =
+      refreshedData.session;
+
   }
 
-  const token = session.access_token;
+  const token =
+    session.access_token;
 
   const response =
     await fetch(
@@ -1524,14 +1450,17 @@ async function api(
     !response.ok ||
     data.success === false
   ){
+
     throw new Error(
       data.error ||
       data.message ||
       "Something went wrong."
     );
+
   }
 
   return data;
+
 }
 
 
@@ -1559,6 +1488,130 @@ let currentOrderId = null;
 
 
 /* ============================================================
+   PROVIDER SWITCH
+============================================================ */
+
+async function changeProvider(
+  newProvider
+){
+
+  if(
+    newProvider !== "smsbower" &&
+    newProvider !== "fivesim"
+  ){
+    return;
+  }
+
+  provider =
+    newProvider;
+
+  FUNCTION_URL =
+    provider === "smsbower"
+      ? SMSBOWER_FUNCTION_URL
+      : FIVESIM_FUNCTION_URL;
+
+  document
+    .getElementById(
+      "smsbowerProviderTab"
+    )
+    .classList.toggle(
+      "active",
+      provider === "smsbower"
+    );
+
+  document
+    .getElementById(
+      "fivesimProviderTab"
+    )
+    .classList.toggle(
+      "active",
+      provider === "fivesim"
+    );
+
+  selectedCountry = null;
+  selectedService = null;
+  selectedServer = null;
+
+  countries = [];
+  services = [];
+  servers = [];
+
+  currentOrderId = null;
+
+  document
+    .getElementById(
+      "countrySearch"
+    )
+    .value = "";
+
+  document
+    .getElementById(
+      "serviceSearch"
+    )
+    .value = "";
+
+  document
+    .getElementById(
+      "serviceSearch"
+    )
+    .disabled = true;
+
+  document
+    .getElementById(
+      "selectedCountryBox"
+    )
+    .classList.add("hidden");
+
+  document
+    .getElementById(
+      "selectedServiceBox"
+    )
+    .classList.add("hidden");
+
+  document
+    .getElementById(
+      "serverSection"
+    )
+    .classList.add("hidden");
+
+  document
+    .getElementById(
+      "serviceList"
+    )
+    .innerHTML = `
+      <div class="empty">
+        Select a country first.
+      </div>
+    `;
+
+  document
+    .getElementById(
+      "currentOrder"
+    )
+    .innerHTML = `
+      <div class="loading">
+        Loading current order...
+      </div>
+    `;
+
+  document
+    .getElementById(
+      "previousOrders"
+    )
+    .innerHTML = `
+      <div class="loading">
+        Loading orders...
+      </div>
+    `;
+
+  await loadCountries();
+
+  await loadOrders();
+
+}
+
+
+/* ============================================================
    SAFE NAIRA
 ============================================================ */
 
@@ -1579,6 +1632,7 @@ function naira(value){
     Math.ceil(n)
       .toLocaleString()
   );
+
 }
 
 
@@ -1589,26 +1643,12 @@ function naira(value){
 function escapeHTML(value){
 
   return String(value ?? "")
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
-    );
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
 }
 
 
@@ -1620,15 +1660,13 @@ function toggleMenu(){
 
   document
     .getElementById("menu")
-    .classList.toggle(
-      "hidden"
-    );
+    .classList.toggle("hidden");
 
 }
 
 
 /* ============================================================
-   VERIFICATION POPUP
+   POPUPS
 ============================================================ */
 
 function closeVerificationPopup(){
@@ -1642,11 +1680,6 @@ function closeVerificationPopup(){
 
 }
 
-
-/* ============================================================
-   PORTAL NOTICE
-============================================================ */
-
 function closePortalNotice(){
 
   document
@@ -1657,7 +1690,6 @@ function closePortalNotice(){
       "none";
 
 }
-
 
 function showPortalNotice(){
 
@@ -1687,34 +1719,26 @@ function changeVersion(
       ".version-tab"
     )
     .forEach(
-      button => {
+      button =>
         button.classList.remove(
           "active"
-        );
-      }
+        )
     );
 
   document
     .getElementById(
-      newVersion
-        .toLowerCase() +
+      newVersion.toLowerCase() +
       "Tab"
     )
     .classList.add(
       "active"
     );
 
-  selectedCountry =
-    null;
-
-  selectedService =
-    null;
-
-  selectedServer =
-    null;
+  selectedCountry = null;
+  selectedService = null;
+  selectedServer = null;
 
   services = [];
-
   servers = [];
 
   document
@@ -1733,17 +1757,13 @@ function changeVersion(
     .getElementById(
       "selectedServiceBox"
     )
-    .classList.add(
-      "hidden"
-    );
+    .classList.add("hidden");
 
   document
     .getElementById(
       "serverSection"
     )
-    .classList.add(
-      "hidden"
-    );
+    .classList.add("hidden");
 
   document
     .getElementById(
@@ -1759,22 +1779,52 @@ function changeVersion(
     .getElementById(
       "selectedCountryBox"
     )
-    .classList.add(
-      "hidden"
-    );
-
-  document
-    .getElementById(
-      "selectedCountryBox"
-    )
-    .textContent = "";
+    .classList.add("hidden");
 
 }
 
 
 /* ============================================================
-   COUNTRY SEARCH
+   COUNTRY HELPERS
 ============================================================ */
+
+function countryKey(
+  country
+){
+
+  return String(
+    country?.country_key ||
+    country?.key ||
+    country?.slug ||
+    country?.code ||
+    country?.id ||
+    ""
+  );
+
+}
+
+function countryName(
+  country
+){
+
+  return String(
+    country?.name ||
+    country?.country_name ||
+    country?.eng ||
+    country?.provider_name ||
+    countryKey(country)
+  );
+
+}
+
+function countryId(
+  country
+){
+
+  return country?.id;
+
+}
+
 
 function countryMatches(
   country,
@@ -1782,7 +1832,7 @@ function countryMatches(
 ){
 
   const q =
-    query
+    String(query || "")
       .trim()
       .toLowerCase();
 
@@ -1791,16 +1841,17 @@ function countryMatches(
   }
 
   const aliases =
-    Array.isArray(
-      country.aliases
-    )
+    Array.isArray(country.aliases)
       ? country.aliases
       : [];
 
   const haystack = [
-    country.name,
-    country.eng,
-    country.provider_name,
+    countryName(country),
+    country?.eng,
+    country?.provider_name,
+    country?.country_key,
+    country?.slug,
+    country?.code,
     ...aliases
   ]
     .filter(Boolean)
@@ -1813,15 +1864,9 @@ function countryMatches(
   ){
 
     return (
-      haystack.includes(
-        "united states"
-      ) ||
-      haystack.includes(
-        "usa"
-      ) ||
-      haystack.includes(
-        " us"
-      ) ||
+      haystack.includes("united states") ||
+      haystack.includes("usa") ||
+      haystack.includes(" us") ||
       haystack === "us"
     );
 
@@ -1833,25 +1878,16 @@ function countryMatches(
   ){
 
     return (
-      haystack.includes(
-        "united kingdom"
-      ) ||
-      haystack.includes(
-        "england"
-      ) ||
-      haystack.includes(
-        " uk"
-      ) ||
-      haystack.includes(
-        " gb"
-      )
+      haystack.includes("united kingdom") ||
+      haystack.includes("england") ||
+      haystack.includes(" uk") ||
+      haystack.includes(" gb")
     );
 
   }
 
-  return haystack.includes(
-    q
-  );
+  return haystack.includes(q);
+
 }
 
 
@@ -1888,14 +1924,10 @@ async function loadCountries(){
   try{
 
     const data =
-      await api(
-        "countries"
-      );
+      await api("countries");
 
     countries =
-      Array.isArray(
-        data.countries
-      )
+      Array.isArray(data.countries)
         ? data.countries
         : [];
 
@@ -1905,9 +1937,7 @@ async function loadCountries(){
 
     list.innerHTML = `
       <div class="empty">
-        ${escapeHTML(
-          error.message
-        )}
+        ${escapeHTML(error.message)}
       </div>
     `;
 
@@ -1949,41 +1979,69 @@ function renderCountries(
     `;
 
     return;
+
   }
 
   list.innerHTML =
     filtered
       .map(
-        country => `
+        country => {
 
-        <div
-          class="choice ${
+          const isSelected =
             selectedCountry &&
-            String(
-              selectedCountry.id
+            countryKey(
+              selectedCountry
             ) ===
-            String(country.id)
-              ? "selected"
-              : ""
-          }"
-          onclick="selectCountry(
-            ${JSON.stringify(
+            countryKey(
               country
-            ).replace(
-              /"/g,
-              "&quot;"
-            )}
-          )"
-        >
+            );
 
-          ${escapeHTML(
-            country.name
-          )}
+          return `
 
-        </div>
-        `
+            <div
+              class="choice ${
+                isSelected
+                  ? "selected"
+                  : ""
+              }"
+              data-country-index="${
+                countries.indexOf(country)
+              }"
+            >
+              ${escapeHTML(
+                countryName(country)
+              )}
+            </div>
+
+          `;
+
+        }
       )
       .join("");
+
+  list
+    .querySelectorAll(
+      "[data-country-index]"
+    )
+    .forEach(
+      element => {
+
+        element.onclick = () => {
+
+          const index =
+            Number(
+              element.dataset
+                .countryIndex
+            );
+
+          selectCountry(
+            countries[index]
+          );
+
+        };
+
+      }
+    );
 
 }
 
@@ -1999,14 +2057,10 @@ async function selectCountry(
   selectedCountry =
     country;
 
-  selectedService =
-    null;
-
-  selectedServer =
-    null;
+  selectedService = null;
+  selectedServer = null;
 
   services = [];
-
   servers = [];
 
   document
@@ -2022,7 +2076,7 @@ async function selectCountry(
       "selectedCountryBox"
     )
     .textContent =
-      `Selected: ${country.name}`;
+      `Selected: ${countryName(country)}`;
 
   document
     .getElementById(
@@ -2056,9 +2110,7 @@ async function selectCountry(
     .getElementById(
       "serverSection"
     )
-    .classList.add(
-      "hidden"
-    );
+    .classList.add("hidden");
 
   await loadServices();
 
@@ -2073,19 +2125,40 @@ async function loadServices(){
 
   try{
 
-    const data =
-      await api(
-        "services",
-        {
-          country_id:
-            selectedCountry.id
-        }
-      );
+    let data;
+
+    if(
+      provider === "smsbower"
+    ){
+
+      data =
+        await api(
+          "services",
+          {
+            country_id:
+              countryId(
+                selectedCountry
+              )
+          }
+        );
+
+    }else{
+
+      data =
+        await api(
+          "services",
+          {
+            country:
+              countryKey(
+                selectedCountry
+              )
+          }
+        );
+
+    }
 
     services =
-      Array.isArray(
-        data.services
-      )
+      Array.isArray(data.services)
         ? data.services
         : [];
 
@@ -2128,6 +2201,37 @@ function filterServices(){
 
 
 /* ============================================================
+   SERVICE HELPERS
+============================================================ */
+
+function serviceCode(
+  service
+){
+
+  return String(
+    service?.service_code ||
+    service?.product ||
+    service?.code ||
+    ""
+  );
+
+}
+
+function serviceName(
+  service
+){
+
+  return String(
+    service?.service_name ||
+    service?.name ||
+    service?.product ||
+    serviceCode(service)
+  );
+
+}
+
+
+/* ============================================================
    RENDER SERVICES
 ============================================================ */
 
@@ -2154,17 +2258,11 @@ function renderServices(
         }
 
         return (
-          String(
-            service.service_name ||
-            ""
-          )
+          serviceName(service)
             .toLowerCase()
             .includes(q)
           ||
-          String(
-            service.service_code ||
-            ""
-          )
+          serviceCode(service)
             .toLowerCase()
             .includes(q)
         );
@@ -2183,6 +2281,7 @@ function renderServices(
     `;
 
     return;
+
   }
 
   list.innerHTML =
@@ -2192,40 +2291,43 @@ function renderServices(
 
           const stock =
             Number(
-              service.stock
+              service.stock ??
+              service.count
             );
 
           const stockText =
-            Number.isFinite(
-              stock
-            ) &&
+            Number.isFinite(stock) &&
             stock > 0
               ? `${stock.toLocaleString()} available`
-              : "No stock";
+              : "Live availability";
+
+          const isSelected =
+            selectedService &&
+            serviceCode(
+              selectedService
+            ) ===
+            serviceCode(
+              service
+            );
 
           return `
 
             <div
               class="choice ${
-                selectedService &&
-                selectedService.service_code ===
-                service.service_code
+                isSelected
                   ? "selected"
                   : ""
               }"
-              onclick="selectService(
-                ${JSON.stringify(
-                  service
-                ).replace(
-                  /"/g,
-                  "&quot;"
-                )}
-              )"
+              data-service-code="${
+                escapeHTML(
+                  serviceCode(service)
+                )
+              }"
             >
 
               <strong>
                 ${escapeHTML(
-                  service.service_name
+                  serviceName(service)
                 )}
               </strong>
 
@@ -2236,9 +2338,7 @@ function renderServices(
                   opacity:.75;
                 "
               >
-                ${escapeHTML(
-                  stockText
-                )}
+                ${escapeHTML(stockText)}
               </div>
 
             </div>
@@ -2248,6 +2348,35 @@ function renderServices(
         }
       )
       .join("");
+
+  list
+    .querySelectorAll(
+      "[data-service-code]"
+    )
+    .forEach(
+      element => {
+
+        element.onclick = () => {
+
+          const code =
+            element.dataset
+              .serviceCode;
+
+          const service =
+            services.find(
+              item =>
+                serviceCode(item) ===
+                code
+            );
+
+          if(service){
+            selectService(service);
+          }
+
+        };
+
+      }
+    );
 
 }
 
@@ -2263,8 +2392,7 @@ async function selectService(
   selectedService =
     service;
 
-  selectedServer =
-    null;
+  selectedServer = null;
 
   servers = [];
 
@@ -2281,7 +2409,7 @@ async function selectService(
       "selectedServiceBox"
     )
     .textContent =
-      `Selected: ${service.service_name}`;
+      `Selected: ${serviceName(service)}`;
 
   document
     .getElementById(
@@ -2343,22 +2471,55 @@ async function loadServers(){
 
   try{
 
-    const data =
-      await api(
-        "prices",
-        {
-          country_id:
-            selectedCountry.id,
+    let data;
 
-          service_code:
-            selectedService.service_code
-        }
-      );
+    if(
+      provider === "smsbower"
+    ){
+
+      data =
+        await api(
+          "prices",
+          {
+            country_id:
+              countryId(
+                selectedCountry
+              ),
+
+            service_code:
+              serviceCode(
+                selectedService
+              )
+          }
+        );
+
+    }else{
+
+      data =
+        await api(
+          "servers",
+          {
+            country:
+              countryKey(
+                selectedCountry
+              ),
+
+            service:
+              serviceCode(
+                selectedService
+              ),
+
+            product:
+              serviceCode(
+                selectedService
+              )
+          }
+        );
+
+    }
 
     servers =
-      Array.isArray(
-        data.servers
-      )
+      Array.isArray(data.servers)
         ? data.servers
         : [];
 
@@ -2384,6 +2545,62 @@ async function loadServers(){
 
 
 /* ============================================================
+   SERVER HELPERS
+============================================================ */
+
+function serverId(
+  server
+){
+
+  return String(
+    server?.server_id ??
+    server?.operator ??
+    server?.id ??
+    ""
+  );
+
+}
+
+function serverLabel(
+  server
+){
+
+  return String(
+    server?.label ||
+    server?.operator ||
+    server?.name ||
+    "Server"
+  );
+
+}
+
+function serverStock(
+  server
+){
+
+  return Number(
+    server?.stock ??
+    server?.count ??
+    0
+  );
+
+}
+
+function serverPrice(
+  server
+){
+
+  return Number(
+    server?.customer_price_ngn ??
+    server?.selling_price_ngn ??
+    server?.price_ngn ??
+    0
+  );
+
+}
+
+
+/* ============================================================
    RENDER SERVERS
 ============================================================ */
 
@@ -2399,23 +2616,15 @@ function renderServers(){
       server => {
 
         const stock =
-          Number(
-            server.stock
-          );
+          serverStock(server);
 
         const price =
-          Number(
-            server.customer_price_ngn
-          );
+          serverPrice(server);
 
         return (
-          Number.isFinite(
-            stock
-          ) &&
+          Number.isFinite(stock) &&
           stock > 0 &&
-          Number.isFinite(
-            price
-          ) &&
+          Number.isFinite(price) &&
           price > 0
         );
 
@@ -2439,49 +2648,43 @@ function renderServers(){
       .disabled = true;
 
     return;
+
   }
 
   list.innerHTML =
     validServers
       .map(
-        server => {
+        (server,index) => {
 
           const stock =
             Math.floor(
-              Number(
-                server.stock
-              )
+              serverStock(server)
             );
 
           const price =
-            Number(
-              server.customer_price_ngn
-            );
+            serverPrice(server);
+
+          const selected =
+            selectedServer &&
+            serverId(
+              selectedServer
+            ) ===
+            serverId(server);
 
           return `
 
             <div
               class="server ${
-                selectedServer &&
-                selectedServer.server_id ===
-                server.server_id
+                selected
                   ? "selected"
                   : ""
               }"
-              onclick="selectServer(
-                ${JSON.stringify(
-                  server
-                ).replace(
-                  /"/g,
-                  "&quot;"
-                )}
-              )"
+              data-server-index="${index}"
             >
 
               <div class="server-name">
                 ${escapeHTML(
-                  server.label ||
-                  "Server"
+                  serverLabel(server)
                 )}
               </div>
 
@@ -2502,6 +2705,30 @@ function renderServers(){
       )
       .join("");
 
+  list
+    .querySelectorAll(
+      "[data-server-index]"
+    )
+    .forEach(
+      element => {
+
+        element.onclick = () => {
+
+          const index =
+            Number(
+              element.dataset
+                .serverIndex
+            );
+
+          selectServer(
+            validServers[index]
+          );
+
+        };
+
+      }
+    );
+
 }
 
 
@@ -2514,24 +2741,17 @@ function selectServer(
 ){
 
   const price =
-    Number(
-      server.customer_price_ngn
-    );
+    serverPrice(server);
 
   const stock =
-    Number(
-      server.stock
-    );
+    serverStock(server);
 
   if(
-    !Number.isFinite(
-      price
-    ) ||
+    !Number.isFinite(price) ||
     price <= 0
   ){
 
-    selectedServer =
-      null;
+    selectedServer = null;
 
     document
       .getElementById(
@@ -2543,18 +2763,14 @@ function selectServer(
       .getElementById(
         "priceBox"
       )
-      .classList.add(
-        "hidden"
-      );
+      .classList.add("hidden");
 
     return;
 
   }
 
   if(
-    !Number.isFinite(
-      stock
-    ) ||
+    !Number.isFinite(stock) ||
     stock <= 0
   ){
 
@@ -2571,9 +2787,7 @@ function selectServer(
     .getElementById(
       "priceBox"
     )
-    .classList.remove(
-      "hidden"
-    );
+    .classList.remove("hidden");
 
   document
     .getElementById(
@@ -2623,17 +2837,16 @@ async function buyNumber(){
       "Select a country, service and server first.";
 
     return;
+
   }
 
   const price =
-    Number(
-      selectedServer.customer_price_ngn
+    serverPrice(
+      selectedServer
     );
 
   if(
-    !Number.isFinite(
-      price
-    ) ||
+    !Number.isFinite(price) ||
     price <= 0
   ){
 
@@ -2641,42 +2854,88 @@ async function buyNumber(){
       "Price unavailable. Please choose another server.";
 
     return;
+
   }
 
-  button.disabled =
-    true;
+  button.disabled = true;
 
   message.textContent =
     "Purchasing number...";
 
   try{
 
-    const data =
-      await api(
-        "buy",
-        {
-          country_id:
-            selectedCountry.id,
+    let data;
 
-          country_name:
-            selectedCountry.name,
+    if(
+      provider === "smsbower"
+    ){
 
-          service_code:
-            selectedService.service_code,
+      data =
+        await api(
+          "buy",
+          {
+            country_id:
+              countryId(
+                selectedCountry
+              ),
 
-          service_name:
-            selectedService.service_name,
+            country_name:
+              countryName(
+                selectedCountry
+              ),
 
-          server_id:
-            selectedServer.server_id
-        }
-      );
+            service_code:
+              serviceCode(
+                selectedService
+              ),
+
+            service_name:
+              serviceName(
+                selectedService
+              ),
+
+            server_id:
+              serverId(
+                selectedServer
+              )
+          }
+        );
+
+    }else{
+
+      const country =
+        countryKey(
+          selectedCountry
+        );
+
+      const product =
+        serviceCode(
+          selectedService
+        );
+
+      const operator =
+        serverId(
+          selectedServer
+        );
+
+      data =
+        await api(
+          "buy",
+          {
+            country,
+            service:product,
+            product,
+            operator,
+            server:operator
+          }
+        );
+
+    }
 
     message.textContent =
       data.message ||
       "Number successfully purchased.";
 
-    /* SHOW PORTAL NOTICE IMMEDIATELY AFTER SUCCESSFUL PURCHASE */
     showPortalNotice();
 
     await loadOrders();
@@ -2699,7 +2958,7 @@ async function buyNumber(){
 
 
 /* ============================================================
-   CURRENT ORDER
+   ORDER STATUS
 ============================================================ */
 
 function isCurrentOrder(
@@ -2707,10 +2966,9 @@ function isCurrentOrder(
 ){
 
   return (
-    order.status ===
-      "waiting" ||
-    order.status ===
-      "received"
+    order.status === "waiting" ||
+    order.status === "pending" ||
+    order.status === "received"
   );
 
 }
@@ -2722,6 +2980,7 @@ function statusLabel(
 
   const map = {
     waiting:"Pending",
+    pending:"Pending",
     received:"Received",
     cancelled:"Cancelled",
     refunded:"Refunded",
@@ -2736,6 +2995,10 @@ function statusLabel(
 }
 
 
+/* ============================================================
+   RENDER ORDER
+============================================================ */
+
 function renderOrder(
   order,
   showActions = true
@@ -2745,7 +3008,7 @@ function renderOrder(
     String(
       order.status ||
       ""
-    );
+    ).toLowerCase();
 
   const number =
     order.number ||
@@ -2758,9 +3021,7 @@ function renderOrder(
 
   let otpHTML = "";
 
-  if(
-    order.otp_code
-  ){
+  if(order.otp_code){
 
     otpHTML = `
       <div class="otp">
@@ -2776,7 +3037,10 @@ function renderOrder(
 
   if(
     showActions &&
-    status === "waiting"
+    (
+      status === "waiting" ||
+      status === "pending"
+    )
   ){
 
     actionsHTML = `
@@ -2810,9 +3074,7 @@ function renderOrder(
     <div class="order">
 
       <div class="order-number">
-        ${escapeHTML(
-          number
-        )}
+        ${escapeHTML(number)}
       </div>
 
       <div class="order-meta">
@@ -2824,6 +3086,7 @@ function renderOrder(
         ·
         ${escapeHTML(
           order.country_name ||
+          order.country_key ||
           ""
         )}
       </div>
@@ -2833,14 +3096,10 @@ function renderOrder(
       </div>
 
       <span
-        class="status ${escapeHTML(
-          status
-        )}"
+        class="status ${escapeHTML(status)}"
       >
         ${escapeHTML(
-          statusLabel(
-            status
-          )
+          statusLabel(status)
         )}
       </span>
 
@@ -2874,14 +3133,10 @@ async function loadOrders(){
   try{
 
     const data =
-      await api(
-        "orders"
-      );
+      await api("orders");
 
     orders =
-      Array.isArray(
-        data.orders
-      )
+      Array.isArray(data.orders)
         ? data.orders
         : [];
 
@@ -2918,11 +3173,8 @@ async function loadOrders(){
       orders.filter(
         order =>
           !active ||
-          Number(
-            order.id
-          ) !== Number(
-            active.id
-          )
+          Number(order.id) !==
+          Number(active.id)
       );
 
     if(
@@ -3038,9 +3290,6 @@ async function cancelOrder(
       "currentOrder"
     );
 
-  const previousHTML =
-    current.innerHTML;
-
   current.innerHTML = `
     <div class="loading">
       Cancelling number...
@@ -3089,9 +3338,7 @@ async function loadWallet(){
   try{
 
     const data =
-      await api(
-        "wallet"
-      );
+      await api("wallet");
 
     const balance =
       Number(
@@ -3099,9 +3346,7 @@ async function loadWallet(){
       );
 
     const safeBalance =
-      Number.isFinite(
-        balance
-      )
+      Number.isFinite(balance)
         ? balance
         : 0;
 
@@ -3110,14 +3355,10 @@ async function loadWallet(){
         "walletMini"
       )
       .textContent =
-        naira(
+        "₦" +
+        Math.ceil(
           safeBalance
-        ) ===
-        "Price unavailable"
-          ? "₦0"
-          : naira(
-              safeBalance
-            );
+        ).toLocaleString();
 
   }catch{
 
@@ -3139,7 +3380,6 @@ async function loadWallet(){
 
 async function init(){
 
-  /* ALWAYS SHOW VERIFICATION POPUP ON EVERY PAGE LOAD/REFRESH */
   document
     .getElementById(
       "verificationPopup"
@@ -3157,15 +3397,13 @@ async function init(){
 
 
 /* ============================================================
-   AUTO REFRESH CURRENT ORDER
+   AUTO REFRESH
 ============================================================ */
 
 setInterval(
   async () => {
 
-    if(
-      currentOrderId
-    ){
+    if(currentOrderId){
 
       try{
 
@@ -3180,7 +3418,7 @@ setInterval(
         await loadOrders();
 
       }catch{
-        // Don't interrupt the UI.
+        // Keep UI running.
       }
 
     }
