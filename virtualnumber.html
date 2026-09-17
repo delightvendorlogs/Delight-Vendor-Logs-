@@ -1501,7 +1501,6 @@ async function changeProvider(
 
   await loadAllOrders();
 
-
 }
 
 
@@ -2874,20 +2873,22 @@ async function buyNumber(){
    CURRENT ORDER
 ============================================================ */
 
+/*
+   IMPORTANT:
+
+   "Current / New Order" now means the MOST RECENT ORDER,
+   not only an order that is still waiting.
+
+   This allows cancelled, refunded, received, finished and
+   failed orders to remain visible as the latest order.
+*/
+
 function isCurrentOrder(
-  order
+  order,
+  index = 0
 ){
 
-  const status =
-    String(
-      order?.status || ""
-    ).toLowerCase();
-
-  return (
-    status === "waiting" ||
-    status === "pending" ||
-    status === "received"
-  );
+  return index === 0;
 
 }
 
@@ -2904,6 +2905,7 @@ function statusLabel(
     waiting:"Pending",
     pending:"Pending",
     received:"Received",
+    finished:"Completed",
     cancelled:"Cancelled",
     refunded:"Refunded",
     failed:"Failed"
@@ -3099,6 +3101,13 @@ async function loadAllOrders(){
 
   try{
 
+    /*
+       ALWAYS LOAD BOTH PROVIDERS.
+
+       This means the order history is shared between
+       All Country Number 1 and All Country Number 2.
+    */
+
     const results =
       await Promise.allSettled([
 
@@ -3148,10 +3157,18 @@ async function loadAllOrders(){
             )
         : [];
 
+    /*
+       MERGE SMSBOWER + 5SIM INTO ONE ORDER LIST.
+    */
+
     const merged = [
       ...smsOrders,
       ...fiveSimOrders
     ];
+
+    /*
+       REMOVE DUPLICATES USING PROVIDER + LOCAL ORDER ID.
+    */
 
     const unique =
       new Map();
@@ -3172,6 +3189,10 @@ async function loadAllOrders(){
         unique.values()
       );
 
+    /*
+       NEWEST ORDER FIRST.
+    */
+
     combined.sort(
       (
         a,
@@ -3180,11 +3201,13 @@ async function loadAllOrders(){
         new Date(
           b.created_at ||
           b.purchased_at ||
+          b.updated_at ||
           0
         ) -
         new Date(
           a.created_at ||
           a.purchased_at ||
+          a.updated_at ||
           0
         )
     );
@@ -3192,10 +3215,24 @@ async function loadAllOrders(){
     orders =
       combined;
 
+    /*
+       THE FIRST / NEWEST ORDER IS ALWAYS THE
+       CURRENT / NEW ORDER.
+
+       It can be:
+       waiting
+       pending
+       received
+       finished
+       cancelled
+       refunded
+       failed
+    */
+
     const active =
-      orders.find(
-        isCurrentOrder
-      );
+      orders.length > 0
+        ? orders[0]
+        : null;
 
     if(active){
 
@@ -3223,6 +3260,11 @@ async function loadAllOrders(){
       `;
 
     }
+
+    /*
+       EVERYTHING EXCEPT THE NEWEST ORDER GOES
+       INTO PREVIOUS ORDERS.
+    */
 
     const activeKey =
       active
@@ -3482,16 +3524,48 @@ setInterval(
 
       try{
 
-        await api(
-          "check",
-          {
-            order_id:
-              currentOrderId
-          },
-          currentOrderProvider
-        );
+        /*
+           Only check orders that can actually receive
+           an update from the provider.
 
-        await loadAllOrders();
+           Cancelled/finished orders should not keep
+           getting checked every 15 seconds.
+        */
+
+        const current =
+          orders.find(
+            order =>
+              orderUniqueKey(order) ===
+              (
+                currentOrderProvider +
+                ":" +
+                String(currentOrderId)
+              )
+          );
+
+        const status =
+          String(
+            current?.status || ""
+          ).toLowerCase();
+
+        if(
+          status === "waiting" ||
+          status === "pending" ||
+          status === "received"
+        ){
+
+          await api(
+            "check",
+            {
+              order_id:
+                currentOrderId
+            },
+            currentOrderProvider
+          );
+
+          await loadAllOrders();
+
+        }
 
       }catch{
 
