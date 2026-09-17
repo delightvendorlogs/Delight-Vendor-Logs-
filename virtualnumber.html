@@ -624,6 +624,7 @@ input:focus{
 <body>
 
 <header>
+
 <h1>Virtual Numbers</h1>
 
 <div class="header-right">
@@ -640,6 +641,7 @@ onclick="toggleMenu()"
 </button>
 
 </div>
+
 </header>
 
 <main>
@@ -710,7 +712,7 @@ id="countrySearch"
 type="search"
 placeholder="Search country..."
 autocomplete="off"
-oninput="filterCountries()"
+oninput="filterCountries"
 >
 
 </div>
@@ -719,9 +721,11 @@ oninput="filterCountries()"
 id="countryList"
 class="choice-list"
 >
+
 <div class="loading">
 Loading countries...
 </div>
+
 </div>
 
 <div
@@ -754,9 +758,11 @@ disabled
 id="serviceList"
 class="choice-list"
 >
+
 <div class="empty">
 Select a country first.
 </div>
+
 </div>
 
 <div
@@ -1350,6 +1356,10 @@ async function loadWatermark(){
       "virtualNumberWatermark"
     );
 
+  if(!watermark){
+    return;
+  }
+
   watermark.classList.add(
     "hidden"
   );
@@ -1360,26 +1370,33 @@ async function loadWatermark(){
 
   try{
 
-    const data =
-      await api(
-        "watermark",
-        {
-          server:provider
-        },
-        provider
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("site_settings")
+        .select("value")
+        .eq("key","watermark")
+        .maybeSingle();
+
+    if(error){
+
+      console.error(
+        "Watermark error:",
+        error
       );
+
+      return;
+
+    }
 
     const text =
       String(
-        data?.watermark_text ??
-        data?.watermark?.watermark_text ??
-        data?.watermark?.text ??
-        ""
-      );
+        data?.value || ""
+      ).trim();
 
-    if(
-      text.trim()
-    ){
+    if(text){
 
       watermarkText =
         text;
@@ -1393,10 +1410,11 @@ async function loadWatermark(){
 
     }
 
-  }catch{
+  }catch(error){
 
-    watermark.classList.add(
-      "hidden"
+    console.error(
+      "Watermark loading error:",
+      error
     );
 
   }
@@ -1594,7 +1612,9 @@ function naira(value){
     !Number.isFinite(n) ||
     n <= 0
   ){
+
     return "Price unavailable";
+
   }
 
   return (
