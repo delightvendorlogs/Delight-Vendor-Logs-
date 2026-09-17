@@ -825,6 +825,12 @@ async function api(
 
   /*
     SMSBower keeps its existing action names.
+
+    5SIM uses:
+      action: "markup"
+      markup_action: "list"
+      markup_action: "upsert"
+      markup_action: "delete"
   */
 
   let finalAction = action;
@@ -833,20 +839,11 @@ async function api(
     currentProvider === "fivesim"
   ) {
 
-    /*
-      Convert our common UI actions to the
-      fivesim-api actions.
-    */
-
-    if (action === "markup_rules") {
-      finalAction = "markup";
-    }
-
-    if (action === "save_markup_rule") {
-      finalAction = "markup";
-    }
-
-    if (action === "delete_markup_rule") {
+    if (
+      action === "markup_rules" ||
+      action === "save_markup_rule" ||
+      action === "delete_markup_rule"
+    ) {
       finalAction = "markup";
     }
   }
@@ -858,29 +855,30 @@ async function api(
   };
 
   /*
-    5SIM markup endpoint expects its own
-    operation field.
+    IMPORTANT:
+    fivesim-api expects "markup_action",
+    NOT "operation".
   */
 
   if (
     currentProvider === "fivesim" &&
     action === "markup_rules"
   ) {
-    body.operation = "list";
+    body.markup_action = "list";
   }
 
   if (
     currentProvider === "fivesim" &&
     action === "save_markup_rule"
   ) {
-    body.operation = "upsert";
+    body.markup_action = "upsert";
   }
 
   if (
     currentProvider === "fivesim" &&
     action === "delete_markup_rule"
   ) {
-    body.operation = "delete";
+    body.markup_action = "delete";
   }
 
   const response =
@@ -2029,20 +2027,30 @@ async function loadServices(
     }
 
     /*
-      The existing SMSBower function expects
-      country_id.
+      IMPORTANT:
 
-      The 5SIM function also accepts country_id
-      in the services action.
+      SMSBower expects:
+        country_id
+
+      5SIM expects:
+        country
     */
+
+    const servicePayload =
+      currentProvider === "fivesim"
+        ? {
+            country:
+              requestCountryId
+          }
+        : {
+            country_id:
+              requestCountryId
+          };
 
     const data =
       await api(
         "services",
-        {
-          country_id:
-            requestCountryId
-        }
+        servicePayload
       );
 
     services =
