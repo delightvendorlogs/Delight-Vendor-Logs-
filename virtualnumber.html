@@ -1,15 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
->
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Virtual Numbers - Delight Vendor Logs</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -118,6 +111,20 @@ main{
 .version-tab.active{
   background:#111;
   color:#fff;
+}
+
+.watermark{
+  width:100%;
+  background:#111;
+  color:#fff;
+  border-radius:12px;
+  padding:12px 14px;
+  margin-bottom:15px;
+  font-size:13px;
+  line-height:1.45;
+  font-weight:bold;
+  white-space:pre-wrap;
+  word-break:break-word;
 }
 
 .card{
@@ -612,94 +619,83 @@ input:focus{
 }
 
 </style>
-
 </head>
 
 <body>
 
 <header>
-
 <h1>Virtual Numbers</h1>
 
 <div class="header-right">
 
-<div
-  id="walletMini"
-  class="wallet-mini"
->
+<div id="walletMini" class="wallet-mini">
 ₦0
 </div>
 
 <button
-  class="menu-button"
-  onclick="toggleMenu()"
+class="menu-button"
+onclick="toggleMenu()"
 >
 ☰
 </button>
 
 </div>
-
 </header>
 
-
 <main>
-
-
-<!-- PROVIDER -->
 
 <div class="provider-tabs">
 
 <button
-  id="smsbowerProviderTab"
-  class="provider-tab active"
-  onclick="changeProvider('smsbower')"
+id="smsbowerProviderTab"
+class="provider-tab active"
+onclick="changeProvider('smsbower')"
 >
-  All Country Number 1
+All Country Number 1
 </button>
 
 <button
-  id="fivesimProviderTab"
-  class="provider-tab"
-  onclick="changeProvider('fivesim')"
+id="fivesimProviderTab"
+class="provider-tab"
+onclick="changeProvider('fivesim')"
 >
-  All Country Number 2
+All Country Number 2
 </button>
 
 </div>
 
-
-<!-- VERSION -->
-
 <div class="version-tabs">
 
 <button
-  class="version-tab active"
-  id="v1Tab"
-  onclick="changeVersion('V1')"
+class="version-tab active"
+id="v1Tab"
+onclick="changeVersion('V1')"
 >
 V1
 </button>
 
 <button
-  class="version-tab"
-  id="v2Tab"
-  onclick="changeVersion('V2')"
+class="version-tab"
+id="v2Tab"
+onclick="changeVersion('V2')"
 >
 V2
 </button>
 
 <button
-  class="version-tab"
-  id="v3Tab"
-  onclick="changeVersion('V3')"
+class="version-tab"
+id="v3Tab"
+onclick="changeVersion('V3')"
 >
 V3
 </button>
 
 </div>
 
-
-<!-- COUNTRY -->
+<div
+id="virtualNumberWatermark"
+class="watermark hidden"
+></div>
 
 <section class="card">
 
@@ -710,35 +706,30 @@ V3
 <span class="search-icon">🔍</span>
 
 <input
-  id="countrySearch"
-  type="search"
-  placeholder="Search country..."
-  autocomplete="off"
-  oninput="filterCountries()"
+id="countrySearch"
+type="search"
+placeholder="Search country..."
+autocomplete="off"
+oninput="filterCountries()"
 >
 
 </div>
 
 <div
-  id="countryList"
-  class="choice-list"
+id="countryList"
+class="choice-list"
 >
-
 <div class="loading">
 Loading countries...
 </div>
-
 </div>
 
 <div
-  id="selectedCountryBox"
-  class="selected-box hidden"
+id="selectedCountryBox"
+class="selected-box hidden"
 ></div>
 
 </section>
-
-
-<!-- SERVICE -->
 
 <section class="card">
 
@@ -749,52 +740,47 @@ Loading countries...
 <span class="search-icon">🔍</span>
 
 <input
-  id="serviceSearch"
-  type="search"
-  placeholder="Search service..."
-  autocomplete="off"
-  oninput="filterServices()"
-  disabled
+id="serviceSearch"
+type="search"
+placeholder="Search service..."
+autocomplete="off"
+oninput="filterServices()"
+disabled
 >
 
 </div>
 
 <div
-  id="serviceList"
-  class="choice-list"
+id="serviceList"
+class="choice-list"
 >
-
 <div class="empty">
 Select a country first.
 </div>
-
 </div>
 
 <div
-  id="selectedServiceBox"
-  class="selected-box hidden"
+id="selectedServiceBox"
+class="selected-box hidden"
 ></div>
 
 </section>
 
-
-<!-- SERVER -->
-
 <section
-  id="serverSection"
-  class="card hidden"
+id="serverSection"
+class="card hidden"
 >
 
 <h2>Server</h2>
 
 <div
-  id="serverList"
-  class="server-grid"
+id="serverList"
+class="server-grid"
 ></div>
 
 <div
-  id="priceBox"
-  class="price-box hidden"
+id="priceBox"
+class="price-box hidden"
 >
 
 <div class="price-label">
@@ -802,8 +788,8 @@ Price
 </div>
 
 <div
-  id="selectedPrice"
-  class="price-value"
+id="selectedPrice"
+class="price-value"
 >
 Price unavailable
 </div>
@@ -811,23 +797,20 @@ Price unavailable
 </div>
 
 <button
-  id="buyButton"
-  class="buy-button"
-  onclick="buyNumber()"
-  disabled
+id="buyButton"
+class="buy-button"
+onclick="buyNumber()"
+disabled
 >
 Buy Number
 </button>
 
 <div
-  id="buyMessage"
-  class="message"
+id="buyMessage"
+class="message"
 ></div>
 
 </section>
-
-
-<!-- CURRENT ORDER -->
 
 <section class="card">
 
@@ -842,9 +825,6 @@ No current order.
 </div>
 
 </section>
-
-
-<!-- PREVIOUS -->
 
 <section class="card">
 
@@ -862,52 +842,49 @@ Loading orders...
 
 </main>
 
-
-<!-- MENU -->
-
 <div
-  id="menu"
-  class="menu hidden"
+id="menu"
+class="menu hidden"
 >
 
 <div
-  class="menu-item"
-  onclick="location.href='profile.html'"
+class="menu-item"
+onclick="location.href='profile.html'"
 >
 👤 Profile
 </div>
 
 <div
-  class="menu-item"
-  onclick="location.href='wallet.html'"
+class="menu-item"
+onclick="location.href='wallet.html'"
 >
 💰 Fund Wallet
 </div>
 
 <div
-  class="menu-item"
-  onclick="location.href='transactions.html'"
+class="menu-item"
+onclick="location.href='transactions.html'"
 >
 📜 Transactions
 </div>
 
 <div
-  class="menu-item"
-  onclick="location.href='purchases.html'"
+class="menu-item"
+onclick="location.href='purchases.html'"
 >
 🛒 My Purchases
 </div>
 
 <div
-  class="menu-item"
-  onclick="location.href='pending.html'"
+class="menu-item"
+onclick="location.href='pending.html'"
 >
 ⏳ Pending Orders
 </div>
 
 <div
-  class="menu-item"
-  onclick="location.href='settings.html'"
+class="menu-item"
+onclick="location.href='settings.html'"
 >
 ⚙️ Settings
 </div>
@@ -915,9 +892,9 @@ Loading orders...
 <div class="menu-item">
 
 <a
-  href="https://wa.me/2347015908401"
-  target="_blank"
-  style="color:inherit;text-decoration:none;"
+href="https://wa.me/2347015908401"
+target="_blank"
+style="color:inherit;text-decoration:none;"
 >
 💬 WhatsApp Support
 </a>
@@ -925,20 +902,19 @@ Loading orders...
 </div>
 
 <div
-  class="menu-item menu-close"
-  onclick="toggleMenu()"
+class="menu-item menu-close"
+onclick="toggleMenu()"
 >
 ✖ Close
 </div>
 
 </div>
 
-
 <!-- VERIFICATION POPUP -->
 
 <div
-  id="verificationPopup"
-  class="popup"
+id="verificationPopup"
+class="popup"
 >
 
 <div class="popup-card">
@@ -952,8 +928,8 @@ Loading orders...
 <h2>Important Verification</h2>
 
 <button
-  class="popup-x"
-  onclick="closeVerificationPopup()"
+class="popup-x"
+onclick="closeVerificationPopup()"
 >
 ×
 </button>
@@ -1061,8 +1037,8 @@ If a server does not receive a code, please try another server. Each server show
 </div>
 
 <button
-  class="popup-close"
-  onclick="closeVerificationPopup()"
+class="popup-close"
+onclick="closeVerificationPopup()"
 >
 I Understand
 </button>
@@ -1071,13 +1047,12 @@ I Understand
 
 </div>
 
-
 <!-- PORTAL NOTICE -->
 
 <div
-  id="portalNoticePopup"
-  class="popup"
-  style="display:none;"
+id="portalNoticePopup"
+class="popup"
+style="display:none;"
 >
 
 <div class="popup-card">
@@ -1091,8 +1066,8 @@ I Understand
 <h2>PORTAL NOTICE</h2>
 
 <button
-  class="popup-x"
-  onclick="closePortalNotice()"
+class="popup-x"
+onclick="closePortalNotice()"
 >
 ×
 </button>
@@ -1170,8 +1145,8 @@ Please make sure your VPN country matches the country of your purchased number.
 </div>
 
 <button
-  class="popup-close"
-  onclick="closePortalNotice()"
+class="popup-close"
+onclick="closePortalNotice()"
 >
 I Understand
 </button>
@@ -1179,7 +1154,6 @@ I Understand
 </div>
 
 </div>
-
 
 <script>
 
@@ -1231,8 +1205,9 @@ let selectedServer = null;
 let orders = [];
 
 let currentOrderId = null;
-
 let currentOrderProvider = null;
+
+let watermarkText = "";
 
 
 /* ============================================================
@@ -1365,6 +1340,71 @@ async function api(
 
 
 /* ============================================================
+   WATERMARK
+============================================================ */
+
+async function loadWatermark(){
+
+  const watermark =
+    document.getElementById(
+      "virtualNumberWatermark"
+    );
+
+  watermark.classList.add(
+    "hidden"
+  );
+
+  watermark.textContent = "";
+
+  watermarkText = "";
+
+  try{
+
+    const data =
+      await api(
+        "watermark",
+        {
+          server:provider
+        },
+        provider
+      );
+
+    const text =
+      String(
+        data?.watermark_text ??
+        data?.watermark?.watermark_text ??
+        data?.watermark?.text ??
+        ""
+      );
+
+    if(
+      text.trim()
+    ){
+
+      watermarkText =
+        text;
+
+      watermark.textContent =
+        text;
+
+      watermark.classList.remove(
+        "hidden"
+      );
+
+    }
+
+  }catch{
+
+    watermark.classList.add(
+      "hidden"
+    );
+
+  }
+
+}
+
+
+/* ============================================================
    PROVIDER SWITCH
 ============================================================ */
 
@@ -1454,6 +1494,8 @@ async function changeProvider(
         Select a country first.
       </div>
     `;
+
+  await loadWatermark();
 
   await loadCountries();
 
@@ -1745,7 +1787,10 @@ function countryMatches(
 
   if(
     q === "uk" ||
-    q === "gb"
+    q === "gb" ||
+    q === "england" ||
+    q === "great britain" ||
+    q === "united kingdom"
   ){
 
     return (
@@ -1753,7 +1798,17 @@ function countryMatches(
       name.includes("united kingdom") ||
       key === "uk" ||
       key === "gb" ||
-      haystack.includes("united kingdom")
+      haystack.includes("united kingdom") ||
+      haystack.includes("great britain") ||
+      (
+        q === "england" &&
+        (
+          key === "gb" ||
+          key === "uk" ||
+          name === "england" ||
+          haystack.includes("england")
+        )
+      )
     );
 
   }
@@ -2873,18 +2928,38 @@ function orderProvider(
 
   const server =
     String(
-      order?.server ||
-      ""
+      order?.server || ""
     )
       .toLowerCase();
 
   if(
     server === "fivesim"
   ){
+
     return "fivesim";
+
   }
 
   return "smsbower";
+
+}
+
+
+/* ============================================================
+   ORDER UNIQUE KEY
+============================================================ */
+
+function orderUniqueKey(
+  order
+){
+
+  return (
+    orderProvider(order) +
+    ":" +
+    String(
+      order?.id ?? ""
+    )
+  );
 
 }
 
@@ -3024,16 +3099,19 @@ async function loadAllOrders(){
 
     const results =
       await Promise.allSettled([
+
         api(
           "orders",
           {},
           "smsbower"
         ),
+
         api(
           "orders",
           {},
           "fivesim"
         )
+
       ]);
 
     const smsOrders =
@@ -3068,13 +3146,31 @@ async function loadAllOrders(){
             )
         : [];
 
-    const merged =
-      [
-        ...smsOrders,
-        ...fiveSimOrders
-      ];
+    const merged = [
+      ...smsOrders,
+      ...fiveSimOrders
+    ];
 
-    merged.sort(
+    const unique =
+      new Map();
+
+    merged.forEach(
+      order => {
+
+        unique.set(
+          orderUniqueKey(order),
+          order
+        );
+
+      }
+    );
+
+    const combined =
+      Array.from(
+        unique.values()
+      );
+
+    combined.sort(
       (
         a,
         b
@@ -3092,7 +3188,7 @@ async function loadAllOrders(){
     );
 
     orders =
-      merged;
+      combined;
 
     const active =
       orders.find(
@@ -3126,14 +3222,16 @@ async function loadAllOrders(){
 
     }
 
+    const activeKey =
+      active
+        ? orderUniqueKey(active)
+        : null;
+
     const previousOrders =
       orders.filter(
         order =>
-          !active ||
-          Number(order.id) !==
-          Number(active.id) ||
-          orderProvider(order) !==
-          orderProvider(active)
+          orderUniqueKey(order) !==
+          activeKey
       );
 
     if(
@@ -3244,7 +3342,9 @@ async function cancelOrder(
       "Cancel this number? Your refund will only be issued after the provider successfully cancels the number."
     )
   ){
+
     return;
+
   }
 
   const current =
@@ -3355,6 +3455,8 @@ async function init(){
     .style.display =
       "flex";
 
+  await loadWatermark();
+
   await loadCountries();
 
   await loadWallet();
@@ -3390,7 +3492,9 @@ setInterval(
         await loadAllOrders();
 
       }catch{
+
         // Keep UI running.
+
       }
 
     }
