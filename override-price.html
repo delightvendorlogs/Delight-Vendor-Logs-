@@ -1,466 +1,598 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markup Manager — Delight Vendor Logs</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <title>Markup Manager — Delight Vendor Logs</title>
 
-<style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-body{
-  font-family:Arial,Helvetica,sans-serif;
-  background:#f4f6f8;
-  color:#111;
-  min-height:100vh;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-header{
-  background:#000;
-  color:#fff;
-  padding:20px;
-  text-align:center;
-  font-size:22px;
-  font-weight:800;
-}
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #111;
+    }
 
-.container{
-  width:min(900px,94%);
-  margin:24px auto;
-}
+    .header {
+      background: #111;
+      color: #fff;
+      padding: 18px 20px;
+      font-size: 20px;
+      font-weight: 800;
+    }
 
-.card{
-  background:#fff;
-  border-radius:16px;
-  padding:20px;
-  margin-bottom:20px;
-  box-shadow:0 4px 18px rgba(0,0,0,.07);
-}
+    .container {
+      max-width: 900px;
+      margin: 25px auto;
+      padding: 0 16px 40px;
+    }
 
-.card h2{
-  font-size:18px;
-  margin-bottom:16px;
-}
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 15px rgba(0,0,0,.07);
+    }
 
-.provider-tabs{
-  display:flex;
-  gap:10px;
-  margin-bottom:20px;
-}
+    h2 {
+      margin-top: 0;
+      font-size: 20px;
+    }
 
-.provider-tab{
-  flex:1;
-  border:0;
-  border-radius:12px;
-  padding:14px 10px;
-  background:#e9ecef;
-  color:#111;
-  font-weight:800;
-  cursor:pointer;
-}
+    /* =====================================================
+       PROVIDER TABS
+    ===================================================== */
 
-.provider-tab.active{
-  background:#000;
-  color:#fff;
-}
+    .provider-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: #eee;
+      padding: 6px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
 
-.provider-title{
-  font-size:16px;
-  font-weight:800;
-  margin-bottom:14px;
-}
+    .provider-tab {
+      border: 0;
+      border-radius: 9px;
+      padding: 13px 10px;
+      background: transparent;
+      color: #555;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
 
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:14px;
-}
+    .provider-tab.active {
+      background: #111;
+      color: #fff;
+    }
 
-.field{
-  margin-bottom:14px;
-}
+    .provider-label {
+      display: inline-block;
+      margin-bottom: 15px;
+      padding: 7px 11px;
+      border-radius: 7px;
+      background: #f0f0f0;
+      font-size: 13px;
+      font-weight: 800;
+    }
 
-.field.full{
-  grid-column:1/-1;
-}
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
 
-label{
-  display:block;
-  font-size:13px;
-  font-weight:700;
-  margin-bottom:7px;
-}
+    .field {
+      margin-bottom: 15px;
+    }
 
-input,select{
-  width:100%;
-  border:1px solid #d8dde3;
-  border-radius:10px;
-  padding:12px;
-  font-size:14px;
-  outline:none;
-  background:#fff;
-}
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
 
-input:focus,select:focus{
-  border-color:#000;
-}
+    select,
+    input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #d5d9dd;
+      border-radius: 9px;
+      font-size: 15px;
+      background: #fff;
+    }
 
-button{
-  font-family:inherit;
-}
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 12px 18px;
+      font-weight: 700;
+      cursor: pointer;
+    }
 
-.main-btn{
-  width:100%;
-  border:0;
-  border-radius:11px;
-  padding:13px;
-  background:#000;
-  color:#fff;
-  font-weight:800;
-  cursor:pointer;
-}
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
 
-.secondary-btn{
-  border:1px solid #ddd;
-  border-radius:10px;
-  padding:10px 14px;
-  background:#fff;
-  font-weight:700;
-  cursor:pointer;
-}
+    .save-btn {
+      background: #111;
+      color: #fff;
+      width: 100%;
+      font-size: 16px;
+    }
 
-.danger-btn{
-  border:0;
-  border-radius:10px;
-  padding:10px 14px;
-  background:#d90429;
-  color:#fff;
-  font-weight:700;
-  cursor:pointer;
-}
+    .cancel-btn {
+      background: #ddd;
+      color: #111;
+      margin-top: 10px;
+      width: 100%;
+      display: none;
+    }
 
-.cancel-btn{
-  display:none;
-  width:100%;
-  margin-top:9px;
-  border:1px solid #ddd;
-  border-radius:11px;
-  padding:12px;
-  background:#fff;
-  font-weight:800;
-  cursor:pointer;
-}
+    .status {
+      margin-top: 12px;
+      padding: 11px;
+      border-radius: 8px;
+      display: none;
+      font-weight: 600;
+    }
 
-.status{
-  margin-top:14px;
-  padding:12px;
-  border-radius:10px;
-  background:#f1f3f5;
-  font-size:13px;
-  line-height:1.5;
-  display:none;
-}
+    .success {
+      background: #e7f8ed;
+      color: #147a38;
+    }
 
-.status.show{
-  display:block;
-}
+    .error {
+      background: #ffe9e9;
+      color: #b42318;
+    }
 
-.rules{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
+    .rule {
+      border: 1px solid #e1e4e8;
+      border-radius: 11px;
+      padding: 15px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
 
-.rule{
-  border:1px solid #e2e5e8;
-  border-radius:12px;
-  padding:14px;
-  background:#fafafa;
-}
+    .rule-title {
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
 
-.rule-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:10px;
-}
+    .rule-meta {
+      color: #666;
+      font-size: 14px;
+    }
 
-.rule-info{
-  font-size:13px;
-  line-height:1.6;
-}
+    .rule-percent {
+      font-size: 20px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
 
-.rule-info strong{
-  font-size:14px;
-}
+    .actions {
+      display: flex;
+      gap: 7px;
+    }
 
-.rule-actions{
-  display:flex;
-  gap:7px;
-  flex-shrink:0;
-}
+    .edit-btn {
+      background: #eee;
+    }
 
-.badge{
-  display:inline-block;
-  background:#000;
-  color:#fff;
-  border-radius:7px;
-  padding:3px 7px;
-  font-size:11px;
-  font-weight:800;
-}
+    .delete-btn {
+      background: #ffe2e2;
+      color: #b00000;
+    }
 
-.empty{
-  text-align:center;
-  color:#777;
-  font-size:14px;
-  padding:18px 0;
-}
+    .empty {
+      text-align: center;
+      color: #777;
+      padding: 20px;
+    }
 
-.search-box{
-  margin-bottom:8px;
-}
+    .loading {
+      color: #777;
+      font-size: 14px;
+      padding: 10px 0;
+    }
 
-.dropdown{
-  position:relative;
-}
+    .access-box {
+      padding: 40px;
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
 
-.dropdown-list{
-  position:absolute;
-  left:0;
-  right:0;
-  top:100%;
-  z-index:20;
-  background:#fff;
-  border:1px solid #ddd;
-  border-radius:10px;
-  margin-top:4px;
-  max-height:220px;
-  overflow:auto;
-  display:none;
-  box-shadow:0 6px 20px rgba(0,0,0,.1);
-}
+    .access-box h2 {
+      margin-bottom: 10px;
+    }
 
-.dropdown-list.show{
-  display:block;
-}
+    .access-box p {
+      color: #666;
+    }
 
-.dropdown-item{
-  padding:11px 12px;
-  cursor:pointer;
-  font-size:13px;
-}
+    /* =====================================================
+       SEARCHABLE DROPDOWN
+    ===================================================== */
 
-.dropdown-item:hover{
-  background:#f1f3f5;
-}
+    .search-select {
+      position: relative;
+      width: 100%;
+    }
 
-.watermark-box{
-  border:1px solid #e2e5e8;
-  border-radius:13px;
-  padding:16px;
-  background:#fafafa;
-}
+    .search-select-button {
+      width: 100%;
+      min-height: 47px;
+      padding: 13px 42px 13px 13px;
+      border: 1px solid #d5d9dd;
+      border-radius: 9px;
+      background: #fff;
+      color: #111;
+      text-align: left;
+      font-size: 15px;
+      font-weight: 400;
+      position: relative;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-.watermark-box textarea{
-  width:100%;
-  min-height:100px;
-  resize:vertical;
-  border:1px solid #d8dde3;
-  border-radius:10px;
-  padding:12px;
-  font-family:inherit;
-  font-size:14px;
-  outline:none;
-}
+    .search-select-button::after {
+      content: "▼";
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 11px;
+      color: #666;
+      pointer-events: none;
+    }
 
-.watermark-box textarea:focus{
-  border-color:#000;
-}
+    .search-select.open .search-select-button {
+      border-color: #111;
+    }
 
-.watermark-actions{
-  display:flex;
-  gap:9px;
-  margin-top:10px;
-}
+    .search-select-menu {
+      display: none;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 5px);
+      background: #fff;
+      border: 1px solid #d5d9dd;
+      border-radius: 10px;
+      box-shadow: 0 8px 25px rgba(0,0,0,.12);
+      z-index: 1000;
+      overflow: hidden;
+    }
 
-.watermark-actions button{
-  flex:1;
-}
+    .search-select.open .search-select-menu {
+      display: block;
+    }
 
-.hidden{
-  display:none!important;
-}
+    .search-select-search {
+      width: 100%;
+      border: 0;
+      border-bottom: 1px solid #e1e4e8;
+      border-radius: 0;
+      padding: 13px;
+      outline: none;
+      font-size: 15px;
+    }
 
-@media(max-width:650px){
-  .grid{
-    grid-template-columns:1fr;
-  }
+    .search-select-options {
+      max-height: 250px;
+      overflow-y: auto;
+    }
 
-  .field.full{
-    grid-column:auto;
-  }
+    .search-option {
+      padding: 12px 13px;
+      cursor: pointer;
+      font-size: 15px;
+    }
 
-  .provider-tabs{
-    flex-direction:column;
-  }
+    .search-option:hover {
+      background: #f1f3f5;
+    }
 
-  .rule-top{
-    flex-direction:column;
-  }
+    .search-option.selected {
+      background: #eee;
+      font-weight: 700;
+    }
 
-  .rule-actions{
-    width:100%;
-  }
+    .search-option.disabled {
+      color: #777;
+      cursor: default;
+    }
 
-  .rule-actions button{
-    flex:1;
-  }
+    .search-option.disabled:hover {
+      background: #fff;
+    }
 
-  .watermark-actions{
-    flex-direction:column;
-  }
-}
-</style>
+    .search-hidden-select {
+      display: none !important;
+    }
+
+    @media (max-width: 650px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .rule {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .actions {
+        width: 100%;
+      }
+
+      .actions button {
+        flex: 1;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<header>⚡ Delight Vendor Logs — Markup Manager</header>
+<div class="header">
+  ⚡ Delight Vendor Logs — Markup Manager
+</div>
 
 <div class="container">
+
+  <!-- =====================================================
+       PROVIDER SWITCH
+  ====================================================== -->
 
   <div class="card">
 
     <div class="provider-tabs">
-      <button class="provider-tab active" id="smsbowerTab" onclick="switchProvider('smsbower')">
-        All Country Number 1
+
+      <button
+        id="smsbowerTab"
+        class="provider-tab active"
+        type="button"
+        onclick="switchProvider('smsbower')"
+      >
+        SMSBower
       </button>
 
-      <button class="provider-tab" id="fivesimTab" onclick="switchProvider('fivesim')">
-        All Country Number 2
+      <button
+        id="fivesimTab"
+        class="provider-tab"
+        type="button"
+        onclick="switchProvider('fivesim')"
+      >
+        5SIM
       </button>
+
     </div>
 
-    <div class="provider-title" id="providerTitle">
-      SMSBower Markup & Watermark
+    <div class="provider-label" id="providerLabel">
+      SMSBower Markup
     </div>
 
-    <div class="watermark-box">
-      <label for="watermarkText">Permanent Watermark</label>
+    <!-- ===================================================
+         ADD / EDIT
+    ==================================================== -->
 
-      <textarea
-        id="watermarkText"
-        placeholder="Enter the watermark customers should see on the Virtual Numbers page..."
-      ></textarea>
-
-      <div class="watermark-actions">
-        <button class="main-btn" onclick="saveWatermark()">
-          Save Watermark
-        </button>
-
-        <button class="secondary-btn" onclick="deleteWatermark()">
-          Delete Watermark
-        </button>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="card">
-    <h2 id="markupHeading">Add / Edit SMSBower Markup Rule</h2>
+    <h2 id="formTitle">
+      Add Markup Rule
+    </h2>
 
     <div class="grid">
 
-      <div class="field">
-        <label>Country</label>
-
-        <div class="dropdown">
-          <input
-            id="countrySearch"
-            class="search-box"
-            type="text"
-            placeholder="Search country..."
-            autocomplete="off"
-          >
-
-          <div id="countryDropdown" class="dropdown-list"></div>
-        </div>
-      </div>
+      <!-- COUNTRY -->
 
       <div class="field">
-        <label>Service</label>
 
-        <div class="dropdown">
-          <input
-            id="serviceSearch"
-            class="search-box"
-            type="text"
-            placeholder="Search service..."
-            autocomplete="off"
+        <label>
+          Country
+        </label>
+
+        <select
+          id="countrySelect"
+          class="search-hidden-select"
+        >
+          <option value="">
+            Loading countries...
+          </option>
+        </select>
+
+        <div
+          class="search-select"
+          id="countrySearchSelect"
+        >
+
+          <button
+            type="button"
+            class="search-select-button"
+            id="countrySearchButton"
           >
+            Loading countries...
+          </button>
 
-          <div id="serviceDropdown" class="dropdown-list"></div>
+          <div class="search-select-menu">
+
+            <input
+              type="text"
+              class="search-select-search"
+              id="countrySearchInput"
+              placeholder="Search country..."
+              autocomplete="off"
+            />
+
+            <div
+              class="search-select-options"
+              id="countryOptions"
+            ></div>
+
+          </div>
+
         </div>
+
       </div>
 
-      <div class="field full">
-        <label>Markup Percentage</label>
 
-        <input
-          id="markupPercent"
-          type="number"
-          min="0"
-          step="0.01"
-          placeholder="Example: 100"
+      <!-- SERVICE -->
+
+      <div class="field">
+
+        <label>
+          Service
+        </label>
+
+        <select
+          id="serviceSelect"
+          class="search-hidden-select"
         >
-      </div>
+          <option value="">
+            Select country first
+          </option>
+        </select>
 
-      <div class="field full">
-        <button class="main-btn" onclick="saveMarkup()">
-          Save Markup
-        </button>
-
-        <button
-          class="cancel-btn"
-          id="cancelEditBtn"
-          onclick="cancelEdit()"
+        <div
+          class="search-select"
+          id="serviceSearchSelect"
         >
-          Cancel Edit
-        </button>
+
+          <button
+            type="button"
+            class="search-select-button"
+            id="serviceSearchButton"
+          >
+            Select country first
+          </button>
+
+          <div class="search-select-menu">
+
+            <input
+              type="text"
+              class="search-select-search"
+              id="serviceSearchInput"
+              placeholder="Search service..."
+              autocomplete="off"
+            />
+
+            <div
+              class="search-select-options"
+              id="serviceOptions"
+            ></div>
+
+          </div>
+
+        </div>
+
       </div>
 
     </div>
 
-    <div id="status" class="status"></div>
+
+    <div class="field">
+
+      <label>
+        Markup Percentage
+      </label>
+
+      <input
+        id="markupInput"
+        type="number"
+        min="0"
+        step="0.01"
+        placeholder="Example: 100"
+      />
+
+    </div>
+
+
+    <button
+      class="save-btn"
+      id="saveBtn"
+      onclick="saveRule()"
+    >
+      Save Markup
+    </button>
+
+
+    <button
+      class="cancel-btn"
+      id="cancelBtn"
+      onclick="cancelEdit()"
+    >
+      Cancel Edit
+    </button>
+
+
+    <div
+      id="status"
+      class="status"
+    ></div>
+
   </div>
 
-  <div class="card">
-    <h2>Current Markup Rules</h2>
 
-    <div id="rules" class="rules">
-      <div class="empty">Loading...</div>
+  <!-- =====================================================
+       EXISTING RULES
+  ====================================================== -->
+
+  <div class="card">
+
+    <h2 id="rulesTitle">
+      SMSBower Markup Rules
+    </h2>
+
+    <div id="rulesList">
+
+      <div class="loading">
+        Loading rules...
+      </div>
+
     </div>
+
   </div>
 
 </div>
 
+
 <script>
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
 
 const SUPABASE_ANON_KEY =
   "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
+/*
+  Existing SMSBower / NumPool function.
+*/
 const SMSBOWER_FUNCTION_URL =
   `${SUPABASE_URL}/functions/v1/numpool-api`;
 
+/*
+  Separate 5SIM function.
+*/
 const FIVESIM_FUNCTION_URL =
   `${SUPABASE_URL}/functions/v1/fivesim-api`;
 
@@ -470,7 +602,17 @@ const supabaseClient =
     SUPABASE_ANON_KEY
   );
 
-let provider = "smsbower";
+
+/* =========================================================
+   CURRENT PROVIDER
+========================================================= */
+
+let currentProvider = "smsbower";
+
+
+/* =========================================================
+   DATA
+========================================================= */
 
 let countries = [];
 let services = [];
@@ -482,1235 +624,2388 @@ let countryDropdownItems = [];
 let serviceDropdownItems = [];
 
 
-function providerName(){
-  return provider === "fivesim"
-    ? "5SIM"
-    : "SMSBower";
-}
+/* =========================================================
+   PROVIDER SWITCH
+========================================================= */
 
+async function switchProvider(provider) {
 
-function functionUrl(){
-  return provider === "fivesim"
-    ? FIVESIM_FUNCTION_URL
-    : SMSBOWER_FUNCTION_URL;
-}
-
-
-function showStatus(message, success=true){
-  const box = document.getElementById("status");
-
-  box.textContent = message;
-  box.classList.add("show");
-
-  box.style.background = success
-    ? "#eaf7ee"
-    : "#fdecec";
-
-  box.style.color = success
-    ? "#176b35"
-    : "#a61b1b";
-}
-
-
-async function getSession(){
-  const {data,error} =
-    await supabaseClient.auth.getSession();
-
-  if(error) throw error;
-
-  return data?.session || null;
-}
-
-
-async function checkAdmin(){
-  const session = await getSession();
-
-  if(!session){
-    window.location.href = "login.html";
-    return null;
+  if (
+    provider !== "smsbower" &&
+    provider !== "fivesim"
+  ) {
+    return;
   }
 
-  const {data,error} =
-    await supabaseClient
-      .from("admin_users")
-      .select("user_id")
-      .eq("user_id",session.user.id)
-      .maybeSingle();
+  /*
+    Cancel any edit when changing provider.
+    This prevents an SMSBower rule from accidentally
+    being edited while 5SIM is selected.
+  */
+  resetForm();
 
-  if(error || !data){
-    document.body.innerHTML = `
-      <div style="
-        min-height:100vh;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        font-family:Arial;
-        text-align:center;
-        padding:30px;
-      ">
-        <div>
-          <h2>Access Denied</h2>
-          <p style="margin-top:10px;color:#666">
-            Admin access is required.
-          </p>
-        </div>
-      </div>
-    `;
+  currentProvider = provider;
 
-    return null;
-  }
-
-  return session;
-}
-
-
-async function api(action,payload={},url=functionUrl()){
-  const session = await getSession();
-
-  if(!session){
-    throw new Error("Not authenticated");
-  }
-
-  const response =
-    await fetch(url,{
-      method:"POST",
-
-      headers:{
-        "Content-Type":"application/json",
-        "apikey":String(SUPABASE_ANON_KEY),
-        "Authorization":
-          "Bearer " + String(session.access_token)
-      },
-
-      body:JSON.stringify({
-        action,
-        version:"1.0.0",
-        ...payload
-      })
-    });
-
-  let data = null;
-
-  try{
-    data = await response.json();
-  }catch{
-    throw new Error(
-      `Server returned HTTP ${response.status}`
-    );
-  }
-
-  if(!response.ok || data?.success === false){
-    throw new Error(
-      data?.error ||
-      data?.message ||
-      `HTTP ${response.status}`
-    );
-  }
-
-  return data;
-}
-
-
-function normalizeText(value){
-  return String(value || "")
-    .trim()
-    .toLowerCase();
-}
-
-
-function countryName(country){
-  return String(
-    country?.name ||
-    country?.country_name ||
-    country?.eng ||
-    country?.provider_name ||
-    country?.country ||
-    country?.key ||
-    country?.country_key ||
-    ""
-  );
-}
-
-
-function countryKey(country){
-  return String(
-    country?.country_key ||
-    country?.key ||
-    country?.slug ||
-    country?.code ||
-    country?.country ||
-    country?.name ||
-    ""
-  ).trim().toLowerCase();
-}
-
-
-function serviceName(service){
-  return String(
-    service?.name ||
-    service?.service_name ||
-    service?.title ||
-    service?.service ||
-    service?.code ||
-    ""
-  );
-}
-
-
-function serviceCode(service){
-  return String(
-    service?.code ||
-    service?.service_code ||
-    service?.key ||
-    service?.slug ||
-    service?.service ||
-    service?.name ||
-    ""
-  ).trim();
-}
-
-
-function countryId(country){
-  return (
-    country?.id ??
-    country?.country_id ??
-    country?.countryId ??
-    null
-  );
-}
-
-
-function switchProvider(nextProvider){
-
-  provider = nextProvider;
-
-  document.getElementById("smsbowerTab")
+  document
+    .getElementById("smsbowerTab")
     .classList.toggle(
       "active",
       provider === "smsbower"
     );
 
-  document.getElementById("fivesimTab")
+  document
+    .getElementById("fivesimTab")
     .classList.toggle(
       "active",
       provider === "fivesim"
     );
 
-  document.getElementById("providerTitle").textContent =
-    provider === "fivesim"
-      ? "5SIM Markup & Watermark"
-      : "SMSBower Markup & Watermark";
+  document
+    .getElementById("providerLabel")
+    .textContent =
+      provider === "smsbower"
+        ? "SMSBower Markup"
+        : "5SIM Markup";
 
-  document.getElementById("markupHeading").textContent =
-    provider === "fivesim"
-      ? "Add / Edit 5SIM Markup Rule"
-      : "Add / Edit SMSBower Markup Rule";
+  document
+    .getElementById("rulesTitle")
+    .textContent =
+      provider === "smsbower"
+        ? "SMSBower Markup Rules"
+        : "5SIM Markup Rules";
 
-  cancelEdit();
+  /*
+    Clear provider-specific data before loading
+    the new provider.
+  */
 
-  loadProviderData();
-  loadWatermark();
+  countries = [];
+  services = [];
+  rules = [];
+
+  countryDropdownItems = [];
+  serviceDropdownItems = [];
+
+  document
+    .getElementById("rulesList")
+    .innerHTML = `
+      <div class="loading">
+        Loading ${provider === "smsbower" ? "SMSBower" : "5SIM"} rules...
+      </div>
+    `;
+
+  await loadCountries();
+
+  await loadRules();
 }
 
 
-async function loadProviderData(){
+/* =========================================================
+   ACCESS DENIED
+========================================================= */
 
-  try{
+function showAccessDenied(message) {
 
-    if(provider === "fivesim"){
+  document.body.innerHTML = `
+    <div class="access-box">
 
-      const result =
-        await api(
-          "countries",
-          {},
-          FIVESIM_FUNCTION_URL
-        );
+      <h2>
+        Access Denied
+      </h2>
 
-      countries =
-        Array.isArray(result?.countries)
-          ? result.countries
-          : Array.isArray(result?.data)
-            ? result.data
-            : [];
+      <p>
+        ${escapeHtml(message)}
+      </p>
 
-      const serviceResult =
-        await api(
-          "services",
-          {},
-          FIVESIM_FUNCTION_URL
-        );
+    </div>
+  `;
+}
 
-      services =
-        Array.isArray(serviceResult?.services)
-          ? serviceResult.services
-          : Array.isArray(serviceResult?.data)
-            ? serviceResult.data
-            : [];
 
-    }else{
+/* =========================================================
+   AUTH CHECK
+========================================================= */
 
-      const countryResult =
-        await api(
-          "countries",
-          {},
-          SMSBOWER_FUNCTION_URL
-        );
+async function checkAdmin() {
 
-      countries =
-        Array.isArray(countryResult?.countries)
-          ? countryResult.countries
-          : Array.isArray(countryResult?.data)
-            ? countryResult.data
-            : [];
+  try {
 
-      const serviceResult =
-        await api(
-          "services",
-          {},
-          SMSBOWER_FUNCTION_URL
-        );
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.getSession();
 
-      services =
-        Array.isArray(serviceResult?.services)
-          ? serviceResult.services
-          : Array.isArray(serviceResult?.data)
-            ? serviceResult.data
-            : [];
+    if (error) {
+
+      console.error(
+        "Supabase session error:",
+        error
+      );
+
+      showAccessDenied(
+        "Unable to verify login session: " +
+        error.message
+      );
+
+      return false;
     }
 
-    setupDropdowns();
-    await loadRules();
+    const session =
+      data?.session;
 
-  }catch(error){
+    if (!session) {
 
-    showStatus(
-      error?.message || "Unable to load provider data.",
-      false
+      showAccessDenied(
+        "Please login first."
+      );
+
+      return false;
+    }
+
+    return true;
+
+  } catch (error) {
+
+    console.error(
+      "checkAdmin:",
+      error
     );
 
-    countries = [];
-    services = [];
+    showAccessDenied(
+      "Unable to verify login session: " +
+      (
+        error?.message ||
+        "Unknown error"
+      )
+    );
 
-    setupDropdowns();
-    await loadRules();
+    return false;
   }
 }
 
 
-function setupDropdowns(){
+/* =========================================================
+   PROVIDER API
+========================================================= */
 
-  countryDropdownItems = countries.slice();
-  serviceDropdownItems = services.slice();
+async function api(
+  action,
+  payload = {}
+) {
 
-  renderCountryDropdown(countryDropdownItems);
-  renderServiceDropdown(serviceDropdownItems);
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.auth.getSession();
 
-  document.getElementById("countrySearch").value = "";
-  document.getElementById("serviceSearch").value = "";
+  if (error) {
 
-  document.getElementById("countrySearch").oninput = function(){
-    const q = normalizeText(this.value);
+    throw new Error(
+      error.message ||
+      "Unable to get login session."
+    );
+  }
 
-    countryDropdownItems =
-      countries.filter(country => {
+  const session =
+    data?.session;
 
-        const name =
-          normalizeText(countryName(country));
+  if (!session) {
 
-        const key =
-          normalizeText(countryKey(country));
+    throw new Error(
+      "Your login session has expired. Please login again."
+    );
+  }
 
-        const haystack =
-          `${name} ${key}`;
+  const functionUrl =
+    currentProvider === "smsbower"
+      ? SMSBOWER_FUNCTION_URL
+      : FIVESIM_FUNCTION_URL;
 
-        if(
-          q === "uk" ||
-          q === "gb" ||
-          q === "england" ||
-          q === "great britain" ||
-          q === "united kingdom"
-        ){
-          return (
-            name === "united kingdom" ||
-            name.includes("united kingdom") ||
-            key === "uk" ||
-            key === "gb" ||
-            haystack.includes("united kingdom") ||
-            haystack.includes("great britain") ||
-            haystack.includes("england")
-          );
-        }
+  /*
+    SMSBower keeps its existing action names.
+  */
 
-        if(
-          q === "us" ||
-          q === "usa" ||
-          q === "united states" ||
-          q === "america"
-        ){
-          return (
-            name === "united states" ||
-            name.includes("united states") ||
-            key === "us" ||
-            key === "usa" ||
-            haystack.includes("united states") ||
-            haystack.includes("usa")
-          );
-        }
+  let finalAction = action;
 
-        return (
-          name.includes(q) ||
-          key.includes(q) ||
-          haystack.includes(q)
-        );
-      });
+  if (
+    currentProvider === "fivesim"
+  ) {
 
-    renderCountryDropdown(countryDropdownItems);
-    openDropdown("countryDropdown");
+    /*
+      Convert our common UI actions to the
+      fivesim-api actions.
+    */
+
+    if (action === "markup_rules") {
+      finalAction = "markup";
+    }
+
+    if (action === "save_markup_rule") {
+      finalAction = "markup";
+    }
+
+    if (action === "delete_markup_rule") {
+      finalAction = "markup";
+    }
+  }
+
+  const body = {
+    action: finalAction,
+    version: "1.0.0",
+    ...payload
   };
 
+  /*
+    5SIM markup endpoint expects its own
+    operation field.
+  */
 
-  document.getElementById("serviceSearch").oninput = function(){
+  if (
+    currentProvider === "fivesim" &&
+    action === "markup_rules"
+  ) {
+    body.operation = "list";
+  }
 
-    const q =
-      normalizeText(this.value);
+  if (
+    currentProvider === "fivesim" &&
+    action === "save_markup_rule"
+  ) {
+    body.operation = "upsert";
+  }
 
-    serviceDropdownItems =
-      services.filter(service => {
+  if (
+    currentProvider === "fivesim" &&
+    action === "delete_markup_rule"
+  ) {
+    body.operation = "delete";
+  }
 
-        const name =
-          normalizeText(serviceName(service));
+  const response =
+    await fetch(
+      functionUrl,
+      {
+        method: "POST",
 
-        const code =
-          normalizeText(serviceCode(service));
+        headers: {
+          "Content-Type":
+            "application/json",
 
-        return (
-          name.includes(q) ||
-          code.includes(q)
-        );
-      });
+          "Authorization":
+            `Bearer ${session.access_token}`
+        },
 
-    renderServiceDropdown(serviceDropdownItems);
-    openDropdown("serviceDropdown");
-  };
+        body:
+          JSON.stringify(body)
+      }
+    );
+
+  let result;
+
+  try {
+
+    result =
+      await response.json();
+
+  } catch {
+
+    throw new Error(
+      `Server returned an invalid response (${response.status}).`
+    );
+  }
+
+  if (!response.ok) {
+
+    throw new Error(
+      result?.error ||
+      result?.message ||
+      `API request failed (${response.status}).`
+    );
+  }
+
+  if (
+    result &&
+    result.success === false
+  ) {
+
+    throw new Error(
+      result.error ||
+      result.message ||
+      "API request failed."
+    );
+  }
+
+  return result;
+}
 
 
-  document.getElementById("countrySearch").onfocus = function(){
-    renderCountryDropdown(countryDropdownItems);
-    openDropdown("countryDropdown");
-  };
+/* =========================================================
+   STATUS
+========================================================= */
 
+function showStatus(
+  message,
+  type = "success"
+) {
 
-  document.getElementById("serviceSearch").onfocus = function(){
-    renderServiceDropdown(serviceDropdownItems);
-    openDropdown("serviceDropdown");
-  };
+  const box =
+    document.getElementById(
+      "status"
+    );
 
+  box.textContent =
+    message;
 
-  document.addEventListener(
-    "click",
-    dropdownOutsideHandler
+  box.className =
+    `status ${type}`;
+
+  box.style.display =
+    "block";
+
+  setTimeout(
+    () => {
+
+      box.style.display =
+        "none";
+
+    },
+    4000
   );
 }
 
 
-function dropdownOutsideHandler(event){
+/* =========================================================
+   SEARCH HELPERS
+========================================================= */
 
-  if(
-    !event.target.closest(".dropdown")
-  ){
-    closeDropdown("countryDropdown");
-    closeDropdown("serviceDropdown");
-  }
+function normalizeSearch(value) {
+
+  return String(
+    value ?? ""
+  )
+    .toLowerCase()
+    .trim();
 }
 
 
-function openDropdown(id){
-  document
-    .getElementById(id)
-    .classList.add("show");
-}
+/* =========================================================
+   COUNTRY NAME / KEY
+========================================================= */
 
+function getCountryObject(idOrKey) {
 
-function closeDropdown(id){
-  document
-    .getElementById(id)
-    .classList.remove("show");
-}
+  return countries.find(
+    country => {
 
+      const id =
+        country?.id ??
+        country?.country_id;
 
-function renderCountryDropdown(items){
+      const key =
+        country?.key ??
+        country?.country_key ??
+        country?.code ??
+        country?.country;
 
-  const box =
-    document.getElementById("countryDropdown");
+      return (
+        String(id ?? "") ===
+          String(idOrKey ?? "") ||
 
-  box.innerHTML = "";
-
-  if(!items.length){
-
-    const empty =
-      document.createElement("div");
-
-    empty.className = "dropdown-item";
-    empty.textContent = "No country found";
-
-    box.appendChild(empty);
-
-    return;
-  }
-
-  items.forEach(country => {
-
-    const item =
-      document.createElement("div");
-
-    item.className = "dropdown-item";
-
-    item.textContent =
-      countryName(country);
-
-    item.onclick = function(){
-
-      document.getElementById(
-        "countrySearch"
-      ).value =
-        countryName(country);
-
-      document.getElementById(
-        "countrySearch"
-      ).dataset.countryId =
-        countryId(country) ?? "";
-
-      document.getElementById(
-        "countrySearch"
-      ).dataset.countryKey =
-        countryKey(country);
-
-      closeDropdown("countryDropdown");
-    };
-
-    box.appendChild(item);
-  });
-}
-
-
-function renderServiceDropdown(items){
-
-  const box =
-    document.getElementById("serviceDropdown");
-
-  box.innerHTML = "";
-
-  if(!items.length){
-
-    const empty =
-      document.createElement("div");
-
-    empty.className = "dropdown-item";
-    empty.textContent = "No service found";
-
-    box.appendChild(empty);
-
-    return;
-  }
-
-  items.forEach(service => {
-
-    const item =
-      document.createElement("div");
-
-    item.className = "dropdown-item";
-
-    item.textContent =
-      serviceName(service);
-
-    item.onclick = function(){
-
-      document.getElementById(
-        "serviceSearch"
-      ).value =
-        serviceName(service);
-
-      document.getElementById(
-        "serviceSearch"
-      ).dataset.serviceCode =
-        serviceCode(service);
-
-      closeDropdown("serviceDropdown");
-    };
-
-    box.appendChild(item);
-  });
-}
-
-
-async function loadRules(){
-
-  const box =
-    document.getElementById("rules");
-
-  box.innerHTML =
-    `<div class="empty">Loading...</div>`;
-
-  try{
-
-    const result =
-      await api(
-        "markup",
-        {mode:"list"},
-        functionUrl()
+        String(key ?? "").toLowerCase() ===
+          String(idOrKey ?? "").toLowerCase()
       );
 
-    rules =
-      Array.isArray(result?.rules)
-        ? result.rules
-        : Array.isArray(result?.data)
-          ? result.data
-          : [];
-
-    renderRules();
-
-  }catch(error){
-
-    box.innerHTML =
-      `<div class="empty">
-        Unable to load markup rules.
-      </div>`;
-
-    showStatus(
-      error?.message ||
-      "Unable to load markup rules.",
-      false
-    );
-  }
-}
-
-
-function ruleCountryLabel(rule){
-
-  if(
-    normalizeText(rule?.country_key) === "overall" ||
-    normalizeText(rule?.country_key) === "all" ||
-    normalizeText(rule?.country_key) === "*"
-  ){
-    return "Overall Countries";
-  }
-
-  if(
-    provider === "fivesim"
-  ){
-    return (
-      rule?.country_name ||
-      rule?.country_key ||
-      "Unknown Country"
-    );
-  }
-
-  const id =
-    rule?.country_id ??
-    rule?.country;
-
-  const found =
-    countries.find(c =>
-      String(countryId(c)) === String(id)
-    );
-
-  return found
-    ? countryName(found)
-    : (
-      rule?.country_name ||
-      rule?.country_id ||
-      "Unknown Country"
-    );
-}
-
-
-function ruleServiceLabel(rule){
-
-  const code =
-    rule?.service_code ??
-    rule?.service;
-
-  if(
-    normalizeText(code) === "overall" ||
-    normalizeText(code) === "all" ||
-    normalizeText(code) === "*"
-  ){
-    return "Overall Services";
-  }
-
-  const found =
-    services.find(s =>
-      normalizeText(serviceCode(s)) ===
-      normalizeText(code)
-    );
-
-  return found
-    ? serviceName(found)
-    : (
-      rule?.service_name ||
-      code ||
-      "Unknown Service"
-    );
-}
-
-
-function renderRules(){
-
-  const box =
-    document.getElementById("rules");
-
-  if(!rules.length){
-
-    box.innerHTML =
-      `<div class="empty">
-        No ${providerName()} markup rules yet.
-      </div>`;
-
-    return;
-  }
-
-  box.innerHTML = "";
-
-  rules.forEach(rule => {
-
-    const wrapper =
-      document.createElement("div");
-
-    wrapper.className = "rule";
-
-    const top =
-      document.createElement("div");
-
-    top.className = "rule-top";
-
-    const info =
-      document.createElement("div");
-
-    info.className = "rule-info";
-
-    const strong =
-      document.createElement("strong");
-
-    strong.textContent =
-      `${ruleCountryLabel(rule)} × ${ruleServiceLabel(rule)}`;
-
-    const line =
-      document.createElement("div");
-
-    line.textContent =
-      `Markup: ${Number(
-        rule.markup_percent ?? 0
-      )}%`;
-
-    const server =
-      document.createElement("span");
-
-    server.className = "badge";
-    server.textContent =
-      providerName();
-
-    info.appendChild(strong);
-    info.appendChild(document.createElement("br"));
-    info.appendChild(line);
-    info.appendChild(document.createElement("br"));
-    info.appendChild(server);
-
-    const actions =
-      document.createElement("div");
-
-    actions.className = "rule-actions";
-
-    const edit =
-      document.createElement("button");
-
-    edit.className = "secondary-btn";
-    edit.textContent = "Edit";
-
-    edit.onclick = function(){
-      editRule(rule);
-    };
-
-    const del =
-      document.createElement("button");
-
-    del.className = "danger-btn";
-    del.textContent = "Delete";
-
-    del.onclick = function(){
-      deleteRule(rule);
-    };
-
-    actions.appendChild(edit);
-    actions.appendChild(del);
-
-    top.appendChild(info);
-    top.appendChild(actions);
-
-    wrapper.appendChild(top);
-
-    box.appendChild(wrapper);
-  });
-}
-
-
-function editRule(rule){
-
-  editingId =
-    rule?.id ??
-    rule?.rule_id ??
-    null;
-
-  document.getElementById(
-    "markupPercent"
-  ).value =
-    rule?.markup_percent ?? "";
-
-  if(provider === "fivesim"){
-
-    document.getElementById(
-      "countrySearch"
-    ).value =
-      rule?.country_name ||
-      rule?.country_key ||
-      "";
-
-    document.getElementById(
-      "countrySearch"
-    ).dataset.countryKey =
-      rule?.country_key || "";
-
-  }else{
-
-    const foundCountry =
-      countries.find(c =>
-        String(countryId(c)) ===
-        String(rule?.country_id)
-      );
-
-    document.getElementById(
-      "countrySearch"
-    ).value =
-      foundCountry
-        ? countryName(foundCountry)
-        : (
-          rule?.country_name ||
-          rule?.country_id ||
-          ""
-        );
-
-    document.getElementById(
-      "countrySearch"
-    ).dataset.countryId =
-      rule?.country_id ?? "";
-  }
-
-  const foundService =
-    services.find(s =>
-      normalizeText(
-        serviceCode(s)
-      ) ===
-      normalizeText(
-        rule?.service_code
-      )
-    );
-
-  document.getElementById(
-    "serviceSearch"
-  ).value =
-    foundService
-      ? serviceName(foundService)
-      : (
-        rule?.service_name ||
-        rule?.service_code ||
-        ""
-      );
-
-  document.getElementById(
-    "serviceSearch"
-  ).dataset.serviceCode =
-    rule?.service_code || "";
-
-  document.getElementById(
-    "cancelEditBtn"
-  ).style.display = "block";
-
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
-}
-
-
-function cancelEdit(){
-
-  editingId = null;
-
-  document.getElementById(
-    "countrySearch"
-  ).value = "";
-
-  document.getElementById(
-    "serviceSearch"
-  ).value = "";
-
-  document.getElementById(
-    "markupPercent"
-  ).value = "";
-
-  delete document.getElementById(
-    "countrySearch"
-  ).dataset.countryId;
-
-  delete document.getElementById(
-    "countrySearch"
-  ).dataset.countryKey;
-
-  delete document.getElementById(
-    "serviceSearch"
-  ).dataset.serviceCode;
-
-  document.getElementById(
-    "cancelEditBtn"
-  ).style.display = "none";
-}
-
-
-async function saveMarkup(){
-
-  try{
-
-    const markupValue =
-      document.getElementById(
-        "markupPercent"
-      ).value;
-
-    if(markupValue === ""){
-      throw new Error(
-        "Enter a markup percentage."
-      );
     }
+  );
+}
 
-    const markup =
-      Number(markupValue);
 
-    if(!Number.isFinite(markup) || markup < 0){
-      throw new Error(
-        "Enter a valid markup percentage."
-      );
-    }
+function getCountryName(idOrKey) {
 
-    const serviceInput =
-      document.getElementById(
-        "serviceSearch"
-      );
+  if (
+    idOrKey === null ||
+    idOrKey === undefined ||
+    idOrKey === "" ||
+    idOrKey === "overall"
+  ) {
+    return "Overall";
+  }
 
-    const serviceCodeValue =
-      String(
-        serviceInput.dataset.serviceCode ||
-        ""
-      ).trim();
+  const country =
+    getCountryObject(idOrKey);
 
-    if(!serviceCodeValue){
-      throw new Error(
-        "Select a service."
-      );
-    }
+  return (
+    country?.name ||
+    country?.country_name ||
+    `Country ${idOrKey}`
+  );
+}
 
-    if(provider === "fivesim"){
 
-      const countryInput =
-        document.getElementById(
-          "countrySearch"
-        );
+function getFiveSimCountryKey(country) {
 
-      const countryValue =
+  return (
+    country?.key ??
+    country?.country_key ??
+    country?.code ??
+    country?.country ??
+    country?.id
+  );
+}
+
+
+/* =========================================================
+   SERVICE NAME
+========================================================= */
+
+function getServiceName(code) {
+
+  if (
+    code === null ||
+    code === undefined ||
+    code === "" ||
+    code === "overall"
+  ) {
+    return "Overall";
+  }
+
+  const service =
+    services.find(
+      s =>
         String(
-          countryInput.dataset.countryKey ||
-          countryInput.value ||
+          s.service_code ??
+          s.code ??
+          s.name ??
           ""
-        ).trim().toLowerCase();
+        ).toLowerCase() ===
+        String(code).toLowerCase()
+    );
 
-      if(!countryValue){
-        throw new Error(
-          "Select a country."
-        );
+  return (
+    service?.service_name ||
+    service?.name ||
+    service?.title ||
+    code
+  );
+}
+
+
+/* =========================================================
+   COUNTRY SEARCH TEXT
+========================================================= */
+
+function getCountrySearchText(country) {
+
+  const name =
+    String(
+      country?.name ||
+      country?.country_name ||
+      ""
+    );
+
+  const normalized =
+    normalizeSearch(name);
+
+  const aliases = [];
+
+  if (
+    normalized.includes(
+      "united kingdom"
+    )
+  ) {
+
+    aliases.push(
+      "uk",
+      "gb",
+      "great britain"
+    );
+  }
+
+  if (
+    normalized.includes(
+      "united states"
+    )
+  ) {
+
+    aliases.push(
+      "us",
+      "usa",
+      "america"
+    );
+  }
+
+  return [
+    name,
+    ...aliases,
+    country?.id,
+    country?.key,
+    country?.country_key,
+    country?.code
+  ]
+    .join(" ")
+    .toLowerCase();
+}
+
+
+/* =========================================================
+   BUILD COUNTRY DROPDOWN
+========================================================= */
+
+function buildCountryDropdown() {
+
+  countryDropdownItems = [];
+
+  countryDropdownItems.push({
+    value: "overall",
+    label: "Overall",
+    searchText:
+      "overall all countries"
+  });
+
+  countries.forEach(
+    country => {
+
+      const value =
+        currentProvider === "fivesim"
+          ? String(
+              getFiveSimCountryKey(
+                country
+              )
+            )
+          : String(
+              country?.id ??
+              country?.country_id ??
+              ""
+            );
+
+      if (!value) {
+        return;
       }
 
-      await api(
-        "markup",
-        {
-          mode:"save",
+      const label =
+        country?.name ||
+        country?.country_name ||
+        `Country ${value}`;
 
-          id:
-            editingId !== null
-              ? Number(editingId)
-              : null,
+      countryDropdownItems.push({
 
-          country_key:
-            countryValue,
+        value,
 
-          service_code:
-            serviceCodeValue,
+        label,
 
-          markup_percent:
-            markup
-        },
-        FIVESIM_FUNCTION_URL
-      );
+        searchText:
+          getCountrySearchText(
+            country
+          )
 
-    }else{
+      });
 
-      const countryInput =
-        document.getElementById(
-          "countrySearch"
-        );
-
-      const countryValue =
-        String(
-          countryInput.dataset.countryId ||
-          ""
-        ).trim();
-
-      if(!countryValue){
-        throw new Error(
-          "Select a country."
-        );
-      }
-
-      await api(
-        "save_markup_rule",
-        {
-          id:
-            editingId !== null
-              ? Number(editingId)
-              : null,
-
-          country_id:
-            Number(countryValue),
-
-          service_code:
-            serviceCodeValue,
-
-          markup_percent:
-            markup
-        },
-        SMSBOWER_FUNCTION_URL
-      );
     }
+  );
 
-    showStatus(
-      `${providerName()} markup saved successfully.`,
-      true
-    );
-
-    cancelEdit();
-    await loadRules();
-
-  }catch(error){
-
-    showStatus(
-      error?.message ||
-      "Unable to save markup.",
-      false
-    );
-  }
+  renderCountryOptions("");
 }
 
 
-async function deleteRule(rule){
+/* =========================================================
+   COUNTRY OPTIONS
+========================================================= */
 
-  if(!confirm(
-    `Delete this ${providerName()} markup rule?`
-  )){
-    return;
-  }
+function renderCountryOptions(
+  searchTerm = ""
+) {
 
-  try{
-
-    if(provider === "fivesim"){
-
-      await api(
-        "markup",
-        {
-          mode:"delete",
-          id:Number(
-            rule?.id ??
-            rule?.rule_id
-          )
-        },
-        FIVESIM_FUNCTION_URL
-      );
-
-    }else{
-
-      await api(
-        "delete_markup_rule",
-        {
-          id:Number(
-            rule?.id ??
-            rule?.rule_id
-          )
-        },
-        SMSBOWER_FUNCTION_URL
-      );
-    }
-
-    showStatus(
-      `${providerName()} markup rule deleted.`,
-      true
-    );
-
-    await loadRules();
-
-  }catch(error){
-
-    showStatus(
-      error?.message ||
-      "Unable to delete markup rule.",
-      false
-    );
-  }
-}
-
-
-async function loadWatermark(){
-
-  const textarea =
+  const container =
     document.getElementById(
-      "watermarkText"
+      "countryOptions"
     );
 
-  textarea.value = "";
+  const search =
+    normalizeSearch(
+      searchTerm
+    );
 
-  try{
-
-    const {data,error} =
-      await supabaseClient
-        .from("virtual_number_watermarks")
-        .select(
-          "id,server,watermark_text,updated_at"
+  const filtered =
+    countryDropdownItems.filter(
+      item =>
+        !search ||
+        item.searchText.includes(
+          search
         )
-        .eq("server",provider)
-        .maybeSingle();
+    );
 
-    if(error){
-      throw error;
+  container.innerHTML =
+    "";
+
+  if (!filtered.length) {
+
+    container.innerHTML = `
+      <div class="search-option disabled">
+        No country found
+      </div>
+    `;
+
+    return;
+  }
+
+  filtered.forEach(
+    item => {
+
+      const option =
+        document.createElement(
+          "div"
+        );
+
+      option.className =
+        "search-option";
+
+      const currentValue =
+        document.getElementById(
+          "countrySelect"
+        ).value;
+
+      if (
+        currentValue ===
+        item.value
+      ) {
+
+        option.classList.add(
+          "selected"
+        );
+      }
+
+      option.textContent =
+        item.label;
+
+      option.addEventListener(
+        "click",
+        () => {
+
+          selectCountry(
+            item.value
+          );
+
+        }
+      );
+
+      container.appendChild(
+        option
+      );
+
     }
+  );
+}
 
-    textarea.value =
-      data?.watermark_text ?? "";
 
-  }catch(error){
+/* =========================================================
+   SELECT COUNTRY
+========================================================= */
 
-    showStatus(
-      error?.message ||
-      "Unable to load watermark.",
-      false
+function selectCountry(value) {
+
+  const select =
+    document.getElementById(
+      "countrySelect"
+    );
+
+  select.value =
+    value;
+
+  const item =
+    countryDropdownItems.find(
+      x =>
+        x.value ===
+        value
+    );
+
+  document.getElementById(
+    "countrySearchButton"
+  ).textContent =
+    item?.label ||
+    "Select country";
+
+  document.getElementById(
+    "countrySearchInput"
+  ).value =
+    "";
+
+  closeDropdown(
+    "countrySearchSelect"
+  );
+
+  renderCountryOptions("");
+
+  select.dispatchEvent(
+    new Event(
+      "change",
+      {
+        bubbles: true
+      }
+    )
+  );
+}
+
+
+/* =========================================================
+   BUILD SERVICE DROPDOWN
+========================================================= */
+
+function buildServiceDropdown() {
+
+  serviceDropdownItems = [];
+
+  serviceDropdownItems.push({
+    value: "overall",
+    label: "Overall",
+    searchText:
+      "overall all services"
+  });
+
+  services.forEach(
+    service => {
+
+      const code =
+        service?.service_code ??
+        service?.code ??
+        service?.name;
+
+      if (!code) {
+        return;
+      }
+
+      const label =
+        service?.service_name ||
+        service?.name ||
+        service?.title ||
+        code;
+
+      serviceDropdownItems.push({
+
+        value:
+          String(code),
+
+        label,
+
+        searchText:
+          [
+            label,
+            code
+          ]
+            .join(" ")
+            .toLowerCase()
+
+      });
+
+    }
+  );
+
+  renderServiceOptions("");
+}
+
+
+/* =========================================================
+   SERVICE OPTIONS
+========================================================= */
+
+function renderServiceOptions(
+  searchTerm = ""
+) {
+
+  const container =
+    document.getElementById(
+      "serviceOptions"
+    );
+
+  const search =
+    normalizeSearch(
+      searchTerm
+    );
+
+  const filtered =
+    serviceDropdownItems.filter(
+      item =>
+        !search ||
+        item.searchText.includes(
+          search
+        )
+    );
+
+  container.innerHTML =
+    "";
+
+  if (!filtered.length) {
+
+    container.innerHTML = `
+      <div class="search-option disabled">
+        No service found
+      </div>
+    `;
+
+    return;
+  }
+
+  filtered.forEach(
+    item => {
+
+      const option =
+        document.createElement(
+          "div"
+        );
+
+      option.className =
+        "search-option";
+
+      const currentValue =
+        document.getElementById(
+          "serviceSelect"
+        ).value;
+
+      if (
+        currentValue ===
+        item.value
+      ) {
+
+        option.classList.add(
+          "selected"
+        );
+      }
+
+      option.textContent =
+        item.label;
+
+      option.addEventListener(
+        "click",
+        () => {
+
+          selectService(
+            item.value
+          );
+
+        }
+      );
+
+      container.appendChild(
+        option
+      );
+
+    }
+  );
+}
+
+
+/* =========================================================
+   SELECT SERVICE
+========================================================= */
+
+function selectService(value) {
+
+  const select =
+    document.getElementById(
+      "serviceSelect"
+    );
+
+  select.value =
+    value;
+
+  const item =
+    serviceDropdownItems.find(
+      x =>
+        x.value ===
+        value
+    );
+
+  document.getElementById(
+    "serviceSearchButton"
+  ).textContent =
+    item?.label ||
+    "Select service";
+
+  document.getElementById(
+    "serviceSearchInput"
+  ).value =
+    "";
+
+  closeDropdown(
+    "serviceSearchSelect"
+  );
+
+  renderServiceOptions("");
+}
+
+
+/* =========================================================
+   SYNC DROPDOWNS
+========================================================= */
+
+function syncCountryDropdown() {
+
+  const value =
+    document.getElementById(
+      "countrySelect"
+    ).value;
+
+  const item =
+    countryDropdownItems.find(
+      x =>
+        x.value ===
+        value
+    );
+
+  document.getElementById(
+    "countrySearchButton"
+  ).textContent =
+    item?.label ||
+    "Select country";
+
+  renderCountryOptions("");
+}
+
+
+function syncServiceDropdown() {
+
+  const value =
+    document.getElementById(
+      "serviceSelect"
+    ).value;
+
+  const item =
+    serviceDropdownItems.find(
+      x =>
+        x.value ===
+        value
+    );
+
+  document.getElementById(
+    "serviceSearchButton"
+  ).textContent =
+    item?.label ||
+    "Select service";
+
+  renderServiceOptions("");
+}
+
+
+/* =========================================================
+   DROPDOWNS
+========================================================= */
+
+function openDropdown(id) {
+
+  const dropdown =
+    document.getElementById(
+      id
+    );
+
+  document
+    .querySelectorAll(
+      ".search-select.open"
+    )
+    .forEach(
+      element => {
+
+        if (
+          element.id !==
+          id
+        ) {
+
+          element.classList.remove(
+            "open"
+          );
+        }
+
+      }
+    );
+
+  dropdown.classList.add(
+    "open"
+  );
+
+  const input =
+    dropdown.querySelector(
+      ".search-select-search"
+    );
+
+  if (input) {
+
+    setTimeout(
+      () => {
+        input.focus();
+      },
+      50
     );
   }
 }
 
 
-async function saveWatermark(){
+function closeDropdown(id) {
 
-  try{
+  const dropdown =
+    document.getElementById(
+      id
+    );
 
-    const textarea =
-      document.getElementById(
-        "watermarkText"
+  if (dropdown) {
+
+    dropdown.classList.remove(
+      "open"
+    );
+  }
+}
+
+
+/* =========================================================
+   DROPDOWN LISTENERS
+========================================================= */
+
+document
+  .getElementById(
+    "countrySearchButton"
+  )
+  .addEventListener(
+    "click",
+    () => {
+
+      const dropdown =
+        document.getElementById(
+          "countrySearchSelect"
+        );
+
+      if (
+        dropdown.classList.contains(
+          "open"
+        )
+      ) {
+
+        closeDropdown(
+          "countrySearchSelect"
+        );
+
+      } else {
+
+        openDropdown(
+          "countrySearchSelect"
+        );
+      }
+
+    }
+  );
+
+
+document
+  .getElementById(
+    "serviceSearchButton"
+  )
+  .addEventListener(
+    "click",
+    () => {
+
+      const dropdown =
+        document.getElementById(
+          "serviceSearchSelect"
+        );
+
+      if (
+        dropdown.classList.contains(
+          "open"
+        )
+      ) {
+
+        closeDropdown(
+          "serviceSearchSelect"
+        );
+
+      } else {
+
+        openDropdown(
+          "serviceSearchSelect"
+        );
+      }
+
+    }
+  );
+
+
+document
+  .getElementById(
+    "countrySearchInput"
+  )
+  .addEventListener(
+    "input",
+    event => {
+
+      renderCountryOptions(
+        event.target.value
       );
 
-    const text =
-      textarea.value;
+    }
+  );
 
-    const {error} =
-      await supabaseClient
-        .from("virtual_number_watermarks")
-        .upsert(
-          {
-            server:provider,
-            watermark_text:text,
-            updated_at:
-              new Date().toISOString()
-          },
-          {
-            onConflict:"server"
+
+document
+  .getElementById(
+    "serviceSearchInput"
+  )
+  .addEventListener(
+    "input",
+    event => {
+
+      renderServiceOptions(
+        event.target.value
+      );
+
+    }
+  );
+
+
+document.addEventListener(
+  "click",
+  event => {
+
+    if (
+      !event.target.closest(
+        ".search-select"
+      )
+    ) {
+
+      document
+        .querySelectorAll(
+          ".search-select.open"
+        )
+        .forEach(
+          dropdown => {
+
+            dropdown.classList.remove(
+              "open"
+            );
+
+          }
+        );
+    }
+
+  }
+);
+
+
+/* =========================================================
+   LOAD COUNTRIES
+========================================================= */
+
+async function loadCountries() {
+
+  const select =
+    document.getElementById(
+      "countrySelect"
+    );
+
+  select.innerHTML = `
+    <option value="">
+      Loading countries...
+    </option>
+  `;
+
+  document.getElementById(
+    "countrySearchButton"
+  ).textContent =
+    "Loading countries...";
+
+  try {
+
+    const data =
+      await api(
+        "countries"
+      );
+
+    countries =
+      Array.isArray(
+        data?.countries
+      )
+        ? data.countries
+        : [];
+
+    select.innerHTML = `
+      <option value="">
+        Select country
+      </option>
+
+      <option value="overall">
+        Overall
+      </option>
+    `;
+
+    countries.forEach(
+      country => {
+
+        const value =
+          currentProvider === "fivesim"
+            ? getFiveSimCountryKey(
+                country
+              )
+            : (
+                country?.id ??
+                country?.country_id
+              );
+
+        if (
+          value === undefined ||
+          value === null ||
+          value === ""
+        ) {
+          return;
+        }
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+        option.value =
+          String(value);
+
+        option.textContent =
+          country?.name ||
+          country?.country_name ||
+          `Country ${value}`;
+
+        select.appendChild(
+          option
+        );
+
+      }
+    );
+
+    buildCountryDropdown();
+
+    syncCountryDropdown();
+
+  } catch (error) {
+
+    console.error(
+      "loadCountries:",
+      error
+    );
+
+    select.innerHTML = `
+      <option value="">
+        Unable to load countries
+      </option>
+    `;
+
+    document.getElementById(
+      "countrySearchButton"
+    ).textContent =
+      "Unable to load countries";
+
+    document.getElementById(
+      "countryOptions"
+    ).innerHTML = `
+      <div class="search-option disabled">
+        Unable to load countries
+      </div>
+    `;
+
+    showStatus(
+      error.message ||
+      "Could not load countries.",
+      "error"
+    );
+  }
+}
+
+
+/* =========================================================
+   LOAD SERVICES
+========================================================= */
+
+async function loadServices(
+  countryId
+) {
+
+  const select =
+    document.getElementById(
+      "serviceSelect"
+    );
+
+  services = [];
+
+  serviceDropdownItems = [];
+
+  document.getElementById(
+    "serviceOptions"
+  ).innerHTML =
+    "";
+
+  if (!countryId) {
+
+    select.innerHTML = `
+      <option value="">
+        Select country first
+      </option>
+    `;
+
+    document.getElementById(
+      "serviceSearchButton"
+    ).textContent =
+      "Select country first";
+
+    return;
+  }
+
+  select.innerHTML = `
+    <option value="">
+      Loading services...
+    </option>
+  `;
+
+  document.getElementById(
+    "serviceSearchButton"
+  ).textContent =
+    "Loading services...";
+
+  try {
+
+    let requestCountryId =
+      countryId;
+
+    if (
+      countryId ===
+      "overall"
+    ) {
+
+      const firstCountry =
+        countries.find(
+          country => {
+
+            const value =
+              currentProvider === "fivesim"
+                ? getFiveSimCountryKey(
+                    country
+                  )
+                : (
+                    country?.id ??
+                    country?.country_id
+                  );
+
+            return (
+              value !== undefined &&
+              value !== null &&
+              value !== ""
+            );
           }
         );
 
-    if(error){
-      throw error;
+      if (!firstCountry) {
+
+        select.innerHTML = `
+          <option value="">
+            No services available
+          </option>
+
+          <option value="overall">
+            Overall
+          </option>
+        `;
+
+        buildServiceDropdown();
+
+        document.getElementById(
+          "serviceSearchButton"
+        ).textContent =
+          "Overall";
+
+        return;
+      }
+
+      requestCountryId =
+        currentProvider === "fivesim"
+          ? getFiveSimCountryKey(
+              firstCountry
+            )
+          : (
+              firstCountry?.id ??
+              firstCountry?.country_id
+            );
     }
 
-    showStatus(
-      `${providerName()} watermark saved successfully.`,
-      true
+    /*
+      The existing SMSBower function expects
+      country_id.
+
+      The 5SIM function also accepts country_id
+      in the services action.
+    */
+
+    const data =
+      await api(
+        "services",
+        {
+          country_id:
+            requestCountryId
+        }
+      );
+
+    services =
+      Array.isArray(
+        data?.services
+      )
+        ? data.services
+        : [];
+
+    select.innerHTML = `
+      <option value="">
+        Select service
+      </option>
+
+      <option value="overall">
+        Overall
+      </option>
+    `;
+
+    services.forEach(
+      service => {
+
+        const code =
+          service?.service_code ??
+          service?.code ??
+          service?.name;
+
+        if (!code) {
+          return;
+        }
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+        option.value =
+          String(code);
+
+        option.textContent =
+          service?.service_name ||
+          service?.name ||
+          service?.title ||
+          code;
+
+        select.appendChild(
+          option
+        );
+
+      }
     );
 
-  }catch(error){
+    buildServiceDropdown();
+
+    syncServiceDropdown();
+
+  } catch (error) {
+
+    console.error(
+      "loadServices:",
+      error
+    );
+
+    select.innerHTML = `
+      <option value="">
+        Unable to load services
+      </option>
+    `;
+
+    document.getElementById(
+      "serviceSearchButton"
+    ).textContent =
+      "Unable to load services";
+
+    document.getElementById(
+      "serviceOptions"
+    ).innerHTML = `
+      <div class="search-option disabled">
+        Unable to load services
+      </div>
+    `;
 
     showStatus(
-      error?.message ||
-      "Unable to save watermark.",
-      false
+      error.message ||
+      "Could not load services.",
+      "error"
     );
   }
 }
 
 
-async function deleteWatermark(){
+/* =========================================================
+   COUNTRY CHANGE
+========================================================= */
 
-  if(!confirm(
-    `Delete the ${providerName()} watermark?`
-  )){
+document
+  .getElementById(
+    "countrySelect"
+  )
+  .addEventListener(
+    "change",
+    event => {
+
+      loadServices(
+        event.target.value
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   LOAD MARKUP RULES
+========================================================= */
+
+async function loadRules() {
+
+  const container =
+    document.getElementById(
+      "rulesList"
+    );
+
+  container.innerHTML = `
+    <div class="loading">
+      Loading ${currentProvider === "smsbower" ? "SMSBower" : "5SIM"} rules...
+    </div>
+  `;
+
+  try {
+
+    const data =
+      await api(
+        "markup_rules"
+      );
+
+    rules =
+      Array.isArray(
+        data?.rules
+      )
+        ? data.rules
+        : [];
+
+    if (!rules.length) {
+
+      container.innerHTML = `
+        <div class="empty">
+
+          No custom ${currentProvider === "smsbower" ? "SMSBower" : "5SIM"} markup rules yet.
+
+          <br>
+
+          The system is currently using
+          the default markup.
+
+        </div>
+      `;
+
+      return;
+    }
+
+    /*
+      Sort so the most specific rules appear
+      before the Overall rule.
+    */
+
+    rules.sort(
+      (a, b) => {
+
+        const aSpecific =
+          getSpecificity(a);
+
+        const bSpecific =
+          getSpecificity(b);
+
+        return bSpecific - aSpecific;
+      }
+    );
+
+    container.innerHTML =
+      "";
+
+    rules.forEach(
+      rule => {
+
+        const isFiveSim =
+          currentProvider ===
+          "fivesim";
+
+        const countryValue =
+          isFiveSim
+            ? (
+                rule.country_key ??
+                rule.country_id
+              )
+            : rule.country_id;
+
+        const serviceValue =
+          rule.service_code;
+
+        const countryLabel =
+          isOverallValue(
+            countryValue
+          )
+            ? "Overall"
+            : getCountryName(
+                countryValue
+              );
+
+        const serviceLabel =
+          isOverallValue(
+            serviceValue
+          )
+            ? "Overall"
+            : getServiceName(
+                serviceValue
+              );
+
+        const countryMeta =
+          isOverallValue(
+            countryValue
+          )
+            ? "All countries"
+            : "Specific country";
+
+        const serviceMeta =
+          isOverallValue(
+            serviceValue
+          )
+            ? "All services"
+            : "Specific service";
+
+        const div =
+          document.createElement(
+            "div"
+          );
+
+        div.className =
+          "rule";
+
+        div.innerHTML = `
+
+          <div>
+
+            <div class="rule-title">
+
+              ${escapeHtml(
+                countryLabel
+              )}
+
+              +
+
+              ${escapeHtml(
+                serviceLabel
+              )}
+
+            </div>
+
+            <div class="rule-meta">
+
+              ${countryMeta}
+
+              ·
+
+              ${serviceMeta}
+
+            </div>
+
+          </div>
+
+
+          <div style="text-align:right">
+
+            <div class="rule-percent">
+
+              ${Number(
+                rule.markup_percent
+              )}%
+
+            </div>
+
+            <div class="actions">
+
+              <button
+                class="edit-btn"
+                onclick="editRule(
+                  ${Number(rule.id)}
+                )"
+              >
+                Edit
+              </button>
+
+              <button
+                class="delete-btn"
+                onclick="deleteRule(
+                  ${Number(rule.id)}
+                )"
+              >
+                Delete
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+
+        container.appendChild(
+          div
+        );
+
+      }
+    );
+
+  } catch (error) {
+
+    console.error(
+      "loadRules:",
+      error
+    );
+
+    rules = [];
+
+    container.innerHTML = `
+
+      <div class="empty">
+
+        Unable to load
+        ${currentProvider === "smsbower" ? "SMSBower" : "5SIM"}
+        markup rules.
+
+        <br>
+
+        <small>
+
+          ${escapeHtml(
+            error.message ||
+            "API request failed."
+          )}
+
+        </small>
+
+      </div>
+
+    `;
+
+    showStatus(
+      error.message ||
+      "Could not load markup rules.",
+      "error"
+    );
+  }
+}
+
+
+/* =========================================================
+   SPECIFICITY
+========================================================= */
+
+function isOverallValue(value) {
+
+  return (
+    value === null ||
+    value === undefined ||
+    value === "" ||
+    value === "overall" ||
+    value === "*" ||
+    String(value).toLowerCase() ===
+      "all"
+  );
+}
+
+
+function getSpecificity(rule) {
+
+  const country =
+    currentProvider === "fivesim"
+      ? (
+          rule.country_key ??
+          rule.country_id
+        )
+      : rule.country_id;
+
+  const service =
+    rule.service_code;
+
+  let score = 0;
+
+  if (
+    !isOverallValue(country)
+  ) {
+    score += 2;
+  }
+
+  if (
+    !isOverallValue(service)
+  ) {
+    score += 2;
+  }
+
+  return score;
+}
+
+
+/* =========================================================
+   SAVE RULE
+========================================================= */
+
+async function saveRule() {
+
+  const saveBtn =
+    document.getElementById(
+      "saveBtn"
+    );
+
+  const countryValue =
+    document.getElementById(
+      "countrySelect"
+    ).value;
+
+  const serviceValue =
+    document.getElementById(
+      "serviceSelect"
+    ).value;
+
+  const markupValue =
+    document.getElementById(
+      "markupInput"
+    ).value.trim();
+
+  if (!countryValue) {
+
+    showStatus(
+      "Please select a country.",
+      "error"
+    );
+
     return;
   }
 
-  try{
-
-    const {error} =
-      await supabaseClient
-        .from("virtual_number_watermarks")
-        .update({
-          watermark_text:"",
-          updated_at:
-            new Date().toISOString()
-        })
-        .eq("server",provider);
-
-    if(error){
-      throw error;
-    }
-
-    document.getElementById(
-      "watermarkText"
-    ).value = "";
+  if (!serviceValue) {
 
     showStatus(
-      `${providerName()} watermark deleted.`,
-      true
+      "Please select a service.",
+      "error"
     );
 
-  }catch(error){
+    return;
+  }
+
+  if (
+    markupValue === "" ||
+    !Number.isFinite(
+      Number(markupValue)
+    ) ||
+    Number(markupValue) < 0
+  ) {
 
     showStatus(
-      error?.message ||
-      "Unable to delete watermark.",
-      false
+      "Enter a valid markup percentage.",
+      "error"
+    );
+
+    return;
+  }
+
+  const markup =
+    Number(
+      markupValue
+    );
+
+  saveBtn.disabled =
+    true;
+
+  saveBtn.textContent =
+    editingId !== null
+      ? "Updating..."
+      : "Saving...";
+
+  try {
+
+    if (
+      currentProvider ===
+      "smsbower"
+    ) {
+
+      /*
+        IMPORTANT:
+
+        SMSBower keeps its existing
+        country_id / service_code system.
+
+        NULL means Overall.
+      */
+
+      const countryId =
+        countryValue === "overall"
+          ? null
+          : Number(
+              countryValue
+            );
+
+      const serviceCode =
+        serviceValue === "overall"
+          ? null
+          : serviceValue;
+
+      const data =
+        await api(
+          "save_markup_rule",
+          {
+            id:
+              editingId !== null
+                ? Number(editingId)
+                : null,
+
+            country_id:
+              countryId,
+
+            service_code:
+              serviceCode,
+
+            markup_percent:
+              markup
+          }
+        );
+
+      showStatus(
+        data?.message ||
+        (
+          editingId !== null
+            ? "SMSBower markup rule updated."
+            : "SMSBower markup rule saved."
+        ),
+        "success"
+      );
+
+    } else {
+
+      /*
+        ==================================================
+        5SIM IS COMPLETELY SEPARATE
+        ==================================================
+      */
+
+      const countryKey =
+        countryValue === "overall"
+          ? "*"
+          : String(
+              countryValue
+            );
+
+      const serviceCode =
+        serviceValue === "overall"
+          ? "*"
+          : String(
+              serviceValue
+            );
+
+      const data =
+        await api(
+          "save_markup_rule",
+          {
+            id:
+              editingId !== null
+                ? Number(editingId)
+                : null,
+
+            country_key:
+              countryKey,
+
+            service_code:
+              serviceCode,
+
+            markup_percent:
+              markup
+          }
+        );
+
+      showStatus(
+        data?.message ||
+        (
+          editingId !== null
+            ? "5SIM markup rule updated."
+            : "5SIM markup rule saved."
+        ),
+        "success"
+      );
+    }
+
+    resetForm();
+
+    await loadRules();
+
+  } catch (error) {
+
+    console.error(
+      "saveRule:",
+      error
+    );
+
+    showStatus(
+      error.message ||
+      "Could not save markup.",
+      "error"
+    );
+
+  } finally {
+
+    saveBtn.disabled =
+      false;
+
+    saveBtn.textContent =
+      "Save Markup";
+  }
+}
+
+
+/* =========================================================
+   EDIT RULE
+========================================================= */
+
+async function editRule(id) {
+
+  const rule =
+    rules.find(
+      r =>
+        Number(r.id) ===
+        Number(id)
+    );
+
+  if (!rule) {
+    return;
+  }
+
+  editingId =
+    Number(
+      rule.id
+    );
+
+  const countrySelect =
+    document.getElementById(
+      "countrySelect"
+    );
+
+  const serviceSelect =
+    document.getElementById(
+      "serviceSelect"
+    );
+
+  const countryValue =
+    currentProvider === "fivesim"
+      ? (
+          rule.country_key ??
+          rule.country_id
+        )
+      : rule.country_id;
+
+  const serviceValue =
+    rule.service_code;
+
+  countrySelect.value =
+    isOverallValue(
+      countryValue
+    )
+      ? "overall"
+      : String(
+          countryValue
+        );
+
+  syncCountryDropdown();
+
+  await loadServices(
+    countrySelect.value
+  );
+
+  serviceSelect.value =
+    isOverallValue(
+      serviceValue
+    )
+      ? "overall"
+      : String(
+          serviceValue
+        );
+
+  syncServiceDropdown();
+
+  document.getElementById(
+    "markupInput"
+  ).value =
+    rule.markup_percent;
+
+  document.getElementById(
+    "formTitle"
+  ).textContent =
+    `Edit ${currentProvider === "smsbower" ? "SMSBower" : "5SIM"} Markup Rule`;
+
+  document.getElementById(
+    "saveBtn"
+  ).textContent =
+    "Update Markup";
+
+  document.getElementById(
+    "cancelBtn"
+  ).style.display =
+    "block";
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+
+/* =========================================================
+   DELETE RULE
+========================================================= */
+
+async function deleteRule(id) {
+
+  const rule =
+    rules.find(
+      r =>
+        Number(r.id) ===
+        Number(id)
+    );
+
+  if (!rule) {
+    return;
+  }
+
+  const countryValue =
+    currentProvider === "fivesim"
+      ? (
+          rule.country_key ??
+          rule.country_id
+        )
+      : rule.country_id;
+
+  const countryName =
+    isOverallValue(
+      countryValue
+    )
+      ? "Overall"
+      : getCountryName(
+          countryValue
+        );
+
+  const serviceName =
+    isOverallValue(
+      rule.service_code
+    )
+      ? "Overall"
+      : getServiceName(
+          rule.service_code
+        );
+
+  const confirmed =
+    confirm(
+      `Delete ${currentProvider === "smsbower" ? "SMSBower" : "5SIM"} markup rule:\n\n` +
+      `${countryName} + ${serviceName}\n` +
+      `${rule.markup_percent}%`
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+
+    await api(
+      "delete_markup_rule",
+      {
+        id:
+          Number(id)
+      }
+    );
+
+    showStatus(
+      `${currentProvider === "smsbower" ? "SMSBower" : "5SIM"} markup rule deleted.`,
+      "success"
+    );
+
+    if (
+      editingId !== null &&
+      Number(editingId) ===
+        Number(id)
+    ) {
+
+      resetForm();
+    }
+
+    await loadRules();
+
+  } catch (error) {
+
+    console.error(
+      "deleteRule:",
+      error
+    );
+
+    showStatus(
+      error.message ||
+      "Could not delete rule.",
+      "error"
     );
   }
 }
 
 
-(async function init(){
+/* =========================================================
+   RESET FORM
+========================================================= */
 
-  const session =
+function resetForm() {
+
+  editingId =
+    null;
+
+  document.getElementById(
+    "countrySelect"
+  ).value =
+    "";
+
+  document.getElementById(
+    "countrySearchButton"
+  ).textContent =
+    "Select country";
+
+  document.getElementById(
+    "countrySearchInput"
+  ).value =
+    "";
+
+  renderCountryOptions("");
+
+  document.getElementById(
+    "serviceSelect"
+  ).innerHTML = `
+    <option value="">
+      Select country first
+    </option>
+  `;
+
+  serviceDropdownItems = [];
+
+  document.getElementById(
+    "serviceSearchButton"
+  ).textContent =
+    "Select country first";
+
+  document.getElementById(
+    "serviceSearchInput"
+  ).value =
+    "";
+
+  document.getElementById(
+    "serviceOptions"
+  ).innerHTML =
+    "";
+
+  document.getElementById(
+    "markupInput"
+  ).value =
+    "";
+
+  document.getElementById(
+    "formTitle"
+  ).textContent =
+    "Add Markup Rule";
+
+  document.getElementById(
+    "saveBtn"
+  ).textContent =
+    "Save Markup";
+
+  document.getElementById(
+    "cancelBtn"
+  ).style.display =
+    "none";
+
+  closeDropdown(
+    "countrySearchSelect"
+  );
+
+  closeDropdown(
+    "serviceSearchSelect"
+  );
+}
+
+
+function cancelEdit() {
+
+  resetForm();
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(value) {
+
+  return String(
+    value ?? ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+(async function init() {
+
+  const isLoggedIn =
     await checkAdmin();
 
-  if(!session) return;
+  if (!isLoggedIn) {
+    return;
+  }
 
-  await loadProviderData();
-  await loadWatermark();
+  /*
+    SMSBower is ALWAYS the default tab.
+  */
+
+  currentProvider =
+    "smsbower";
+
+  document.getElementById(
+    "smsbowerTab"
+  ).classList.add(
+    "active"
+  );
+
+  document.getElementById(
+    "fivesimTab"
+  ).classList.remove(
+    "active"
+  );
+
+  await loadCountries();
+
+  await loadRules();
 
 })();
 </script>
