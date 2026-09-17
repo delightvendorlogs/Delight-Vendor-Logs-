@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<title>My Purchases - Delight Vendor Logs</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"><title>My Purchases - Delight Vendor Logs</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>
 
 *{
     box-sizing:border-box;
@@ -44,11 +37,6 @@ main{
     font-size:21px;
 }
 
-
-/* =========================
-   CARD
-========================= */
-
 .card{
     background:#fff;
     padding:20px;
@@ -56,11 +44,6 @@ main{
     box-shadow:0 2px 10px #00000014;
     margin-bottom:18px;
 }
-
-
-/* =========================
-   TOTAL SPENT
-========================= */
 
 .total-card{
     background:#fff;
@@ -82,11 +65,6 @@ main{
     font-weight:bold;
     margin-top:8px;
 }
-
-
-/* =========================
-   NORMAL PURCHASE
-========================= */
 
 .purchase{
     border:1px solid #eee;
@@ -141,11 +119,6 @@ main{
     font-size:13px;
 }
 
-
-/* =========================
-   VIRTUAL NUMBER
-========================= */
-
 .virtual-number-card{
     border:1px solid #eee;
     border-radius:12px;
@@ -196,18 +169,6 @@ main{
     line-height:1.5;
 }
 
-.virtual-actions{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    margin-top:12px;
-}
-
-
-/* =========================
-   STATUS BADGES
-========================= */
-
 .badge{
     display:inline-block;
     padding:6px 10px;
@@ -235,11 +196,6 @@ main{
     background:#eee;
     color:#555;
 }
-
-
-/* =========================
-   BUTTONS
-========================= */
 
 .copy-btn{
     margin-top:10px;
@@ -271,11 +227,6 @@ main{
     margin-top:20px;
 }
 
-
-/* =========================
-   EMPTY / ERROR / LOADING
-========================= */
-
 .empty{
     text-align:center;
     color:#777;
@@ -294,116 +245,32 @@ main{
     padding:20px;
 }
 
-.divider{
-    height:1px;
-    background:#eee;
-    margin:25px 0;
-}
+</style></head><body><header>
+    <h1>My Purchases</h1>
+</header><main><div class="total-card"><div class="total-title">
+    💰 Total Spent
+</div>
 
-</style>
-</head>
+<div id="totalSpent" class="total-amount">
+    ₦0.00
+</div>
 
+</div><h2 class="section-title">
+    🛍️ My Purchases
+</h2><div class="card"><div id="allPurchases">
 
-<body>
-
-
-<header>
-
-    <h1>
-        My Purchases
-    </h1>
-
-</header>
-
-
-<main>
-
-
-<!-- =========================
-     TOTAL SPENT
-========================= -->
-
-<div class="total-card">
-
-    <div class="total-title">
-        💰 Total Spent
-    </div>
-
-    <div
-        id="totalSpent"
-        class="total-amount"
-    >
-        ₦0.00
+    <div class="loading">
+        Loading purchases...
     </div>
 
 </div>
 
-
-
-<!-- =====================================================
-     VIRTUAL NUMBER PURCHASES
-===================================================== -->
-
-<h2 class="section-title">
-    📱 Virtual Number Purchases
-</h2>
-
-
-<div class="card">
-
-    <div id="virtualNumberPurchases">
-
-        <div class="loading">
-            Loading virtual numbers...
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<!-- =====================================================
-     NORMAL INVENTORY PURCHASES
-===================================================== -->
-
-<h2 class="section-title">
-    🛍️ Product Purchases
-</h2>
-
-
-<div class="card">
-
-    <div id="purchases">
-
-        <div class="loading">
-            Loading purchases...
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<!-- =========================
-     BACK
-========================= -->
-
-<div
+</div><div
     class="back"
     onclick="location.href='dashboard.html'"
 >
     🏠 Back to Dashboard
-</div>
-
-
-</main>
-
-
-
-<script>
-
+</div></main><script>
 
 // =====================================================
 // SUPABASE
@@ -412,17 +279,14 @@ main{
 const SUPABASE_URL =
 "https://hkfhehbhmucymusaytoe.supabase.co";
 
-
 const SUPABASE_KEY =
 "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
-
 
 const supabaseClient =
 supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
-
 
 
 // =====================================================
@@ -439,7 +303,6 @@ function esc(value){
         .replace(/'/g,"&#039;");
 
 }
-
 
 
 // =====================================================
@@ -460,7 +323,6 @@ function formatMoney(value){
 }
 
 
-
 // =====================================================
 // FORMAT DATE
 // =====================================================
@@ -473,9 +335,7 @@ function formatDate(value){
 
     try{
 
-        return new Date(
-            value
-        ).toLocaleString(
+        return new Date(value).toLocaleString(
             "en-NG",
             {
                 dateStyle:"medium",
@@ -490,7 +350,6 @@ function formatDate(value){
     }
 
 }
-
 
 
 // =====================================================
@@ -521,7 +380,6 @@ function formatContent(value){
     );
 
 }
-
 
 
 // =====================================================
@@ -568,19 +426,14 @@ async function copyContent(
 }
 
 
-
 // =====================================================
-// VIRTUAL STATUS
+// VIRTUAL STATUS BADGE
 // =====================================================
 
-function virtualStatusBadge(
-    status
-){
+function virtualStatusBadge(status){
 
     const value =
-        String(
-            status || ""
-        )
+        String(status || "")
         .toLowerCase()
         .trim();
 
@@ -627,45 +480,458 @@ function virtualStatusBadge(
 }
 
 
-
 // =====================================================
-// LOAD VIRTUAL NUMBER PURCHASES
+// CREATE VIRTUAL NUMBER CARD
 // =====================================================
 
-async function loadVirtualNumberPurchases(
-    user
-){
+function createVirtualNumberCard(order){
 
-    const container =
-        document.getElementById(
-            "virtualNumberPurchases"
+    const status =
+        String(order.status || "")
+        .toLowerCase()
+        .trim();
+
+
+    const number =
+        String(order.number || "");
+
+
+    const otp =
+        String(order.otp_code || "");
+
+
+    const sms =
+        String(order.full_sms || "");
+
+
+    const purchaseDate =
+        formatDate(
+            order.purchased_at ||
+            order.created_at
         );
 
 
-    if(!container){
+    let otpSection = "";
 
-        return {
-            totalSpent:0
-        };
+
+    if(otp){
+
+        otpSection = `
+
+            <div class="otp-box">
+
+                <div class="virtual-label">
+                    OTP Code
+                </div>
+
+                <strong>
+                    ${esc(otp)}
+                </strong>
+
+                <br>
+
+                <button
+                    class="copy-btn copy-small"
+                    onclick='copyContent(
+                        this,
+                        ${JSON.stringify(otp)}
+                    )'
+                >
+                    📋 Copy OTP
+                </button>
+
+            </div>
+
+        `;
+
+    }else if(status === "waiting"){
+
+        otpSection = `
+
+            <div class="otp-box">
+
+                <div class="virtual-label">
+                    OTP Code
+                </div>
+
+                <strong>
+                    Waiting...
+                </strong>
+
+            </div>
+
+        `;
 
     }
 
 
+    let smsSection = "";
+
+
+    if(sms){
+
+        smsSection = `
+
+            <div class="sms-box">
+
+                <div class="virtual-label">
+                    Full SMS
+                </div>
+
+                ${esc(sms)}
+
+            </div>
+
+        `;
+
+    }
+
+
+    let numberSection = "";
+
+
+    if(number){
+
+        numberSection = `
+
+            <div class="number-box">
+
+                <div class="virtual-label">
+                    Phone Number
+                </div>
+
+                <strong>
+                    ${esc(number)}
+                </strong>
+
+                <br>
+
+                <button
+                    class="copy-btn copy-small"
+                    onclick='copyContent(
+                        this,
+                        ${JSON.stringify(number)}
+                    )'
+                >
+                    📋 Copy Number
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+
+    let refundSection = "";
+
+
+    if(status === "cancelled"){
+
+        refundSection = `
+
+            <div class="virtual-row">
+
+                <span class="virtual-label">
+                    Refund
+                </span>
+
+                <br>
+
+                <strong>
+                    ${
+                        order.refunded_at
+                        ? "✅ Wallet refunded"
+                        : "Refund processing"
+                    }
+                </strong>
+
+            </div>
+
+        `;
+
+    }
+
+
+    const card =
+        document.createElement("div");
+
+
+    card.className =
+        "virtual-number-card";
+
+
+    card.innerHTML = `
+
+        <div class="virtual-title">
+
+            📱
+            ${esc(
+                order.service_name ||
+                "Virtual Number"
+            )}
+
+            -
+            ${esc(
+                order.country_name ||
+                ""
+            )}
+
+        </div>
+
+
+        <div class="virtual-row">
+
+            ${virtualStatusBadge(
+                order.status
+            )}
+
+        </div>
+
+
+        ${numberSection}
+
+
+        ${otpSection}
+
+
+        ${smsSection}
+
+
+        <div class="virtual-row">
+
+            <span class="virtual-label">
+                Price
+            </span>
+
+            <br>
+
+            <strong>
+                ₦${formatMoney(
+                    order.customer_price_ngn
+                )}
+            </strong>
+
+        </div>
+
+
+        <div class="virtual-row">
+
+            <span class="virtual-label">
+                Purchased
+            </span>
+
+            <br>
+
+            ${esc(purchaseDate)}
+
+        </div>
+
+
+        ${refundSection}
+
+    `;
+
+
+    return card;
+
+}
+
+
+// =====================================================
+// CREATE NORMAL PURCHASE CARD
+// =====================================================
+
+function createNormalPurchaseCard(purchase){
+
+    const status =
+        String(purchase.status || "")
+        .toLowerCase()
+        .trim();
+
+
+    const content =
+        String(
+            purchase.content ?? ""
+        );
+
+
+    const safeContent =
+        formatContent(content);
+
+
+    const copyButton =
+        content.trim()
+
+        ? `
+
+            <button
+                class="copy-btn"
+                onclick='copyContent(
+                    this,
+                    ${JSON.stringify(content)}
+                )'
+            >
+                📋 Copy
+            </button>
+
+        `
+
+        : "";
+
+
+    const date =
+        formatDate(
+            purchase.created_at
+        );
+
+
+    const purchaseBox =
+        document.createElement("div");
+
+
+    purchaseBox.className =
+        "purchase";
+
+
+    purchaseBox.innerHTML = `
+
+        <div class="top">
+
+            <div class="name">
+
+                ${esc(
+                    purchase.product_name ||
+                    "Unnamed Product"
+                )}
+
+            </div>
+
+
+            <div class="amount">
+
+                ₦${formatMoney(
+                    purchase.amount
+                )}
+
+            </div>
+
+        </div>
+
+
+        <div class="status">
+
+            ${
+                status === "completed"
+
+                ? `
+                    <span class="badge badge-received">
+                        ✅ Completed
+                    </span>
+                `
+
+                : status === "cancelled"
+
+                ? `
+                    <span class="badge badge-cancelled">
+                        ❌ Cancelled
+                    </span>
+                `
+
+                : `
+                    <span class="badge badge-waiting">
+                        ${esc(
+                            purchase.status ||
+                            "Pending"
+                        )}
+                    </span>
+                `
+            }
+
+        </div>
+
+
+        ${
+            content.trim()
+
+            ? `
+
+                <div class="content">
+                    ${safeContent}
+                </div>
+
+                ${copyButton}
+
+            `
+
+            : ""
+        }
+
+
+        <div class="date">
+
+            ${esc(date)}
+
+        </div>
+
+    `;
+
+
+    return purchaseBox;
+
+}
+
+
+// =====================================================
+// LOAD ALL PURCHASES
+// =====================================================
+
+async function loadPurchases(){
+
+    const totalBox =
+        document.getElementById(
+            "totalSpent"
+        );
+
+
+    const container =
+        document.getElementById(
+            "allPurchases"
+        );
+
+
     try{
 
-        /*
-           IMPORTANT:
-
-           Only load virtual-number orders
-           belonging to the logged-in user.
-
-           This prevents one customer from
-           seeing another customer's numbers.
-        */
+        // =================================================
+        // CHECK LOGIN
+        // =================================================
 
         const {
-            data,
-            error
+            data:{
+                user
+            },
+            error:authError
+        } =
+        await supabaseClient.auth.getUser();
+
+
+        if(authError || !user){
+
+            location.href =
+                "login.html";
+
+            return;
+
+        }
+
+
+        // =================================================
+        // LOAD VIRTUAL NUMBER PURCHASES
+        // =================================================
+
+        const {
+            data:virtualData,
+            error:virtualError
         } =
         await supabaseClient
 
@@ -712,437 +978,23 @@ async function loadVirtualNumberPurchases(
             );
 
 
-        if(error){
+        if(virtualError){
 
             console.error(
                 "Virtual purchases error:",
-                error
+                virtualError
             );
 
-
-            container.innerHTML = `
-
-                <div class="error">
-
-                    ❌ Unable to load virtual number purchases.
-
-                    <br><br>
-
-                    ${esc(error.message)}
-
-                </div>
-
-            `;
-
-
-            return {
-                totalSpent:0
-            };
-
         }
 
 
-        if(
-            !data ||
-            data.length === 0
-        ){
-
-            container.innerHTML = `
-
-                <div class="empty">
-
-                    You haven't purchased
-                    any virtual numbers yet.
-
-                </div>
-
-            `;
-
-
-            return {
-                totalSpent:0
-            };
-
-        }
-
-
-        container.innerHTML = "";
-
-
-        let virtualTotalSpent = 0;
-
-
-        data.forEach(
-            order => {
-
-                const status =
-                    String(
-                        order.status || ""
-                    )
-                    .toLowerCase()
-                    .trim();
-
-
-                /*
-                   Only received numbers count
-                   as completed spending.
-
-                   Cancelled/refunded numbers
-                   are NOT counted.
-                */
-
-                if(
-                    status === "received"
-                ){
-
-                    virtualTotalSpent +=
-                        Number(
-                            order.customer_price_ngn || 0
-                        );
-
-                }
-
-
-                const card =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                card.className =
-                    "virtual-number-card";
-
-
-                const number =
-                    String(
-                        order.number || ""
-                    );
-
-
-                const otp =
-                    String(
-                        order.otp_code || ""
-                    );
-
-
-                const sms =
-                    String(
-                        order.full_sms || ""
-                    );
-
-
-                const purchaseDate =
-                    formatDate(
-                        order.purchased_at ||
-                        order.created_at
-                    );
-
-
-                let otpSection = "";
-
-
-                if(otp){
-
-                    otpSection = `
-
-                        <div class="otp-box">
-
-                            <div class="virtual-label">
-                                OTP Code
-                            </div>
-
-                            <strong>
-                                ${esc(otp)}
-                            </strong>
-
-                            <br>
-
-                            <button
-                                class="copy-btn copy-small"
-                                onclick='copyContent(
-                                    this,
-                                    ${JSON.stringify(otp)}
-                                )'
-                            >
-                                📋 Copy OTP
-                            </button>
-
-                        </div>
-
-                    `;
-
-                }else if(
-                    status === "waiting"
-                ){
-
-                    otpSection = `
-
-                        <div class="otp-box">
-
-                            <div class="virtual-label">
-                                OTP Code
-                            </div>
-
-                            <strong>
-                                Waiting...
-                            </strong>
-
-                        </div>
-
-                    `;
-
-                }
-
-
-                let smsSection = "";
-
-
-                if(sms){
-
-                    smsSection = `
-
-                        <div class="sms-box">
-
-                            <div class="virtual-label">
-                                Full SMS
-                            </div>
-
-                            ${esc(sms)}
-
-                        </div>
-
-                    `;
-
-                }
-
-
-                let numberSection = "";
-
-
-                if(number){
-
-                    numberSection = `
-
-                        <div class="number-box">
-
-                            <div class="virtual-label">
-                                Phone Number
-                            </div>
-
-                            <strong>
-                                ${esc(number)}
-                            </strong>
-
-                            <br>
-
-                            <button
-                                class="copy-btn copy-small"
-                                onclick='copyContent(
-                                    this,
-                                    ${JSON.stringify(number)}
-                                )'
-                            >
-                                📋 Copy Number
-                            </button>
-
-                        </div>
-
-                    `;
-
-                }
-
-
-                let refundSection = "";
-
-
-                if(
-                    status === "cancelled"
-                ){
-
-                    refundSection = `
-
-                        <div class="virtual-row">
-
-                            <span class="virtual-label">
-                                Refund
-                            </span>
-
-                            <br>
-
-                            <strong>
-                                ${
-                                    order.refunded_at
-                                    ? "✅ Wallet refunded"
-                                    : "Refund processing"
-                                }
-                            </strong>
-
-                        </div>
-
-                    `;
-
-                }
-
-
-                card.innerHTML = `
-
-                    <div class="virtual-title">
-
-                        📱
-                        ${esc(
-                            order.service_name ||
-                            "Virtual Number"
-                        )}
-
-                        -
-                        ${esc(
-                            order.country_name ||
-                            ""
-                        )}
-
-                    </div>
-
-
-                    <div class="virtual-row">
-
-                        ${virtualStatusBadge(
-                            order.status
-                        )}
-
-                    </div>
-
-
-                    ${numberSection}
-
-
-                    ${otpSection}
-
-
-                    ${smsSection}
-
-
-                    <div class="virtual-row">
-
-                        <span class="virtual-label">
-                            Price
-                        </span>
-
-                        <br>
-
-                        <strong>
-                            ₦${formatMoney(
-                                order.customer_price_ngn
-                            )}
-                        </strong>
-
-                    </div>
-
-
-                    <div class="virtual-row">
-
-                        <span class="virtual-label">
-                            Purchased
-                        </span>
-
-                        <br>
-
-                        ${esc(
-                            purchaseDate
-                        )}
-
-                    </div>
-
-
-                    ${refundSection}
-
-                `;
-
-
-                container.appendChild(
-                    card
-                );
-
-            }
-        );
-
-
-        return {
-            totalSpent:
-                virtualTotalSpent
-        };
-
-    }catch(error){
-
-        console.error(
-            "Unexpected virtual purchase error:",
-            error
-        );
-
-
-        container.innerHTML = `
-
-            <div class="error">
-
-                ❌ Something went wrong
-                while loading virtual numbers.
-
-                <br><br>
-
-                ${esc(
-                    error.message
-                )}
-
-            </div>
-
-        `;
-
-
-        return {
-            totalSpent:0
-        };
-
-    }
-
-}
-
-
-
-// =====================================================
-// LOAD NORMAL INVENTORY PURCHASES
-// =====================================================
-
-async function loadNormalPurchases(
-    user
-){
-
-    const box =
-        document.getElementById(
-            "purchases"
-        );
-
-
-    if(!box){
-
-        return {
-            totalSpent:0
-        };
-
-    }
-
-
-    try{
-
-        /*
-           YOUR ORIGINAL INVENTORY PURCHASE
-           SYSTEM REMAINS HERE.
-
-           This is completely separate from
-           virtual_number_orders.
-        */
+        // =================================================
+        // LOAD NORMAL PURCHASES
+        // =================================================
 
         const {
-            data,
-            error
+            data:normalData,
+            error:normalError
         } =
         await supabaseClient
 
@@ -1167,15 +1019,26 @@ async function loadNormalPurchases(
             );
 
 
-        if(error){
+        if(normalError){
 
             console.error(
                 "Purchase loading error:",
-                error
+                normalError
             );
 
+        }
 
-            box.innerHTML = `
+
+        // =================================================
+        // CHECK BOTH RESULTS
+        // =================================================
+
+        if(
+            virtualError &&
+            normalError
+        ){
+
+            container.innerHTML = `
 
                 <div class="error">
 
@@ -1184,352 +1047,209 @@ async function loadNormalPurchases(
                     <br><br>
 
                     ${esc(
-                        error.message
+                        virtualError.message ||
+                        normalError.message
                     )}
 
                 </div>
 
             `;
 
+            totalBox.textContent =
+                "₦0.00";
 
-            return {
-                totalSpent:0
-            };
-
-        }
-
-
-        if(
-            !data ||
-            data.length === 0
-        ){
-
-            box.innerHTML = `
-
-                <div class="empty">
-
-                    You haven't purchased
-                    any products yet.
-
-                </div>
-
-            `;
-
-
-            return {
-                totalSpent:0
-            };
+            return;
 
         }
 
 
-        box.innerHTML = "";
+        // =================================================
+        // COMBINE BOTH PURCHASE TYPES
+        // =================================================
+
+        const combined = [];
 
 
-        let normalTotalSpent = 0;
+        (virtualData || []).forEach(
+            order => {
+
+                combined.push({
+
+                    type:"virtual",
+
+                    date:
+                        order.created_at ||
+                        order.purchased_at,
+
+                    data:order
+
+                });
+
+            }
+        );
 
 
-        data.forEach(
+        (normalData || []).forEach(
             purchase => {
 
-                const status =
-                    String(
-                        purchase.status || ""
-                    )
-                    .toLowerCase()
-                    .trim();
+                combined.push({
+
+                    type:"normal",
+
+                    date:
+                        purchase.created_at,
+
+                    data:purchase
+
+                });
+
+            }
+        );
 
 
-                /*
-                   Only completed inventory
-                   purchases count as spent.
-                */
+        // =================================================
+        // SORT EVERYTHING TOGETHER
+        // NEWEST PURCHASE ALWAYS FIRST
+        // =================================================
 
-                if(
-                    status === "completed"
-                ){
+        combined.sort(
+            function(a,b){
 
-                    normalTotalSpent +=
-                        Number(
-                            purchase.amount || 0
-                        );
-
-                }
-
-
-                const content =
-                    String(
-                        purchase.content ?? ""
-                    );
-
-
-                const safeContent =
-                    formatContent(
-                        content
-                    );
-
-
-                const copyButton =
-                    content.trim()
-
-                    ? `
-
-                        <button
-                            class="copy-btn"
-                            onclick='copyContent(
-                                this,
-                                ${JSON.stringify(content)}
-                            )'
-                        >
-                            📋 Copy
-                        </button>
-
-                    `
-
-                    : "";
-
-
-                const date =
-                    formatDate(
-                        purchase.created_at
-                    );
-
-
-                const purchaseBox =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                purchaseBox.className =
-                    "purchase";
-
-
-                purchaseBox.innerHTML = `
-
-                    <div class="top">
-
-                        <div class="name">
-
-                            ${esc(
-                                purchase.product_name ||
-                                "Unnamed Product"
-                            )}
-
-                        </div>
-
-
-                        <div class="amount">
-
-                            ₦${formatMoney(
-                                purchase.amount
-                            )}
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="status">
-
-                        ${
-                            status === "completed"
-
-                            ? `
-                                <span
-                                    class="badge badge-received"
-                                >
-                                    ✅ Completed
-                                </span>
-                            `
-
-                            : status === "cancelled"
-
-                            ? `
-                                <span
-                                    class="badge badge-cancelled"
-                                >
-                                    ❌ Cancelled
-                                </span>
-                            `
-
-                            : `
-                                <span
-                                    class="badge badge-waiting"
-                                >
-                                    ${esc(
-                                        purchase.status ||
-                                        "Pending"
-                                    )}
-                                </span>
-                            `
-                        }
-
-                    </div>
-
-
-                    ${
-                        content.trim()
-
-                        ? `
-
-                            <div class="content">
-
-                                ${safeContent}
-
-                            </div>
-
-                            ${copyButton}
-
-                        `
-
-                        : ""
-                    }
-
-
-                    <div class="date">
-
-                        ${esc(
-                            date
-                        )}
-
-                    </div>
-
-                `;
-
-
-                box.appendChild(
-                    purchaseBox
+                return (
+                    new Date(b.date || 0).getTime()
+                    -
+                    new Date(a.date || 0).getTime()
                 );
 
             }
         );
 
 
-        return {
-            totalSpent:
-                normalTotalSpent
-        };
+        // =================================================
+        // EMPTY
+        // =================================================
 
-    }catch(error){
+        if(combined.length === 0){
 
-        console.error(
-            "Unexpected purchase error:",
-            error
-        );
+            container.innerHTML = `
 
+                <div class="empty">
 
-        box.innerHTML = `
+                    You haven't purchased
+                    anything yet.
 
-            <div class="error">
+                </div>
 
-                ❌ Something went wrong.
+            `;
 
-                <br><br>
-
-                ${esc(
-                    error.message
-                )}
-
-            </div>
-
-        `;
-
-
-        return {
-            totalSpent:0
-        };
-
-    }
-
-}
-
-
-
-// =====================================================
-// LOAD EVERYTHING
-// =====================================================
-
-async function loadPurchases(){
-
-    const totalBox =
-        document.getElementById(
-            "totalSpent"
-        );
-
-
-    try{
-
-        // -----------------------------------------------
-        // CHECK LOGIN
-        // -----------------------------------------------
-
-        const {
-            data:{
-                user
-            },
-            error:authError
-        } =
-        await supabaseClient.auth.getUser();
-
-
-        if(authError){
-
-            console.error(
-                "Authentication error:",
-                authError
-            );
-
-            location.href =
-                "login.html";
+            totalBox.textContent =
+                "₦0.00";
 
             return;
 
         }
 
 
-        if(!user){
-
-            location.href =
-                "login.html";
-
-            return;
-
-        }
-
-
-        // -----------------------------------------------
-        // LOAD BOTH SYSTEMS
-        // -----------------------------------------------
-
-        const [
-            virtualResult,
-            normalResult
-        ] =
-        await Promise.all([
-
-            loadVirtualNumberPurchases(
-                user
-            ),
-
-            loadNormalPurchases(
-                user
-            )
-
-        ]);
-
-
-        // -----------------------------------------------
+        // =================================================
         // TOTAL SPENT
-        // -----------------------------------------------
+        // =================================================
 
-        const totalSpent =
-            Number(
-                virtualResult?.totalSpent || 0
-            ) +
-            Number(
-                normalResult?.totalSpent || 0
-            );
+        let totalSpent = 0;
+
+
+        // =================================================
+        // RENDER IN ONE SHARED LIST
+        // =================================================
+
+        container.innerHTML = "";
+
+
+        combined.forEach(
+            item => {
+
+                if(
+                    item.type === "virtual"
+                ){
+
+                    const order =
+                        item.data;
+
+
+                    const status =
+                        String(
+                            order.status || ""
+                        )
+                        .toLowerCase()
+                        .trim();
+
+
+                    /*
+                       Only completed virtual
+                       numbers count as spending.
+
+                       Cancelled/refunded numbers
+                       do NOT count.
+                    */
+
+                    if(
+                        status === "received"
+                    ){
+
+                        totalSpent +=
+                            Number(
+                                order.customer_price_ngn || 0
+                            );
+
+                    }
+
+
+                    container.appendChild(
+                        createVirtualNumberCard(
+                            order
+                        )
+                    );
+
+                }else{
+
+                    const purchase =
+                        item.data;
+
+
+                    const status =
+                        String(
+                            purchase.status || ""
+                        )
+                        .toLowerCase()
+                        .trim();
+
+
+                    /*
+                       Only completed normal
+                       purchases count as spending.
+                    */
+
+                    if(
+                        status === "completed"
+                    ){
+
+                        totalSpent +=
+                            Number(
+                                purchase.amount || 0
+                            );
+
+                    }
+
+
+                    container.appendChild(
+                        createNormalPurchaseCard(
+                            purchase
+                        )
+                    );
+
+                }
+
+            }
+        );
 
 
         totalBox.textContent =
@@ -1547,6 +1267,24 @@ async function loadPurchases(){
         );
 
 
+        container.innerHTML = `
+
+            <div class="error">
+
+                ❌ Something went wrong
+                while loading purchases.
+
+                <br><br>
+
+                ${esc(
+                    error.message
+                )}
+
+            </div>
+
+        `;
+
+
         totalBox.textContent =
             "₦0.00";
 
@@ -1555,14 +1293,11 @@ async function loadPurchases(){
 }
 
 
-
 // =====================================================
 // START
 // =====================================================
 
 loadPurchases();
 
-</script>
-
-</body>
+</script></body>
 </html>
