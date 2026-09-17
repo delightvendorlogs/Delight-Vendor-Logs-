@@ -712,7 +712,7 @@ id="countrySearch"
 type="search"
 placeholder="Search country..."
 autocomplete="off"
-oninput="filterCountries"
+oninput="filterCountries()"
 >
 
 </div>
@@ -2893,16 +2893,6 @@ async function buyNumber(){
    CURRENT ORDER
 ============================================================ */
 
-/*
-   IMPORTANT:
-
-   "Current / New Order" now means the MOST RECENT ORDER,
-   not only an order that is still waiting.
-
-   This allows cancelled, refunded, received, finished and
-   failed orders to remain visible as the latest order.
-*/
-
 function isCurrentOrder(
   order,
   index = 0
@@ -3121,13 +3111,6 @@ async function loadAllOrders(){
 
   try{
 
-    /*
-       ALWAYS LOAD BOTH PROVIDERS.
-
-       This means the order history is shared between
-       All Country Number 1 and All Country Number 2.
-    */
-
     const results =
       await Promise.allSettled([
 
@@ -3177,18 +3160,10 @@ async function loadAllOrders(){
             )
         : [];
 
-    /*
-       MERGE SMSBOWER + 5SIM INTO ONE ORDER LIST.
-    */
-
     const merged = [
       ...smsOrders,
       ...fiveSimOrders
     ];
-
-    /*
-       REMOVE DUPLICATES USING PROVIDER + LOCAL ORDER ID.
-    */
 
     const unique =
       new Map();
@@ -3208,10 +3183,6 @@ async function loadAllOrders(){
       Array.from(
         unique.values()
       );
-
-    /*
-       NEWEST ORDER FIRST.
-    */
 
     combined.sort(
       (
@@ -3234,20 +3205,6 @@ async function loadAllOrders(){
 
     orders =
       combined;
-
-    /*
-       THE FIRST / NEWEST ORDER IS ALWAYS THE
-       CURRENT / NEW ORDER.
-
-       It can be:
-       waiting
-       pending
-       received
-       finished
-       cancelled
-       refunded
-       failed
-    */
 
     const active =
       orders.length > 0
@@ -3280,11 +3237,6 @@ async function loadAllOrders(){
       `;
 
     }
-
-    /*
-       EVERYTHING EXCEPT THE NEWEST ORDER GOES
-       INTO PREVIOUS ORDERS.
-    */
 
     const activeKey =
       active
@@ -3543,14 +3495,6 @@ setInterval(
     ){
 
       try{
-
-        /*
-           Only check orders that can actually receive
-           an update from the provider.
-
-           Cancelled/finished orders should not keep
-           getting checked every 15 seconds.
-        */
 
         const current =
           orders.find(
