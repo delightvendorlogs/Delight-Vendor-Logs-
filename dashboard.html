@@ -3,36 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-
 <title>Delight Vendor Logs</title>
-
-<link rel="stylesheet" href="style.css">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
-/* =========================
-   BASIC
-========================= */
-
-*{
-    box-sizing:border-box;
-}
-
-html{
-    scroll-behavior:smooth;
-}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
 
 body{
-    margin:0;
     font-family:Arial,Helvetica,sans-serif;
-    background:#f4f6ff;
-    color:#151827;
+    background:#f3f6ff;
+    color:#18203a;
 }
 
-button,
-input{
+button,input{
     font-family:inherit;
 }
 
@@ -40,137 +25,127 @@ button{
     cursor:pointer;
 }
 
-.hidden{
-    display:none !important;
-}
-
-
-/* =========================
-   HEADER
-========================= */
+/* HEADER */
 
 header{
-    background:#f4f6ff;
     padding:20px 18px 14px;
     display:flex;
     align-items:center;
     justify-content:space-between;
+    gap:12px;
 }
 
-.brand-area{
+.brand{
     display:flex;
     align-items:center;
     gap:13px;
 }
 
-.brand-logo{
+.logo{
     width:52px;
     height:52px;
     border-radius:16px;
     background:#1028d8;
-    color:white;
+    color:#fff;
     display:flex;
     align-items:center;
     justify-content:center;
     font-size:25px;
     font-weight:900;
-    box-shadow:0 4px 12px #1028d833;
+    box-shadow:0 5px 14px #1028d833;
 }
 
-.brand-text h1{
+.brand h1{
     margin:0;
     font-size:20px;
-    line-height:1.2;
+    color:#18203a;
 }
 
-.brand-text p{
+.brand p{
     margin:5px 0 0;
-    color:#8c93ae;
+    color:#8d95b1;
     font-size:14px;
 }
 
-.menu-button{
+.menu-btn{
     width:50px;
     height:50px;
-    border:1px solid #e0e4f0;
-    background:white;
+    border:1px solid #e1e5f0;
+    background:#fff;
     border-radius:16px;
-    font-size:23px;
-    color:#20263b;
-    box-shadow:0 2px 8px #00000008;
+    font-size:24px;
+    color:#18203a;
 }
 
-
-/* =========================
-   MAIN
-========================= */
+/* MAIN */
 
 main{
-    width:100%;
     max-width:850px;
     margin:auto;
-    padding:5px 18px 100px;
+    padding:4px 18px 100px;
 }
 
-
-/* =========================
-   WATERMARK
-========================= */
+/* WATERMARK */
 
 .watermark{
     display:none;
-    background:white;
-    border-radius:12px;
-    padding:12px 14px;
-    margin:5px 0 15px;
-    color:#666d87;
-    font-size:13px;
-    line-height:1.5;
+    background:#fff;
     border-left:4px solid #1028d8;
+    border-radius:13px;
+    padding:14px;
+    margin:4px 0 18px;
+    color:#687089;
+    font-size:14px;
+    line-height:1.55;
 }
 
+/* WALLET */
 
-/* =========================
-   WALLET
-========================= */
-
-.wallet-card{
+.wallet{
     position:relative;
     overflow:hidden;
-    background:linear-gradient(135deg,#07105d,#101bb8 55%,#102fe2);
+    background:
+        linear-gradient(
+            135deg,
+            #07105d,
+            #1020bd 58%,
+            #1534e9
+        );
     border-radius:27px;
-    padding:27px 24px 25px;
-    color:white;
-    box-shadow:0 10px 30px #1528bb30;
-    margin-bottom:28px;
+    padding:26px 24px 24px;
+    color:#fff;
+    box-shadow:0 12px 30px #1028d833;
+    margin-bottom:29px;
 }
 
-.wallet-card:before,
-.wallet-card:after{
+.wallet:before{
     content:"";
     position:absolute;
-    border:1px solid #ffffff18;
+    width:360px;
+    height:360px;
+    border:1px solid #ffffff16;
     border-radius:50%;
-    pointer-events:none;
+    right:-180px;
+    top:-180px;
 }
 
-.wallet-card:before{
+.wallet:after{
+    content:"";
+    position:absolute;
     width:330px;
     height:330px;
-    right:-150px;
-    top:-170px;
+    border:1px solid #ffffff12;
+    border-radius:50%;
+    left:-190px;
+    bottom:-200px;
 }
 
-.wallet-card:after{
-    width:300px;
-    height:300px;
-    left:-160px;
-    bottom:-190px;
+.wallet>*{
+    position:relative;
+    z-index:2;
 }
 
 .wallet-top{
-    position:relative;
-    z-index:2;
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -178,60 +153,72 @@ main{
 
 .wallet-label{
     margin:0;
-    color:#aeb7e9;
+    color:#b9c1eb;
     font-size:14px;
     font-weight:bold;
     letter-spacing:.5px;
 }
 
-.wallet-status{
-    background:#ffffff13;
-    border:1px solid #ffffff20;
+.status{
+    background:#ffffff14;
+    border:1px solid #ffffff22;
     color:#28e1ad;
-    padding:8px 13px;
+    padding:9px 14px;
     border-radius:25px;
-    font-size:13px;
     font-weight:bold;
 }
 
-.wallet-status span{
+.status i{
     display:inline-block;
     width:8px;
     height:8px;
-    background:#24d9a5;
+    background:#26dca8;
     border-radius:50%;
     margin-right:6px;
 }
 
 .balance-row{
-    position:relative;
-    z-index:2;
     display:flex;
     align-items:center;
     gap:12px;
-    margin:14px 0 24px;
+    margin:14px 0 25px;
 }
+
+/*
+IMPORTANT:
+Force the balance itself to remain transparent.
+This prevents style.css or another CSS rule
+from turning it into a white box.
+*/
 
 #walletBalance{
-    margin:0;
-    font-size:36px;
-    font-weight:900;
-    letter-spacing:-1px;
+    display:block !important;
+    width:auto !important;
+    height:auto !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    background:transparent !important;
+    border:0 !important;
+    border-radius:0 !important;
+    color:#fff !important;
+    font-size:36px !important;
+    font-weight:900 !important;
+    line-height:1.15 !important;
+    box-shadow:none !important;
 }
 
-.eye-button{
+.eye{
     width:46px;
     height:46px;
     border-radius:50%;
-    border:1px solid #ffffff20;
+    border:1px solid #ffffff22;
     background:#ffffff18;
-    color:white;
+    color:#fff;
     font-size:21px;
 }
 
 .wallet-actions{
-    position:relative;
-    z-index:2;
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:14px;
@@ -244,104 +231,97 @@ main{
     font-weight:bold;
 }
 
-.fund-button{
-    border:none;
-    background:white;
-    color:#1534ca;
+.fund{
+    border:0;
+    background:#fff;
+    color:#1735c8;
 }
 
-.history-button{
+.history{
     border:1px solid #ffffff30;
-    background:#ffffff16;
-    color:white;
+    background:#ffffff15;
+    color:#fff;
 }
 
+/* SECTION HEAD */
 
-/* =========================
-   SECTION HEADERS
-========================= */
-
-.section-heading{
+.section-head{
     display:flex;
     align-items:center;
     justify-content:space-between;
     margin:0 0 14px;
 }
 
-.section-heading h2{
+.section-head h2{
     margin:0;
+    color:#929bb7;
     font-size:16px;
-    color:#9299b5;
     letter-spacing:1px;
     text-transform:uppercase;
 }
 
-.section-heading h2:after{
+.section-head h2:after{
     content:"";
     display:inline-block;
-    vertical-align:middle;
     width:60px;
     height:2px;
-    background:#e1e4ee;
+    background:#dfe3ee;
+    vertical-align:middle;
     margin-left:12px;
 }
 
-.view-all{
-    border:none;
+.view{
+    border:0;
     background:none;
-    color:#1239c8;
+    color:#123bc8;
     font-size:15px;
     font-weight:bold;
 }
 
+/* CATEGORIES */
 
-/* =========================
-   CATEGORIES
-========================= */
-
-.categories-section{
-    margin-bottom:30px;
-}
-
-.category-grid{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    background:white;
-    border:1px solid #e2e5ef;
+.categories{
+    background:#fff;
+    border:1px solid #e1e5ef;
     border-radius:25px;
     overflow:hidden;
-    box-shadow:0 3px 12px #00000007;
+    box-shadow:0 3px 12px #00000008;
+    margin-bottom:31px;
 }
 
-.category-card{
+.grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+}
+
+.cat{
     min-height:132px;
     border:0;
-    border-right:1px solid #e7e9f0;
-    border-bottom:1px solid #e7e9f0;
-    background:white;
+    border-right:1px solid #e8eaf0;
+    border-bottom:1px solid #e8eaf0;
+    background:#fff;
+    color:#58617e;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
     gap:10px;
-    padding:15px 7px;
-    color:#555d7d;
-    transition:.15s;
+    padding:14px 5px;
 }
 
-.category-card:nth-child(4n){
-    border-right:none;
+.cat:nth-child(4n){
+    border-right:0;
 }
 
-.category-card:nth-last-child(-n+4){
-    border-bottom:none;
+.cat:nth-last-child(-n+4){
+    border-bottom:0;
 }
 
-.category-card:active{
-    transform:scale(.97);
+.cat:active{
+    transform:scale(.98);
 }
 
-.category-icon{
+.cat-icon{
     width:55px;
     height:55px;
     border-radius:17px;
@@ -349,128 +329,115 @@ main{
     align-items:center;
     justify-content:center;
     font-size:27px;
-    background:#edf1ff;
-    border:1px solid #dce2fb;
+    background:#eaf0ff;
+    border:1px solid #dce3fb;
 }
 
-.category-card:nth-child(2) .category-icon{
+.cat:nth-child(2) .cat-icon{
     background:#f3eaff;
 }
 
-.category-card:nth-child(3) .category-icon{
-    background:#e7faf4;
+.cat:nth-child(3) .cat-icon{
+    background:#e6faf3;
 }
 
-.category-card:nth-child(4) .category-icon{
-    background:#fff3df;
+.cat:nth-child(4) .cat-icon{
+    background:#fff1dc;
 }
 
-.category-card:nth-child(5) .category-icon{
+.cat:nth-child(5) .cat-icon{
     background:#e8f5ff;
 }
 
-.category-card:nth-child(6) .category-icon{
+.cat:nth-child(6) .cat-icon{
     background:#eeeaff;
 }
 
-.category-card:nth-child(7) .category-icon{
-    background:#e7f9f4;
+.cat:nth-child(7) .cat-icon{
+    background:#e6faf4;
 }
 
-.category-card:nth-child(8) .category-icon{
+.cat:nth-child(8) .cat-icon{
     background:#fff0df;
 }
 
-.category-card:nth-child(9) .category-icon{
+.cat:nth-child(9) .cat-icon{
     background:#e8efff;
 }
 
-.category-card:nth-child(10) .category-icon{
-    background:#ededed;
-}
-
-.category-name{
+.cat-name{
+    text-align:center;
     font-size:13px;
     line-height:1.25;
     font-weight:bold;
-    text-align:center;
 }
 
+/* TRANSACTIONS */
 
-/* =========================
-   RECENT TRANSACTIONS
-========================= */
-
-.transactions-section{
+.transactions{
     margin-bottom:25px;
 }
 
-.transactions-card{
-    background:white;
-    border:1px solid #e2e5ef;
+.tx-card{
+    background:#fff;
+    border:1px solid #e1e5ef;
     border-radius:22px;
     overflow:hidden;
-    box-shadow:0 3px 12px #00000007;
+    box-shadow:0 3px 12px #00000008;
 }
 
-.transaction-loading,
-.no-transactions{
+.tx-loading,
+.tx-empty{
     min-height:180px;
     display:flex;
     align-items:center;
     justify-content:center;
     text-align:center;
     padding:30px;
-    color:#737b99;
+    color:#737c99;
 }
 
-.no-transactions-icon{
-    font-size:38px;
-    margin-bottom:10px;
-    opacity:.7;
-}
-
-.transaction-list{
+.tx-list{
     width:100%;
 }
 
-.transaction-item{
+.tx{
     padding:17px 18px;
     border-bottom:1px solid #edf0f5;
     display:flex;
-    align-items:center;
     justify-content:space-between;
+    align-items:center;
     gap:12px;
 }
 
-.transaction-item:last-child{
-    border-bottom:none;
+.tx:last-child{
+    border-bottom:0;
 }
 
-.transaction-left{
-    min-width:0;
+.tx-left{
     display:flex;
     align-items:center;
-    gap:13px;
+    gap:12px;
+    min-width:0;
 }
 
-.transaction-icon{
+.tx-icon{
     width:43px;
     height:43px;
     flex:0 0 43px;
     border-radius:13px;
+    background:#edf1ff;
     display:flex;
     align-items:center;
     justify-content:center;
-    background:#edf1ff;
     font-size:19px;
 }
 
-.transaction-info{
+.tx-info{
     min-width:0;
 }
 
-.transaction-info strong{
+.tx-info strong{
     display:block;
     font-size:14px;
     margin-bottom:5px;
@@ -479,46 +446,42 @@ main{
     text-overflow:ellipsis;
 }
 
-.transaction-date{
-    color:#969db5;
+.tx-date{
     font-size:12px;
+    color:#969db5;
 }
 
-.transaction-right{
+.tx-right{
     text-align:right;
     flex:0 0 auto;
 }
 
-.transaction-amount{
+.tx-amount{
     font-size:14px;
     font-weight:800;
 }
 
-.amount-credit{
-    color:#00a779;
+.credit{
+    color:#009b72;
 }
 
-.amount-debit{
-    color:#d33939;
+.debit{
+    color:#d13c3c;
 }
 
-.transaction-status{
+.tx-status{
     font-size:11px;
+    color:#8d95ab;
     margin-top:4px;
-    text-transform:capitalize;
-    color:#8b92aa;
 }
 
+/* SERVICES */
 
-/* =========================
-   SERVICES VIEW
-========================= */
-
-.services-view{
+#servicesView{
     display:none;
 }
 
-.services-view.active{
+#servicesView.active{
     display:block;
 }
 
@@ -529,11 +492,11 @@ main{
     margin-bottom:18px;
 }
 
-.back-button{
+.back{
     width:45px;
     height:45px;
     border:1px solid #e0e4ef;
-    background:white;
+    background:#fff;
     border-radius:14px;
     font-size:20px;
 }
@@ -549,63 +512,59 @@ main{
     font-size:13px;
 }
 
-.search-box{
+.search{
     width:100%;
     height:52px;
     border:1px solid #e0e4ef;
     border-radius:15px;
-    background:white;
+    background:#fff;
     padding:0 16px;
     font-size:15px;
     outline:none;
     margin-bottom:17px;
 }
 
-.search-box:focus{
+.search:focus{
     border-color:#1028d8;
 }
 
-.products-grid{
+.products{
     display:grid;
     grid-template-columns:1fr;
     gap:15px;
 }
 
-.product-card{
-    background:white;
+.product{
+    background:#fff;
+    border:1px solid #e3e6ef;
     border-radius:20px;
     padding:15px;
     box-shadow:0 3px 12px #00000008;
-    border:1px solid #e5e7ef;
     overflow:hidden;
 }
 
-.product-image{
-    width:100%;
-    height:190px;
-    object-fit:cover;
-    border-radius:14px;
-    background:#eee;
-    display:block;
-}
-
+.product img,
 .no-image{
     width:100%;
     height:190px;
     border-radius:14px;
+    object-fit:cover;
     background:#edf0f6;
+}
+
+.no-image{
     display:flex;
     align-items:center;
     justify-content:center;
     font-size:45px;
 }
 
-.product-card h3{
+.product h3{
     margin:14px 0 8px;
     font-size:18px;
 }
 
-.product-category{
+.badge{
     display:inline-block;
     background:#edf1ff;
     color:#3149bb;
@@ -615,43 +574,43 @@ main{
     font-weight:bold;
 }
 
-.product-description{
+.desc{
     color:#69708b;
     font-size:14px;
     line-height:1.5;
     white-space:pre-wrap;
 }
 
-.product-price{
+.price{
     font-size:20px;
     font-weight:900;
     margin:13px 0 7px;
 }
 
-.stock-text{
+.stock{
     margin:0 0 9px;
     color:#666d83;
     font-size:13px;
 }
 
-.buy-button{
+.buy{
     width:100%;
     height:48px;
-    border:none;
+    border:0;
     border-radius:12px;
     background:#1028d8;
-    color:white;
+    color:#fff;
     font-size:15px;
     font-weight:bold;
 }
 
-.buy-button:disabled{
-    background:#a1a5b1;
+.buy:disabled{
+    background:#999;
     cursor:not-allowed;
 }
 
-.message-box{
-    background:white;
+.msg{
+    background:#fff;
     border:1px solid #e3e6ee;
     border-radius:18px;
     padding:35px 20px;
@@ -659,27 +618,17 @@ main{
     color:#747b95;
 }
 
-.error-box{
-    background:#ffe8e8;
-    color:#a00000;
-    padding:18px;
-    border-radius:14px;
-}
+/* WHATSAPP */
 
-
-/* =========================
-   WHATSAPP
-========================= */
-
-.whatsapp-float{
+.whatsapp{
     position:fixed;
-    right:19px;
-    bottom:20px;
-    width:56px;
-    height:56px;
+    right:18px;
+    bottom:19px;
+    width:57px;
+    height:57px;
     border-radius:50%;
     background:#25d366;
-    color:white;
+    color:#fff;
     text-decoration:none;
     display:flex;
     align-items:center;
@@ -689,12 +638,9 @@ main{
     z-index:90;
 }
 
+/* MENU */
 
-/* =========================
-   SIDE MENU
-========================= */
-
-.menu-overlay{
+.overlay{
     display:none;
     position:fixed;
     inset:0;
@@ -702,49 +648,48 @@ main{
     z-index:199;
 }
 
-.menu-overlay.active{
+.overlay.open{
     display:block;
 }
 
 #menu{
     position:fixed;
-    top:0;
     right:0;
+    top:0;
     width:300px;
     max-width:88%;
     height:100vh;
-    background:white;
+    background:#fff;
     z-index:200;
     padding:23px;
     box-shadow:-5px 0 20px #00000020;
-    overflow-y:auto;
     transform:translateX(100%);
     transition:.2s;
+    overflow-y:auto;
 }
 
-#menu.active{
+#menu.open{
     transform:translateX(0);
 }
 
-.menu-header{
+.menu-head{
     display:flex;
     align-items:center;
     justify-content:space-between;
     margin-bottom:15px;
 }
 
-.menu-header h3{
+.menu-head h3{
     margin:0;
     font-size:20px;
 }
 
-.menu-close-button{
+.menu-close-btn{
     width:40px;
     height:40px;
-    border:none;
+    border:0;
     background:#f1f3f8;
     border-radius:12px;
-    font-size:18px;
 }
 
 .menu-item{
@@ -760,10 +705,7 @@ main{
     display:block;
 }
 
-
-/* =========================
-   MOBILE
-========================= */
+/* MOBILE */
 
 @media(max-width:600px){
 
@@ -776,49 +718,44 @@ main{
         padding-right:15px;
     }
 
-    .brand-logo{
+    .logo{
         width:48px;
         height:48px;
     }
 
-    .brand-text h1{
+    .brand h1{
         font-size:18px;
     }
 
-    .wallet-card{
+    .wallet{
         padding:24px 19px 21px;
         border-radius:24px;
     }
 
     #walletBalance{
-        font-size:32px;
+        font-size:32px !important;
     }
 
-    .category-grid{
-        grid-template-columns:repeat(4,1fr);
-    }
-
-    .category-card{
+    .cat{
         min-height:122px;
-        padding:12px 4px;
     }
 
-    .category-icon{
+    .cat-icon{
         width:48px;
         height:48px;
         font-size:23px;
         border-radius:15px;
     }
 
-    .category-name{
+    .cat-name{
         font-size:11.5px;
     }
 
-    .transaction-item{
+    .tx{
         padding:15px 13px;
     }
 
-    .transaction-icon{
+    .tx-icon{
         width:39px;
         height:39px;
         flex-basis:39px;
@@ -831,11 +768,11 @@ main{
         grid-template-columns:1fr;
     }
 
-    .category-name{
+    .cat-name{
         font-size:10.5px;
     }
 
-    .category-icon{
+    .cat-icon{
         width:43px;
         height:43px;
         font-size:21px;
@@ -845,33 +782,39 @@ main{
 </style>
 </head>
 
+
 <body>
 
 
-<!-- =========================
-     HEADER
-========================= -->
+<!-- HEADER -->
 
 <header>
 
-    <div class="brand-area">
+    <div class="brand">
 
-        <div class="brand-logo">
+        <div class="logo">
             D
         </div>
 
-        <div class="brand-text">
-            <h1 id="greeting">Good Evening, Delight 👋</h1>
-            <p>Your Delight Vendor Logs Dashboard</p>
+        <div>
+
+            <h1 id="greeting">
+                Good Evening, Delight 👋
+            </h1>
+
+            <p>
+                Your Delight Vendor Logs Dashboard
+            </p>
+
         </div>
 
     </div>
 
+
     <button
+        class="menu-btn"
         type="button"
-        class="menu-button"
         onclick="openMenu()"
-        aria-label="Open menu"
     >
         ☰
     </button>
@@ -879,27 +822,25 @@ main{
 </header>
 
 
-<!-- =========================
-     MAIN
-========================= -->
-
 <main>
+
 
     <!-- WATERMARK -->
 
-    <div id="watermark" class="watermark"></div>
+    <div
+        id="watermark"
+        class="watermark"
+    ></div>
 
 
-    <!-- =========================
-         HOME VIEW
-    ========================= -->
+    <!-- HOME -->
 
     <div id="homeView">
 
 
         <!-- WALLET -->
 
-        <section class="wallet-card">
+        <section class="wallet">
 
             <div class="wallet-top">
 
@@ -907,8 +848,8 @@ main{
                     AVAILABLE BALANCE
                 </p>
 
-                <div class="wallet-status">
-                    <span></span> Active
+                <div class="status">
+                    <i></i>Active
                 </div>
 
             </div>
@@ -921,11 +862,9 @@ main{
                 </p>
 
                 <button
+                    class="eye"
                     type="button"
-                    class="eye-button"
-                    id="eyeButton"
                     onclick="toggleBalance()"
-                    aria-label="Show or hide balance"
                 >
                     👁
                 </button>
@@ -936,16 +875,17 @@ main{
             <div class="wallet-actions">
 
                 <button
+                    class="wallet-action fund"
                     type="button"
-                    class="wallet-action fund-button"
                     onclick="location.href='wallet.html'"
                 >
                     ＋ Fund Wallet
                 </button>
 
+
                 <button
+                    class="wallet-action history"
                     type="button"
-                    class="wallet-action history-button"
                     onclick="location.href='transactions.html'"
                 >
                     ↶ History
@@ -958,112 +898,152 @@ main{
 
         <!-- CATEGORIES -->
 
-        <section class="categories-section">
+        <section>
 
-            <div class="section-heading">
-                <h2>Categories</h2>
+            <div class="section-head">
+
+                <h2>
+                    Categories
+                </h2>
+
             </div>
 
 
-            <div class="category-grid" id="categoryGrid">
+            <div class="categories">
 
-                <button
-                    class="category-card"
-                    onclick="selectCategory('All Social Logs')"
-                >
-                    <div class="category-icon">📱</div>
-                    <div class="category-name">
-                        All Social<br>Logs
-                    </div>
-                </button>
+                <div class="grid">
 
 
-                <button
-                    class="category-card"
-                    onclick="selectCategory('Working Pictures')"
-                >
-                    <div class="category-icon">🖼️</div>
-                    <div class="category-name">
-                        Working<br>Pictures
-                    </div>
-                </button>
+                    <button
+                        class="cat"
+                        onclick="selectCategory('All Social Logs')"
+                    >
+                        <div class="cat-icon">
+                            📱
+                        </div>
+
+                        <div class="cat-name">
+                            All Social<br>Logs
+                        </div>
+                    </button>
 
 
-                <button
-                    class="category-card"
-                    onclick="selectCategory('Formats')"
-                >
-                    <div class="category-icon">📄</div>
-                    <div class="category-name">
-                        Formats
-                    </div>
-                </button>
+                    <button
+                        class="cat"
+                        onclick="selectCategory('Working Pictures')"
+                    >
+                        <div class="cat-icon">
+                            🖼️
+                        </div>
+
+                        <div class="cat-name">
+                            Working<br>Pictures
+                        </div>
+                    </button>
 
 
-                <button
-                    class="category-card"
-                    onclick="selectCategory('Working Links')"
-                >
-                    <div class="category-icon">🔗</div>
-                    <div class="category-name">
-                        Working<br>Links
-                    </div>
-                </button>
+                    <button
+                        class="cat"
+                        onclick="selectCategory('Formats')"
+                    >
+                        <div class="cat-icon">
+                            📄
+                        </div>
+
+                        <div class="cat-name">
+                            Formats
+                        </div>
+                    </button>
 
 
-                <button
-                    class="category-card"
-                    onclick="selectCategory('Voice Cloner/Fake Video Call')"
-                >
-                    <div class="category-icon">🎙️</div>
-                    <div class="category-name">
-                        Voice Cloner/<br>Fake Video Call
-                    </div>
-                </button>
+                    <button
+                        class="cat"
+                        onclick="selectCategory('Working Links')"
+                    >
+                        <div class="cat-icon">
+                            🔗
+                        </div>
+
+                        <div class="cat-name">
+                            Working<br>Links
+                        </div>
+                    </button>
 
 
-                <button
-                    class="category-card"
-                    onclick="selectCategory('All Countries Number')"
-                >
-                    <div class="category-icon">📞</div>
-                    <div class="category-name">
-                        All Countries<br>Number
-                    </div>
-                </button>
+                    <button
+                        class="cat"
+                        onclick="selectCategory('Voice Cloner/Fake Video Call')"
+                    >
+                        <div class="cat-icon">
+                            🎙️
+                        </div>
+
+                        <div class="cat-name">
+                            Voice Cloner/<br>
+                            Fake Video Call
+                        </div>
+                    </button>
 
 
-                <button
-                    class="category-card"
-                    onclick="selectCategory('Streaming & More')"
-                >
-                    <div class="category-icon">📺</div>
-                    <div class="category-name">
-                        Streaming<br>& More
-                    </div>
-                </button>
+                    <button
+                        class="cat"
+                        onclick="selectCategory('All Countries Number')"
+                    >
+                        <div class="cat-icon">
+                            📞
+                        </div>
+
+                        <div class="cat-name">
+                            All Countries<br>
+                            Number
+                        </div>
+                    </button>
 
 
-                <button
-                    class="category-card"
-                    onclick="selectCategory('ESIMS')"
-                >
-                    <div class="category-icon">📡</div>
-                    <div class="category-name">
-                        ESIMS
-                    </div>
-                </button>
+                    <button
+                        class="cat"
+                        onclick="selectCategory('Streaming & More')"
+                    >
+                        <div class="cat-icon">
+                            📺
+                        </div>
+
+                        <div class="cat-name">
+                            Streaming<br>
+                            & More
+                        </div>
+                    </button>
 
 
-                <button
-                    class="category-card"
-                    onclick="selectCategory('VPN')"
-                >
-                    <div class="category-icon">🔐</div>
-                    <div class="category-name">
-                        VPN
-                    </div>
-                </button>
+                    <button
+                        class="cat"
+                        onclick="selectCategory('ESIMS')"
+                    >
+                        <div class="cat-icon">
+                            📡
+                        </div>
+
+                        <div class="cat-name">
+                            ESIMS
+                        </div>
+                    </button>
+
+
+                    <button
+                        class="cat"
+                        onclick="selectCategory('VPN')"
+                    >
+                        <div class="cat-icon">
+                            🔐
+                        </div>
+
+                        <div class="cat-name">
+                            VPN
+                        </div>
+                    </button>
+
+
+                </div>
 
             </div>
 
@@ -1072,15 +1052,18 @@ main{
 
         <!-- RECENT TRANSACTIONS -->
 
-        <section class="transactions-section">
+        <section class="transactions">
 
-            <div class="section-heading">
+            <div class="section-head">
 
-                <h2>Recent Transactions</h2>
+                <h2>
+                    Recent Transactions
+                </h2>
+
 
                 <button
+                    class="view"
                     type="button"
-                    class="view-all"
                     onclick="location.href='transactions.html'"
                 >
                     See more ›
@@ -1089,137 +1072,120 @@ main{
             </div>
 
 
-            <div class="transactions-card">
+            <div class="tx-card">
 
                 <div
-                    id="transactionLoading"
-                    class="transaction-loading"
+                    id="txLoading"
+                    class="tx-loading"
                 >
                     Loading transactions...
                 </div>
 
+
                 <div
-                    id="transactionList"
-                    class="transaction-list hidden"
+                    id="txList"
+                    class="tx-list"
+                    style="display:none"
                 ></div>
 
+
                 <div
-                    id="noTransactions"
-                    class="no-transactions hidden"
-                >
-
-                    <div>
-
-                        <div class="no-transactions-icon">
-                            🧾
-                        </div>
-
-                        <strong>
-                            No transactions yet
-                        </strong>
-
-                        <p>
-                            Fund your wallet to get started.
-                        </p>
-
-                    </div>
-
-                </div>
+                    id="txEmpty"
+                    class="tx-empty"
+                    style="display:none"
+                ></div>
 
             </div>
 
         </section>
 
+
     </div>
 
 
-    <!-- =========================
-         CATEGORY SERVICES VIEW
-    ========================= -->
+    <!-- CATEGORY SERVICES -->
 
-    <div id="servicesView" class="services-view">
+    <div id="servicesView">
+
 
         <div class="services-top">
 
+
             <button
+                class="back"
                 type="button"
-                class="back-button"
-                onclick="backToHome()"
+                onclick="backHome()"
             >
                 ←
             </button>
 
+
             <div class="services-title">
 
-                <h2 id="categoryTitle">
-                    Services
-                </h2>
+                <h2 id="categoryTitle"></h2>
 
-                <p id="categoryDescription">
-                    Services available in this category.
-                </p>
+                <p id="categoryDescription"></p>
 
             </div>
+
 
         </div>
 
 
         <input
             id="serviceSearch"
-            class="search-box"
+            class="search"
             type="search"
             placeholder="🔍 Search service..."
-            oninput="filterServices()"
+            oninput="renderServices()"
         >
 
 
         <div
             id="products"
-            class="products-grid"
-        >
-            Loading services...
-        </div>
+            class="products"
+        ></div>
+
 
     </div>
+
 
 </main>
 
 
-<!-- =========================
-     WHATSAPP
-========================= -->
+<!-- WHATSAPP -->
 
 <a
-    class="whatsapp-float"
+    class="whatsapp"
     href="https://wa.me/2347015908401"
     target="_blank"
     rel="noopener"
-    aria-label="WhatsApp Support"
 >
     💬
 </a>
 
 
-<!-- =========================
-     MENU
-========================= -->
+<!-- MENU -->
 
 <div
-    id="menuOverlay"
-    class="menu-overlay"
+    id="overlay"
+    class="overlay"
     onclick="closeMenu()"
 ></div>
 
 
 <div id="menu">
 
-    <div class="menu-header">
 
-        <h3>Menu</h3>
+    <div class="menu-head">
+
+        <h3>
+            Menu
+        </h3>
 
         <button
+            class="menu-close-btn"
             type="button"
-            class="menu-close-button"
             onclick="closeMenu()"
         >
             ✕
@@ -1291,11 +1257,12 @@ main{
 
     <div
         class="menu-item"
-        onclick="closeMenu()"
         style="color:#b00020"
+        onclick="closeMenu()"
     >
         ✖ Close
     </div>
+
 
 </div>
 
@@ -1312,10 +1279,18 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
+
 const supabaseClient =
     window.supabase.createClient(
         SUPABASE_URL,
-        SUPABASE_KEY
+        SUPABASE_KEY,
+        {
+            auth:{
+                persistSession:true,
+                autoRefreshToken:true,
+                detectSessionInUrl:true
+            }
+        }
     );
 
 
@@ -1330,27 +1305,6 @@ let selectedCategory = "Home";
 let realBalance = 0;
 
 let balanceHidden = false;
-
-
-/* =========================================================
-   GREETING
-========================================================= */
-
-function updateGreeting(){
-
-    const hour = new Date().getHours();
-
-    let greeting = "Good Evening";
-
-    if(hour < 12){
-        greeting = "Good Morning";
-    }else if(hour < 17){
-        greeting = "Good Afternoon";
-    }
-
-    document.getElementById("greeting").textContent =
-        greeting + ", Delight 👋";
-}
 
 
 /* =========================================================
@@ -1376,11 +1330,11 @@ function openMenu(){
 
     document
         .getElementById("menu")
-        .classList.add("active");
+        .classList.add("open");
 
     document
-        .getElementById("menuOverlay")
-        .classList.add("active");
+        .getElementById("overlay")
+        .classList.add("open");
 }
 
 
@@ -1388,32 +1342,70 @@ function closeMenu(){
 
     document
         .getElementById("menu")
-        .classList.remove("active");
+        .classList.remove("open");
 
     document
-        .getElementById("menuOverlay")
-        .classList.remove("active");
+        .getElementById("overlay")
+        .classList.remove("open");
 }
 
 
 /* =========================================================
-   BALANCE
+   GREETING
 ========================================================= */
 
-function displayBalance(){
+function updateGreeting(){
 
-    const balanceElement =
-        document.getElementById("walletBalance");
+    const hour =
+        new Date().getHours();
+
+
+    let greeting =
+        "Good Evening";
+
+
+    if(hour < 12){
+
+        greeting =
+            "Good Morning";
+
+    }else if(hour < 17){
+
+        greeting =
+            "Good Afternoon";
+    }
+
+
+    document
+        .getElementById("greeting")
+        .textContent =
+            greeting +
+            ", Delight 👋";
+}
+
+
+/* =========================================================
+   BALANCE DISPLAY
+========================================================= */
+
+function showBalance(){
+
+    const element =
+        document.getElementById(
+            "walletBalance"
+        );
+
 
     if(balanceHidden){
 
-        balanceElement.textContent =
+        element.textContent =
             "₦••••••";
 
         return;
     }
 
-    balanceElement.textContent =
+
+    element.textContent =
         "₦" +
         Number(realBalance || 0)
             .toLocaleString(
@@ -1428,86 +1420,150 @@ function displayBalance(){
 
 function toggleBalance(){
 
-    balanceHidden = !balanceHidden;
+    balanceHidden =
+        !balanceHidden;
 
-    const eye =
-        document.getElementById("eyeButton");
 
-    eye.textContent =
-        balanceHidden ? "🙈" : "👁";
+    document
+        .querySelector(".eye")
+        .textContent =
+            balanceHidden
+            ? "🙈"
+            : "👁";
 
-    displayBalance();
+
+    showBalance();
 }
 
 
-async function loadWallet(){
+/* =========================================================
+   GET USER
+========================================================= */
 
-    const {
-        data:{user},
-        error
-    } =
-        await supabaseClient.auth.getUser();
+async function getUserFast(){
 
+    /*
+       getSession() is faster because the current
+       session is already stored locally.
+    */
 
-    if(error || !user){
-
-        location.href = "login.html";
-
-        return;
-    }
+    const sessionResult =
+        await supabaseClient.auth.getSession();
 
 
-    const {
-        data:wallet,
-        error:e
-    } =
-        await supabaseClient.rpc(
-            "ensure_my_wallet"
-        );
+    const sessionUser =
+        sessionResult
+            ?.data
+            ?.session
+            ?.user;
 
 
-    if(e){
+    if(sessionUser){
 
-        console.error(
-            "Wallet error:",
-            e
-        );
-
-        document
-            .getElementById("walletBalance")
-            .textContent = "Unable to load";
-
-        return;
+        return sessionUser;
     }
 
 
     /*
-       Keep the same working wallet mechanism
-       from your old dashboard.
+       Only fall back to getUser()
+       if there is no local session.
     */
 
-    let balanceValue = 0;
+    const userResult =
+        await supabaseClient.auth.getUser();
 
-    if(Array.isArray(wallet)){
 
-        balanceValue =
-            Number(
-                wallet[0]?.balance ?? 0
+    return userResult
+        ?.data
+        ?.user || null;
+}
+
+
+/* =========================================================
+   WALLET
+========================================================= */
+
+async function loadWallet(){
+
+    const user =
+        await getUserFast();
+
+
+    if(!user){
+
+        location.href =
+            "login.html";
+
+        return;
+    }
+
+
+    try{
+
+        /*
+           Keep the same wallet RPC
+           that your old dashboard used.
+        */
+
+        const result =
+            await supabaseClient
+                .rpc("ensure_my_wallet");
+
+
+        if(result.error){
+
+            console.error(
+                "Wallet error:",
+                result.error
             );
 
-    }else{
 
-        balanceValue =
+            document
+                .getElementById(
+                    "walletBalance"
+                )
+                .textContent =
+                    "₦0.00";
+
+            return;
+        }
+
+
+        let wallet =
+            result.data;
+
+
+        if(Array.isArray(wallet)){
+
+            wallet =
+                wallet[0];
+        }
+
+
+        realBalance =
             Number(
                 wallet?.balance ?? 0
             );
 
+
+        showBalance();
+
+
+    }catch(error){
+
+        console.error(
+            "Wallet error:",
+            error
+        );
+
+
+        document
+            .getElementById(
+                "walletBalance"
+            )
+            .textContent =
+                "₦0.00";
     }
-
-
-    realBalance = balanceValue;
-
-    displayBalance();
 }
 
 
@@ -1516,9 +1572,6 @@ async function loadWallet(){
 ========================================================= */
 
 async function loadWatermark(){
-
-    const box =
-        document.getElementById("watermark");
 
     try{
 
@@ -1540,54 +1593,237 @@ async function loadWatermark(){
                 error
             );
 
-            box.style.display = "none";
-
             return;
         }
 
 
         const text =
-            String(data?.value || "").trim();
+            String(
+                data?.value || ""
+            ).trim();
 
 
-        if(text){
+        const box =
+            document.getElementById(
+                "watermark"
+            );
 
-            box.textContent = text;
 
-            box.style.display = "block";
+        box.textContent =
+            text;
 
-        }else{
 
-            box.textContent = "";
+        box.style.display =
+            text
+            ? "block"
+            : "none";
 
-            box.style.display = "none";
+
+    }catch(error){
+
+        console.error(
+            "Watermark error:",
+            error
+        );
+    }
+}
+
+
+/* =========================================================
+   CATEGORY NORMALIZER
+========================================================= */
+
+function categoryKey(value){
+
+    return String(value ?? "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g," ")
+        .replace(/&/g,"and")
+        .replace(/[^a-z0-9 ]/g,"")
+        .replace(/\s+/g,"");
+}
+
+
+/* =========================================================
+   CATEGORY MATCHING
+========================================================= */
+
+function categoryMatches(
+    productCategory,
+    wantedCategory
+){
+
+    const product =
+        categoryKey(
+            productCategory
+        );
+
+
+    const wanted =
+        categoryKey(
+            wantedCategory
+        );
+
+
+    /*
+       Exact match first.
+    */
+
+    if(product === wanted){
+
+        return true;
+    }
+
+
+    /*
+       Allow the common variations
+       already present in products.
+    */
+
+    const aliases = {
+
+        "esims":[
+            "esim",
+            "esims"
+        ],
+
+        "streamingandmore":[
+            "streamingandmore",
+            "streamingmore",
+            "streamersandmore"
+        ],
+
+        "voiceclonerfakevideocall":[
+            "voiceclonerfakevideocall",
+            "voicecloner",
+            "fakevideocall"
+        ],
+
+        "allsociallogs":[
+            "allsociallogs",
+            "sociallogs"
+        ],
+
+        "allcountriesnumber":[
+            "allcountriesnumber",
+            "allcountrynumber",
+            "countriesnumber"
+        ],
+
+        "workingpictures":[
+            "workingpictures",
+            "workingpicture"
+        ],
+
+        "workinglinks":[
+            "workinglinks",
+            "workinglink"
+        ]
+
+    };
+
+
+    return (
+        aliases[wanted] || []
+    ).includes(product);
+}
+
+
+/* =========================================================
+   LOAD PRODUCTS
+========================================================= */
+
+async function loadProducts(){
+
+    try{
+
+        /*
+           IMPORTANT:
+
+           There is NO is_active filter here.
+
+           Your Product records need to be loaded
+           based on the actual category stored in
+           the Product table.
+        */
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("Product")
+                .select("*")
+                .order(
+                    "id",
+                    {
+                        ascending:false
+                    }
+                );
+
+
+        if(error){
+
+            console.error(
+                "Product error:",
+                error
+            );
+
+
+            allServices = [];
+
+            return;
+        }
+
+
+        allServices =
+            data || [];
+
+
+        /*
+           If a category is already open,
+           render it immediately after the
+           data arrives.
+        */
+
+        if(
+            selectedCategory !==
+            "Home"
+        ){
+
+            renderServices();
         }
 
 
     }catch(error){
 
         console.error(
-            "Watermark loading error:",
+            "Product error:",
             error
         );
 
-        box.style.display = "none";
+
+        allServices = [];
     }
 }
 
 
 /* =========================================================
-   CATEGORY CLICK
+   SELECT CATEGORY
 ========================================================= */
 
 function selectCategory(category){
 
     /*
-       All Countries Number continues to use
-       your existing virtual number page.
+       Keep your virtual number system
+       exactly as it was.
     */
 
-    if(category === "All Countries Number"){
+    if(
+        category ===
+        "All Countries Number"
+    ){
 
         location.href =
             "virtualnumber.html";
@@ -1596,40 +1832,59 @@ function selectCategory(category){
     }
 
 
-    selectedCategory = category;
+    selectedCategory =
+        category;
+
+
+    document
+        .getElementById(
+            "homeView"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "servicesView"
+        )
+        .classList.add(
+            "active"
+        );
+
+
+    document
+        .getElementById(
+            "categoryTitle"
+        )
+        .textContent =
+            category;
+
+
+    document
+        .getElementById(
+            "categoryDescription"
+        )
+        .textContent =
+            "Services available under " +
+            category +
+            ".";
+
+
+    document
+        .getElementById(
+            "serviceSearch"
+        )
+        .value = "";
 
 
     /*
-       Home dashboard disappears.
-       Category services appear.
+       Render immediately if products
+       have already loaded.
+
+       If they haven't loaded yet,
+       renderServices will show loading.
     */
-
-    document
-        .getElementById("homeView")
-        .classList.add("hidden");
-
-
-    document
-        .getElementById("servicesView")
-        .classList.add("active");
-
-
-    document
-        .getElementById("categoryTitle")
-        .textContent = category;
-
-
-    document
-        .getElementById("categoryDescription")
-        .textContent =
-            "Services available under " +
-            category + ".";
-
-
-    document
-        .getElementById("serviceSearch")
-        .value = "";
-
 
     renderServices();
 
@@ -1645,23 +1900,33 @@ function selectCategory(category){
    BACK HOME
 ========================================================= */
 
-function backToHome(){
+function backHome(){
 
-    selectedCategory = "Home";
-
-
-    document
-        .getElementById("servicesView")
-        .classList.remove("active");
+    selectedCategory =
+        "Home";
 
 
     document
-        .getElementById("homeView")
-        .classList.remove("hidden");
+        .getElementById(
+            "servicesView"
+        )
+        .classList.remove(
+            "active"
+        );
 
 
     document
-        .getElementById("serviceSearch")
+        .getElementById(
+            "homeView"
+        )
+        .style.display =
+            "block";
+
+
+    document
+        .getElementById(
+            "serviceSearch"
+        )
         .value = "";
 
 
@@ -1673,81 +1938,41 @@ function backToHome(){
 
 
 /* =========================================================
-   LOAD PRODUCTS
-========================================================= */
-
-async function loadProducts(){
-
-    const container =
-        document.getElementById("products");
-
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("Product")
-            .select("*")
-            .eq("is_active",true)
-            .order("id",{ascending:false});
-
-
-    if(error){
-
-        console.error(
-            "Product loading error:",
-            error
-        );
-
-        container.innerHTML =
-            '<div class="error-box">' +
-            '❌ Unable to load services.<br><br>' +
-            escapeHTML(error.message) +
-            '</div>';
-
-        return;
-    }
-
-
-    allServices = data || [];
-
-
-    /*
-       Don't show products on the home dashboard.
-       Products only appear after category selection.
-    */
-
-    if(selectedCategory !== "Home"){
-
-        renderServices();
-    }
-}
-
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-function filterServices(){
-
-    renderServices();
-}
-
-
-/* =========================================================
    RENDER SERVICES
 ========================================================= */
 
 function renderServices(){
 
-    const container =
-        document.getElementById("products");
+    const box =
+        document.getElementById(
+            "products"
+        );
 
 
-    if(selectedCategory === "Home"){
+    if(
+        selectedCategory ===
+        "Home"
+    ){
 
-        container.innerHTML = "";
+        box.innerHTML = "";
+
+        return;
+    }
+
+
+    /*
+       If Product data hasn't arrived yet,
+       don't falsely say "No services".
+    */
+
+    if(
+        !Array.isArray(allServices)
+    ){
+
+        box.innerHTML =
+            '<div class="msg">' +
+            'Loading services...' +
+            '</div>';
 
         return;
     }
@@ -1755,47 +1980,34 @@ function renderServices(){
 
     const search =
         document
-            .getElementById("serviceSearch")
+            .getElementById(
+                "serviceSearch"
+            )
             .value
             .trim()
             .toLowerCase();
 
 
-    let services =
-        [...allServices];
+    let list =
+        allServices.filter(
+            product =>
+                categoryMatches(
+                    product.category,
+                    selectedCategory
+                )
+        );
 
 
     /*
-       Exact category matching,
-       same Product table.
-    */
-
-    services =
-        services.filter(product => {
-
-            return String(
-                product.category || ""
-            )
-            .trim()
-            .toLowerCase()
-            ===
-            selectedCategory
-                .trim()
-                .toLowerCase();
-
-        });
-
-
-    /*
-       Search within selected category.
+       Search only inside
+       the selected category.
     */
 
     if(search){
 
-        services =
-            services.filter(product => {
-
-                return (
+        list =
+            list.filter(
+                product =>
 
                     String(
                         product.name || ""
@@ -1806,58 +2018,50 @@ function renderServices(){
                     ||
 
                     String(
-                        product.description || ""
+                        product.description ||
+                        ""
                     )
                     .toLowerCase()
                     .includes(search)
-
-                );
-
-            });
-
+            );
     }
 
 
-    if(!services.length){
+    if(!list.length){
 
-        container.innerHTML =
-            '<div class="message-box">' +
-            '<div style="font-size:38px">🔍</div>' +
-            '<br>' +
-            '<strong>No services found</strong>' +
-            '<p>There are currently no services in this category.</p>' +
+        box.innerHTML =
+            '<div class="msg">' +
+
+                '<div style="font-size:40px">' +
+                    '🔍' +
+                '</div>' +
+
+                '<br>' +
+
+                '<strong>' +
+                    'No services found' +
+                '</strong>' +
+
+                '<p>' +
+                    'There are currently no services in this category.' +
+                '</p>' +
+
             '</div>';
 
         return;
     }
 
 
-    container.innerHTML = "";
+    box.innerHTML = "";
 
 
-    services.forEach(product => {
-
-        const card =
-            document.createElement("div");
-
-
-        card.className =
-            "product-card";
-
-
-        const price =
-            Number(product.price || 0)
-                .toLocaleString(
-                    "en-NG",
-                    {
-                        minimumFractionDigits:0,
-                        maximumFractionDigits:2
-                    }
-                );
+    list.forEach(product => {
 
 
         const stock =
-            Number(product.stock || 0);
+            Number(
+                product.stock || 0
+            );
 
 
         const track =
@@ -1866,27 +2070,27 @@ function renderServices(){
 
         const status =
             String(
-                product.status || "Available"
+                product.status ||
+                "Available"
             )
-            .toLowerCase()
-            .trim();
+            .trim()
+            .toLowerCase();
 
 
         const soldOut =
+            track
+            ?
             (
-                track &&
-                (
-                    stock <= 0 ||
-                    status === "sold" ||
-                    status === "sold out" ||
-                    status === "unavailable"
-                )
-            )
-            ||
-            (
-                !track &&
+                stock <= 0 ||
+
+                status === "sold" ||
+
+                status === "sold out" ||
+
                 status === "unavailable"
-            );
+            )
+            :
+            status === "unavailable";
 
 
         let imageHTML;
@@ -1894,93 +2098,126 @@ function renderServices(){
 
         if(
             product.image_url &&
-            String(product.image_url).trim()
+            String(
+                product.image_url
+            ).trim()
         ){
 
             imageHTML =
+
                 '<img ' +
-                'class="product-image" ' +
-                'src="' +
-                escapeHTML(
-                    product.image_url
-                ) +
-                '" ' +
-                'onerror="' +
-                "this.style.display='none';" +
-                "this.nextElementSibling.style.display='flex'" +
-                '">' +
+
+                    'src="' +
+                    escapeHTML(
+                        product.image_url
+                    ) +
+                    '" ' +
+
+                    'alt="" ' +
+
+                    'onerror="' +
+                        "this.style.display='none';" +
+                        "this.nextElementSibling.style.display='flex'" +
+                    '"' +
+
+                '>' +
 
                 '<div ' +
-                'class="no-image" ' +
-                'style="display:none"' +
-                '>🛍️</div>';
+                    'class="no-image" ' +
+                    'style="display:none"' +
+                '>' +
+                    '🛍️' +
+                '</div>';
 
         }else{
 
             imageHTML =
                 '<div class="no-image">' +
-                '🛍️' +
+                    '🛍️' +
                 '</div>';
         }
 
 
+        const card =
+            document.createElement(
+                "div"
+            );
+
+
+        card.className =
+            "product";
+
+
         card.innerHTML =
+
             imageHTML +
 
             '<h3>' +
-            escapeHTML(
-                product.name ||
-                "Unnamed Service"
-            ) +
+                escapeHTML(
+                    product.name ||
+                    "Unnamed Service"
+                ) +
             '</h3>' +
 
-            '<span class="product-category">' +
-            escapeHTML(
-                product.category ||
-                "Service"
-            ) +
+            '<span class="badge">' +
+                escapeHTML(
+                    product.category ||
+                    "Service"
+                ) +
             '</span>' +
 
-            '<p class="product-description">' +
-            escapeHTML(
-                product.description || ""
-            ) +
+            '<p class="desc">' +
+                escapeHTML(
+                    product.description ||
+                    ""
+                ) +
             '</p>' +
 
-            '<p class="product-price">' +
-            '₦' +
-            price +
+            '<p class="price">' +
+                '₦' +
+                Number(
+                    product.price || 0
+                ).toLocaleString(
+                    "en-NG",
+                    {
+                        minimumFractionDigits:0,
+                        maximumFractionDigits:2
+                    }
+                ) +
             '</p>' +
 
-            '<p class="stock-text">' +
-            (
-                soldOut
-                ? "❌ Sold Out / Unavailable"
-                : "✅ Available"
-            ) +
+            '<p class="stock">' +
+                (
+                    soldOut
+                    ?
+                    "❌ Sold Out / Unavailable"
+                    :
+                    "✅ Available"
+                ) +
             '</p>' +
 
             '<button ' +
-            'class="buy-button" ' +
-            (
-                soldOut
-                ? "disabled"
-                : ""
-            ) +
-            ' onclick="buyProduct(' +
-            Number(product.id) +
-            ')">' +
+                'class="buy" ' +
+                (
+                    soldOut
+                    ? "disabled"
+                    : ""
+                ) +
+                ' onclick="buyProduct(' +
+                    Number(product.id) +
+                ')"' +
+            '>' +
 
-            (
-                soldOut
-                ? "Sold Out"
-                : "Buy Now"
-            ) +
+                (
+                    soldOut
+                    ? "Sold Out"
+                    : "Buy Now"
+                ) +
 
             '</button>';
 
 
-        container.appendChild(card);
+        box.appendChild(card);
 
     });
 }
@@ -1999,10 +2236,10 @@ function buyProduct(id){
 
 
 /* =========================================================
-   TRANSACTIONS
+   TRANSACTION ICON
 ========================================================= */
 
-function transactionIcon(type){
+function txIcon(type){
 
     const t =
         String(type || "")
@@ -2020,6 +2257,14 @@ function transactionIcon(type){
 
 
     if(
+        t.includes("refund")
+    ){
+
+        return "↩️";
+    }
+
+
+    if(
         t.includes("purchase") ||
         t.includes("buy") ||
         t.includes("order")
@@ -2029,35 +2274,31 @@ function transactionIcon(type){
     }
 
 
-    if(
-        t.includes("refund")
-    ){
-
-        return "↩️";
-    }
-
-
     return "🧾";
 }
 
 
-function formatTransactionDate(date){
+/* =========================================================
+   TRANSACTION DATE
+========================================================= */
 
-    if(!date){
+function txDate(value){
+
+    const date =
+        new Date(value);
+
+
+    if(
+        isNaN(
+            date.getTime()
+        )
+    ){
+
         return "";
     }
 
 
-    const d =
-        new Date(date);
-
-
-    if(isNaN(d.getTime())){
-        return "";
-    }
-
-
-    return d.toLocaleString(
+    return date.toLocaleString(
         "en-NG",
         {
             day:"numeric",
@@ -2070,238 +2311,305 @@ function formatTransactionDate(date){
 }
 
 
-function formatTransactionAmount(amount){
+/* =========================================================
+   TRANSACTION EMPTY
+========================================================= */
 
-    return Number(amount || 0)
-        .toLocaleString(
-            "en-NG",
-            {
-                minimumFractionDigits:2,
-                maximumFractionDigits:2
-            }
+function showTxEmpty(message){
+
+    document
+        .getElementById(
+            "txLoading"
+        )
+        .style.display =
+            "none";
+
+
+    const empty =
+        document.getElementById(
+            "txEmpty"
         );
+
+
+    empty.style.display =
+        "flex";
+
+
+    empty.innerHTML =
+
+        '<div>' +
+
+            '<div style="font-size:38px">' +
+                '🧾' +
+            '</div>' +
+
+            '<strong>' +
+                escapeHTML(message) +
+            '</strong>' +
+
+        '</div>';
 }
 
+
+/* =========================================================
+   LOAD TRANSACTIONS
+========================================================= */
 
 async function loadTransactions(){
 
     const loading =
         document.getElementById(
-            "transactionLoading"
+            "txLoading"
         );
+
 
     const list =
         document.getElementById(
-            "transactionList"
+            "txList"
         );
+
 
     const empty =
         document.getElementById(
-            "noTransactions"
+            "txEmpty"
         );
 
 
-    loading.classList.remove("hidden");
-
-    list.classList.add("hidden");
-
-    empty.classList.add("hidden");
+    loading.style.display =
+        "flex";
 
 
-    const {
-        data:{user},
-        error:userError
-    } =
-        await supabaseClient.auth.getUser();
+    list.style.display =
+        "none";
 
 
-    if(userError || !user){
+    empty.style.display =
+        "none";
 
-        location.href =
-            "login.html";
+
+    const user =
+        await getUserFast();
+
+
+    if(!user){
+
+        showTxEmpty(
+            "Login session not found."
+        );
 
         return;
     }
 
 
-    /*
-       Existing transactions table:
-       id
-       user_id
-       type
-       amount
-       status
-       description
-       created_at
-    */
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("transactions")
-            .select(
-                "id,type,amount,status,description,created_at"
-            )
-            .eq(
-                "user_id",
-                user.id
-            )
-            .order(
-                "created_at",
-                {
-                    ascending:false
-                }
-            )
-            .limit(5);
-
-
-    loading.classList.add("hidden");
-
-
-    if(error){
-
-        console.error(
-            "Transactions error:",
-            error
-        );
+    try{
 
         /*
-           Don't replace the whole dashboard
-           if transactions have an RLS/query issue.
+           Limit this dashboard request
+           to the newest 5 transactions.
+
+           Abort after 8 seconds so a slow
+           request cannot leave the page
+           stuck forever.
         */
 
-        empty.classList.remove("hidden");
-
-        empty.innerHTML =
-            '<div>' +
-            '<div class="no-transactions-icon">🧾</div>' +
-            '<strong>No transactions to display</strong>' +
-            '<p>Check your transaction history for details.</p>' +
-            '</div>';
-
-        return;
-    }
-
-
-    if(!data || !data.length){
-
-        empty.classList.remove("hidden");
-
-        return;
-    }
-
-
-    list.innerHTML = "";
+        const query =
+            supabaseClient
+                .from("transactions")
+                .select(
+                    "id,user_id,type,amount,status,description,created_at"
+                )
+                .eq(
+                    "user_id",
+                    user.id
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending:false
+                    }
+                )
+                .limit(5)
+                .abortSignal(
+                    AbortSignal.timeout(8000)
+                );
 
 
-    data.forEach(transaction => {
+        const {
+            data,
+            error
+        } =
+            await query;
 
-        const amount =
-            Number(
-                transaction.amount || 0
+
+        if(error){
+
+            console.error(
+                "TRANSACTIONS ERROR:",
+                error
             );
 
 
-        const type =
-            String(
-                transaction.type || ""
-            )
-            .toLowerCase();
+            showTxEmpty(
+                "Unable to load transactions right now."
+            );
+
+            return;
+        }
 
 
-        /*
-           Credit types are displayed with +.
-           Everything else is treated as debit.
-        */
+        if(
+            !data ||
+            !data.length
+        ){
 
-        const isCredit =
-            type.includes("fund") ||
-            type.includes("deposit") ||
-            type.includes("credit") ||
-            type.includes("refund");
+            showTxEmpty(
+                "No transactions yet."
+            );
 
-
-        const item =
-            document.createElement("div");
+            return;
+        }
 
 
-        item.className =
-            "transaction-item";
+        list.innerHTML = "";
 
 
-        item.innerHTML =
+        data.forEach(transaction => {
 
-            '<div class="transaction-left">' +
 
-                '<div class="transaction-icon">' +
-                    transactionIcon(
-                        transaction.type
-                    ) +
-                '</div>' +
+            const amount =
+                Number(
+                    transaction.amount || 0
+                );
 
-                '<div class="transaction-info">' +
 
-                    '<strong>' +
-                    escapeHTML(
-                        transaction.description ||
-                        transaction.type ||
-                        "Transaction"
-                    ) +
-                    '</strong>' +
+            const type =
+                String(
+                    transaction.type || ""
+                )
+                .toLowerCase();
 
-                    '<div class="transaction-date">' +
-                    formatTransactionDate(
-                        transaction.created_at
-                    ) +
+
+            const isCredit =
+
+                type.includes("fund") ||
+
+                type.includes("deposit") ||
+
+                type.includes("credit") ||
+
+                type.includes("refund");
+
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "tx";
+
+
+            row.innerHTML =
+
+                '<div class="tx-left">' +
+
+                    '<div class="tx-icon">' +
+                        txIcon(
+                            transaction.type
+                        ) +
+                    '</div>' +
+
+                    '<div class="tx-info">' +
+
+                        '<strong>' +
+                            escapeHTML(
+                                transaction.description ||
+                                transaction.type ||
+                                "Transaction"
+                            ) +
+                        '</strong>' +
+
+                        '<div class="tx-date">' +
+                            escapeHTML(
+                                txDate(
+                                    transaction.created_at
+                                )
+                            ) +
+                        '</div>' +
+
                     '</div>' +
 
                 '</div>' +
 
-            '</div>' +
+
+                '<div class="tx-right">' +
+
+                    '<div class="tx-amount ' +
+                        (
+                            isCredit
+                            ? "credit"
+                            : "debit"
+                        ) +
+                    '">' +
+
+                        (
+                            isCredit
+                            ? "+"
+                            : "-"
+                        ) +
+
+                        '₦' +
+
+                        Math.abs(
+                            amount
+                        ).toLocaleString(
+                            "en-NG",
+                            {
+                                minimumFractionDigits:2,
+                                maximumFractionDigits:2
+                            }
+                        ) +
+
+                    '</div>' +
+
+                    '<div class="tx-status">' +
+
+                        escapeHTML(
+                            transaction.status ||
+                            "completed"
+                        ) +
+
+                    '</div>' +
+
+                '</div>';
 
 
-            '<div class="transaction-right">' +
+            list.appendChild(row);
 
-                '<div class="transaction-amount ' +
-                (
-                    isCredit
-                    ? "amount-credit"
-                    : "amount-debit"
-                ) +
-                '">' +
-
-                (
-                    isCredit
-                    ? "+"
-                    : "-"
-                ) +
-
-                "₦" +
-
-                formatTransactionAmount(
-                    Math.abs(amount)
-                ) +
-
-                '</div>' +
-
-                '<div class="transaction-status">' +
-                escapeHTML(
-                    transaction.status ||
-                    "completed"
-                ) +
-                '</div>' +
-
-            '</div>';
+        });
 
 
-        list.appendChild(item);
+        loading.style.display =
+            "none";
 
-    });
+
+        list.style.display =
+            "block";
 
 
-    list.classList.remove("hidden");
+    }catch(error){
+
+        console.error(
+            "TRANSACTIONS ERROR:",
+            error
+        );
+
+
+        showTxEmpty(
+            "Unable to load transactions right now."
+        );
+    }
 }
 
 
@@ -2313,18 +2621,26 @@ async function startDashboard(){
 
     updateGreeting();
 
+
     /*
-       These run independently so one failure
-       doesn't wipe the entire dashboard.
+       All four load independently.
+
+       So if transactions are slow,
+       the wallet/products/watermark don't
+       have to wait for transactions.
     */
 
-    await loadWallet();
+    await Promise.allSettled([
 
-    await loadWatermark();
+        loadWallet(),
 
-    await loadProducts();
+        loadWatermark(),
 
-    await loadTransactions();
+        loadProducts(),
+
+        loadTransactions()
+
+    ]);
 }
 
 
