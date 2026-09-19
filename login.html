@@ -3,16 +3,441 @@
 
 <head>
 
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 
-  <title>Login - Delight Vendor Logs</title>
+<title>Login - Delight Vendor Logs</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+html,
+body{
+  margin:0;
+  padding:0;
+}
+
+body{
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  background:#ffffff;
+
+  color:#111827;
+
+  min-height:100vh;
+
+}
+
+
+/* PAGE */
+
+.page{
+
+  width:100%;
+
+  max-width:720px;
+
+  margin:0 auto;
+
+  padding:
+    170px
+    34px
+    60px;
+
+}
+
+
+/* HEADER */
+
+.heading{
+
+  margin-bottom:48px;
+
+}
+
+.heading h1{
+
+  margin:0;
+
+  font-size:42px;
+
+  line-height:1.15;
+
+  font-weight:800;
+
+  letter-spacing:-1.3px;
+
+  color:#101522;
+
+}
+
+.heading p{
+
+  margin:14px 0 0;
+
+  font-size:19px;
+
+  line-height:1.5;
+
+  color:#66708a;
+
+}
+
+
+/* FORM */
+
+.field{
+
+  margin-bottom:28px;
+
+}
+
+.field label{
+
+  display:block;
+
+  margin-bottom:12px;
+
+  font-size:18px;
+
+  font-weight:700;
+
+  color:#151922;
+
+}
+
+
+.input-wrap{
+
+  position:relative;
+
+}
+
+
+.input-icon{
+
+  position:absolute;
+
+  left:21px;
+
+  top:50%;
+
+  transform:translateY(-50%);
+
+  color:#a0a9c2;
+
+  font-size:21px;
+
+  pointer-events:none;
+
+}
+
+
+.input-wrap input{
+
+  width:100%;
+
+  height:78px;
+
+  border:2px solid #e3e7f0;
+
+  background:#f7f8fc;
+
+  border-radius:20px;
+
+  outline:none;
+
+  padding:
+    0
+    20px
+    0
+    63px;
+
+  font-size:19px;
+
+  color:#202636;
+
+  transition:.2s;
+
+}
+
+
+.input-wrap input::placeholder{
+
+  color:#a2abc2;
+
+}
+
+
+.input-wrap input:focus{
+
+  border-color:#1740e8;
+
+  background:#fff;
+
+  box-shadow:
+    0 0 0 4px #1740e810;
+
+}
+
+
+/* PASSWORD */
+
+.password-input{
+
+  padding-right:60px !important;
+
+}
+
+
+.password-toggle{
+
+  position:absolute;
+
+  right:19px;
+
+  top:50%;
+
+  transform:translateY(-50%);
+
+  border:0;
+
+  background:none;
+
+  color:#9da6bf;
+
+  font-size:21px;
+
+  padding:8px;
+
+  cursor:pointer;
+
+}
+
+
+/* FORGOT */
+
+.forgot{
+
+  text-align:right;
+
+  margin-top:-8px;
+
+  margin-bottom:27px;
+
+}
+
+
+.forgot a{
+
+  color:#123bc8;
+
+  font-size:15px;
+
+  font-weight:700;
+
+  text-decoration:none;
+
+}
+
+
+/* LOGIN BUTTON */
+
+.login-btn{
+
+  width:100%;
+
+  height:76px;
+
+  border:0;
+
+  border-radius:19px;
+
+  background:#123be8;
+
+  color:#fff;
+
+  font-size:21px;
+
+  font-weight:800;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 8px 20px #123be82b;
+
+  transition:.2s;
+
+}
+
+
+.login-btn:active{
+
+  transform:scale(.99);
+
+}
+
+
+.login-btn:disabled{
+
+  opacity:.65;
+
+  cursor:not-allowed;
+
+}
+
+
+/* MESSAGE */
+
+#message{
+
+  text-align:center;
+
+  margin:20px 0 0;
+
+  color:#66708a;
+
+  font-size:16px;
+
+  line-height:1.5;
+
+}
+
+
+/* DIVIDER */
+
+.divider{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:16px;
+
+  margin:37px 0;
+
+  color:#a1a8bb;
+
+  font-size:16px;
+
+}
+
+
+.divider::before,
+.divider::after{
+
+  content:"";
+
+  height:2px;
+
+  background:#e7e9ef;
+
+  flex:1;
+
+}
+
+
+/* CREATE ACCOUNT */
+
+.create-text{
+
+  text-align:center;
+
+  color:#68718b;
+
+  font-size:18px;
+
+  line-height:1.5;
+
+}
+
+
+.create-text a{
+
+  color:#123bc8;
+
+  font-weight:800;
+
+  text-decoration:none;
+
+}
+
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+  .page{
+
+    padding:
+      155px
+      40px
+      50px;
+
+  }
+
+  .heading h1{
+
+    font-size:34px;
+
+  }
+
+  .heading p{
+
+    font-size:18px;
+
+  }
+
+  .input-wrap input{
+
+    height:76px;
+
+    font-size:18px;
+
+  }
+
+  .login-btn{
+
+    height:75px;
+
+  }
+
+}
+
+
+@media(max-width:400px){
+
+  .page{
+
+    padding-left:25px;
+
+    padding-right:25px;
+
+  }
+
+  .heading h1{
+
+    font-size:31px;
+
+  }
+
+}
+
+</style>
 
 </head>
 
@@ -20,149 +445,146 @@
 <body>
 
 
-<h1>Login</h1>
+<div class="page">
 
 
-<form id="loginForm">
+  <!-- HEADER -->
 
+  <div class="heading">
 
-  <label for="email">
-    Email
-  </label>
+    <h1>
+      Welcome back 👋
+    </h1>
 
-  <br>
+    <p>
+      Sign in to your Delight Vendor Logs account
+    </p>
 
-  <input
-    id="email"
-    type="email"
-    placeholder="Enter your email"
-    required
-  >
-
-
-  <br><br>
-
-
-  <label for="password">
-    Password
-  </label>
-
-  <br>
-
-  <input
-    id="password"
-    type="password"
-    placeholder="Enter your password"
-    required
-  >
-
-
-  <br><br>
-
-
-  <!-- LOGIN -->
-
-  <div
-    onclick="loginUser()"
-    style="
-      display:inline-block;
-      background:#111;
-      color:#fff;
-      padding:15px 30px;
-      margin:10px;
-      border-radius:10px;
-      font-family:Arial,sans-serif;
-      font-size:18px;
-      font-weight:bold;
-      cursor:pointer;
-    "
-  >
-    Login
   </div>
 
 
-  <br>
+  <!-- EMAIL -->
+
+  <div class="field">
+
+    <label for="email">
+      Email Address
+    </label>
+
+
+    <div class="input-wrap">
+
+      <span class="input-icon">
+        ✉
+      </span>
+
+
+      <input
+        id="email"
+        type="email"
+        placeholder="you@example.com"
+        autocomplete="email"
+        required
+      >
+
+    </div>
+
+  </div>
+
+
+  <!-- PASSWORD -->
+
+  <div class="field">
+
+    <label for="password">
+      Password
+    </label>
+
+
+    <div class="input-wrap">
+
+      <span class="input-icon">
+        🔒
+      </span>
+
+
+      <input
+        id="password"
+        class="password-input"
+        type="password"
+        placeholder="Enter your password"
+        autocomplete="current-password"
+        required
+      >
+
+
+      <button
+        type="button"
+        class="password-toggle"
+        onclick="togglePassword()"
+        aria-label="Show password"
+      >
+        👁
+      </button>
+
+    </div>
+
+  </div>
 
 
   <!-- FORGOT PASSWORD -->
 
-  <div
-    onclick="window.location.href='forgot-password.html'"
-    style="
-      display:inline-block;
-      background:#111;
-      color:#fff;
-      padding:15px 30px;
-      margin:10px;
-      border-radius:10px;
-      font-family:Arial,sans-serif;
-      font-size:18px;
-      font-weight:bold;
-      cursor:pointer;
-    "
-  >
-    Forgot Password?
+  <div class="forgot">
+
+    <a href="forgot-password.html">
+      Forgot Password?
+    </a>
+
   </div>
 
 
-</form>
+  <!-- LOGIN -->
+
+  <button
+    id="loginButton"
+    class="login-btn"
+    type="button"
+    onclick="loginUser()"
+  >
+    Continue
+  </button>
 
 
-<p>
-  Don't have an account?
-</p>
+  <p id="message"></p>
 
 
-<!-- CREATE ACCOUNT -->
+  <!-- DIVIDER -->
 
-<div
-  onclick="window.location.href='register.html'"
-  style="
-    display:inline-block;
-    background:#111;
-    color:#fff;
-    padding:15px 30px;
-    margin:10px;
-    border-radius:10px;
-    font-family:Arial,sans-serif;
-    font-size:18px;
-    font-weight:bold;
-    cursor:pointer;
-  "
->
-  Create Account
+  <div class="divider">
+    or
+  </div>
+
+
+  <!-- CREATE ACCOUNT -->
+
+  <div class="create-text">
+
+    Don't have an account?
+
+    <a href="register.html">
+      Create one free
+    </a>
+
+  </div>
+
+
 </div>
-
-
-<br>
-
-
-<!-- BACK -->
-
-<div
-  onclick="window.location.href='index.html'"
-  style="
-    display:inline-block;
-    background:#111;
-    color:#fff;
-    padding:15px 30px;
-    margin:10px;
-    border-radius:10px;
-    font-family:Arial,sans-serif;
-    font-size:18px;
-    font-weight:bold;
-    cursor:pointer;
-  "
->
-  Back
-</div>
-
-
-<p id="message"></p>
 
 
 <script>
 
+
+/* SUPABASE */
 
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
@@ -179,8 +601,43 @@ const supabaseClient =
   );
 
 
-async function loginUser() {
+/* PASSWORD TOGGLE */
 
+function togglePassword(){
+
+  const password =
+    document.getElementById(
+      "password"
+    );
+
+  const button =
+    document.querySelector(
+      ".password-toggle"
+    );
+
+
+  if(
+    password.type === "password"
+  ){
+
+    password.type = "text";
+
+    button.textContent = "🙈";
+
+  }else{
+
+    password.type = "password";
+
+    button.textContent = "👁";
+
+  }
+
+}
+
+
+/* LOGIN */
+
+async function loginUser(){
 
   const email =
     document
@@ -200,7 +657,18 @@ async function loginUser() {
       .getElementById("message");
 
 
-  if (!email || !password) {
+  const button =
+    document
+      .getElementById("loginButton");
+
+
+  message.textContent = "";
+
+
+  if(
+    !email ||
+    !password
+  ){
 
     message.textContent =
       "Please enter your email and password.";
@@ -210,44 +678,86 @@ async function loginUser() {
   }
 
 
+  button.disabled = true;
+
+  button.textContent =
+    "Signing In...";
+
+
   message.textContent =
     "Logging in...";
 
 
-  const {
-    data,
-    error
-  } =
-    await supabaseClient.auth.signInWithPassword({
+  try{
 
-      email: email,
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .auth
+        .signInWithPassword({
 
-      password: password
+          email:email,
 
-    });
+          password:password
+
+        });
 
 
-  if (error) {
+    if(error){
+
+      console.error(error);
+
+      message.textContent =
+        error.message;
+
+      button.disabled = false;
+
+      button.textContent =
+        "Continue";
+
+      return;
+
+    }
+
+
+    if(
+      data &&
+      data.user
+    ){
+
+      window.location.href =
+        "dashboard.html";
+
+    }else{
+
+      message.textContent =
+        "Unable to log in. Please try again.";
+
+      button.disabled = false;
+
+      button.textContent =
+        "Continue";
+
+    }
+
+
+  }catch(error){
 
     console.error(error);
 
     message.textContent =
-      error.message;
+      "Something went wrong. Please try again.";
 
-    return;
+    button.disabled = false;
 
-  }
-
-
-  if (data && data.user) {
-
-    window.location.href =
-      "dashboard.html";
+    button.textContent =
+      "Continue";
 
   }
 
 }
-
 
 </script>
 
