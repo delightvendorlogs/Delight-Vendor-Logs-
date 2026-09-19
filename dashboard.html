@@ -16,395 +16,246 @@
 body{
   margin:0;
   font-family:Arial,sans-serif;
-  background:#f3f5fb;
+  background:#f5f5f5;
   color:#111;
-  padding-bottom:85px;
 }
 
-/* =========================
-   TOP HEADER
-========================= */
+/* HEADER */
 
 header{
-  background:#f3f5fb;
-  color:#111;
-  padding:20px 18px 14px;
+  background:#111;
+  color:#fff;
+  padding:18px 15px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:12px;
+  gap:10px;
 }
 
 .header-left{
   display:flex;
   align-items:center;
   gap:12px;
-}
-
-.profile-avatar{
-  width:58px;
-  height:58px;
-  border-radius:18px;
-  background:#173fe5;
-  color:white;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:24px;
-  font-weight:bold;
-  box-shadow:0 3px 8px #173fe52e;
-}
-
-.greeting{
   min-width:0;
 }
 
-.greeting h1{
-  margin:0;
-  font-size:21px;
-  line-height:1.25;
-  font-weight:800;
-}
-
-.greeting p{
-  margin:5px 0 0;
-  color:#9a9eb7;
-  font-size:15px;
-  font-weight:600;
-}
-
-.menu-top-button{
-  width:54px;
-  height:54px;
-  border:none;
-  background:white;
+.header-avatar{
+  width:43px;
+  height:43px;
+  border-radius:50%;
+  background:#fff;
   color:#111;
-  border-radius:18px;
-  font-size:25px;
-  cursor:pointer;
-  box-shadow:0 2px 8px #0000000d;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  font-weight:bold;
+  flex-shrink:0;
 }
 
-/* =========================
-   MAIN
-========================= */
+.header-text{
+  min-width:0;
+}
+
+.header-welcome{
+  margin:0 0 3px;
+  font-size:12px;
+  color:#ccc;
+}
+
+header h1{
+  margin:0;
+  font-size:18px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+header button{
+  width:44px;
+  height:44px;
+  background:#fff;
+  color:#111;
+  border:none;
+  border-radius:12px;
+  font-size:22px;
+  cursor:pointer;
+  flex-shrink:0;
+}
+
+/* MAIN */
 
 main{
-  width:100%;
-  max-width:700px;
+  padding:15px;
+  max-width:800px;
   margin:auto;
-  padding:8px 18px 35px;
 }
 
-/* =========================
-   WATERMARK
-========================= */
+/* WATERMARK */
 
 .watermark{
   display:none;
-  background:white;
-  margin:8px 0 15px;
-  padding:12px 14px;
-  border-radius:13px;
-  color:#666;
+  background:#fff;
+  margin:0 0 15px;
+  padding:11px 13px;
+  border-radius:10px;
+  color:#555;
   font-size:13px;
   line-height:1.5;
-  border-left:3px solid #173fe5;
-  box-shadow:0 2px 8px #0000000a;
+  border-left:3px solid #111;
 }
 
-/* =========================
-   WALLET
-========================= */
+/* WALLET */
 
 .wallet-card{
-  position:relative;
-  overflow:hidden;
-  background:
-    radial-gradient(circle at 80% 20%,#1c42d8 0,#10218d 32%,#070b5a 75%);
-  color:white;
-  padding:28px 26px 25px;
-  border-radius:31px;
-  box-shadow:0 8px 25px #10177d26;
-  margin-bottom:29px;
-}
-
-.wallet-card:before{
-  content:"";
-  position:absolute;
-  width:280px;
-  height:280px;
-  border:1px solid #ffffff13;
-  border-radius:50%;
-  right:-100px;
-  top:-130px;
-}
-
-.wallet-card:after{
-  content:"";
-  position:absolute;
-  width:360px;
-  height:360px;
-  border:1px solid #ffffff10;
-  border-radius:50%;
-  left:-210px;
-  bottom:-250px;
+  background:#111;
+  color:#fff;
+  padding:20px;
+  margin-bottom:18px;
+  border-radius:18px;
+  box-shadow:0 3px 12px #00000018;
 }
 
 .wallet-top{
-  position:relative;
-  z-index:2;
   display:flex;
-  justify-content:space-between;
   align-items:center;
+  justify-content:space-between;
+  gap:10px;
 }
 
-.balance-label{
+.wallet-label{
   margin:0;
-  color:#aeb7df;
-  font-size:14px;
-  font-weight:800;
-  letter-spacing:.5px;
-  text-transform:uppercase;
-}
-
-.wallet-status{
-  background:#0c756b66;
-  border:1px solid #14cfa955;
-  color:#18d9aa;
-  padding:9px 14px;
-  border-radius:22px;
+  color:#ccc;
   font-size:14px;
   font-weight:bold;
 }
 
-.wallet-status span{
-  display:inline-block;
-  width:8px;
-  height:8px;
-  background:#13d5a6;
-  border-radius:50%;
-  margin-right:5px;
-}
-
-.balance-row{
-  position:relative;
-  z-index:2;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-top:12px;
+.eye-button{
+  border:0;
+  background:#292929;
+  color:#fff;
+  width:38px;
+  height:38px;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:17px;
 }
 
 #walletBalance{
-  margin:0;
-  font-size:38px;
-  font-weight:900;
-  letter-spacing:-1.5px;
-}
-
-.balance-eye{
-  width:47px;
-  height:47px;
-  border-radius:50%;
-  border:1px solid #ffffff20;
-  background:#ffffff18;
-  color:white;
-  font-size:21px;
-  cursor:pointer;
+  margin:12px 0 18px;
+  font-size:29px;
+  font-weight:bold;
+  letter-spacing:.2px;
 }
 
 .wallet-actions{
-  position:relative;
-  z-index:2;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:15px;
-  margin-top:28px;
-}
-
-.wallet-action{
-  height:58px;
-  border:none;
-  border-radius:18px;
-  font-size:16px;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.fund-button{
-  background:white;
-  color:#173fcf;
-}
-
-.history-button{
-  background:#ffffff1c;
-  color:white;
-  border:1px solid #ffffff30;
-}
-
-/* =========================
-   QUICK ACTIONS
-========================= */
-
-.section-title-row{
   display:flex;
-  align-items:center;
-  gap:12px;
-  margin:0 0 14px;
+  gap:10px;
 }
 
-.section-title{
+.main-button{
+  border:none;
+  background:#fff;
+  color:#111;
+  padding:12px 17px;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.secondary-button{
+  border:1px solid #444;
+  background:#222;
+  color:#fff;
+  padding:12px 17px;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+  font-size:14px;
+}
+
+/* CATEGORY TITLE */
+
+.section-heading{
+  margin:5px 0 13px;
+}
+
+.section-heading h2{
   margin:0;
-  color:#a0a5bd;
-  font-size:15px;
-  font-weight:900;
-  letter-spacing:1px;
-  text-transform:uppercase;
-  white-space:nowrap;
+  font-size:20px;
 }
 
-.section-line{
-  height:2px;
-  background:#e1e4ee;
-  flex:1;
-  border-radius:5px;
+.section-heading p{
+  margin:5px 0 0;
+  color:#777;
+  font-size:13px;
 }
 
-.quick-actions{
-  background:white;
-  border-radius:27px;
-  overflow:hidden;
-  border:1px solid #e4e6ef;
-  box-shadow:0 2px 10px #00000008;
+/* CATEGORY GRID */
+
+.category-grid{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  margin-bottom:30px;
+  gap:12px;
+  margin-bottom:22px;
 }
 
-.quick-action{
-  min-height:124px;
+.category-item{
   border:0;
-  border-right:1px solid #e7e8ee;
-  border-bottom:1px solid #e7e8ee;
-  background:white;
-  cursor:pointer;
-  padding:15px 7px 12px;
+  background:#fff;
+  border-radius:15px;
+  padding:14px 7px;
+  min-height:105px;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:10px;
+  gap:9px;
+  cursor:pointer;
+  box-shadow:0 2px 9px #0000000d;
+  transition:transform .12s ease;
 }
 
-.quick-action:nth-child(4n){
-  border-right:none;
+.category-item:active{
+  transform:scale(.96);
 }
 
-.quick-action:nth-last-child(-n+4){
-  border-bottom:none;
-}
-
-.quick-icon{
-  width:56px;
-  height:56px;
-  border-radius:18px;
+.category-icon{
+  width:47px;
+  height:47px;
+  border-radius:14px;
+  background:#f0f0f0;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:27px;
-  background:#edf1ff;
-  border:1px solid #dce3ff;
+  font-size:23px;
 }
 
-.quick-action:nth-child(2) .quick-icon{
-  background:#f3eaff;
-  border-color:#e7d8ff;
-}
-
-.quick-action:nth-child(3) .quick-icon{
-  background:#e7faf5;
-  border-color:#ccefe6;
-}
-
-.quick-action:nth-child(4) .quick-icon{
-  background:#fff5e5;
-  border-color:#f9e7c2;
-}
-
-.quick-action:nth-child(5) .quick-icon{
-  background:#e8f6ff;
-  border-color:#d4eaf9;
-}
-
-.quick-action:nth-child(6) .quick-icon{
-  background:#edf1ff;
-  border-color:#dce3ff;
-}
-
-.quick-action:nth-child(7) .quick-icon{
-  background:#f2eaff;
-  border-color:#e4d7ff;
-}
-
-.quick-action:nth-child(8) .quick-icon{
-  background:#eeeeee;
-  border-color:#dddddd;
-}
-
-.quick-action:nth-child(9) .quick-icon{
-  background:#e8f7ff;
-  border-color:#d5ebf8;
-}
-
-.quick-action:nth-child(10) .quick-icon{
-  background:#eef0ff;
-  border-color:#dfe3ff;
-}
-
-.quick-name{
-  color:#555b78;
-  font-size:13px;
-  font-weight:800;
-  line-height:1.2;
+.category-name{
+  font-size:11px;
+  font-weight:bold;
   text-align:center;
+  line-height:1.25;
 }
 
-/* =========================
-   WATERMARK / PRODUCTS
-========================= */
-
-.services-section{
-  margin-top:5px;
-}
-
-.services-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
-}
-
-.services-header h2{
-  margin:0;
-  font-size:21px;
-}
-
-.services-header p{
-  margin:5px 0 0;
-  color:#8d92aa;
-  font-size:13px;
-}
+/* SEARCH */
 
 .search-box{
   width:100%;
-  margin:10px 0 15px;
+  margin:0 0 15px;
   padding:14px 15px;
-  border:1px solid #e0e2eb;
-  border-radius:14px;
+  border:1px solid #ddd;
+  border-radius:12px;
   font-size:15px;
   outline:none;
-  background:white;
+  background:#fff;
+}
+
+/* SERVICES */
+
+.services-section{
+  margin-top:5px;
 }
 
 .products-grid{
@@ -414,19 +265,18 @@ main{
 }
 
 .product-card{
-  background:white;
-  border-radius:18px;
+  background:#fff;
+  border-radius:14px;
   padding:15px;
-  box-shadow:0 2px 9px #0000000c;
+  box-shadow:0 2px 9px #00000012;
   overflow:hidden;
-  border:1px solid #e8e9ef;
 }
 
 .product-image{
   width:100%;
   height:190px;
   object-fit:cover;
-  border-radius:12px;
+  border-radius:10px;
   background:#eee;
   display:block;
 }
@@ -434,7 +284,7 @@ main{
 .no-image{
   width:100%;
   height:190px;
-  border-radius:12px;
+  border-radius:10px;
   background:#eee;
   display:flex;
   align-items:center;
@@ -479,7 +329,7 @@ main{
   width:100%;
   border:none;
   background:#111;
-  color:white;
+  color:#fff;
   padding:13px;
   border-radius:9px;
   font-weight:bold;
@@ -493,130 +343,7 @@ main{
   cursor:not-allowed;
 }
 
-/* =========================
-   TRANSACTIONS
-========================= */
-
-.transactions-section{
-  margin-top:7px;
-}
-
-.transactions-heading{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:14px;
-}
-
-.transactions-heading .section-title-row{
-  margin:0;
-  flex:1;
-}
-
-.view-all{
-  border:none;
-  background:none;
-  color:#173fcf;
-  font-size:14px;
-  font-weight:800;
-  cursor:pointer;
-  padding:5px 0 5px 10px;
-  white-space:nowrap;
-}
-
-.transaction-card{
-  background:white;
-  border:1px solid #e4e6ef;
-  border-radius:20px;
-  padding:8px;
-  box-shadow:0 2px 10px #00000008;
-}
-
-#transactions{
-  display:flex;
-  flex-direction:column;
-}
-
-.transaction{
-  padding:15px 13px;
-  border-bottom:1px solid #eeeeF3;
-}
-
-.transaction:last-child{
-  border-bottom:none;
-}
-
-.transaction-top{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  align-items:center;
-}
-
-.transaction-type{
-  font-weight:800;
-  font-size:15px;
-  color:#4f5570;
-}
-
-.amount{
-  font-size:15px;
-  font-weight:900;
-}
-
-.positive{
-  color:#15966c;
-}
-
-.status{
-  margin-top:6px;
-  font-size:12px;
-  font-weight:bold;
-  text-transform:capitalize;
-}
-
-.description{
-  margin-top:5px;
-  color:#777c91;
-  font-size:13px;
-  line-height:1.35;
-}
-
-.date{
-  margin-top:6px;
-  color:#a0a4b5;
-  font-size:11px;
-}
-
-.empty{
-  text-align:center;
-  color:#999eb3;
-  padding:30px 10px;
-  font-size:14px;
-}
-
-.transaction-receipt{
-  font-size:34px;
-  margin-bottom:10px;
-  opacity:.6;
-}
-
-.error{
-  color:#b00020;
-  text-align:center;
-  padding:20px 10px;
-}
-
-.error-box{
-  background:#ffe5e5;
-  color:#9b0000;
-  padding:15px;
-  border-radius:10px;
-}
-
-/* =========================
-   MENU
-========================= */
+/* MENU */
 
 #menu{
   position:fixed;
@@ -625,7 +352,7 @@ main{
   width:280px;
   max-width:85%;
   height:100vh;
-  background:white;
+  background:#fff;
   z-index:100;
   box-shadow:-3px 0 15px #0003;
   padding:22px;
@@ -643,9 +370,7 @@ main{
   color:#b00020;
 }
 
-/* =========================
-   WHATSAPP
-========================= */
+/* WHATSAPP */
 
 .whatsapp-float{
   position:fixed;
@@ -655,7 +380,7 @@ main{
   height:54px;
   border-radius:50%;
   background:#25d366;
-  color:white;
+  color:#fff;
   text-decoration:none;
   display:flex;
   align-items:center;
@@ -665,69 +390,59 @@ main{
   z-index:90;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+/* MOBILE */
 
-@media(max-width:430px){
+@media(max-width:520px){
 
-  header{
-    padding:17px 14px 12px;
+  .category-grid{
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
   }
 
-  main{
-    padding-left:14px;
-    padding-right:14px;
+  .category-item{
+    min-height:95px;
+    padding:10px 4px;
   }
 
-  .profile-avatar{
-    width:55px;
-    height:55px;
-    border-radius:17px;
+  .category-icon{
+    width:42px;
+    height:42px;
+    font-size:20px;
   }
 
-  .greeting h1{
-    font-size:18px;
+  .category-name{
+    font-size:10px;
   }
 
-  .greeting p{
-    font-size:13px;
+  .wallet-actions{
+    flex-wrap:wrap;
   }
 
-  .menu-top-button{
-    width:50px;
-    height:50px;
+}
+
+@media(min-width:600px){
+
+  .products-grid{
+    grid-template-columns:repeat(2,1fr);
   }
 
-  .wallet-card{
-    padding:25px 22px 22px;
-    border-radius:28px;
-  }
+}
 
-  #walletBalance{
-    font-size:34px;
-  }
+/* LOADING */
 
-  .wallet-action{
-    height:55px;
-    font-size:15px;
-  }
+.loading-box{
+  background:#fff;
+  border-radius:14px;
+  padding:25px;
+  text-align:center;
+  color:#777;
+}
 
-  .quick-action{
-    min-height:115px;
-    padding:12px 4px;
-  }
-
-  .quick-icon{
-    width:51px;
-    height:51px;
-    font-size:24px;
-    border-radius:16px;
-  }
-
-  .quick-name{
-    font-size:12px;
-  }
+.error-box{
+  background:#ffe5e5;
+  color:#9b0000;
+  padding:15px;
+  border-radius:10px;
 }
 </style>
 </head>
@@ -738,85 +453,71 @@ main{
 
   <div class="header-left">
 
-    <div class="profile-avatar" id="profileAvatar">
-      D
+    <div id="headerAvatar" class="header-avatar">
+      👤
     </div>
 
-    <div class="greeting">
-      <h1 id="greetingText">Good Evening, Delight 👋</h1>
-      <p>Your Delight Vendor Logs Dashboard</p>
+    <div class="header-text">
+      <p class="header-welcome">Welcome back</p>
+      <h1 id="userName">Delight Vendor Logs</h1>
     </div>
 
   </div>
 
-  <!-- YOUR MENU BUTTON IS STILL HERE -->
-  <button
-    type="button"
-    class="menu-top-button"
-    onclick="openMenu()"
-  >
-    ☰
-  </button>
+  <button type="button" onclick="openMenu()">☰</button>
 
 </header>
 
 
 <main>
 
-  <!-- WATERMARK STILL HERE -->
+  <!-- WATERMARK — KEPT -->
+
   <div id="watermark" class="watermark"></div>
 
 
   <!-- WALLET -->
+
   <section class="wallet-card">
 
     <div class="wallet-top">
 
-      <p class="balance-label">
-        Available Balance
-      </p>
-
-      <div class="wallet-status">
-        <span></span> Active
-      </div>
-
-    </div>
-
-
-    <div class="balance-row">
-
-      <p id="walletBalance">
-        Loading...
+      <p class="wallet-label">
+        Wallet Balance
       </p>
 
       <button
         type="button"
-        class="balance-eye"
+        id="eyeButton"
+        class="eye-button"
         onclick="toggleBalance()"
-        aria-label="Show or hide balance"
+        aria-label="Show balance"
       >
-        👁
+        👁️
       </button>
 
     </div>
 
+    <p id="walletBalance">
+      ••••••••
+    </p>
 
     <div class="wallet-actions">
 
       <button
         type="button"
-        class="wallet-action fund-button"
+        class="main-button"
         onclick="location.href='wallet.html'"
       >
-        ＋ Fund Wallet
+        💰 Fund Wallet
       </button>
 
       <button
         type="button"
-        class="wallet-action history-button"
+        class="secondary-button"
         onclick="location.href='transactions.html'"
       >
-        ↩ History
+        📜 Transactions
       </button>
 
     </div>
@@ -824,152 +525,120 @@ main{
   </section>
 
 
-  <!-- QUICK ACTIONS -->
+  <!-- CATEGORIES -->
 
-  <div class="section-title-row">
-    <h2 class="section-title">Quick Actions</h2>
-    <div class="section-line"></div>
-  </div>
+  <section>
 
-
-  <section class="quick-actions">
-
-    <button
-      class="quick-action"
-      onclick="selectCategory('All Social Logs')"
-    >
-      <div class="quick-icon">📱</div>
-      <div class="quick-name">Social Logs</div>
-    </button>
+    <div class="section-heading">
+      <h2>Our Services</h2>
+      <p>Choose a category to continue</p>
+    </div>
 
 
-    <button
-      class="quick-action"
-      onclick="selectCategory('Working Pictures')"
-    >
-      <div class="quick-icon">🖼️</div>
-      <div class="quick-name">Working Pictures</div>
-    </button>
-
-
-    <button
-      class="quick-action"
-      onclick="selectCategory('Formats')"
-    >
-      <div class="quick-icon">📄</div>
-      <div class="quick-name">Formats</div>
-    </button>
-
-
-    <button
-      class="quick-action"
-      onclick="selectCategory('Working Links')"
-    >
-      <div class="quick-icon">🔗</div>
-      <div class="quick-name">Working Links</div>
-    </button>
-
-
-    <button
-      class="quick-action"
-      onclick="selectCategory('Voice Cloner/Fake Video Call')"
-    >
-      <div class="quick-icon">🎙️</div>
-      <div class="quick-name">Voice / Video</div>
-    </button>
-
-
-    <button
-      class="quick-action"
-      onclick="selectCategory('All Countries Number')"
-    >
-      <div class="quick-icon">📞</div>
-      <div class="quick-name">Country Numbers</div>
-    </button>
-
-
-    <button
-      class="quick-action"
-      onclick="selectCategory('Streaming & More')"
-    >
-      <div class="quick-icon">📺</div>
-      <div class="quick-name">Streaming & More</div>
-    </button>
-
-
-    <button
-      class="quick-action"
-      onclick="selectCategory('ESIMS')"
-    >
-      <div class="quick-icon">📡</div>
-      <div class="quick-name">ESIMS</div>
-    </button>
-
-
-    <button
-      class="quick-action"
-      onclick="selectCategory('VPN')"
-    >
-      <div class="quick-icon">🔐</div>
-      <div class="quick-name">VPN</div>
-    </button>
-
-  </section>
-
-
-  <!-- TRANSACTIONS -->
-
-  <section class="transactions-section">
-
-    <div class="transactions-heading">
-
-      <div class="section-title-row">
-        <h2 class="section-title">Recent Activity</h2>
-        <div class="section-line"></div>
-      </div>
+    <div class="category-grid">
 
       <button
-        class="view-all"
-        onclick="location.href='transactions.html'"
+        class="category-item"
+        onclick="openCategory('All Social Logs')"
       >
-        View all ›
+        <div class="category-icon">📱</div>
+        <div class="category-name">Social Logs</div>
       </button>
 
-    </div>
+
+      <button
+        class="category-item"
+        onclick="openCategory('Working Pictures')"
+      >
+        <div class="category-icon">🖼️</div>
+        <div class="category-name">Working Pictures</div>
+      </button>
 
 
-    <div class="transaction-card">
+      <button
+        class="category-item"
+        onclick="openCategory('Formats')"
+      >
+        <div class="category-icon">📄</div>
+        <div class="category-name">Formats</div>
+      </button>
 
-      <div id="transactions">
-        <div class="empty">
-          <div class="transaction-receipt">🧾</div>
-          Loading transactions...
-        </div>
-      </div>
+
+      <button
+        class="category-item"
+        onclick="openCategory('Working Links')"
+      >
+        <div class="category-icon">🔗</div>
+        <div class="category-name">Working Links</div>
+      </button>
+
+
+      <button
+        class="category-item"
+        onclick="openCategory('Voice Cloner/Fake Video Call')"
+      >
+        <div class="category-icon">🎙️</div>
+        <div class="category-name">Voice / Video Call</div>
+      </button>
+
+
+      <button
+        class="category-item"
+        onclick="location.href='virtualnumber.html'"
+      >
+        <div class="category-icon">📞</div>
+        <div class="category-name">Country Numbers</div>
+      </button>
+
+
+      <button
+        class="category-item"
+        onclick="openCategory('Streaming & More')"
+      >
+        <div class="category-icon">📺</div>
+        <div class="category-name">Streaming & More</div>
+      </button>
+
+
+      <button
+        class="category-item"
+        onclick="openCategory('ESIMS')"
+      >
+        <div class="category-icon">📡</div>
+        <div class="category-name">ESIMS</div>
+      </button>
+
+
+      <button
+        class="category-item"
+        onclick="openCategory('VPN')"
+      >
+        <div class="category-icon">🔐</div>
+        <div class="category-name">VPN</div>
+      </button>
+
+
+      <button
+        class="category-item"
+        onclick="openCategory('Other Services')"
+      >
+        <div class="category-icon">➕</div>
+        <div class="category-name">Other Services</div>
+      </button>
 
     </div>
 
   </section>
 
 
-  <!-- SERVICES -->
+  <!-- SERVICE SEARCH / LIST -->
 
   <section class="services-section">
 
-    <div class="services-header">
-
-      <div>
-        <h2 id="categoryTitle">
-          Latest Services
-        </h2>
-
-        <p id="categoryDescription">
-          Browse all available services.
-        </p>
-      </div>
-
+    <div class="section-heading">
+      <h2>Latest Services</h2>
+      <p>Browse available services</p>
     </div>
-
 
     <input
       id="serviceSearch"
@@ -977,14 +646,13 @@ main{
       type="search"
       placeholder="🔍 Search service..."
       oninput="filterServices()"
+      autocomplete="off"
     >
 
-
-    <div
-      id="products"
-      class="products-grid"
-    >
-      Loading service...
+    <div id="products" class="products-grid">
+      <div class="loading-box">
+        Loading services...
+      </div>
     </div>
 
   </section>
@@ -992,7 +660,7 @@ main{
 </main>
 
 
-<!-- WHATSAPP STILL HERE -->
+<!-- WHATSAPP — KEPT -->
 
 <a
   class="whatsapp-float"
@@ -1004,12 +672,9 @@ main{
 </a>
 
 
-<!-- MENU STILL HERE -->
+<!-- MENU — KEPT -->
 
-<div
-  id="menu"
-  style="display:none;"
->
+<div id="menu" style="display:none;">
 
   <h3>Menu</h3>
 
@@ -1093,146 +758,239 @@ window.supabase.createClient(
 
 
 let allServices = [];
-let selectedCategory = "Home";
-let balanceHidden = false;
-let realBalance = 0;
+let balanceVisible = false;
+let actualBalance = 0;
 
 
-/* =========================
-   MENU
-========================= */
+/* MENU */
 
 function openMenu(){
-
-  document.getElementById("menu").style.display =
-    "block";
-
+  document.getElementById("menu").style.display="block";
 }
 
 function closeMenu(){
-
-  document.getElementById("menu").style.display =
-    "none";
-
+  document.getElementById("menu").style.display="none";
 }
 
 
-/* =========================
-   ESCAPE HTML
-========================= */
+/* ESCAPE HTML */
 
 function escapeHTML(v){
-
   return String(v ?? "")
     .replace(/&/g,"&amp;")
     .replace(/</g,"&lt;")
     .replace(/>/g,"&gt;")
     .replace(/"/g,"&quot;")
     .replace(/'/g,"&#039;");
+}
+
+
+/* BALANCE */
+
+function formatBalance(value){
+
+  return "₦" +
+    Number(value || 0).toLocaleString("en-NG",{
+      minimumFractionDigits:2,
+      maximumFractionDigits:2
+    });
 
 }
 
 
-/* =========================
-   GREETING / USER NAME
-========================= */
+function renderBalance(){
 
-function getFirstName(user){
+  const box =
+    document.getElementById("walletBalance");
+
+  const eye =
+    document.getElementById("eyeButton");
+
+  if(balanceVisible){
+
+    box.textContent =
+      formatBalance(actualBalance);
+
+    eye.textContent="🙈";
+    eye.setAttribute(
+      "aria-label",
+      "Hide balance"
+    );
+
+  }else{
+
+    box.textContent="••••••••";
+
+    eye.textContent="👁️";
+    eye.setAttribute(
+      "aria-label",
+      "Show balance"
+    );
+
+  }
+
+}
+
+
+function toggleBalance(){
+
+  balanceVisible =
+    !balanceVisible;
+
+  renderBalance();
+
+}
+
+
+/* USER */
+
+async function loadUser(){
+
+  const {
+    data:{user},
+    error
+  } =
+  await supabaseClient.auth.getUser();
+
+
+  if(error || !user){
+
+    location.href="login.html";
+    return null;
+
+  }
+
 
   const metadata =
-    user?.user_metadata || {};
+    user.user_metadata || {};
+
 
   const firstName =
     metadata.first_name ||
     metadata.firstname ||
     metadata.firstName ||
-    "";
-
-  if(firstName){
-
-    return String(firstName).trim();
-
-  }
-
-
-  const fullName =
-    metadata.full_name ||
     metadata.name ||
     "";
 
-  if(fullName){
 
-    return String(fullName)
-      .trim()
-      .split(/\s+/)[0];
+  const lastName =
+    metadata.last_name ||
+    metadata.lastname ||
+    metadata.lastName ||
+    "";
+
+
+  let fullName =
+    [firstName,lastName]
+      .filter(Boolean)
+      .join(" ")
+      .trim();
+
+
+  if(!fullName){
+
+    fullName =
+      metadata.full_name ||
+      metadata.fullName ||
+      "";
 
   }
 
 
-  if(user?.email){
+  if(!fullName){
 
-    return String(user.email)
-      .split("@")[0];
-
-  }
-
-
-  return "Delight";
-
-}
-
-
-function updateGreeting(user){
-
-  const firstName =
-    getFirstName(user);
-
-  const hour =
-    new Date().getHours();
-
-  let greeting =
-    "Good Evening";
-
-  if(hour < 12){
-
-    greeting =
-      "Good Morning";
-
-  }else if(hour < 17){
-
-    greeting =
-      "Good Afternoon";
+    fullName =
+      user.email
+        ? user.email.split("@")[0]
+        : "Customer";
 
   }
 
 
   document.getElementById(
-    "greetingText"
+    "userName"
   ).textContent =
-    greeting + ", " + firstName + " 👋";
+    fullName;
 
 
   const avatar =
-    document.getElementById("profileAvatar");
+    document.getElementById(
+      "headerAvatar"
+    );
 
-  avatar.textContent =
-    String(firstName || "D")
+
+  const initial =
+    fullName
+      .trim()
       .charAt(0)
       .toUpperCase();
+
+
+  if(initial){
+
+    avatar.textContent =
+      initial;
+
+  }
+
+
+  return user;
 
 }
 
 
-/* =========================
-   WATERMARK
-========================= */
+/* WALLET */
+
+async function loadWallet(){
+
+  const {
+    data,
+    error
+  } =
+  await supabaseClient.rpc(
+    "ensure_my_wallet"
+  );
+
+
+  if(error){
+
+    console.error(
+      "Wallet error:",
+      error
+    );
+
+    actualBalance=0;
+
+    document.getElementById(
+      "walletBalance"
+    ).textContent=
+      "Unable to load balance.";
+
+    return;
+
+  }
+
+
+  actualBalance =
+    Number(data?.balance ?? 0);
+
+
+  renderBalance();
+
+}
+
+
+/* WATERMARK — KEPT */
 
 async function loadWatermark(){
 
   const box =
-    document.getElementById("watermark");
+    document.getElementById(
+      "watermark"
+    );
 
-  if(!box) return;
+
+  if(!box)return;
 
 
   try{
@@ -1240,7 +998,8 @@ async function loadWatermark(){
     const {
       data,
       error
-    } = await supabaseClient
+    } =
+    await supabaseClient
       .from("site_settings")
       .select("value")
       .eq("key","watermark")
@@ -1254,8 +1013,8 @@ async function loadWatermark(){
         error
       );
 
-      box.textContent = "";
-      box.style.display = "none";
+      box.textContent="";
+      box.style.display="none";
 
       return;
 
@@ -1263,22 +1022,22 @@ async function loadWatermark(){
 
 
     const text =
-      String(data?.value || "")
-        .trim();
+      String(
+        data?.value || ""
+      ).trim();
 
 
     if(text){
 
-      box.textContent = text;
-      box.style.display = "block";
+      box.textContent=text;
+      box.style.display="block";
 
     }else{
 
-      box.textContent = "";
-      box.style.display = "none";
+      box.textContent="";
+      box.style.display="none";
 
     }
-
 
   }catch(error){
 
@@ -1287,179 +1046,34 @@ async function loadWatermark(){
       error
     );
 
-    box.textContent = "";
-    box.style.display = "none";
+    box.textContent="";
+    box.style.display="none";
 
   }
 
 }
 
 
-/* =========================
-   WALLET
-========================= */
+/* CATEGORY NAVIGATION */
 
-async function loadWallet(){
+function openCategory(category){
 
-  const {
-    data:{
-      user
-    },
-    error
-  } =
-    await supabaseClient.auth.getUser();
+  /*
+    Navigate immediately.
+    No waiting for products,
+    wallet, or category data.
+  */
 
+  const url =
+    "products.html?category=" +
+    encodeURIComponent(category);
 
-  if(error || !user){
-
-    location.href =
-      "login.html";
-
-    return null;
-
-  }
-
-
-  updateGreeting(user);
-
-
-  const {
-    data:wallet,
-    error:e
-  } =
-    await supabaseClient
-      .rpc("ensure_my_wallet");
-
-
-  if(e){
-
-    console.error(
-      "Wallet error:",
-      e
-    );
-
-    document.getElementById(
-      "walletBalance"
-    ).textContent =
-      "Unable to load balance.";
-
-    return user;
-
-  }
-
-
-  realBalance =
-    Number(wallet?.balance ?? 0);
-
-
-  renderBalance();
-
-
-  return user;
+  location.href=url;
 
 }
 
 
-function renderBalance(){
-
-  const balanceElement =
-    document.getElementById(
-      "walletBalance"
-    );
-
-
-  if(balanceHidden){
-
-    balanceElement.textContent =
-      "₦••••••";
-
-    return;
-
-  }
-
-
-  balanceElement.textContent =
-    "₦" +
-    realBalance.toLocaleString(
-      "en-NG",
-      {
-        minimumFractionDigits:2,
-        maximumFractionDigits:2
-      }
-    );
-
-}
-
-
-function toggleBalance(){
-
-  balanceHidden =
-    !balanceHidden;
-
-  renderBalance();
-
-}
-
-
-/* =========================
-   CATEGORY
-========================= */
-
-function selectCategory(category){
-
-  if(category ===
-     "All Countries Number"){
-
-    location.href =
-      "virtualnumber.html";
-
-    return;
-
-  }
-
-
-  selectedCategory =
-    category;
-
-
-  document.getElementById(
-    "serviceSearch"
-  ).value = "";
-
-
-  document.getElementById(
-    "categoryTitle"
-  ).textContent =
-    category === "Home"
-      ? "Latest Services"
-      : category;
-
-
-  document.getElementById(
-    "categoryDescription"
-  ).textContent =
-    category === "Home"
-      ? "Browse all available services."
-      : "Services available under " +
-        category + ".";
-
-
-  renderServices();
-
-
-  document
-    .querySelector(".services-section")
-    .scrollIntoView({
-      behavior:"smooth",
-      block:"start"
-    });
-
-}
-
-
-/* =========================
-   PRODUCTS
-========================= */
+/* PRODUCTS */
 
 async function loadProducts(){
 
@@ -1473,13 +1087,11 @@ async function loadProducts(){
     data,
     error
   } =
-    await supabaseClient
-      .from("Product")
-      .select("*")
-      .eq("is_active",true)
-      .order("id",{
-        ascending:false
-      });
+  await supabaseClient
+    .from("Product")
+    .select("*")
+    .eq("is_active",true)
+    .order("id",{ascending:false});
 
 
   if(error){
@@ -1489,11 +1101,9 @@ async function loadProducts(){
       error
     );
 
-
     container.innerHTML =
       '<div class="error-box">' +
-      '❌ Unable to load services.<br><br>' +
-      escapeHTML(error.message) +
+      '❌ Unable to load services.' +
       '</div>';
 
     return;
@@ -1510,12 +1120,16 @@ async function loadProducts(){
 }
 
 
+/* SEARCH */
+
 function filterServices(){
 
   renderServices();
 
 }
 
+
+/* RENDER */
 
 function renderServices(){
 
@@ -1525,51 +1139,49 @@ function renderServices(){
     );
 
 
-  const search =
+  const input =
     document.getElementById(
       "serviceSearch"
-    )
-    .value
-    .trim()
-    .toLowerCase();
+    );
+
+
+  const search =
+    input.value
+      .trim()
+      .toLowerCase();
 
 
   let services =
     [...allServices];
 
 
-  if(selectedCategory !== "Home"){
-
-    services =
-      services.filter(
-        p =>
-          String(
-            p.category || ""
-          ).toLowerCase() ===
-          selectedCategory.toLowerCase()
-      );
-
-  }
-
-
   if(search){
 
     services =
-      services.filter(
-        p =>
-          String(
-            p.name || ""
-          )
-          .toLowerCase()
-          .includes(search)
+      services.filter(product =>
 
-          ||
+        String(
+          product.name || ""
+        )
+        .toLowerCase()
+        .includes(search)
 
-          String(
-            p.description || ""
-          )
-          .toLowerCase()
-          .includes(search)
+        ||
+
+        String(
+          product.description || ""
+        )
+        .toLowerCase()
+        .includes(search)
+
+        ||
+
+        String(
+          product.category || ""
+        )
+        .toLowerCase()
+        .includes(search)
+
       );
 
   }
@@ -1578,10 +1190,10 @@ function renderServices(){
   if(!services.length){
 
     container.innerHTML =
-      '<div class="empty">' +
+      '<div class="loading-box">' +
       '🔍<br><br>' +
       '<strong>No services found</strong>' +
-      '<p>Try another search or category.</p>' +
+      '<p>Try another search.</p>' +
       '</div>';
 
     return;
@@ -1589,162 +1201,175 @@ function renderServices(){
   }
 
 
-  container.innerHTML = "";
+  container.innerHTML="";
 
 
-  services.forEach(
-    product => {
+  services.forEach(product => {
 
-      const card =
-        document.createElement(
-          "div"
-        );
-
-
-      card.className =
-        "product-card";
+    const card =
+      document.createElement(
+        "div"
+      );
 
 
-      const price =
-        Number(
-          product.price || 0
-        ).toLocaleString(
-          "en-NG",
-          {
-            minimumFractionDigits:0,
-            maximumFractionDigits:2
-          }
-        );
+    card.className =
+      "product-card";
 
 
-      const stock =
-        Number(
-          product.stock || 0
-        );
+    const price =
+      Number(
+        product.price || 0
+      ).toLocaleString(
+        "en-NG",
+        {
+          minimumFractionDigits:0,
+          maximumFractionDigits:2
+        }
+      );
 
 
-      const track =
-        product.track_stock !== false;
+    const stock =
+      Number(
+        product.stock || 0
+      );
 
 
-      const status =
-        String(
-          product.status ||
-          "Available"
-        )
-        .toLowerCase()
-        .trim();
+    const track =
+      product.track_stock !== false;
 
 
-      const soldOut =
+    const status =
+      String(
+        product.status ||
+        "Available"
+      )
+      .toLowerCase()
+      .trim();
+
+
+    const soldOut =
+
+      (
+        track &&
         (
-          track &&
-          (
-            stock <= 0 ||
-            status === "sold" ||
-            status === "sold out" ||
-            status === "unavailable"
-          )
-        )
-        ||
-        (
-          !track &&
+          stock <= 0 ||
+          status === "sold" ||
+          status === "sold out" ||
           status === "unavailable"
-        );
+        )
+      )
+
+      ||
+
+      (
+        !track &&
+        status === "unavailable"
+      );
 
 
-      let image;
+    let image;
 
 
-      if(
-        product.image_url &&
-        String(
+    if(
+      product.image_url &&
+      String(
+        product.image_url
+      ).trim()
+    ){
+
+      image =
+        '<img class="product-image" src="' +
+        escapeHTML(
           product.image_url
-        ).trim()
-      ){
-
-        image =
-          '<img class="product-image" src="' +
-          escapeHTML(
-            product.image_url
-          ) +
-          '" onerror="this.style.display=\'none\';' +
-          'this.nextElementSibling.style.display=\'flex\'">' +
-
-          '<div class="no-image" style="display:none">' +
-          '🛍️' +
-          '</div>';
-
-      }else{
-
-        image =
-          '<div class="no-image">' +
-          '🛍️' +
-          '</div>';
-
-      }
-
-
-      card.innerHTML =
-        image +
-
-        '<h3>' +
-        escapeHTML(
-          product.name ||
-          "Unnamed Service"
         ) +
-        '</h3>' +
+        '" onerror="' +
+        'this.style.display=\'none\';' +
+        'this.nextElementSibling.style.display=\'flex\'' +
+        '">' +
 
-        '<span class="product-category">' +
-        escapeHTML(
-          product.category ||
-          "Service"
-        ) +
-        '</span>' +
+        '<div class="no-image" ' +
+        'style="display:none">' +
+        '🛍️' +
+        '</div>';
 
-        '<p class="product-description">' +
-        escapeHTML(
-          product.description ||
-          ""
-        ) +
-        '</p>' +
+    }else{
 
-        '<p class="product-price">' +
-        '₦' + price +
-        '</p>' +
-
-        '<p class="stock-text">' +
-        (
-          soldOut
-            ? "❌ Sold Out / Unavailable"
-            : "✅ Available"
-        ) +
-        '</p>' +
-
-        '<button class="buy-button" ' +
-        (
-          soldOut
-            ? "disabled"
-            : ""
-        ) +
-        ' onclick="buyProduct(' +
-        Number(product.id) +
-        ')">' +
-        (
-          soldOut
-            ? "Sold Out"
-            : "Buy Now"
-        ) +
-        '</button>';
-
-
-      container.appendChild(card);
+      image =
+        '<div class="no-image">' +
+        '🛍️' +
+        '</div>';
 
     }
-  );
+
+
+    card.innerHTML =
+
+      image +
+
+      '<h3>' +
+      escapeHTML(
+        product.name ||
+        "Unnamed Service"
+      ) +
+      '</h3>' +
+
+      '<span class="product-category">' +
+      escapeHTML(
+        product.category ||
+        "Service"
+      ) +
+      '</span>' +
+
+      '<p class="product-description">' +
+      escapeHTML(
+        product.description ||
+        ""
+      ) +
+      '</p>' +
+
+      '<p class="product-price">' +
+      '₦' +
+      price +
+      '</p>' +
+
+      '<p class="stock-text">' +
+
+      (
+        soldOut
+        ? "❌ Sold Out / Unavailable"
+        : "✅ Available"
+      ) +
+
+      '</p>' +
+
+      '<button ' +
+      'class="buy-button" ' +
+      (soldOut
+        ? "disabled"
+        : "") +
+      ' onclick="buyProduct(' +
+      Number(product.id) +
+      ')">' +
+
+      (
+        soldOut
+        ? "Sold Out"
+        : "Buy Now"
+      ) +
+
+      '</button>';
+
+
+    container.appendChild(
+      card
+    );
+
+  });
 
 }
 
+
+/* BUY */
 
 function buyProduct(id){
 
@@ -1755,223 +1380,22 @@ function buyProduct(id){
 }
 
 
-/* =========================
-   TRANSACTIONS
-========================= */
+/*
+  IMPORTANT:
+  These are deliberately started
+  independently.
 
-async function getCurrentUser(){
-
-  const {
-    data:{
-      user
-    },
-    error
-  } =
-    await supabaseClient.auth.getUser();
-
-
-  if(error || !user){
-
-    location.href =
-      "login.html";
-
-    return null;
-
-  }
-
-
-  return user;
-
-}
-
-
-async function loadTransactions(){
-
-  const container =
-    document.getElementById(
-      "transactions"
-    );
-
-
-  container.innerHTML =
-    '<div class="empty">' +
-    '<div class="transaction-receipt">🧾</div>' +
-    'Loading transactions...' +
-    '</div>';
-
-
-  const user =
-    await getCurrentUser();
-
-
-  if(!user) return;
-
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("transactions")
-      .select(
-        "id, user_id, type, amount, status, description, created_at"
-      )
-      .eq(
-        "user_id",
-        user.id
-      )
-      .order(
-        "created_at",
-        {
-          ascending:false
-        }
-      )
-      .limit(5);
-
-
-  if(error){
-
-    console.error(
-      "Transaction error:",
-      error
-    );
-
-
-    container.innerHTML =
-      '<div class="error">' +
-      'Unable to load transactions.' +
-      '</div>';
-
-    return;
-
-  }
-
-
-  if(
-    !data ||
-    data.length === 0
-  ){
-
-    container.innerHTML =
-      '<div class="empty">' +
-      '<div class="transaction-receipt">🧾</div>' +
-      'No transactions yet.<br>' +
-      'Fund your wallet to get started.' +
-      '</div>';
-
-    return;
-
-  }
-
-
-  container.innerHTML = "";
-
-
-  data.forEach(
-    transaction => {
-
-      const amount =
-        Number(
-          transaction.amount || 0
-        );
-
-
-      const date =
-        transaction.created_at
-          ? new Date(
-              transaction.created_at
-            ).toLocaleString(
-              "en-NG",
-              {
-                dateStyle:"medium",
-                timeStyle:"short"
-              }
-            )
-          : "";
-
-
-      const item =
-        document.createElement(
-          "div"
-        );
-
-
-      item.className =
-        "transaction";
-
-
-      item.innerHTML = `
-
-        <div class="transaction-top">
-
-          <div class="transaction-type">
-            ${escapeHTML(
-              transaction.type ||
-              "Transaction"
-            )}
-          </div>
-
-          <div class="amount positive">
-            +₦${amount.toLocaleString(
-              "en-NG",
-              {
-                minimumFractionDigits:2,
-                maximumFractionDigits:2
-              }
-            )}
-          </div>
-
-        </div>
-
-        <div class="status">
-          ${escapeHTML(
-            transaction.status ||
-            "completed"
-          )}
-        </div>
-
-        <div class="description">
-          ${escapeHTML(
-            transaction.description ||
-            ""
-          )}
-        </div>
-
-        <div class="date">
-          ${escapeHTML(date)}
-        </div>
-
-      `;
-
-
-      container.appendChild(
-        item
-      );
-
-    }
-  );
-
-}
-
-
-/* =========================
-   START DASHBOARD
-========================= */
+  The dashboard does NOT wait for
+  wallet/watermark/products before
+  the user can click navigation.
+*/
 
 async function startDashboard(){
 
-  const user =
-    await loadWallet();
-
-
-  if(!user) return;
-
-
-  await loadWatermark();
-
-  await loadProducts();
-
-  await loadTransactions();
+  loadUser();
+  loadWallet();
+  loadWatermark();
+  loadProducts();
 
 }
 
