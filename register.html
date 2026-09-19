@@ -1,136 +1,872 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <title>Create Account - Delight Vendor Logs</title>
-  <link rel="stylesheet" href="style.css">
-</head>
 
-<body>
+<meta charset="UTF-8">
 
-<h1>Create Account</h1>
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 
-<form id="registerForm">
-
-  <label>Name</label>
-  <br>
-  <input id="name" type="text" placeholder="Enter your name" required>
-
-  <br><br>
-
-  <label>Email</label>
-  <br>
-  <input id="email" type="email" placeholder="Enter your email" required>
-
-  <br><br>
-
-  <label>Password</label>
-  <br>
-  <input id="password" type="password" placeholder="Create a password" required>
-
-  <br><br>
-
-  <label>Confirm Password</label>
-  <br>
-  <input id="confirmPassword" type="password" placeholder="Confirm your password" required>
-
-  <br><br>
-
-  <button type="submit">Create Account</button>
-
-</form>
-
-<p id="message"></p>
-
-<br>
-
-<button onclick="window.location.href='login.html'">
-  Already have an account? Login
-</button>
+<title>Create Account - Delight Vendor Logs</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+html,
+body{
+  margin:0;
+  padding:0;
+}
+
+body{
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  background:#ffffff;
+
+  color:#111827;
+
+  min-height:100vh;
+
+}
+
+
+/* MAIN */
+
+.page{
+
+  width:100%;
+
+  max-width:720px;
+
+  margin:0 auto;
+
+  padding:55px 34px 50px;
+
+}
+
+
+/* HEADER */
+
+.heading{
+
+  margin-bottom:48px;
+
+}
+
+.heading h1{
+
+  margin:0;
+
+  font-size:40px;
+
+  line-height:1.15;
+
+  font-weight:800;
+
+  letter-spacing:-1.2px;
+
+  color:#101522;
+
+}
+
+.heading p{
+
+  margin:14px 0 0;
+
+  font-size:19px;
+
+  line-height:1.5;
+
+  color:#66708a;
+
+}
+
+
+/* SECTION */
+
+.section{
+
+  margin-bottom:40px;
+
+}
+
+.section-title{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:14px;
+
+  margin-bottom:26px;
+
+}
+
+.section-title span{
+
+  font-size:15px;
+
+  font-weight:800;
+
+  color:#9aa3bd;
+
+  letter-spacing:1.5px;
+
+  white-space:nowrap;
+
+}
+
+.section-title::after{
+
+  content:"";
+
+  height:2px;
+
+  background:#e4e7ef;
+
+  flex:1;
+
+}
+
+
+/* FIELD */
+
+.field{
+
+  margin-bottom:27px;
+
+}
+
+.field label{
+
+  display:block;
+
+  margin-bottom:12px;
+
+  font-size:18px;
+
+  font-weight:700;
+
+  color:#151922;
+
+}
+
+.input-wrap{
+
+  position:relative;
+
+}
+
+.input-icon{
+
+  position:absolute;
+
+  left:21px;
+
+  top:50%;
+
+  transform:translateY(-50%);
+
+  color:#a0a9c2;
+
+  font-size:21px;
+
+  pointer-events:none;
+
+}
+
+.input-wrap input{
+
+  width:100%;
+
+  height:78px;
+
+  border:2px solid #e3e7f0;
+
+  background:#f7f8fc;
+
+  border-radius:20px;
+
+  outline:none;
+
+  padding:0 20px 0 63px;
+
+  font-size:19px;
+
+  color:#202636;
+
+  transition:.2s;
+
+}
+
+.input-wrap input::placeholder{
+
+  color:#a2abc2;
+
+}
+
+.input-wrap input:focus{
+
+  border-color:#1740e8;
+
+  background:#fff;
+
+  box-shadow:
+    0 0 0 4px #1740e810;
+
+}
+
+
+/* PASSWORD */
+
+.password-toggle{
+
+  position:absolute;
+
+  right:19px;
+
+  top:50%;
+
+  transform:translateY(-50%);
+
+  border:0;
+
+  background:none;
+
+  color:#9da6bf;
+
+  font-size:21px;
+
+  padding:8px;
+
+  cursor:pointer;
+
+}
+
+.password-input{
+
+  padding-right:58px !important;
+
+}
+
+
+/* BUTTON */
+
+.create-btn{
+
+  width:100%;
+
+  height:76px;
+
+  border:0;
+
+  border-radius:19px;
+
+  background:#123be8;
+
+  color:#fff;
+
+  font-size:21px;
+
+  font-weight:800;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 8px 20px #123be82b;
+
+  transition:.2s;
+
+}
+
+.create-btn:active{
+
+  transform:scale(.99);
+
+}
+
+.create-btn:disabled{
+
+  opacity:.65;
+
+  cursor:not-allowed;
+
+}
+
+
+/* MESSAGE */
+
+#message{
+
+  margin:20px 0 0;
+
+  text-align:center;
+
+  font-size:16px;
+
+  line-height:1.5;
+
+  color:#66708a;
+
+}
+
+
+/* LOGIN LINK */
+
+.account-link{
+
+  text-align:center;
+
+  margin-top:34px;
+
+  font-size:18px;
+
+  color:#68718b;
+
+}
+
+.account-link a{
+
+  color:#123bc8;
+
+  text-decoration:none;
+
+  font-weight:800;
+
+}
+
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+  .page{
+
+    padding:
+      46px
+      34px
+      45px;
+
+  }
+
+  .heading{
+
+    margin-bottom:43px;
+
+  }
+
+  .heading h1{
+
+    font-size:34px;
+
+  }
+
+  .heading p{
+
+    font-size:18px;
+
+  }
+
+  .section-title span{
+
+    font-size:13px;
+
+  }
+
+  .field label{
+
+    font-size:17px;
+
+  }
+
+  .input-wrap input{
+
+    height:76px;
+
+    font-size:18px;
+
+  }
+
+  .create-btn{
+
+    height:75px;
+
+  }
+
+}
+
+
+@media(max-width:400px){
+
+  .page{
+
+    padding-left:25px;
+
+    padding-right:25px;
+
+  }
+
+  .heading h1{
+
+    font-size:31px;
+
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+  <!-- HEADER -->
+
+  <div class="heading">
+
+    <h1>
+      Create your account 🚀
+    </h1>
+
+    <p>
+      Fill in your details below to get started for free
+    </p>
+
+  </div>
+
+
+  <!-- PERSONAL INFO -->
+
+  <section class="section">
+
+
+    <div class="section-title">
+
+      <span>
+        PERSONAL INFO
+      </span>
+
+    </div>
+
+
+    <!-- FIRST NAME -->
+
+    <div class="field">
+
+      <label for="firstName">
+        First Name
+      </label>
+
+      <div class="input-wrap">
+
+        <span class="input-icon">
+          🪪
+        </span>
+
+        <input
+          id="firstName"
+          type="text"
+          placeholder="John"
+          autocomplete="given-name"
+          required
+        >
+
+      </div>
+
+    </div>
+
+
+    <!-- LAST NAME -->
+
+    <div class="field">
+
+      <label for="lastName">
+        Last Name
+      </label>
+
+      <div class="input-wrap">
+
+        <span class="input-icon">
+          🪪
+        </span>
+
+        <input
+          id="lastName"
+          type="text"
+          placeholder="Doe"
+          autocomplete="family-name"
+          required
+        >
+
+      </div>
+
+    </div>
+
+
+    <!-- EMAIL -->
+
+    <div class="field">
+
+      <label for="email">
+        Email Address
+      </label>
+
+      <div class="input-wrap">
+
+        <span class="input-icon">
+          ✉
+        </span>
+
+        <input
+          id="email"
+          type="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+          required
+        >
+
+      </div>
+
+    </div>
+
+
+  </section>
+
+
+  <!-- ACCOUNT SECURITY -->
+
+  <section class="section">
+
+
+    <div class="section-title">
+
+      <span>
+        ACCOUNT SECURITY
+      </span>
+
+    </div>
+
+
+    <!-- PASSWORD -->
+
+    <div class="field">
+
+      <label for="password">
+        Password
+      </label>
+
+      <div class="input-wrap">
+
+        <span class="input-icon">
+          🔒
+        </span>
+
+        <input
+          id="password"
+          class="password-input"
+          type="password"
+          placeholder="Create a password"
+          autocomplete="new-password"
+          required
+        >
+
+        <button
+          type="button"
+          class="password-toggle"
+          onclick="togglePassword()"
+          aria-label="Show password"
+        >
+          👁
+        </button>
+
+      </div>
+
+    </div>
+
+
+  </section>
+
+
+  <!-- CREATE ACCOUNT -->
+
+  <button
+    id="createButton"
+    class="create-btn"
+    type="button"
+    onclick="createAccount()"
+  >
+    Create Account
+  </button>
+
+
+  <p id="message"></p>
+
+
+  <!-- LOGIN -->
+
+  <div class="account-link">
+
+    Already have an account?
+
+    <a href="login.html">
+      Sign In
+    </a>
+
+  </div>
+
+
+</div>
+
+
 <script>
 
-const SUPABASE_URL = "https://hkfhehbhmucymusaytoe.supabase.co";
 
-const SUPABASE_KEY = "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+/* SUPABASE */
 
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const SUPABASE_URL =
+  "https://hkfhehbhmucymusaytoe.supabase.co";
 
-document.getElementById("registerForm").addEventListener("submit", async function(event) {
 
-  event.preventDefault();
+const SUPABASE_KEY =
+  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-  const confirmPassword = document.getElementById("confirmPassword").value;
-  const message = document.getElementById("message");
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* PASSWORD TOGGLE */
+
+function togglePassword(){
+
+  const password =
+    document.getElementById(
+      "password"
+    );
+
+  const button =
+    document.querySelector(
+      ".password-toggle"
+    );
+
+
+  if(
+    password.type === "password"
+  ){
+
+    password.type = "text";
+
+    button.textContent = "🙈";
+
+  }else{
+
+    password.type = "password";
+
+    button.textContent = "👁";
+
+  }
+
+}
+
+
+/* CREATE ACCOUNT */
+
+async function createAccount(){
+
+  const firstName =
+    document
+      .getElementById("firstName")
+      .value
+      .trim();
+
+
+  const lastName =
+    document
+      .getElementById("lastName")
+      .value
+      .trim();
+
+
+  const email =
+    document
+      .getElementById("email")
+      .value
+      .trim();
+
+
+  const password =
+    document
+      .getElementById("password")
+      .value;
+
+
+  const message =
+    document
+      .getElementById("message");
+
+
+  const button =
+    document
+      .getElementById("createButton");
+
 
   message.textContent = "";
 
-  if (password !== confirmPassword) {
-    message.textContent = "Passwords do not match.";
+
+  if(
+    !firstName ||
+    !lastName ||
+    !email ||
+    !password
+  ){
+
+    message.textContent =
+      "Please fill in all fields.";
+
     return;
+
   }
 
-  if (password.length < 6) {
-    message.textContent = "Password must be at least 6 characters.";
-    return;
-  }
 
-  message.textContent = "Creating your account...";
+  button.disabled = true;
 
-  const { data, error } = await supabaseClient.auth.signUp({
-    email: email,
-    password: password,
-    options: {
-      data: {
-        name: name
-      }
+  button.textContent =
+    "Creating Account...";
+
+
+  message.textContent =
+    "Creating your account...";
+
+
+  try{
+
+    const fullName =
+      firstName +
+      " " +
+      lastName;
+
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.signUp({
+
+        email:email,
+
+        password:password,
+
+        options:{
+
+          data:{
+
+            name:fullName,
+
+            first_name:firstName,
+
+            last_name:lastName
+
+          }
+
+        }
+
+      });
+
+
+    if(error){
+
+      console.error(error);
+
+      message.textContent =
+        error.message;
+
+      button.disabled = false;
+
+      button.textContent =
+        "Create Account";
+
+      return;
+
     }
-  });
 
-  if (error) {
-    message.textContent = error.message;
-    return;
-  }
-
-  /*
-    Confirm Email is OFF in Supabase.
-    Therefore a session should be created immediately.
-  */
-
-  if (data && data.session) {
-
-    message.textContent = "Account created successfully!";
-
-    setTimeout(function() {
-      window.location.href = "dashboard.html";
-    }, 500);
-
-  } else {
 
     /*
-      Safety fallback in case Supabase does not return
-      a session for some reason.
+      Confirm Email is OFF in Supabase,
+      so a session should normally exist.
     */
 
-    message.textContent = "Account created successfully. Please log in.";
+    if(
+      data &&
+      data.session
+    ){
 
-    setTimeout(function() {
-      window.location.href = "login.html";
-    }, 1000);
+      message.textContent =
+        "Account created successfully!";
+
+
+      setTimeout(function(){
+
+        window.location.href =
+          "dashboard.html";
+
+      },500);
+
+
+    }else{
+
+      message.textContent =
+        "Account created successfully. Please log in.";
+
+
+      setTimeout(function(){
+
+        window.location.href =
+          "login.html";
+
+      },1000);
+
+    }
+
+
+  }catch(error){
+
+    console.error(error);
+
+    message.textContent =
+      "Something went wrong. Please try again.";
+
+    button.disabled = false;
+
+    button.textContent =
+      "Create Account";
 
   }
 
-});
+}
 
 </script>
+
 
 </body>
 
