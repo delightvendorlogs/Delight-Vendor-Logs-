@@ -18,101 +18,103 @@
 
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
     }
 
     body {
-      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+      padding: 0 0 82px;
       background: #f3f6ff;
-      color: #10152f;
-      padding-bottom: 95px;
+      color: #10152b;
+      font-family: Arial, Helvetica, sans-serif;
     }
 
-    /* ================================
-       TOP PROFILE BANNER
-    ================================= */
+    /* =========================
+       PROFILE HEADER
+    ========================= */
 
-    .profile-banner {
-      margin: 20px 20px 30px;
-      padding: 28px 24px;
+    .profile-header {
+      margin: 20px 28px 28px;
+      padding: 20px 18px;
+      min-height: 145px;
       border-radius: 28px;
       background:
         radial-gradient(
-          circle at 85% 20%,
-          rgba(255,255,255,0.10),
-          transparent 30%
+          circle at 85% 10%,
+          rgba(255,255,255,.08),
+          transparent 35%
         ),
         linear-gradient(
           135deg,
-          #1128b8,
-          #063ff0
+          #1028b8,
+          #061a88
         );
-      color: white;
       display: flex;
       align-items: center;
       gap: 18px;
+      color: white;
       overflow: hidden;
       position: relative;
     }
 
-    .profile-banner::after {
+    .profile-header::after {
       content: "";
       position: absolute;
-      width: 220px;
-      height: 220px;
-      border: 1px solid rgba(255,255,255,0.12);
+      width: 240px;
+      height: 240px;
+      border: 1px solid rgba(255,255,255,.08);
       border-radius: 50%;
       right: -90px;
       top: -100px;
     }
 
     .dv-logo {
-      width: 76px;
-      height: 76px;
+      width: 72px;
+      height: 72px;
+      min-width: 72px;
       border-radius: 22px;
-      background: rgba(255,255,255,0.15);
-      border: 2px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,.12);
+      border: 2px solid rgba(255,255,255,.14);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 31px;
+      font-size: 30px;
       font-weight: 800;
-      flex-shrink: 0;
       position: relative;
       z-index: 2;
     }
 
-    .banner-text {
+    .header-text {
       position: relative;
       z-index: 2;
     }
 
-    .banner-text h1 {
-      font-size: 25px;
-      margin-bottom: 8px;
+    .header-text h1 {
+      margin: 0 0 7px;
+      font-size: 24px;
+      line-height: 1.15;
     }
 
-    .banner-text p {
-      color: rgba(255,255,255,0.68);
+    .header-text p {
+      margin: 0;
+      color: rgba(255,255,255,.58);
       font-size: 16px;
     }
 
-    /* ================================
+    /* =========================
        SECTIONS
-    ================================= */
+    ========================= */
 
     .section {
-      margin: 0 20px 28px;
+      margin: 0 28px 25px;
     }
 
     .section-title {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 13px;
-      color: #8996b8;
-      font-size: 17px;
+      margin-bottom: 11px;
+      color: #909bb9;
+      font-size: 16px;
       font-weight: 800;
       letter-spacing: 1px;
       text-transform: uppercase;
@@ -121,250 +123,240 @@
     .section-title::after {
       content: "";
       height: 1px;
-      background: #d9e0f1;
+      background: #dce2ef;
       flex: 1;
     }
 
-    /* ================================
-       CARDS
-    ================================= */
+    /* =========================
+       CARD
+    ========================= */
 
     .card {
       background: white;
-      border: 1px solid #e0e6f3;
-      border-radius: 25px;
+      border: 1px solid #e0e5f0;
+      border-radius: 24px;
       overflow: hidden;
-      box-shadow: 0 3px 12px rgba(30, 55, 120, 0.04);
     }
 
-    .row {
-      min-height: 105px;
-      padding: 20px 25px;
+    .profile-row {
+      min-height: 102px;
+      padding: 18px 28px;
       display: flex;
       align-items: center;
       gap: 20px;
-      border-bottom: 1px solid #e8ecf5;
+      border-bottom: 1px solid #e8ebf2;
     }
 
-    .row:last-child {
+    .profile-row:last-child {
       border-bottom: none;
     }
 
     .icon-box {
-      width: 66px;
-      height: 66px;
+      width: 64px;
+      height: 64px;
+      min-width: 64px;
       border-radius: 18px;
       background: #edf2ff;
-      border: 1px solid #d7e0fa;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #0644df;
-      font-size: 28px;
-      flex-shrink: 0;
-    }
-
-    .row-content {
-      min-width: 0;
-      flex: 1;
-    }
-
-    .row-label {
-      color: #929dbc;
-      font-size: 15px;
-      font-weight: 700;
-      text-transform: uppercase;
-      margin-bottom: 5px;
-      letter-spacing: 0.5px;
-    }
-
-    .row-value {
-      font-size: 20px;
-      font-weight: 700;
-      color: #10152f;
-      word-break: break-word;
-    }
-
-    /* ================================
-       WALLET
-    ================================= */
-
-    .wallet-card {
-      background: linear-gradient(
-        135deg,
-        #1028c0,
-        #0649f5
-      );
-      color: white;
-      border-radius: 25px;
-      padding: 24px;
-      box-shadow: 0 8px 25px rgba(13, 60, 220, 0.20);
-    }
-
-    .wallet-top {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 18px;
-    }
-
-    .wallet-icon {
-      width: 58px;
-      height: 58px;
-      border-radius: 17px;
-      background: rgba(255,255,255,0.15);
+      border: 1px solid #d5def6;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 27px;
     }
 
-    .wallet-label {
+    .row-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .row-label {
+      margin-bottom: 4px;
+      color: #9aa4bd;
       font-size: 14px;
-      color: rgba(255,255,255,0.70);
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 1px;
+    }
+
+    .row-value {
+      color: #10152b;
+      font-size: 19px;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    /* =========================
+       WALLET
+    ========================= */
+
+    .wallet-card {
+      padding: 20px 22px;
+      border-radius: 24px;
+      background: linear-gradient(
+        135deg,
+        #1230d0,
+        #073eea
+      );
+      color: white;
+    }
+
+    .wallet-title {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .wallet-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 25px;
+    }
+
+    .wallet-label {
+      font-size: 13px;
+      color: rgba(255,255,255,.65);
+      font-weight: 700;
+      text-transform: uppercase;
     }
 
     .wallet-balance {
-      font-size: 31px;
+      margin-top: 5px;
+      font-size: 25px;
       font-weight: 800;
     }
 
-    .fund-button {
+    .fund-wallet {
       width: 100%;
-      margin-top: 20px;
-      border: none;
-      border-radius: 14px;
-      padding: 14px;
+      margin-top: 15px;
+      padding: 12px;
+      border: 0;
+      border-radius: 13px;
       background: white;
-      color: #073fdd;
-      font-size: 16px;
+      color: #063edc;
+      font-size: 15px;
       font-weight: 800;
       cursor: pointer;
     }
 
-    /* ================================
+    /* =========================
        CLICKABLE ROW
-    ================================= */
+    ========================= */
 
     .clickable {
       cursor: pointer;
     }
 
     .arrow {
-      font-size: 30px;
-      color: #9aa6c2;
+      color: #9aa5bd;
+      font-size: 28px;
+      line-height: 1;
     }
 
-    /* ================================
-       LOGOUT
-    ================================= */
+    /* =========================
+       BUTTONS
+    ========================= */
 
-    .logout-button {
-      width: calc(100% - 40px);
-      margin: 5px 20px 14px;
-      padding: 18px;
-      border: none;
-      border-radius: 22px;
+    .logout {
+      display: block;
+      width: calc(100% - 56px);
+      margin: 5px 28px 13px;
+      padding: 17px;
+      border: 0;
+      border-radius: 20px;
       background: linear-gradient(
         135deg,
-        #1241ed,
-        #063be7
+        #1645ee,
+        #0639e8
       );
       color: white;
-      font-size: 20px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    /* ================================
-       BACK BUTTON
-    ================================= */
-
-    .back-button {
-      width: calc(100% - 40px);
-      margin: 0 20px 22px;
-      padding: 17px;
-      border: 2px solid #d5def2;
-      border-radius: 22px;
-      background: white;
-      color: #0745df;
       font-size: 18px;
       font-weight: 800;
       cursor: pointer;
     }
 
-    /* ================================
-       SUPPORT FOOTER
-    ================================= */
+    .back-dashboard {
+      display: block;
+      width: calc(100% - 56px);
+      margin: 0 28px 20px;
+      padding: 16px;
+      border: 2px solid #d7dff0;
+      border-radius: 20px;
+      background: transparent;
+      color: #0844db;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
 
     .support-text {
       text-align: center;
-      color: #8997bb;
-      font-size: 15px;
-      margin: 5px 20px 12px;
+      color: #8d99b8;
+      font-size: 14px;
+      margin: 0 20px 12px;
     }
 
     .member-badge {
       width: fit-content;
-      margin: 0 auto 25px;
-      padding: 9px 17px;
-      border: 1px solid #d7e1f8;
+      max-width: calc(100% - 56px);
+      margin: 0 auto 20px;
+      padding: 8px 15px;
+      border-radius: 25px;
+      border: 1px solid #d9e1f4;
+      color: #2c5fd4;
       background: #f7f9ff;
-      border-radius: 30px;
-      color: #2860d9;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
     }
 
-    /* ================================
-       BOTTOM NAV
-    ================================= */
+    #message {
+      text-align: center;
+      margin: 10px 20px;
+      color: #d22;
+    }
+
+    /* =========================
+       BOTTOM NAVIGATION
+    ========================= */
 
     .bottom-nav {
       position: fixed;
       left: 0;
       right: 0;
       bottom: 0;
-      height: 82px;
-      background: rgba(255,255,255,0.97);
-      border-top: 1px solid #dce2ef;
+      height: 78px;
+      background: rgba(255,255,255,.98);
+      border-top: 1px solid #dce2ee;
       display: flex;
-      justify-content: space-around;
       align-items: center;
-      z-index: 999;
+      justify-content: space-around;
+      z-index: 1000;
     }
 
     .nav-item {
-      text-decoration: none;
-      color: #99a4c0;
+      width: 20%;
       text-align: center;
+      text-decoration: none;
+      color: #a0a9c1;
       font-size: 12px;
       font-weight: 700;
-      width: 20%;
     }
 
     .nav-icon {
       display: block;
-      font-size: 25px;
-      margin-bottom: 5px;
+      font-size: 24px;
+      margin-bottom: 4px;
     }
 
     .nav-item.active {
-      color: #0645df;
-    }
-
-    /* ================================
-       MESSAGE
-    ================================= */
-
-    #message {
-      text-align: center;
-      color: #d62828;
-      margin: 15px 20px;
-      font-weight: 600;
+      color: #0844e2;
     }
 
   </style>
@@ -375,24 +367,24 @@
 <body>
 
 
-<!-- ================================
-     PROFILE BANNER
-================================= -->
+<!-- =========================
+     PROFILE HEADER
+========================= -->
 
-<div class="profile-banner">
+<div class="profile-header">
 
   <div class="dv-logo">
     DV
   </div>
 
-  <div class="banner-text">
+  <div class="header-text">
 
     <h1>
       Delight Vendor Logs
     </h1>
 
     <p id="memberSince">
-      Member since Loading...
+      Member since...
     </p>
 
   </div>
@@ -400,9 +392,9 @@
 </div>
 
 
-<!-- ================================
+<!-- =========================
      ACCOUNT INFORMATION
-================================= -->
+========================= -->
 
 <section class="section">
 
@@ -412,14 +404,13 @@
 
   <div class="card">
 
-
-    <div class="row">
+    <div class="profile-row">
 
       <div class="icon-box">
         👤
       </div>
 
-      <div class="row-content">
+      <div class="row-info">
 
         <div class="row-label">
           Full Name
@@ -437,13 +428,13 @@
     </div>
 
 
-    <div class="row">
+    <div class="profile-row">
 
       <div class="icon-box">
         ✉️
       </div>
 
-      <div class="row-content">
+      <div class="row-info">
 
         <div class="row-label">
           Email
@@ -460,15 +451,14 @@
 
     </div>
 
-
   </div>
 
 </section>
 
 
-<!-- ================================
-     AVAILABLE WALLET
-================================= -->
+<!-- =========================
+     WALLET
+========================= -->
 
 <section class="section">
 
@@ -478,7 +468,7 @@
 
   <div class="wallet-card">
 
-    <div class="wallet-top">
+    <div class="wallet-title">
 
       <div class="wallet-icon">
         💳
@@ -490,19 +480,19 @@
           Available Wallet
         </div>
 
+        <div
+          class="wallet-balance"
+          id="walletBalance"
+        >
+          ₦0.00
+        </div>
+
       </div>
 
     </div>
 
-    <div
-      class="wallet-balance"
-      id="walletBalance"
-    >
-      ₦0.00
-    </div>
-
     <button
-      class="fund-button"
+      class="fund-wallet"
       type="button"
       onclick="window.location.href='wallet.html'"
     >
@@ -514,9 +504,9 @@
 </section>
 
 
-<!-- ================================
+<!-- =========================
      SECURITY
-================================= -->
+========================= -->
 
 <section class="section">
 
@@ -527,7 +517,7 @@
   <div class="card">
 
     <div
-      class="row clickable"
+      class="profile-row clickable"
       onclick="changePassword()"
     >
 
@@ -535,19 +525,15 @@
         class="icon-box"
         style="
           background:#edfff9;
-          border-color:#c9f1e6;
-          color:#10b981;
+          border-color:#c8eee4;
         "
       >
         🛡️
       </div>
 
-      <div class="row-content">
+      <div class="row-info">
 
-        <div
-          class="row-value"
-          style="font-size:19px;"
-        >
+        <div class="row-value">
           Change Password
         </div>
 
@@ -564,9 +550,9 @@
 </section>
 
 
-<!-- ================================
+<!-- =========================
      SUPPORT
-================================= -->
+========================= -->
 
 <section class="section">
 
@@ -577,7 +563,7 @@
   <div class="card">
 
     <div
-      class="row clickable"
+      class="profile-row clickable"
       onclick="openWhatsApp()"
     >
 
@@ -585,12 +571,9 @@
         🎧
       </div>
 
-      <div class="row-content">
+      <div class="row-info">
 
-        <div
-          class="row-value"
-          style="font-size:19px;"
-        >
+        <div class="row-value">
           Help &amp; Support
         </div>
 
@@ -607,12 +590,12 @@
 </section>
 
 
-<!-- ================================
+<!-- =========================
      LOG OUT
-================================= -->
+========================= -->
 
 <button
-  class="logout-button"
+  class="logout"
   type="button"
   onclick="logout()"
 >
@@ -620,22 +603,18 @@
 </button>
 
 
-<!-- ================================
+<!-- =========================
      BACK TO DASHBOARD
-================================= -->
+========================= -->
 
 <button
-  class="back-button"
+  class="back-dashboard"
   type="button"
   onclick="window.location.href='dashboard.html'"
 >
   ← &nbsp; Back to Dashboard
 </button>
 
-
-<!-- ================================
-     SUPPORT TEXT
-================================= -->
 
 <div class="support-text">
   Need help? Contact us on WhatsApp 💬
@@ -646,16 +625,16 @@
   class="member-badge"
   id="memberBadge"
 >
-  🛡️ DV Member since Loading...
+  DV Member since...
 </div>
 
 
 <p id="message"></p>
 
 
-<!-- ================================
+<!-- =========================
      BOTTOM NAV
-================================= -->
+========================= -->
 
 <nav class="bottom-nav">
 
@@ -708,19 +687,15 @@
 
 <script>
 
-
-/* ========================================
+/* =========================
    SUPABASE
-======================================== */
-
+========================= */
 
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
 
-
 const SUPABASE_KEY =
   "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
-
 
 const supabaseClient =
   window.supabase.createClient(
@@ -729,10 +704,9 @@ const supabaseClient =
   );
 
 
-/* ========================================
+/* =========================
    WHATSAPP
-======================================== */
-
+========================= */
 
 function openWhatsApp() {
 
@@ -744,10 +718,9 @@ function openWhatsApp() {
 }
 
 
-/* ========================================
+/* =========================
    CHANGE PASSWORD
-======================================== */
-
+========================= */
 
 async function changePassword() {
 
@@ -756,22 +729,9 @@ async function changePassword() {
       "Enter your new password:"
     );
 
-
   if (!newPassword) {
     return;
   }
-
-
-  if (newPassword.length < 1) {
-
-    alert(
-      "Please enter a password."
-    );
-
-    return;
-
-  }
-
 
   const {
     error
@@ -780,17 +740,12 @@ async function changePassword() {
       password: newPassword
     });
 
-
   if (error) {
 
-    alert(
-      error.message
-    );
+    alert(error.message);
 
     return;
-
   }
-
 
   alert(
     "Password changed successfully."
@@ -799,13 +754,11 @@ async function changePassword() {
 }
 
 
-/* ========================================
+/* =========================
    LOAD PROFILE
-======================================== */
-
+========================= */
 
 async function loadProfile() {
-
 
   const {
     data: {
@@ -815,8 +768,6 @@ async function loadProfile() {
   } =
     await supabaseClient.auth.getUser();
 
-
-  /* NOT LOGGED IN */
 
   if (error || !user) {
 
@@ -828,9 +779,9 @@ async function loadProfile() {
   }
 
 
-  /* ======================================
+  /* =========================
      NAME
-  ====================================== */
+  ========================= */
 
   let name =
     user.user_metadata?.name;
@@ -841,10 +792,8 @@ async function loadProfile() {
     const firstName =
       user.user_metadata?.first_name || "";
 
-
     const lastName =
       user.user_metadata?.last_name || "";
-
 
     name =
       (
@@ -862,9 +811,9 @@ async function loadProfile() {
       name || "Not set";
 
 
-  /* ======================================
+  /* =========================
      EMAIL
-  ====================================== */
+  ========================= */
 
   document
     .getElementById("userEmail")
@@ -872,26 +821,19 @@ async function loadProfile() {
       user.email || "Not available";
 
 
-  /* ======================================
+  /* =========================
      MEMBER SINCE
-  ====================================== */
+     FETCHED FROM SUPABASE
+  ========================= */
 
-  const createdAt =
-    user.created_at;
+  if (user.created_at) {
 
-
-  let memberSince =
-    "September 2026";
-
-
-  if (createdAt) {
-
-    const date =
-      new Date(createdAt);
+    const joinedDate =
+      new Date(user.created_at);
 
 
-    memberSince =
-      date.toLocaleDateString(
+    const memberSince =
+      joinedDate.toLocaleDateString(
         "en-US",
         {
           month: "long",
@@ -899,26 +841,26 @@ async function loadProfile() {
         }
       );
 
+
+    document
+      .getElementById("memberSince")
+      .textContent =
+        "Member since " +
+        memberSince;
+
+
+    document
+      .getElementById("memberBadge")
+      .textContent =
+        "DV Member since " +
+        memberSince;
+
   }
 
 
-  document
-    .getElementById("memberSince")
-    .textContent =
-      "Member since " +
-      memberSince;
-
-
-  document
-    .getElementById("memberBadge")
-    .textContent =
-      "🛡️ DV Member since " +
-      memberSince;
-
-
-  /* ======================================
+  /* =========================
      WALLET
-  ====================================== */
+  ========================= */
 
   const {
     data: balance,
@@ -936,14 +878,10 @@ async function loadProfile() {
       walletError
     );
 
-
     document
-      .getElementById(
-        "walletBalance"
-      )
+      .getElementById("walletBalance")
       .textContent =
         "Unable to load";
-
 
     return;
 
@@ -951,9 +889,7 @@ async function loadProfile() {
 
 
   document
-    .getElementById(
-      "walletBalance"
-    )
+    .getElementById("walletBalance")
     .textContent =
       "₦" +
       Number(balance || 0)
@@ -968,13 +904,11 @@ async function loadProfile() {
 }
 
 
-/* ========================================
-   LOGOUT
-======================================== */
-
+/* =========================
+   LOG OUT
+========================= */
 
 async function logout() {
-
 
   const {
     error
@@ -985,9 +919,7 @@ async function logout() {
   if (error) {
 
     document
-      .getElementById(
-        "message"
-      )
+      .getElementById("message")
       .textContent =
         error.message;
 
@@ -1002,13 +934,11 @@ async function logout() {
 }
 
 
-/* ========================================
+/* =========================
    START
-======================================== */
-
+========================= */
 
 loadProfile();
-
 
 </script>
 
