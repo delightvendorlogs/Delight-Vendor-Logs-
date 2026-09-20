@@ -84,10 +84,15 @@
     .amount {
       font-size: 18px;
       font-weight: bold;
+      white-space: nowrap;
     }
 
     .positive {
-      color: green;
+      color: #16a34a;
+    }
+
+    .negative {
+      color: #dc2626;
     }
 
     .status {
@@ -176,6 +181,7 @@
 </main>
 
 <script>
+
   const SUPABASE_URL =
     "https://hkfhehbhmucymusaytoe.supabase.co";
 
@@ -183,17 +189,23 @@
     "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
   const supabaseClient =
-    supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
 
 
   async function getCurrentUser() {
+
     const {
       data: { user },
       error
     } = await supabaseClient.auth.getUser();
 
     if (error || !user) {
+
       location.href = "login.html";
+
       return null;
     }
 
@@ -203,60 +215,94 @@
 
   async function loadWalletBalance(userId) {
 
-    const { data, error } =
-      await supabaseClient.rpc("ensure_my_wallet");
+    const {
+      data,
+      error
+    } = await supabaseClient.rpc(
+      "ensure_my_wallet"
+    );
 
     if (error) {
-      console.error("Balance error:", error);
-      document.getElementById("walletBalance").textContent =
+
+      console.error(
+        "Balance error:",
+        error
+      );
+
+      document.getElementById(
+        "walletBalance"
+      ).textContent =
         "Unable to load balance";
+
       return;
     }
 
-    const balance = Number(data?.balance || 0);
+    const balance =
+      Number(data?.balance || 0);
 
-    document.getElementById("walletBalance").textContent =
+    document.getElementById(
+      "walletBalance"
+    ).textContent =
       "₦" +
-      balance.toLocaleString("en-NG", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
+      balance.toLocaleString(
+        "en-NG",
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      );
   }
 
 
   async function loadTransactions() {
 
     const container =
-      document.getElementById("transactions");
+      document.getElementById(
+        "transactions"
+      );
 
     container.innerHTML =
       '<div class="empty">Loading transactions...</div>';
 
-    const user = await getCurrentUser();
+
+    const user =
+      await getCurrentUser();
 
     if (!user) return;
 
 
-    await loadWalletBalance(user.id);
+    await loadWalletBalance(
+      user.id
+    );
 
 
     const {
       data,
       error
-    } = await supabaseClient
-      .from("transactions")
-      .select(
-        "id, user_id, type, amount, status, description, created_at"
-      )
-      .eq("user_id", user.id)
-      .order("created_at", {
-        ascending: false
-      });
+    } =
+      await supabaseClient
+        .from("transactions")
+        .select(
+          "id, user_id, type, amount, status, description, created_at"
+        )
+        .eq(
+          "user_id",
+          user.id
+        )
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
 
 
     if (error) {
 
-      console.error("Transaction error:", error);
+      console.error(
+        "Transaction error:",
+        error
+      );
 
       container.innerHTML =
         '<div class="error">Unable to load transactions.</div>';
@@ -265,7 +311,10 @@
     }
 
 
-    if (!data || data.length === 0) {
+    if (
+      !data ||
+      data.length === 0
+    ) {
 
       container.innerHTML =
         '<div class="empty">No transactions yet.</div>';
@@ -277,81 +326,194 @@
     container.innerHTML = "";
 
 
-    data.forEach(transaction => {
+    data.forEach(
+      transaction => {
 
-      const amount =
-        Number(transaction.amount || 0);
-
-      const date =
-        transaction.created_at
-          ? new Date(transaction.created_at)
-              .toLocaleString("en-NG", {
-                dateStyle: "medium",
-                timeStyle: "short"
-              })
-          : "";
+        const amount =
+          Number(
+            transaction.amount || 0
+          );
 
 
-      const item =
-        document.createElement("div");
+        const date =
+          transaction.created_at
+            ? new Date(
+                transaction.created_at
+              ).toLocaleString(
+                "en-NG",
+                {
+                  dateStyle: "medium",
+                  timeStyle: "short"
+                }
+              )
+            : "";
 
-      item.className = "transaction";
+
+        const type =
+          String(
+            transaction.type || ""
+          ).toLowerCase();
 
 
-      item.innerHTML = `
-        <div class="transaction-top">
+        const description =
+          String(
+            transaction.description || ""
+          ).toLowerCase();
 
-          <div class="transaction-type">
+
+        /*
+         * MONEY COMING INTO WALLET
+         */
+
+        const isCredit =
+          type.includes("fund") ||
+          type.includes("deposit") ||
+          type.includes("credit") ||
+          type.includes("wallet funding") ||
+          type.includes("wallet_funding") ||
+          type.includes("topup") ||
+          type.includes("top up") ||
+          description.includes("wallet funding") ||
+          description.includes("fund wallet") ||
+          description.includes("deposit") ||
+          description.includes("top up") ||
+          description.includes("topup");
+
+
+        /*
+         * MONEY LEAVING WALLET
+         */
+
+        const isDebit =
+          type.includes("purchase") ||
+          type.includes("buy") ||
+          type.includes("debit") ||
+          type.includes("order") ||
+          type.includes("product") ||
+          type.includes("virtual number") ||
+          type.includes("virtual_number") ||
+          type.includes("number purchase") ||
+          description.includes("purchase") ||
+          description.includes("bought") ||
+          description.includes("virtual number");
+
+
+        let amountClass =
+          "negative";
+
+        let amountSign =
+          "-";
+
+
+        if (
+          isCredit &&
+          !isDebit
+        ) {
+
+          amountClass =
+            "positive";
+
+          amountSign =
+            "+";
+        }
+
+
+        const item =
+          document.createElement(
+            "div"
+          );
+
+        item.className =
+          "transaction";
+
+
+        item.innerHTML = `
+
+          <div class="transaction-top">
+
+            <div class="transaction-type">
+              ${escapeHTML(
+                transaction.type ||
+                "Transaction"
+              )}
+            </div>
+
+            <div class="amount ${amountClass}">
+              ${amountSign}₦${amount.toLocaleString(
+                "en-NG",
+                {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                }
+              )}
+            </div>
+
+          </div>
+
+
+          <div class="status">
             ${escapeHTML(
-              transaction.type || "Transaction"
+              transaction.status ||
+              "completed"
             )}
           </div>
 
-          <div class="amount positive">
-            +₦${amount.toLocaleString("en-NG", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2
-            })}
+
+          <div class="description">
+            ${escapeHTML(
+              transaction.description ||
+              ""
+            )}
           </div>
 
-        </div>
 
-        <div class="status">
-          ${escapeHTML(
-            transaction.status || "completed"
-          )}
-        </div>
+          <div class="date">
+            ${escapeHTML(date)}
+          </div>
 
-        <div class="description">
-          ${escapeHTML(
-            transaction.description || ""
-          )}
-        </div>
-
-        <div class="date">
-          ${escapeHTML(date)}
-        </div>
-      `;
+        `;
 
 
-      container.appendChild(item);
-    });
+        container.appendChild(
+          item
+        );
+
+      }
+    );
+
   }
 
 
   function escapeHTML(value) {
 
     return String(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+      .replace(
+        /</g,
+        "&lt;"
+      )
+      .replace(
+        />/g,
+        "&gt;"
+      )
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+      .replace(
+        /'/g,
+        "&#039;"
+      );
+
   }
 
 
   loadTransactions();
+
 </script>
 
 </body>
-  </html>
+</html>
