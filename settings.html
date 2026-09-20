@@ -1,70 +1,238 @@
-<!DOCTYPE html><html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Settings - Delight Vendor Logs</title>  <link rel="stylesheet" href="style.css">  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body>  <header>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Delight Vendor Logs</title>
+
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f7fb;
+      color: #111827;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background: linear-gradient(135deg, #0066ff, #0047b3);
+      color: white;
+      padding: 20px 18px;
+      text-align: center;
+      box-shadow: 0 4px 14px #0066ff22;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    main {
+      max-width: 520px;
+      margin: auto;
+      padding: 18px 14px 35px;
+    }
+
+    main > h2 {
+      font-size: 16px;
+      margin: 20px 3px 10px;
+      color: #111827;
+    }
+
+    .profile-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 4px 18px #0000000d;
+      border: 1px solid #e8edf5;
+    }
+
+    .profile-card h3 {
+      font-size: 13px;
+      margin: 2px 0 7px;
+      color: #4b5563;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid #d9e0ea;
+      border-radius: 10px;
+      background: #f9fafc;
+      color: #111827;
+      font-size: 15px;
+      outline: none;
+      margin-bottom: 12px;
+    }
+
+    input:focus {
+      border-color: #0066ff;
+      background: #fff;
+      box-shadow: 0 0 0 3px #0066ff12;
+    }
+
+    #email {
+      margin: 0 0 3px;
+      padding: 13px 14px;
+      background: #f7f9fc;
+      border: 1px solid #edf0f5;
+      border-radius: 10px;
+      color: #374151;
+      font-size: 15px;
+    }
+
+    main > button {
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 13px 15px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    main > button[onclick="saveName()"] {
+      background: #0066ff;
+      color: white;
+      box-shadow: 0 4px 12px #0066ff22;
+    }
+
+    main > button[onclick="changePassword()"] {
+      background: #0066ff;
+      color: white;
+      box-shadow: 0 4px 12px #0066ff22;
+    }
+
+    main > button[onclick="logout()"] {
+      background: #fff;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+      margin-top: 8px;
+    }
+
+    main > button[onclick="window.location.href='dashboard.html'"] {
+      background: #111827;
+      color: white;
+    }
+
+    #message {
+      min-height: 18px;
+      margin: 5px 2px 0;
+      font-size: 13px;
+      color: #0066ff;
+    }
+
+    .password-section {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 4px 18px #0000000d;
+      border: 1px solid #e8edf5;
+    }
+
+    .password-section input {
+      margin-bottom: 10px;
+    }
+
+    .password-section button {
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 13px 15px;
+      background: #0066ff;
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .actions {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
     <h1>Settings</h1>
-  </header>  <main><h2>Account Settings</h2>
+  </header>
 
-<div class="profile-card">
+  <main>
 
-  <h3>👤 Name</h3>
+    <h2>Account Settings</h2>
 
-  <input
-    id="name"
-    type="text"
-    placeholder="Your name"
-  >
+    <div class="profile-card">
 
-  <h3>📧 Email</h3>
+      <h3>👤 Name</h3>
 
-  <p id="email">
-    Loading...
-  </p>
+      <input
+        id="name"
+        type="text"
+        placeholder="Your name"
+      >
 
-</div>
+      <h3>📧 Email</h3>
 
-<br>
+      <p id="email">
+        Loading...
+      </p>
 
-<button onclick="saveName()">
-  💾 Save Name
-</button>
+    </div>
 
-<h2>🔐 Change Password</h2>
+    <br>
 
-<input
-  id="newPassword"
-  type="password"
-  placeholder="Enter new password"
->
+    <button onclick="saveName()">
+      💾 Save Name
+    </button>
 
-<br>
+    <h2>🔐 Change Password</h2>
 
-<input
-  id="confirmPassword"
-  type="password"
-  placeholder="Confirm new password"
->
+    <div class="password-section">
 
-<br>
+      <input
+        id="newPassword"
+        type="password"
+        placeholder="Enter new password"
+      >
 
-<button onclick="changePassword()">
-  Change Password
-</button>
+      <input
+        id="confirmPassword"
+        type="password"
+        placeholder="Confirm new password"
+      >
 
-<p id="message"></p>
+      <button onclick="changePassword()">
+        Change Password
+      </button>
 
-<br>
+      <p id="message"></p>
 
-<button onclick="logout()">
-  🚪 Logout
-</button>
+    </div>
 
-<br>
+    <div class="actions">
 
-<button onclick="window.location.href='dashboard.html'">
-  🏠 Back to Dashboard
-</button>
+      <button onclick="logout()">
+        🚪 Logout
+      </button>
 
-  </main>  <script>
+      <button onclick="window.location.href='dashboard.html'">
+        🏠 Back to Dashboard
+      </button>
+
+    </div>
+
+  </main>
+
+  <script>
 
     /* =========================
        SUPABASE
@@ -289,4 +457,7 @@
 
     loadUser();
 
-  </script></body></html>
+  </script>
+
+</body>
+</html>
