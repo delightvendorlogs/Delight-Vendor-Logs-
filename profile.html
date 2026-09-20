@@ -12,95 +12,698 @@
 
   <title>My Profile - Delight Vendor Logs</title>
 
-  <link
-    rel="stylesheet"
-    href="style.css"
-  >
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+  <style>
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f3f6ff;
+      color: #10152f;
+      padding-bottom: 95px;
+    }
+
+    /* ================================
+       TOP PROFILE BANNER
+    ================================= */
+
+    .profile-banner {
+      margin: 20px 20px 30px;
+      padding: 28px 24px;
+      border-radius: 28px;
+      background:
+        radial-gradient(
+          circle at 85% 20%,
+          rgba(255,255,255,0.10),
+          transparent 30%
+        ),
+        linear-gradient(
+          135deg,
+          #1128b8,
+          #063ff0
+        );
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .profile-banner::after {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 50%;
+      right: -90px;
+      top: -100px;
+    }
+
+    .dv-logo {
+      width: 76px;
+      height: 76px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.15);
+      border: 2px solid rgba(255,255,255,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 31px;
+      font-weight: 800;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    .banner-text {
+      position: relative;
+      z-index: 2;
+    }
+
+    .banner-text h1 {
+      font-size: 25px;
+      margin-bottom: 8px;
+    }
+
+    .banner-text p {
+      color: rgba(255,255,255,0.68);
+      font-size: 16px;
+    }
+
+    /* ================================
+       SECTIONS
+    ================================= */
+
+    .section {
+      margin: 0 20px 28px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 13px;
+      color: #8996b8;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .section-title::after {
+      content: "";
+      height: 1px;
+      background: #d9e0f1;
+      flex: 1;
+    }
+
+    /* ================================
+       CARDS
+    ================================= */
+
+    .card {
+      background: white;
+      border: 1px solid #e0e6f3;
+      border-radius: 25px;
+      overflow: hidden;
+      box-shadow: 0 3px 12px rgba(30, 55, 120, 0.04);
+    }
+
+    .row {
+      min-height: 105px;
+      padding: 20px 25px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      border-bottom: 1px solid #e8ecf5;
+    }
+
+    .row:last-child {
+      border-bottom: none;
+    }
+
+    .icon-box {
+      width: 66px;
+      height: 66px;
+      border-radius: 18px;
+      background: #edf2ff;
+      border: 1px solid #d7e0fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0644df;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .row-content {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .row-label {
+      color: #929dbc;
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+      letter-spacing: 0.5px;
+    }
+
+    .row-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #10152f;
+      word-break: break-word;
+    }
+
+    /* ================================
+       WALLET
+    ================================= */
+
+    .wallet-card {
+      background: linear-gradient(
+        135deg,
+        #1028c0,
+        #0649f5
+      );
+      color: white;
+      border-radius: 25px;
+      padding: 24px;
+      box-shadow: 0 8px 25px rgba(13, 60, 220, 0.20);
+    }
+
+    .wallet-top {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 18px;
+    }
+
+    .wallet-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 17px;
+      background: rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 27px;
+    }
+
+    .wallet-label {
+      font-size: 14px;
+      color: rgba(255,255,255,0.70);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .wallet-balance {
+      font-size: 31px;
+      font-weight: 800;
+    }
+
+    .fund-button {
+      width: 100%;
+      margin-top: 20px;
+      border: none;
+      border-radius: 14px;
+      padding: 14px;
+      background: white;
+      color: #073fdd;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* ================================
+       CLICKABLE ROW
+    ================================= */
+
+    .clickable {
+      cursor: pointer;
+    }
+
+    .arrow {
+      font-size: 30px;
+      color: #9aa6c2;
+    }
+
+    /* ================================
+       LOGOUT
+    ================================= */
+
+    .logout-button {
+      width: calc(100% - 40px);
+      margin: 5px 20px 14px;
+      padding: 18px;
+      border: none;
+      border-radius: 22px;
+      background: linear-gradient(
+        135deg,
+        #1241ed,
+        #063be7
+      );
+      color: white;
+      font-size: 20px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* ================================
+       BACK BUTTON
+    ================================= */
+
+    .back-button {
+      width: calc(100% - 40px);
+      margin: 0 20px 22px;
+      padding: 17px;
+      border: 2px solid #d5def2;
+      border-radius: 22px;
+      background: white;
+      color: #0745df;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* ================================
+       SUPPORT FOOTER
+    ================================= */
+
+    .support-text {
+      text-align: center;
+      color: #8997bb;
+      font-size: 15px;
+      margin: 5px 20px 12px;
+    }
+
+    .member-badge {
+      width: fit-content;
+      margin: 0 auto 25px;
+      padding: 9px 17px;
+      border: 1px solid #d7e1f8;
+      background: #f7f9ff;
+      border-radius: 30px;
+      color: #2860d9;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* ================================
+       BOTTOM NAV
+    ================================= */
+
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 82px;
+      background: rgba(255,255,255,0.97);
+      border-top: 1px solid #dce2ef;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .nav-item {
+      text-decoration: none;
+      color: #99a4c0;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      width: 20%;
+    }
+
+    .nav-icon {
+      display: block;
+      font-size: 25px;
+      margin-bottom: 5px;
+    }
+
+    .nav-item.active {
+      color: #0645df;
+    }
+
+    /* ================================
+       MESSAGE
+    ================================= */
+
+    #message {
+      text-align: center;
+      color: #d62828;
+      margin: 15px 20px;
+      font-weight: 600;
+    }
+
+  </style>
+
 </head>
+
 
 <body>
 
 
-<header>
+<!-- ================================
+     PROFILE BANNER
+================================= -->
 
-  <h1>My Profile</h1>
+<div class="profile-banner">
 
-</header>
+  <div class="dv-logo">
+    DV
+  </div>
 
+  <div class="banner-text">
 
-<main>
+    <h1>
+      Delight Vendor Logs
+    </h1>
 
+    <p id="memberSince">
+      Member since Loading...
+    </p>
 
-<h2>Account Information</h2>
-
-
-<div class="profile-card">
-
-
-  <h3>👤 Name</h3>
-
-  <p id="userName">
-    Loading...
-  </p>
-
-
-  <h3>📧 Email</h3>
-
-  <p id="userEmail">
-    Loading...
-  </p>
-
-
-  <h3>💰 Wallet Balance</h3>
-
-  <p id="walletBalance">
-    Loading...
-  </p>
-
+  </div>
 
 </div>
 
 
-<br>
+<!-- ================================
+     ACCOUNT INFORMATION
+================================= -->
 
+<section class="section">
+
+  <div class="section-title">
+    Account Information
+  </div>
+
+  <div class="card">
+
+
+    <div class="row">
+
+      <div class="icon-box">
+        👤
+      </div>
+
+      <div class="row-content">
+
+        <div class="row-label">
+          Full Name
+        </div>
+
+        <div
+          class="row-value"
+          id="userName"
+        >
+          Loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="row">
+
+      <div class="icon-box">
+        ✉️
+      </div>
+
+      <div class="row-content">
+
+        <div class="row-label">
+          Email
+        </div>
+
+        <div
+          class="row-value"
+          id="userEmail"
+        >
+          Loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+  </div>
+
+</section>
+
+
+<!-- ================================
+     AVAILABLE WALLET
+================================= -->
+
+<section class="section">
+
+  <div class="section-title">
+    Wallet
+  </div>
+
+  <div class="wallet-card">
+
+    <div class="wallet-top">
+
+      <div class="wallet-icon">
+        💳
+      </div>
+
+      <div>
+
+        <div class="wallet-label">
+          Available Wallet
+        </div>
+
+      </div>
+
+    </div>
+
+    <div
+      class="wallet-balance"
+      id="walletBalance"
+    >
+      ₦0.00
+    </div>
+
+    <button
+      class="fund-button"
+      type="button"
+      onclick="window.location.href='wallet.html'"
+    >
+      + Fund Wallet
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- ================================
+     SECURITY
+================================= -->
+
+<section class="section">
+
+  <div class="section-title">
+    Security
+  </div>
+
+  <div class="card">
+
+    <div
+      class="row clickable"
+      onclick="changePassword()"
+    >
+
+      <div
+        class="icon-box"
+        style="
+          background:#edfff9;
+          border-color:#c9f1e6;
+          color:#10b981;
+        "
+      >
+        🛡️
+      </div>
+
+      <div class="row-content">
+
+        <div
+          class="row-value"
+          style="font-size:19px;"
+        >
+          Change Password
+        </div>
+
+      </div>
+
+      <div class="arrow">
+        ›
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================================
+     SUPPORT
+================================= -->
+
+<section class="section">
+
+  <div class="section-title">
+    Support
+  </div>
+
+  <div class="card">
+
+    <div
+      class="row clickable"
+      onclick="openWhatsApp()"
+    >
+
+      <div class="icon-box">
+        🎧
+      </div>
+
+      <div class="row-content">
+
+        <div
+          class="row-value"
+          style="font-size:19px;"
+        >
+          Help &amp; Support
+        </div>
+
+      </div>
+
+      <div class="arrow">
+        ›
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================================
+     LOG OUT
+================================= -->
 
 <button
-  type="button"
-  onclick="window.location.href='wallet.html'"
->
-  💳 Fund Wallet
-</button>
-
-
-<br>
-
-
-<button
+  class="logout-button"
   type="button"
   onclick="logout()"
 >
-  🚪 Logout
+  ⇥ &nbsp; Log Out
 </button>
 
 
-<br>
-
+<!-- ================================
+     BACK TO DASHBOARD
+================================= -->
 
 <button
+  class="back-button"
   type="button"
   onclick="window.location.href='dashboard.html'"
 >
-  🏠 Back to Dashboard
+  ← &nbsp; Back to Dashboard
 </button>
+
+
+<!-- ================================
+     SUPPORT TEXT
+================================= -->
+
+<div class="support-text">
+  Need help? Contact us on WhatsApp 💬
+</div>
+
+
+<div
+  class="member-badge"
+  id="memberBadge"
+>
+  🛡️ DV Member since Loading...
+</div>
 
 
 <p id="message"></p>
 
 
-</main>
+<!-- ================================
+     BOTTOM NAV
+================================= -->
+
+<nav class="bottom-nav">
+
+  <a
+    class="nav-item"
+    href="dashboard.html"
+  >
+    <span class="nav-icon">⌂</span>
+    Home
+  </a>
+
+
+  <a
+    class="nav-item"
+    href="transactions.html"
+  >
+    <span class="nav-icon">▤</span>
+    History
+  </a>
+
+
+  <a
+    class="nav-item"
+    href="wallet.html"
+  >
+    <span class="nav-icon">⊕</span>
+    Fund
+  </a>
+
+
+  <a
+    class="nav-item"
+    href="dashboard.html"
+  >
+    <span class="nav-icon">♟</span>
+    Alerts
+  </a>
+
+
+  <a
+    class="nav-item active"
+    href="profile.html"
+  >
+    <span class="nav-icon">●</span>
+    Profile
+  </a>
+
+</nav>
 
 
 <script>
@@ -124,6 +727,76 @@ const supabaseClient =
     SUPABASE_URL,
     SUPABASE_KEY
   );
+
+
+/* ========================================
+   WHATSAPP
+======================================== */
+
+
+function openWhatsApp() {
+
+  window.open(
+    "https://wa.me/2347015908401",
+    "_blank"
+  );
+
+}
+
+
+/* ========================================
+   CHANGE PASSWORD
+======================================== */
+
+
+async function changePassword() {
+
+  const newPassword =
+    prompt(
+      "Enter your new password:"
+    );
+
+
+  if (!newPassword) {
+    return;
+  }
+
+
+  if (newPassword.length < 1) {
+
+    alert(
+      "Please enter a password."
+    );
+
+    return;
+
+  }
+
+
+  const {
+    error
+  } =
+    await supabaseClient.auth.updateUser({
+      password: newPassword
+    });
+
+
+  if (error) {
+
+    alert(
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  alert(
+    "Password changed successfully."
+  );
+
+}
 
 
 /* ========================================
@@ -156,6 +829,40 @@ async function loadProfile() {
 
 
   /* ======================================
+     NAME
+  ====================================== */
+
+  let name =
+    user.user_metadata?.name;
+
+
+  if (!name) {
+
+    const firstName =
+      user.user_metadata?.first_name || "";
+
+
+    const lastName =
+      user.user_metadata?.last_name || "";
+
+
+    name =
+      (
+        firstName +
+        " " +
+        lastName
+      ).trim();
+
+  }
+
+
+  document
+    .getElementById("userName")
+    .textContent =
+      name || "Not set";
+
+
+  /* ======================================
      EMAIL
   ====================================== */
 
@@ -166,17 +873,47 @@ async function loadProfile() {
 
 
   /* ======================================
-     NAME
+     MEMBER SINCE
   ====================================== */
 
-  const name =
-    user.user_metadata?.name;
+  const createdAt =
+    user.created_at;
+
+
+  let memberSince =
+    "September 2026";
+
+
+  if (createdAt) {
+
+    const date =
+      new Date(createdAt);
+
+
+    memberSince =
+      date.toLocaleDateString(
+        "en-US",
+        {
+          month: "long",
+          year: "numeric"
+        }
+      );
+
+  }
 
 
   document
-    .getElementById("userName")
+    .getElementById("memberSince")
     .textContent =
-      name || "Not set";
+      "Member since " +
+      memberSince;
+
+
+  document
+    .getElementById("memberBadge")
+    .textContent =
+      "🛡️ DV Member since " +
+      memberSince;
 
 
   /* ======================================
@@ -205,17 +942,13 @@ async function loadProfile() {
         "walletBalance"
       )
       .textContent =
-        "Unable to load balance";
+        "Unable to load";
 
 
     return;
 
   }
 
-
-  /* ======================================
-     DISPLAY BALANCE
-  ====================================== */
 
   document
     .getElementById(
