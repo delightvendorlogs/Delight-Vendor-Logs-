@@ -352,69 +352,60 @@
         const type =
           String(
             transaction.type || ""
-          ).toLowerCase();
+          ).toLowerCase().trim();
 
 
         const description =
           String(
             transaction.description || ""
-          ).toLowerCase();
+          ).toLowerCase().trim();
 
 
         /*
-         * MONEY COMING INTO WALLET
+         * ONLY MONEY ADDED TO THE WALLET
+         * IS GREEN / POSITIVE.
+         *
+         * Everything else is treated as
+         * money leaving the wallet.
+         *
+         * This also fixes OLD transactions
+         * whose old type names were different.
          */
 
         const isCredit =
           type.includes("fund") ||
           type.includes("deposit") ||
           type.includes("credit") ||
-          type.includes("wallet funding") ||
-          type.includes("wallet_funding") ||
           type.includes("topup") ||
           type.includes("top up") ||
+          type.includes("wallet_funding") ||
+          type.includes("wallet funding") ||
+          type.includes("funding") ||
           description.includes("wallet funding") ||
           description.includes("fund wallet") ||
+          description.includes("wallet funded") ||
+          description.includes("wallet top up") ||
+          description.includes("wallet topup") ||
           description.includes("deposit") ||
           description.includes("top up") ||
-          description.includes("topup");
+          description.includes("topup") ||
+          description.includes("funded wallet");
 
 
-        /*
-         * MONEY LEAVING WALLET
-         */
-
-        const isDebit =
-          type.includes("purchase") ||
-          type.includes("buy") ||
-          type.includes("debit") ||
-          type.includes("order") ||
-          type.includes("product") ||
-          type.includes("virtual number") ||
-          type.includes("virtual_number") ||
-          type.includes("number purchase") ||
-          description.includes("purchase") ||
-          description.includes("bought") ||
-          description.includes("virtual number");
+        let amountClass;
+        let amountSign;
 
 
-        let amountClass =
-          "negative";
+        if (isCredit) {
 
-        let amountSign =
-          "-";
+          amountClass = "positive";
+          amountSign = "+";
 
+        } else {
 
-        if (
-          isCredit &&
-          !isDebit
-        ) {
+          amountClass = "negative";
+          amountSign = "−";
 
-          amountClass =
-            "positive";
-
-          amountSign =
-            "+";
         }
 
 
