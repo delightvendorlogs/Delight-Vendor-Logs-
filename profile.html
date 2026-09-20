@@ -22,7 +22,7 @@
 
     body {
       margin: 0;
-      padding: 0 0 82px;
+      padding: 0 0 30px;
       background: #f3f6ff;
       color: #10152b;
       font-family: Arial, Helvetica, sans-serif;
@@ -322,43 +322,6 @@
       color: #d22;
     }
 
-    /* =========================
-       BOTTOM NAVIGATION
-    ========================= */
-
-    .bottom-nav {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 78px;
-      background: rgba(255,255,255,.98);
-      border-top: 1px solid #dce2ee;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      z-index: 1000;
-    }
-
-    .nav-item {
-      width: 20%;
-      text-align: center;
-      text-decoration: none;
-      color: #a0a9c1;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .nav-icon {
-      display: block;
-      font-size: 24px;
-      margin-bottom: 4px;
-    }
-
-    .nav-item.active {
-      color: #0844e2;
-    }
-
   </style>
 
 </head>
@@ -505,52 +468,6 @@
 
 
 <!-- =========================
-     SECURITY
-========================= -->
-
-<section class="section">
-
-  <div class="section-title">
-    Security
-  </div>
-
-  <div class="card">
-
-    <div
-      class="profile-row clickable"
-      onclick="changePassword()"
-    >
-
-      <div
-        class="icon-box"
-        style="
-          background:#edfff9;
-          border-color:#c8eee4;
-        "
-      >
-        🛡️
-      </div>
-
-      <div class="row-info">
-
-        <div class="row-value">
-          Change Password
-        </div>
-
-      </div>
-
-      <div class="arrow">
-        ›
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- =========================
      SUPPORT
 ========================= -->
 
@@ -632,59 +549,6 @@
 <p id="message"></p>
 
 
-<!-- =========================
-     BOTTOM NAV
-========================= -->
-
-<nav class="bottom-nav">
-
-  <a
-    class="nav-item"
-    href="dashboard.html"
-  >
-    <span class="nav-icon">⌂</span>
-    Home
-  </a>
-
-
-  <a
-    class="nav-item"
-    href="transactions.html"
-  >
-    <span class="nav-icon">▤</span>
-    History
-  </a>
-
-
-  <a
-    class="nav-item"
-    href="wallet.html"
-  >
-    <span class="nav-icon">⊕</span>
-    Fund
-  </a>
-
-
-  <a
-    class="nav-item"
-    href="dashboard.html"
-  >
-    <span class="nav-icon">♟</span>
-    Alerts
-  </a>
-
-
-  <a
-    class="nav-item active"
-    href="profile.html"
-  >
-    <span class="nav-icon">●</span>
-    Profile
-  </a>
-
-</nav>
-
-
 <script>
 
 /* =========================
@@ -713,42 +577,6 @@ function openWhatsApp() {
   window.open(
     "https://wa.me/2347015908401",
     "_blank"
-  );
-
-}
-
-
-/* =========================
-   CHANGE PASSWORD
-========================= */
-
-async function changePassword() {
-
-  const newPassword =
-    prompt(
-      "Enter your new password:"
-    );
-
-  if (!newPassword) {
-    return;
-  }
-
-  const {
-    error
-  } =
-    await supabaseClient.auth.updateUser({
-      password: newPassword
-    });
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-  }
-
-  alert(
-    "Password changed successfully."
   );
 
 }
