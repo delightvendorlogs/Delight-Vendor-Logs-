@@ -1,2683 +1,2767 @@
-<!DOCTYPE html>      
-<html lang="en">      
-<head>      
-<meta charset="UTF-8">      
-<meta name="viewport" content="width=device-width,initial-scale=1.0">      
-<title>Delight Vendor Logs</title>      
-      
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>      
-      
-<style>      
-*{box-sizing:border-box}      
-html,body{margin:0;padding:0}      
-      
-body{      
-    font-family:Arial,Helvetica,sans-serif;      
-    background:#f3f6ff;      
-    color:#18203a;      
-}      
-      
-button,input{      
-    font-family:inherit;      
-}      
-      
-button{      
-    cursor:pointer;      
-}      
-      
-/* HEADER */      
-      
-header{      
-    padding:20px 18px 14px;      
-    display:flex;      
-    align-items:center;      
-    justify-content:space-between;      
-    gap:12px;      
-}      
-      
-.brand{      
-    display:flex;      
-    align-items:center;      
-    gap:13px;      
-}      
-      
-.logo{      
-    width:52px;      
-    height:52px;      
-    border-radius:16px;      
-    background:#1028d8;      
-    color:#fff;      
-    display:flex;      
-    align-items:center;      
-    justify-content:center;      
-    font-size:25px;      
-    font-weight:900;      
-    box-shadow:0 5px 14px #1028d833;      
-}      
-      
-.brand h1{      
-    margin:0;      
-    font-size:20px;      
-    color:#18203a;      
-}      
-      
-.brand p{      
-    margin:5px 0 0;      
-    color:#8d95b1;      
-    font-size:14px;      
-}      
-      
-.menu-btn{      
-    width:50px;      
-    height:50px;      
-    border:1px solid #e1e5f0;      
-    background:#fff;      
-    border-radius:16px;      
-    font-size:24px;      
-    color:#18203a;      
-}      
-      
-/* MAIN */      
-      
-main{      
-    max-width:850px;      
-    margin:auto;      
-    padding:4px 18px 100px;      
-}      
-      
-/* WATERMARK */      
-      
-.watermark{      
-    display:none;      
-    background:#fff;      
-    border-left:4px solid #1028d8;      
-    border-radius:13px;      
-    padding:14px;      
-    margin:4px 0 18px;      
-    color:#687089;      
-    font-size:14px;      
-    line-height:1.55;      
-}      
-      
-/* WALLET */      
-      
-.wallet{      
-    position:relative;      
-    overflow:hidden;      
-    background:      
-        linear-gradient(      
-            135deg,      
-            #07105d,      
-            #1020bd 58%,      
-            #1534e9      
-        );      
-    border-radius:27px;      
-    padding:26px 24px 24px;      
-    color:#fff;      
-    box-shadow:0 12px 30px #1028d833;      
-    margin-bottom:29px;      
-}      
-      
-.wallet:before{      
-    content:"";      
-    position:absolute;      
-    width:360px;      
-    height:360px;      
-    border:1px solid #ffffff16;      
-    border-radius:50%;      
-    right:-180px;      
-    top:-180px;      
-}      
-      
-.wallet:after{      
-    content:"";      
-    position:absolute;      
-    width:330px;      
-    height:330px;      
-    border:1px solid #ffffff12;      
-    border-radius:50%;      
-    left:-190px;      
-    bottom:-200px;      
-}      
-      
-.wallet>*{      
-    position:relative;      
-    z-index:2;      
-}      
-      
-.wallet-top{      
-    display:flex;      
-    align-items:center;      
-    justify-content:space-between;      
-}      
-      
-.wallet-label{      
-    margin:0;      
-    color:#b9c1eb;      
-    font-size:14px;      
-    font-weight:bold;      
-    letter-spacing:.5px;      
-}      
-      
-.status{      
-    background:#ffffff14;      
-    border:1px solid #ffffff22;      
-    color:#28e1ad;      
-    padding:9px 14px;      
-    border-radius:25px;      
-    font-weight:bold;      
-}      
-      
-.status i{      
-    display:inline-block;      
-    width:8px;      
-    height:8px;      
-    background:#26dca8;      
-    border-radius:50%;      
-    margin-right:6px;      
-}      
-      
-.balance-row{      
-    display:flex;      
-    align-items:center;      
-    gap:12px;      
-    margin:14px 0 25px;      
-}      
-      
-/*      
-IMPORTANT:      
-Force the balance itself to remain transparent.      
-This prevents style.css or another CSS rule      
-from turning it into a white box.      
-*/      
-      
-#walletBalance{      
-    display:block !important;      
-    width:auto !important;      
-    height:auto !important;      
-    min-height:0 !important;      
-    margin:0 !important;      
-    padding:0 !important;      
-    background:transparent !important;      
-    border:0 !important;      
-    border-radius:0 !important;      
-    color:#fff !important;      
-    font-size:36px !important;      
-    font-weight:900 !important;      
-    line-height:1.15 !important;      
-    box-shadow:none !important;      
-}      
-      
-.eye{      
-    width:46px;      
-    height:46px;      
-    border-radius:50%;      
-    border:1px solid #ffffff22;      
-    background:#ffffff18;      
-    color:#fff;      
-    font-size:21px;      
-}      
-      
-.wallet-actions{      
-    display:grid;      
-    grid-template-columns:1fr 1fr;      
-    gap:14px;      
-}      
-      
-.wallet-action{      
-    height:58px;      
-    border-radius:17px;      
-    font-size:16px;      
-    font-weight:bold;      
-}      
-      
-.fund{      
-    border:0;      
-    background:#fff;      
-    color:#1735c8;      
-}      
-      
-.history{      
-    border:1px solid #ffffff30;      
-    background:#ffffff15;      
-    color:#fff;      
-}      
-      
-/* SECTION HEAD */      
-      
-.section-head{      
-    display:flex;      
-    align-items:center;      
-    justify-content:space-between;      
-    margin:0 0 14px;      
-}      
-      
-.section-head h2{      
-    margin:0;      
-    color:#929bb7;      
-    font-size:16px;      
-    letter-spacing:1px;      
-    text-transform:uppercase;      
-}      
-      
-.section-head h2:after{      
-    content:"";      
-    display:inline-block;      
-    width:60px;      
-    height:2px;      
-    background:#dfe3ee;      
-    vertical-align:middle;      
-    margin-left:12px;      
-}      
-      
-.view{      
-    border:0;      
-    background:none;      
-    color:#123bc8;      
-    font-size:15px;      
-    font-weight:bold;      
-}      
-      
-/* CATEGORIES */      
-      
-.categories{      
-    background:#fff;      
-    border:1px solid #e1e5ef;      
-    border-radius:25px;      
-    overflow:hidden;      
-    box-shadow:0 3px 12px #00000008;      
-    margin-bottom:31px;      
-}      
-      
-.grid{      
-    display:grid;      
-    grid-template-columns:repeat(4,1fr);      
-}      
-      
-.cat{      
-    min-height:132px;      
-    border:0;      
-    border-right:1px solid #e8eaf0;      
-    border-bottom:1px solid #e8eaf0;      
-    background:#fff;      
-    color:#58617e;      
-    display:flex;      
-    flex-direction:column;      
-    align-items:center;      
-    justify-content:center;      
-    gap:10px;      
-    padding:14px 5px;      
-}      
-      
-.cat:nth-child(4n){      
-    border-right:0;      
-}      
-      
-.cat:nth-last-child(-n+4){      
-    border-bottom:0;      
-}      
-      
-.cat:active{      
-    transform:scale(.98);      
-}      
-      
-.cat-icon{      
-    width:55px;      
-    height:55px;      
-    border-radius:17px;      
-    display:flex;      
-    align-items:center;      
-    justify-content:center;      
-    font-size:27px;      
-    background:#eaf0ff;      
-    border:1px solid #dce3fb;      
-}      
-      
-.cat:nth-child(2) .cat-icon{      
-    background:#f3eaff;      
-}      
-      
-.cat:nth-child(3) .cat-icon{      
-    background:#e6faf3;      
-}      
-      
-.cat:nth-child(4) .cat-icon{      
-    background:#fff1dc;      
-}      
-      
-.cat:nth-child(5) .cat-icon{      
-    background:#e8f5ff;      
-}      
-      
-.cat:nth-child(6) .cat-icon{      
-    background:#eeeaff;      
-}      
-      
-.cat:nth-child(7) .cat-icon{      
-    background:#e6faf4;      
-}      
-      
-.cat:nth-child(8) .cat-icon{      
-    background:#fff0df;      
-}      
-      
-.cat:nth-child(9) .cat-icon{      
-    background:#e8efff;      
-}      
-      
-.cat-name{      
-    text-align:center;      
-    font-size:13px;      
-    line-height:1.25;      
-    font-weight:bold;      
-}      
-      
-/* TRANSACTIONS */      
-      
-.transactions{      
-    margin-bottom:25px;      
-}      
-      
-.tx-card{      
-    background:#fff;      
-    border:1px solid #e1e5ef;      
-    border-radius:22px;      
-    overflow:hidden;      
-    box-shadow:0 3px 12px #00000008;      
-}      
-      
-.tx-loading,      
-.tx-empty{      
-    min-height:180px;      
-    display:flex;      
-    align-items:center;      
-    justify-content:center;      
-    text-align:center;      
-    padding:30px;      
-    color:#737c99;      
-}      
-      
-.tx-list{      
-    width:100%;      
-}      
-      
-.tx{      
-    padding:17px 18px;      
-    border-bottom:1px solid #edf0f5;      
-    display:flex;      
-    justify-content:space-between;      
-    align-items:center;      
-    gap:12px;      
-}      
-      
-.tx:last-child{      
-    border-bottom:0;      
-}      
-      
-.tx-left{      
-    display:flex;      
-    align-items:center;      
-    gap:12px;      
-    min-width:0;      
-}      
-      
-.tx-icon{      
-    width:43px;      
-    height:43px;      
-    flex:0 0 43px;      
-    border-radius:13px;      
-    background:#edf1ff;      
-    display:flex;      
-    align-items:center;      
-    justify-content:center;      
-    font-size:19px;      
-}      
-      
-.tx-info{      
-    min-width:0;      
-}      
-      
-.tx-info strong{      
-    display:block;      
-    font-size:14px;      
-    margin-bottom:5px;      
-    white-space:nowrap;      
-    overflow:hidden;      
-    text-overflow:ellipsis;      
-}      
-      
-.tx-date{      
-    font-size:12px;      
-    color:#969db5;      
-}      
-      
-.tx-right{      
-    text-align:right;      
-    flex:0 0 auto;      
-}      
-      
-.tx-amount{      
-    font-size:14px;      
-    font-weight:800;      
-}      
-      
-.credit{      
-    color:#009b72;      
-}      
-      
-.debit{      
-    color:#d13c3c;      
-}      
-      
-.tx-status{      
-    font-size:11px;      
-    color:#8d95ab;      
-    margin-top:4px;      
-}      
-      
-/* SERVICES */      
-      
-#servicesView{      
-    display:none;      
-}      
-      
-#servicesView.active{      
-    display:block;      
-}      
-      
-.services-top{      
-    display:flex;      
-    align-items:center;      
-    gap:12px;      
-    margin-bottom:18px;      
-}      
-      
-.back{      
-    width:45px;      
-    height:45px;      
-    border:1px solid #e0e4ef;      
-    background:#fff;      
-    border-radius:14px;      
-    font-size:20px;      
-}      
-      
-.services-title h2{      
-    margin:0;      
-    font-size:21px;      
-}      
-      
-.services-title p{      
-    margin:4px 0 0;      
-    color:#8a91aa;      
-    font-size:13px;      
-}      
-      
-.search{      
-    width:100%;      
-    height:52px;      
-    border:1px solid #e0e4ef;      
-    border-radius:15px;      
-    background:#fff;      
-    padding:0 16px;      
-    font-size:15px;      
-    outline:none;      
-    margin-bottom:17px;      
-}      
-      
-.search:focus{      
-    border-color:#1028d8;      
-}      
-      
-.products{      
-    display:grid;      
-    grid-template-columns:1fr;      
-    gap:15px;      
-}      
-      
-.product{      
-    background:#fff;      
-    border:1px solid #e3e6ef;      
-    border-radius:20px;      
-    padding:15px;      
-    box-shadow:0 3px 12px #00000008;      
-    overflow:hidden;      
-}      
-      
-.product img,      
-.no-image{      
-    width:100%;      
-    height:190px;      
-    border-radius:14px;      
-    object-fit:cover;      
-    background:#edf0f6;      
-}      
-      
-.no-image{      
-    display:flex;      
-    align-items:center;      
-    justify-content:center;      
-    font-size:45px;      
-}      
-      
-.product h3{      
-    margin:14px 0 8px;      
-    font-size:18px;      
-}      
-      
-.badge{      
-    display:inline-block;      
-    background:#edf1ff;      
-    color:#3149bb;      
-    padding:6px 9px;      
-    border-radius:8px;      
-    font-size:11px;      
-    font-weight:bold;      
-}      
-      
-.desc{      
-    color:#69708b;      
-    font-size:14px;      
-    line-height:1.5;      
-    white-space:pre-wrap;      
-}      
-      
-.price{      
-    font-size:20px;      
-    font-weight:900;      
-    margin:13px 0 7px;      
-}      
-      
-.stock{      
-    margin:0 0 9px;      
-    color:#666d83;      
-    font-size:13px;      
-}      
-      
-.buy{      
-    width:100%;      
-    height:48px;      
-    border:0;      
-    border-radius:12px;      
-    background:#1028d8;      
-    color:#fff;      
-    font-size:15px;      
-    font-weight:bold;      
-}      
-      
-.buy:disabled{      
-    background:#999;      
-    cursor:not-allowed;      
-}      
-      
-.msg{      
-    background:#fff;      
-    border:1px solid #e3e6ee;      
-    border-radius:18px;      
-    padding:35px 20px;      
-    text-align:center;      
-    color:#747b95;      
-}      
-      
-/* WHATSAPP */      
-      
-.whatsapp{      
-    position:fixed;      
-    right:18px;      
-    bottom:19px;      
-    width:57px;      
-    height:57px;      
-    border-radius:50%;      
-    background:#25d366;      
-    color:#fff;      
-    text-decoration:none;      
-    display:flex;      
-    align-items:center;      
-    justify-content:center;      
-    font-size:27px;      
-    box-shadow:0 4px 15px #00000025;      
-    z-index:90;      
-}      
-      
-/* MENU */      
-      
-.overlay{      
-    display:none;      
-    position:fixed;      
-    inset:0;      
-    background:#00000045;      
-    z-index:199;      
-}      
-      
-.overlay.open{      
-    display:block;      
-}      
-      
-#menu{      
-    position:fixed;      
-    right:0;      
-    top:0;      
-    width:300px;      
-    max-width:88%;      
-    height:100vh;      
-    background:#fff;      
-    z-index:200;      
-    padding:23px;      
-    box-shadow:-5px 0 20px #00000020;      
-    transform:translateX(100%);      
-    transition:.2s;      
-    overflow-y:auto;      
-}      
-      
-#menu.open{      
-    transform:translateX(0);      
-}      
-      
-.menu-head{      
-    display:flex;      
-    align-items:center;      
-    justify-content:space-between;      
-    margin-bottom:15px;      
-}      
-      
-.menu-head h3{      
-    margin:0;      
-    font-size:20px;      
-}      
-      
-.menu-close-btn{      
-    width:40px;      
-    height:40px;      
-    border:0;      
-    background:#f1f3f8;      
-    border-radius:12px;      
-}      
-      
-.menu-item{      
-    padding:16px 5px;      
-    border-bottom:1px solid #edf0f4;      
-    font-weight:bold;      
-    color:#33394f;      
-}      
-      
-.menu-item a{      
-    color:inherit;      
-    text-decoration:none;      
-    display:block;      
-}      
-      
-/* MOBILE */      
-      
-@media(max-width:600px){      
-      
-    header{      
-        padding:17px 15px 13px;      
-    }      
-      
-    main{      
-        padding-left:15px;      
-        padding-right:15px;      
-    }      
-      
-    .logo{      
-        width:48px;      
-        height:48px;      
-    }      
-      
-    .brand h1{      
-        font-size:18px;      
-    }      
-      
-    .wallet{      
-        padding:24px 19px 21px;      
-        border-radius:24px;      
-    }      
-      
-    #walletBalance{      
-        font-size:32px !important;      
-    }      
-      
-    .cat{      
-        min-height:122px;      
-    }      
-      
-    .cat-icon{      
-        width:48px;      
-        height:48px;      
-        font-size:23px;      
-        border-radius:15px;      
-    }      
-      
-    .cat-name{      
-        font-size:11.5px;      
-    }      
-      
-    .tx{      
-        padding:15px 13px;      
-    }      
-      
-    .tx-icon{      
-        width:39px;      
-        height:39px;      
-        flex-basis:39px;      
-    }      
-}      
-      
-@media(max-width:380px){      
-      
-    .wallet-actions{      
-        grid-template-columns:1fr;      
-    }      
-      
-    .cat-name{      
-        font-size:10.5px;      
-    }      
-      
-    .cat-icon{      
-        width:43px;      
-        height:43px;      
-        font-size:21px;      
-    }      
-}      
-      
-</style>      
-</head>      
-      
-      
-<body>      
-      
-      
-<!-- HEADER -->      
-      
-<header>      
-      
-    <div class="brand">      
-      
-        <div class="logo">      
-            D      
-        </div>      
-      
-        <div>      
-      
-            <h1 id="greeting">      
-                Good Evening, Delight 👋      
-            </h1>      
-      
-            <p>      
-                Your Delight Vendor Logs Dashboard      
-            </p>      
-      
-        </div>      
-      
-    </div>      
-      
-      
-    <button      
-        class="menu-btn"      
-        type="button"      
-        onclick="openMenu()"      
-    >      
-        ☰      
-    </button>      
-      
-</header>      
-      
-      
-<main>      
-      
-      
-    <!-- WATERMARK -->      
-      
-    <div      
-        id="watermark"      
-        class="watermark"      
-    ></div>      
-      
-      
-    <!-- HOME -->      
-      
-    <div id="homeView">      
-      
-      
-        <!-- WALLET -->      
-      
-        <section class="wallet">      
-      
-            <div class="wallet-top">      
-      
-                <p class="wallet-label">      
-                    AVAILABLE BALANCE      
-                </p>      
-      
-                <div class="status">      
-                    <i></i>Active      
-                </div>      
-      
-            </div>      
-      
-      
-            <div class="balance-row">      
-      
-                <p id="walletBalance">      
-                    Loading...      
-                </p>      
-      
-                <button      
-                    class="eye"      
-                    type="button"      
-                    onclick="toggleBalance()"      
-                >      
-                    👁      
-                </button>      
-      
-            </div>      
-      
-      
-            <div class="wallet-actions">      
-      
-                <button      
-                    class="wallet-action fund"      
-                    type="button"      
-                    onclick="location.href='wallet.html'"      
-                >      
-                    ＋ Fund Wallet      
-                </button>      
-      
-      
-                <button      
-                    class="wallet-action history"      
-                    type="button"      
-                    onclick="location.href='transactions.html'"      
-                >      
-                    ↶ History      
-                </button>      
-      
-            </div>      
-      
-        </section>      
-      
-      
-        <!-- CATEGORIES -->      
-      
-        <section>      
-      
-            <div class="section-head">      
-      
-                <h2>      
-                    Categories      
-                </h2>      
-      
-            </div>      
-      
-      
-            <div class="categories">      
-      
-                <div class="grid">      
-      
-      
-                    <button      
-                        class="cat"      
-                        onclick="selectCategory('All Social Logs')"      
-                    >      
-                        <div class="cat-icon">      
-                            📱      
-                        </div>      
-      
-                        <div class="cat-name">      
-                            All Social<br>Logs      
-                        </div>      
-                    </button>      
-      
-      
-                    <button      
-                        class="cat"      
-                        onclick="selectCategory('Working Pictures')"      
-                    >      
-                        <div class="cat-icon">      
-                            🖼️      
-                        </div>      
-      
-                        <div class="cat-name">      
-                            Working<br>Pictures      
-                        </div>      
-                    </button>      
-      
-      
-                    <button      
-                        class="cat"      
-                        onclick="selectCategory('Formats')"      
-                    >      
-                        <div class="cat-icon">      
-                            📄      
-                        </div>      
-      
-                        <div class="cat-name">      
-                            Formats      
-                        </div>      
-                    </button>      
-      
-      
-                    <button      
-                        class="cat"      
-                        onclick="selectCategory('Working Links')"      
-                    >      
-                        <div class="cat-icon">      
-                            🔗      
-                        </div>      
-      
-                        <div class="cat-name">      
-                            Working<br>Links      
-                        </div>      
-                    </button>      
-      
-      
-                    <button      
-                        class="cat"      
-                        onclick="selectCategory('Voice Cloner/Fake Video Call')"      
-                    >      
-                        <div class="cat-icon">      
-                            🎙️      
-                        </div>      
-      
-                        <div class="cat-name">      
-                            Voice Cloner/<br>      
-                            Fake Video Call      
-                        </div>      
-                    </button>      
-      
-      
-                    <button      
-                        class="cat"      
-                        onclick="selectCategory('All Countries Number')"      
-                    >      
-                        <div class="cat-icon">      
-                            📞      
-                        </div>      
-      
-                        <div class="cat-name">      
-                            All Countries<br>      
-                            Number      
-                        </div>      
-                    </button>      
-      
-      
-                    <button      
-                        class="cat"      
-                        onclick="selectCategory('Streaming & More')"      
-                    >      
-                        <div class="cat-icon">      
-                            📺      
-                        </div>      
-      
-                        <div class="cat-name">      
-                            Streaming<br>      
-                            & More      
-                        </div>      
-                    </button>      
-      
-      
-                    <button      
-                        class="cat"      
-                        onclick="selectCategory('ESIMS')"      
-                    >      
-                        <div class="cat-icon">      
-                            📡      
-                        </div>      
-      
-                        <div class="cat-name">      
-                            ESIMS      
-                        </div>      
-                    </button>      
-      
-      
-                    <button      
-                        class="cat"      
-                        onclick="selectCategory('VPN')"      
-                    >      
-                        <div class="cat-icon">      
-                            🔐      
-                        </div>      
-      
-                        <div class="cat-name">      
-                            VPN      
-                        </div>      
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Delight Vendor Logs</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f3f6ff;
+    color:#18203a;
+}
+
+button,input{
+    font-family:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+/* HEADER */
+
+header{
+    padding:20px 18px 14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:13px;
+}
+
+.logo{
+    width:52px;
+    height:52px;
+    border-radius:16px;
+    background:#1028d8;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
+    font-weight:900;
+    box-shadow:0 5px 14px #1028d833;
+}
+
+.brand h1{
+    margin:0;
+    font-size:20px;
+    color:#18203a;
+}
+
+.brand p{
+    margin:5px 0 0;
+    color:#8d95b1;
+    font-size:14px;
+}
+
+.menu-btn{
+    width:50px;
+    height:50px;
+    border:1px solid #e1e5f0;
+    background:#fff;
+    border-radius:16px;
+    font-size:24px;
+    color:#18203a;
+}
+
+/* MAIN */
+
+main{
+    max-width:850px;
+    margin:auto;
+    padding:4px 18px 100px;
+}
+
+/* WATERMARK */
+
+.watermark{
+    display:none;
+    background:#fff;
+    border-left:4px solid #1028d8;
+    border-radius:13px;
+    padding:14px;
+    margin:4px 0 18px;
+    color:#687089;
+    font-size:14px;
+    line-height:1.55;
+}
+
+/* WALLET */
+
+.wallet{
+    position:relative;
+    overflow:hidden;
+    background:
+        linear-gradient(
+            135deg,
+            #07105d,
+            #1020bd 58%,
+            #1534e9
+        );
+    border-radius:27px;
+    padding:26px 24px 24px;
+    color:#fff;
+    box-shadow:0 12px 30px #1028d833;
+    margin-bottom:29px;
+}
+
+.wallet:before{
+    content:"";
+    position:absolute;
+    width:360px;
+    height:360px;
+    border:1px solid #ffffff16;
+    border-radius:50%;
+    right:-180px;
+    top:-180px;
+}
+
+.wallet:after{
+    content:"";
+    position:absolute;
+    width:330px;
+    height:330px;
+    border:1px solid #ffffff12;
+    border-radius:50%;
+    left:-190px;
+    bottom:-200px;
+}
+
+.wallet>*{
+    position:relative;
+    z-index:2;
+}
+
+.wallet-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.wallet-label{
+    margin:0;
+    color:#b9c1eb;
+    font-size:14px;
+    font-weight:bold;
+    letter-spacing:.5px;
+}
+
+.status{
+    background:#ffffff14;
+    border:1px solid #ffffff22;
+    color:#28e1ad;
+    padding:9px 14px;
+    border-radius:25px;
+    font-weight:bold;
+}
+
+.status i{
+    display:inline-block;
+    width:8px;
+    height:8px;
+    background:#26dca8;
+    border-radius:50%;
+    margin-right:6px;
+}
+
+.balance-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin:14px 0 25px;
+}
+
+/*
+IMPORTANT:
+Force the balance itself to remain transparent.
+This prevents style.css or another CSS rule
+from turning it into a white box.
+*/
+
+#walletBalance{
+    display:block !important;
+    width:auto !important;
+    height:auto !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    background:transparent !important;
+    border:0 !important;
+    border-radius:0 !important;
+    color:#fff !important;
+    font-size:36px !important;
+    font-weight:900 !important;
+    line-height:1.15 !important;
+    box-shadow:none !important;
+}
+
+.eye{
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    border:1px solid #ffffff22;
+    background:#ffffff18;
+    color:#fff;
+    font-size:21px;
+}
+
+.wallet-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+}
+
+.wallet-action{
+    height:58px;
+    border-radius:17px;
+    font-size:16px;
+    font-weight:bold;
+}
+
+.fund{
+    border:0;
+    background:#fff;
+    color:#1735c8;
+}
+
+.history{
+    border:1px solid #ffffff30;
+    background:#ffffff15;
+    color:#fff;
+}
+
+/* SECTION HEAD */
+
+.section-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin:0 0 14px;
+}
+
+.section-head h2{
+    margin:0;
+    color:#929bb7;
+    font-size:16px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+}
+
+.section-head h2:after{
+    content:"";
+    display:inline-block;
+    width:60px;
+    height:2px;
+    background:#dfe3ee;
+    vertical-align:middle;
+    margin-left:12px;
+}
+
+.view{
+    border:0;
+    background:none;
+    color:#123bc8;
+    font-size:15px;
+    font-weight:bold;
+}
+
+/* CATEGORIES */
+
+.categories{
+    background:#fff;
+    border:1px solid #e1e5ef;
+    border-radius:25px;
+    overflow:hidden;
+    box-shadow:0 3px 12px #00000008;
+    margin-bottom:31px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+}
+
+.cat{
+    min-height:132px;
+    border:0;
+    border-right:1px solid #e8eaf0;
+    border-bottom:1px solid #e8eaf0;
+    background:#fff;
+    color:#58617e;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    padding:14px 5px;
+}
+
+.cat:nth-child(4n){
+    border-right:0;
+}
+
+.cat:nth-last-child(-n+4){
+    border-bottom:0;
+}
+
+.cat:active{
+    transform:scale(.98);
+}
+
+.cat-icon{
+    width:55px;
+    height:55px;
+    border-radius:17px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:27px;
+    background:#eaf0ff;
+    border:1px solid #dce3fb;
+}
+
+.cat:nth-child(2) .cat-icon{
+    background:#f3eaff;
+}
+
+.cat:nth-child(3) .cat-icon{
+    background:#e6faf3;
+}
+
+.cat:nth-child(4) .cat-icon{
+    background:#fff1dc;
+}
+
+.cat:nth-child(5) .cat-icon{
+    background:#e8f5ff;
+}
+
+.cat:nth-child(6) .cat-icon{
+    background:#eeeaff;
+}
+
+.cat:nth-child(7) .cat-icon{
+    background:#e6faf4;
+}
+
+.cat:nth-child(8) .cat-icon{
+    background:#fff0df;
+}
+
+.cat:nth-child(9) .cat-icon{
+    background:#e8efff;
+}
+
+.cat-name{
+    text-align:center;
+    font-size:13px;
+    line-height:1.25;
+    font-weight:bold;
+}
+
+/* TRANSACTIONS */
+
+.transactions{
+    margin-bottom:25px;
+}
+
+.tx-card{
+    background:#fff;
+    border:1px solid #e1e5ef;
+    border-radius:22px;
+    overflow:hidden;
+    box-shadow:0 3px 12px #00000008;
+}
+
+.tx-loading,
+.tx-empty{
+    min-height:180px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:30px;
+    color:#737c99;
+}
+
+.tx-list{
+    width:100%;
+}
+
+.tx{
+    padding:17px 18px;
+    border-bottom:1px solid #edf0f5;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+}
+
+.tx:last-child{
+    border-bottom:0;
+}
+
+.tx-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width:0;
+}
+
+.tx-icon{
+    width:43px;
+    height:43px;
+    flex:0 0 43px;
+    border-radius:13px;
+    background:#edf1ff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:19px;
+}
+
+.tx-info{
+    min-width:0;
+}
+
+.tx-info strong{
+    display:block;
+    font-size:14px;
+    margin-bottom:5px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.tx-date{
+    font-size:12px;
+    color:#969db5;
+}
+
+.tx-right{
+    text-align:right;
+    flex:0 0 auto;
+}
+
+.tx-amount{
+    font-size:14px;
+    font-weight:800;
+}
+
+.credit{
+    color:#009b72;
+}
+
+.debit{
+    color:#d13c3c;
+}
+
+.tx-status{
+    font-size:11px;
+    color:#8d95ab;
+    margin-top:4px;
+}
+
+/* SERVICES */
+
+#servicesView{
+    display:none;
+}
+
+#servicesView.active{
+    display:block;
+}
+
+.services-top{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:18px;
+}
+
+.back{
+    width:45px;
+    height:45px;
+    border:1px solid #e0e4ef;
+    background:#fff;
+    border-radius:14px;
+    font-size:20px;
+}
+
+.services-title h2{
+    margin:0;
+    font-size:21px;
+}
+
+.services-title p{
+    margin:4px 0 0;
+    color:#8a91aa;
+    font-size:13px;
+}
+
+.search{
+    width:100%;
+    height:52px;
+    border:1px solid #e0e4ef;
+    border-radius:15px;
+    background:#fff;
+    padding:0 16px;
+    font-size:15px;
+    outline:none;
+    margin-bottom:17px;
+}
+
+.search:focus{
+    border-color:#1028d8;
+}
+
+.products{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:15px;
+}
+
+.product{
+    background:#fff;
+    border:1px solid #e3e6ef;
+    border-radius:20px;
+    padding:15px;
+    box-shadow:0 3px 12px #00000008;
+    overflow:hidden;
+}
+
+.product img,
+.no-image{
+    width:100%;
+    height:190px;
+    border-radius:14px;
+    object-fit:cover;
+    background:#edf0f6;
+}
+
+.no-image{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:45px;
+}
+
+.product h3{
+    margin:14px 0 8px;
+    font-size:18px;
+}
+
+.badge{
+    display:inline-block;
+    background:#edf1ff;
+    color:#3149bb;
+    padding:6px 9px;
+    border-radius:8px;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.desc{
+    color:#69708b;
+    font-size:14px;
+    line-height:1.5;
+    white-space:pre-wrap;
+}
+
+.price{
+    font-size:20px;
+    font-weight:900;
+    margin:13px 0 7px;
+}
+
+.stock{
+    margin:0 0 9px;
+    color:#666d83;
+    font-size:13px;
+}
+
+.buy{
+    width:100%;
+    height:48px;
+    border:0;
+    border-radius:12px;
+    background:#1028d8;
+    color:#fff;
+    font-size:15px;
+    font-weight:bold;
+}
+
+.buy:disabled{
+    background:#999;
+    cursor:not-allowed;
+}
+
+.msg{
+    background:#fff;
+    border:1px solid #e3e6ee;
+    border-radius:18px;
+    padding:35px 20px;
+    text-align:center;
+    color:#747b95;
+}
+
+/* WHATSAPP */
+
+.whatsapp{
+    position:fixed;
+    right:18px;
+    bottom:19px;
+    width:57px;
+    height:57px;
+    border-radius:50%;
+    background:#25d366;
+    color:#fff;
+    text-decoration:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:27px;
+    box-shadow:0 4px 15px #00000025;
+    z-index:90;
+}
+
+/* MENU */
+
+.overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:#00000045;
+    z-index:199;
+}
+
+.overlay.open{
+    display:block;
+}
+
+#menu{
+    position:fixed;
+    right:0;
+    top:0;
+    width:300px;
+    max-width:88%;
+    height:100vh;
+    background:#fff;
+    z-index:200;
+    padding:23px;
+    box-shadow:-5px 0 20px #00000020;
+    transform:translateX(100%);
+    transition:.2s;
+    overflow-y:auto;
+}
+
+#menu.open{
+    transform:translateX(0);
+}
+
+.menu-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:15px;
+}
+
+.menu-head h3{
+    margin:0;
+    font-size:20px;
+}
+
+.menu-close-btn{
+    width:40px;
+    height:40px;
+    border:0;
+    background:#f1f3f8;
+    border-radius:12px;
+}
+
+.menu-item{
+    padding:16px 5px;
+    border-bottom:1px solid #edf0f4;
+    font-weight:bold;
+    color:#33394f;
+}
+
+.menu-item a{
+    color:inherit;
+    text-decoration:none;
+    display:block;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+    header{
+        padding:17px 15px 13px;
+    }
+
+    main{
+        padding-left:15px;
+        padding-right:15px;
+    }
+
+    .logo{
+        width:48px;
+        height:48px;
+    }
+
+    .brand h1{
+        font-size:18px;
+    }
+
+    .wallet{
+        padding:24px 19px 21px;
+        border-radius:24px;
+    }
+
+    #walletBalance{
+        font-size:32px !important;
+    }
+
+    .cat{
+        min-height:122px;
+    }
+
+    .cat-icon{
+        width:48px;
+        height:48px;
+        font-size:23px;
+        border-radius:15px;
+    }
+
+    .cat-name{
+        font-size:11.5px;
+    }
+
+    .tx{
+        padding:15px 13px;
+    }
+
+    .tx-icon{
+        width:39px;
+        height:39px;
+        flex-basis:39px;
+    }
+}
+
+@media(max-width:380px){
+
+    .wallet-actions{
+        grid-template-columns:1fr;
+    }
+
+    .cat-name{
+        font-size:10.5px;
+    }
+
+    .cat-icon{
+        width:43px;
+        height:43px;
+        font-size:21px;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- HEADER -->
+
+<header>
+
+    <div class="brand">
+
+        <div class="logo">
+            D
+        </div>
+
+        <div>
+
+            <h1 id="greeting">
+                Good Evening, Delight 👋
+            </h1>
+
+            <p>
+                Your Delight Vendor Logs Dashboard
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <button
+        class="menu-btn"
+        type="button"
+        onclick="openMenu()"
+    >
+        ☰
+    </button>
+
+</header>
+
+
+<main>
+
+
+    <!-- WATERMARK -->
+
+    <div
+        id="watermark"
+        class="watermark"
+    ></div>
+
+
+    <!-- HOME -->
+
+    <div id="homeView">
+
+
+        <!-- WALLET -->
+
+        <section class="wallet">
+
+            <div class="wallet-top">
+
+                <p class="wallet-label">
+                    AVAILABLE BALANCE
+                </p>
+
+                <div class="status">
+                    <i></i>Active
+                </div>
+
+            </div>
+
+
+            <div class="balance-row">
+
+                <p id="walletBalance">
+                    Loading...
+                </p>
+
+                <button
+                    class="eye"
+                    type="button"
+                    onclick="toggleBalance()"
+                >
+                    👁
+                </button>
+
+            </div>
+
+
+            <div class="wallet-actions">
+
+                <button
+                    class="wallet-action fund"
+                    type="button"
+                    onclick="location.href='wallet.html'"
+                >
+                    ＋ Fund Wallet
+                </button>
+
+
+                <button
+                    class="wallet-action history"
+                    type="button"
+                    onclick="location.href='transactions.html'"
+                >
+                    ↶ History
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- CATEGORIES -->
+
+        <section>
+
+            <div class="section-head">
+
+                <h2>
+                    Categories
+                </h2>
+
+            </div>
+
+
+            <div class="categories">
+
+                <div class="grid">
+
+
+                    <button
+                        class="cat"
+                        onclick="selectCategory('All Social Logs')"
+                    >
+                        <div class="cat-icon">
+                            📱
+                        </div>
+
+                        <div class="cat-name">
+                            All Social<br>Logs
+                        </div>
                     </button>
 
 
                     <button
                         class="cat"
-                        onclick="selectCategory('Gmail')"
+                        onclick="selectCategory('Working Pictures')"
                     >
                         <div class="cat-icon">
-                            📧
+                            🖼️
                         </div>
 
                         <div class="cat-name">
-                            Gmail
+                            Working<br>Pictures
                         </div>
                     </button>
-      
-      
-                </div>      
-      
-            </div>      
-      
-        </section>      
-      
-      
-        <!-- RECENT TRANSACTIONS -->      
-      
-        <section class="transactions">      
-      
-            <div class="section-head">      
-      
-                <h2>      
-                    Recent Transactions      
-                </h2>      
-      
-      
-                <button      
-                    class="view"      
-                    type="button"      
-                    onclick="location.href='transactions.html'"      
-                >      
-                    See more ›      
-                </button>      
-      
-            </div>      
-      
-      
-            <div class="tx-card">      
-      
-                <div      
-                    id="txLoading"      
-                    class="tx-loading"      
-                >      
-                    Loading transactions...      
-                </div>      
-      
-      
-                <div      
-                    id="txList"      
-                    class="tx-list"      
-                    style="display:none"      
-                ></div>      
-      
-      
-                <div      
-                    id="txEmpty"      
-                    class="tx-empty"      
-                    style="display:none"      
-                ></div>      
-      
-            </div>      
-      
-        </section>      
-      
-      
-    </div>      
-      
-      
-    <!-- CATEGORY SERVICES -->      
-      
-    <div id="servicesView">      
-      
-      
-        <div class="services-top">      
-      
-      
-            <button      
-                class="back"      
-                type="button"      
-                onclick="backHome()"      
-            >      
-                ←      
-            </button>      
-      
-      
-            <div class="services-title">      
-      
-                <h2 id="categoryTitle"></h2>      
-      
-                <p id="categoryDescription"></p>      
-      
-            </div>      
-      
-      
-        </div>      
-      
-      
-        <input      
-            id="serviceSearch"      
-            class="search"      
-            type="search"      
-            placeholder="🔍 Search service..."      
-            oninput="renderServices()"      
-        >      
-      
-      
-        <div      
-            id="products"      
-            class="products"      
-        ></div>      
-      
-      
-    </div>      
-      
-      
-</main>      
-      
-      
-<!-- WHATSAPP -->      
-      
-<a      
-    class="whatsapp"      
-    href="https://wa.me/2347015908401"      
-    target="_blank"      
-    rel="noopener"      
->      
-    💬      
-</a>      
-      
-      
-<!-- MENU -->      
-      
-<div      
-    id="overlay"      
-    class="overlay"      
-    onclick="closeMenu()"      
-></div>      
-      
-      
-<div id="menu">      
-      
-      
-    <div class="menu-head">      
-      
-        <h3>      
-            Menu      
-        </h3>      
-      
-        <button      
-            class="menu-close-btn"      
-            type="button"      
-            onclick="closeMenu()"      
-        >      
-            ✕      
-        </button>      
-      
-    </div>      
-      
-      
-    <div      
-        class="menu-item"      
-        onclick="location.href='profile.html'"      
-    >      
-        👤 Profile      
-    </div>      
-      
-      
-    <div      
-        class="menu-item"      
-        onclick="location.href='wallet.html'"      
-    >      
-        💰 Fund Wallet      
-    </div>      
-      
-      
-    <div      
-        class="menu-item"      
-        onclick="location.href='transactions.html'"      
-    >      
-        📜 Transactions      
-    </div>      
-      
-      
-    <div      
-        class="menu-item"      
-        onclick="location.href='purchases.html'"      
-    >      
-        🛒 My Purchases      
-    </div>      
-      
-      
-    <div      
-        class="menu-item"      
-        onclick="location.href='pending.html'"      
-    >      
-        ⏳ Pending Orders      
-    </div>      
-      
-      
-    <div      
-        class="menu-item"      
-        onclick="location.href='settings.html'"      
-    >      
-        ⚙️ Settings      
-    </div>      
-      
-      
-    <div class="menu-item">      
-      
-        <a      
-            href="https://wa.me/2347015908401"      
-            target="_blank"      
-            rel="noopener"      
-        >      
-            💬 WhatsApp Support      
-        </a>      
-      
-    </div>      
-      
-      
-    <div      
-        class="menu-item"      
-        style="color:#b00020"      
-        onclick="closeMenu()"      
-    >      
-        ✖ Close      
-    </div>      
-      
-      
-</div>      
-      
-      
-<script>      
-      
-/* =========================================================      
-   SUPABASE      
-========================================================= */      
-      
-const SUPABASE_URL =      
-    "https://hkfhehbhmucymusaytoe.supabase.co";      
-      
-const SUPABASE_KEY =      
-    "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";      
-      
-      
-const supabaseClient =      
-    window.supabase.createClient(      
-        SUPABASE_URL,      
-        SUPABASE_KEY,      
-        {      
-            auth:{      
-                persistSession:true,      
-                autoRefreshToken:true,      
-                detectSessionInUrl:true      
-            }      
-        }      
-    );      
-      
-      
-/* =========================================================      
-   VARIABLES      
-========================================================= */      
-      
-let allServices = [];      
-      
-let selectedCategory = "Home";      
-      
-let realBalance = 0;      
-      
-let balanceHidden = false;      
-      
-      
-/* =========================================================      
-   ESCAPE HTML      
-========================================================= */      
-      
-function escapeHTML(value){      
-      
-    return String(value ?? "")      
-        .replace(/&/g,"&amp;")      
-        .replace(/</g,"&lt;")      
-        .replace(/>/g,"&gt;")      
-        .replace(/"/g,"&quot;")      
-        .replace(/'/g,"&#039;");      
-}      
-      
-      
-/* =========================================================      
-   MENU      
-========================================================= */      
-      
-function openMenu(){      
-      
-    document      
-        .getElementById("menu")      
-        .classList.add("open");      
-      
-    document      
-        .getElementById("overlay")      
-        .classList.add("open");      
-}      
-      
-      
-function closeMenu(){      
-      
-    document      
-        .getElementById("menu")      
-        .classList.remove("open");      
-      
-    document      
-        .getElementById("overlay")      
-        .classList.remove("open");      
-}      
-      
-      
-/* =========================================================      
-   GREETING      
-========================================================= */      
-      
-function updateGreeting(){      
-      
-    const hour =      
-        new Date().getHours();      
-      
-      
-    let greeting =      
-        "Good Evening";      
-      
-      
-    if(hour < 12){      
-      
-        greeting =      
-            "Good Morning";      
-      
-    }else if(hour < 17){      
-      
-        greeting =      
-            "Good Afternoon";      
-    }      
-      
-      
-    document      
-        .getElementById("greeting")      
-        .textContent =      
-            greeting +      
-            ", Delight 👋";      
-}      
-      
-      
-/* =========================================================      
-   BALANCE DISPLAY      
-========================================================= */      
-      
-function showBalance(){      
-      
-    const element =      
-        document.getElementById(      
-            "walletBalance"      
-        );      
-      
-      
-    if(balanceHidden){      
-      
-        element.textContent =      
-            "₦••••••";      
-      
-        return;      
-    }      
-      
-      
-    element.textContent =      
-        "₦" +      
-        Number(realBalance || 0)      
-            .toLocaleString(      
-                "en-NG",      
-                {      
-                    minimumFractionDigits:2,      
-                    maximumFractionDigits:2      
-                }      
-            );      
-}      
-      
-      
-function toggleBalance(){      
-      
-    balanceHidden =      
-        !balanceHidden;      
-      
-      
-    document      
-        .querySelector(".eye")      
-        .textContent =      
-            balanceHidden      
-            ? "🙈"      
-            : "👁";      
-      
-      
-    showBalance();      
-}      
-      
-      
-/* =========================================================      
-   GET USER      
-========================================================= */      
-      
-async function getUserFast(){      
-      
-    /*      
-       getSession() is faster because the current      
-       session is already stored locally.      
-    */      
-      
-    const sessionResult =      
-        await supabaseClient.auth.getSession();      
-      
-      
-    const sessionUser =      
-        sessionResult      
-            ?.data      
-            ?.session      
-            ?.user;      
-      
-      
-    if(sessionUser){      
-      
-        return sessionUser;      
-    }      
-      
-      
-    /*      
-       Only fall back to getUser()      
-       if there is no local session.      
-    */      
-      
-    const userResult =      
-        await supabaseClient.auth.getUser();      
-      
-      
-    return userResult      
-        ?.data      
-        ?.user || null;      
-}      
-      
-      
-/* =========================================================      
-   WALLET      
-========================================================= */      
-      
-async function loadWallet(){      
-      
-    const user =      
-        await getUserFast();      
-      
-      
-    if(!user){      
-      
-        location.href =      
-            "login.html";      
-      
-        return;      
-    }      
-      
-      
-    try{      
-      
-        /*      
-           Keep the same wallet RPC      
-           that your old dashboard used.      
-        */      
-      
-        const result =      
-            await supabaseClient      
-                .rpc("ensure_my_wallet");      
-      
-      
-        if(result.error){      
-      
-            console.error(      
-                "Wallet error:",      
-                result.error      
-            );      
-      
-      
-            document      
-                .getElementById(      
-                    "walletBalance"      
-                )      
-                .textContent =      
-                    "₦0.00";      
-      
-            return;      
-        }      
-      
-      
-        let wallet =      
-            result.data;      
-      
-      
-        if(Array.isArray(wallet)){      
-      
-            wallet =      
-                wallet[0];      
-        }      
-      
-      
-        realBalance =      
-            Number(      
-                wallet?.balance ?? 0      
-            );      
-      
-      
-        showBalance();      
-      
-      
-    }catch(error){      
-      
-        console.error(      
-            "Wallet error:",      
-        error      
-        );      
-      
-      
-        document      
-            .getElementById(      
-                "walletBalance"      
-            )      
-            .textContent =      
-                "₦0.00";      
-    }      
-}      
-      
-      
-/* =========================================================      
-   WATERMARK      
-========================================================= */      
-      
-async function loadWatermark(){      
-      
-    try{      
-      
-        const {      
-            data,      
-            error      
-        } =      
-            await supabaseClient      
-                .from("site_settings")      
-                .select("value")      
-                .eq("key","watermark")      
-                .maybeSingle();      
-      
-      
-        if(error){      
-      
-            console.error(      
-                "Watermark error:",      
-                error      
-            );      
-      
-            return;      
-        }      
-      
-      
-        const text =      
-            String(      
-                data?.value || ""      
-            ).trim();      
-      
-      
-        const box =      
-            document.getElementById(      
-                "watermark"      
-            );      
-      
-      
-        box.textContent =      
-            text;      
-      
-      
-        box.style.display =      
-            text      
-            ? "block"      
-            : "none";      
-      
-      
-    }catch(error){      
-      
-        console.error(      
-            "Watermark error:",      
-            error      
-        );      
-    }      
-}      
-      
-      
-/* =========================================================      
-   CATEGORY NORMALIZER      
-========================================================= */      
-      
-function categoryKey(value){      
-      
-    return String(value ?? "")      
-        .trim()      
-        .toLowerCase()      
-        .replace(/\s+/g," ")      
-        .replace(/&/g,"and")      
-        .replace(/[^a-z0-9 ]/g,"")      
-        .replace(/\s+/g,"");      
-}      
-      
-      
-/* =========================================================      
-   CATEGORY MATCHING      
-========================================================= */      
-      
-function categoryMatches(      
-    productCategory,      
-    wantedCategory      
-){      
-      
-    const product =      
-        categoryKey(      
-            productCategory      
-        );      
-      
-      
-    const wanted =      
-        categoryKey(      
-            wantedCategory      
-        );      
-      
-      
-    /*      
-       Exact match first.      
-    */      
-      
-    if(product === wanted){      
-      
-        return true;      
-    }      
-      
-      
-    /*      
-       Allow the common variations      
-       already present in products.      
-    */      
-      
-    const aliases = {      
-      
-        "esims":[      
-            "esim",      
-            "esims"      
-        ],      
-      
-        "streamingandmore":[      
-            "streamingandmore",      
-            "streamingmore",      
-            "streamersandmore"      
-        ],      
-      
-        "voiceclonerfakevideocall":[      
-            "voiceclonerfakevideocall",      
-            "voicecloner",      
-            "fakevideocall"      
-        ],      
-      
-        "allsociallogs":[      
-            "allsociallogs",      
-            "sociallogs"      
-        ],      
-      
-        "allcountriesnumber":[      
-            "allcountriesnumber",      
-            "allcountrynumber",      
-            "countriesnumber"      
-        ],      
-      
-        "workingpictures":[      
-            "workingpictures",      
-            "workingpicture"      
-        ],      
-      
-        "workinglinks":[      
-            "workinglinks",      
-            "workinglink"      
-        ]      
-      
-    };      
-      
-      
-    return (      
-        aliases[wanted] || []      
-    ).includes(product);      
-}      
-      
-      
-/* =========================================================      
-   LOAD PRODUCTS      
-========================================================= */      
-      
-async function loadProducts(){      
-      
-    try{      
-      
-        /*      
-           IMPORTANT:      
-      
-           There is NO is_active filter here.      
-      
-           Your Product records need to be loaded      
-           based on the actual category stored in      
-           the Product table.      
-        */      
-      
-        const {      
-            data,      
-            error      
-        } =      
-            await supabaseClient      
-                .from("Product")      
-                .select("*")      
-                .order(      
-                    "id",      
-                    {      
-                        ascending:false      
-                    }      
-                );      
-      
-      
-        if(error){      
-      
-            console.error(      
-                "Product error:",      
-                error      
-            );      
-      
-      
-            allServices = [];      
-      
-            return;      
-        }      
-      
-      
-        allServices =      
-            data || [];      
-      
-      
-        /*      
-           If a category is already open,      
-           render it immediately after the      
-           data arrives.      
-        */      
-      
-        if(      
-            selectedCategory !==      
-            "Home"      
-        ){      
-      
-            renderServices();      
-        }      
-      
-      
-    }catch(error){      
-      
-        console.error(      
-            "Product error:",      
-            error      
-        );      
-      
-      
-        allServices = [];      
-    }      
-}      
-      
-      
-/* =========================================================      
-   SELECT CATEGORY      
-========================================================= */      
-      
-function selectCategory(category){      
-      
-    /*      
-       Keep your virtual number system      
-       exactly as it was.      
-    */      
-      
-    if(      
-        category ===      
-        "All Countries Number"      
-    ){      
-      
-        location.href =      
-            "virtualnumber.html";      
-      
-        return;      
+
+
+                    <button
+                        class="cat"
+                        onclick="selectCategory('Formats')"
+                    >
+                        <div class="cat-icon">
+                            📄
+                        </div>
+
+                        <div class="cat-name">
+                            Formats
+                        </div>
+                    </button>
+
+
+                    <button
+                        class="cat"
+                        onclick="selectCategory('Working Links')"
+                    >
+                        <div class="cat-icon">
+                            🔗
+                        </div>
+
+                        <div class="cat-name">
+                            Working<br>Links
+                        </div>
+                    </button>
+
+
+                    <button
+                        class="cat"
+                        onclick="selectCategory('Voice Cloner/Fake Video Call')"
+                    >
+                        <div class="cat-icon">
+                            🎙️
+                        </div>
+
+                        <div class="cat-name">
+                            Voice Cloner/<br>
+                            Fake Video Call
+                        </div>
+                    </button>
+
+
+                    <button
+                        class="cat"
+                        onclick="selectCategory('All Countries Number')"
+                    >
+                        <div class="cat-icon">
+                            📞
+                        </div>
+
+                        <div class="cat-name">
+                            All Countries<br>
+                            Number
+                        </div>
+                    </button>
+
+
+                    <button
+                        class="cat"
+                        onclick="selectCategory('Streaming & More')"
+                    >
+                        <div class="cat-icon">
+                            📺
+                        </div>
+
+                        <div class="cat-name">
+                            Streaming<br>
+                            & More
+                        </div>
+                    </button>
+
+
+                    <button
+                        class="cat"
+                        onclick="selectCategory('ESIMS')"
+                    >
+                        <div class="cat-icon">
+                            📡
+                        </div>
+
+                        <div class="cat-name">
+                            ESIMS
+                        </div>
+                    </button>
+
+
+                    <button
+                        class="cat"
+                        onclick="selectCategory('VPN')"
+                    >
+                        <div class="cat-icon">
+                            🔐
+                        </div>
+
+                        <div class="cat-name">
+                            VPN
+                        </div>
+                    </button>
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- RECENT TRANSACTIONS -->
+
+        <section class="transactions">
+
+            <div class="section-head">
+
+                <h2>
+                    Recent Transactions
+                </h2>
+
+
+                <button
+                    class="view"
+                    type="button"
+                    onclick="location.href='transactions.html'"
+                >
+                    See more ›
+                </button>
+
+            </div>
+
+
+            <div class="tx-card">
+
+                <div
+                    id="txLoading"
+                    class="tx-loading"
+                >
+                    Loading transactions...
+                </div>
+
+
+                <div
+                    id="txList"
+                    class="tx-list"
+                    style="display:none"
+                ></div>
+
+
+                <div
+                    id="txEmpty"
+                    class="tx-empty"
+                    style="display:none"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+    </div>
+
+
+    <!-- CATEGORY SERVICES -->
+
+    <div id="servicesView">
+
+
+        <div class="services-top">
+
+
+            <button
+                class="back"
+                type="button"
+                onclick="backHome()"
+            >
+                ←
+            </button>
+
+
+            <div class="services-title">
+
+                <h2 id="categoryTitle"></h2>
+
+                <p id="categoryDescription"></p>
+
+            </div>
+
+
+        </div>
+
+
+        <input
+            id="serviceSearch"
+            class="search"
+            type="search"
+            placeholder="🔍 Search service..."
+            oninput="renderServices()"
+        >
+
+
+        <div
+            id="products"
+            class="products"
+        ></div>
+
+
+    </div>
+
+
+</main>
+
+
+<!-- WHATSAPP -->
+
+<a
+    class="whatsapp"
+    href="https://wa.me/2347015908401"
+    target="_blank"
+    rel="noopener"
+>
+    💬
+</a>
+
+
+<!-- MENU -->
+
+<div
+    id="overlay"
+    class="overlay"
+    onclick="closeMenu()"
+></div>
+
+
+<div id="menu">
+
+
+    <div class="menu-head">
+
+        <h3>
+            Menu
+        </h3>
+
+        <button
+            class="menu-close-btn"
+            type="button"
+            onclick="closeMenu()"
+        >
+            ✕
+        </button>
+
+    </div>
+
+
+    <div
+        class="menu-item"
+        onclick="location.href='profile.html'"
+    >
+        👤 Profile
+    </div>
+
+
+    <div
+        class="menu-item"
+        onclick="location.href='wallet.html'"
+    >
+        💰 Fund Wallet
+    </div>
+
+
+    <div
+        class="menu-item"
+        onclick="location.href='transactions.html'"
+    >
+        📜 Transactions
+    </div>
+
+
+    <div
+        class="menu-item"
+        onclick="location.href='purchases.html'"
+    >
+        🛒 My Purchases
+    </div>
+
+
+    <div
+        class="menu-item"
+        onclick="location.href='pending.html'"
+    >
+        ⏳ Pending Orders
+    </div>
+
+
+    <div
+        class="menu-item"
+        onclick="location.href='settings.html'"
+    >
+        ⚙️ Settings
+    </div>
+
+
+    <div class="menu-item">
+
+        <a
+            href="https://wa.me/2347015908401"
+            target="_blank"
+            rel="noopener"
+        >
+            💬 WhatsApp Support
+        </a>
+
+    </div>
+
+
+    <div
+        class="menu-item"
+        style="color:#b00020"
+        onclick="closeMenu()"
+    >
+        ✖ Close
+    </div>
+
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+    "https://hkfhehbhmucymusaytoe.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY,
+        {
+            auth:{
+                persistSession:true,
+                autoRefreshToken:true,
+                detectSessionInUrl:true
+            }
+        }
+    );
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let allServices = [];
+
+let selectedCategory = "Home";
+
+let realBalance = 0;
+
+let balanceHidden = false;
+
+
+/* =========================================================
+   PRODUCT LOADING STATE
+========================================================= */
+
+let productsLoading = true;
+
+let productsLoaded = false;
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+
+/* =========================================================
+   MENU
+========================================================= */
+
+function openMenu(){
+
+    document
+        .getElementById("menu")
+        .classList.add("open");
+
+    document
+        .getElementById("overlay")
+        .classList.add("open");
+}
+
+
+function closeMenu(){
+
+    document
+        .getElementById("menu")
+        .classList.remove("open");
+
+    document
+        .getElementById("overlay")
+        .classList.remove("open");
+}
+
+
+/* =========================================================
+   GREETING
+========================================================= */
+
+function updateGreeting(){
+
+    const hour =
+        new Date().getHours();
+
+
+    let greeting =
+        "Good Evening";
+
+
+    if(hour < 12){
+
+        greeting =
+            "Good Morning";
+
+    }else if(hour < 17){
+
+        greeting =
+            "Good Afternoon";
     }
 
 
-    /*      
-       Gmail has its own dedicated page      
-       and does not use the normal Product flow.      
-    */      
-      
-    if(      
-        category ===      
-        "Gmail"      
-    ){      
-      
-        location.href =      
-            "gmail.html";      
-      
-        return;      
-    }      
-      
-      
-    selectedCategory =      
-        category;      
-      
-      
-    document      
-        .getElementById(      
-            "homeView"      
-        )      
-        .style.display =      
-            "none";      
-      
-      
-    document      
-        .getElementById(      
-            "servicesView"      
-        )      
-        .classList.add(      
-            "active"      
-        );      
-      
-      
-    document      
-        .getElementById(      
-            "categoryTitle"      
-        )      
-        .textContent =      
-            category;      
-      
-      
-    document      
-        .getElementById(      
-            "categoryDescription"      
-        )      
-        .textContent =      
-            "Services available under " +      
-            category +      
-            ".";      
-      
-      
-    document      
-        .getElementById(      
-            "serviceSearch"      
-        )      
-        .value = "";      
-      
-      
-    /*      
-       Render immediately if products      
-       have already loaded.      
-      
-       If they haven't loaded yet,      
-       renderServices will show loading.      
-    */      
-      
-    renderServices();      
-      
-      
-    window.scrollTo({      
-        top:0,      
-        behavior:"smooth"      
-    });      
-}      
-      
-      
-/* =========================================================      
-   BACK HOME      
-========================================================= */      
-      
-function backHome(){      
-      
-    selectedCategory =      
-        "Home";      
-      
-      
-    document      
-        .getElementById(      
-            "servicesView"      
-        )      
-        .classList.remove(      
-            "active"      
-        );      
-      
-      
-    document      
-        .getElementById(      
-            "homeView"      
-        )      
-        .style.display =      
-            "block";      
-      
-      
-    document      
-        .getElementById(      
-            "serviceSearch"      
-        )      
-        .value = "";      
-      
-      
-    window.scrollTo({      
-        top:0,      
-        behavior:"smooth"      
-    });      
-}      
-      
-      
-/* =========================================================      
-   RENDER SERVICES      
-========================================================= */      
-      
-function renderServices(){      
-      
-    const box =      
-        document.getElementById(      
-            "products"      
-        );      
-      
-      
-    if(      
-        selectedCategory ===      
-        "Home"      
-    ){      
-      
-        box.innerHTML = "";      
-      
-        return;      
-    }      
-      
-      
-    /*      
-       If Product data hasn't arrived yet,      
-       don't falsely say "No services".      
-    */      
-      
-    if(      
-        !Array.isArray(allServices)      
-    ){      
-      
-        box.innerHTML =      
-            '<div class="msg">' +      
-            'Loading services...' +      
-            '</div>';      
-      
-        return;      
-    }      
-      
-      
-    const search =      
-        document      
-            .getElementById(      
-                "serviceSearch"      
-            )      
-            .value      
-            .trim()      
-            .toLowerCase();      
-      
-      
-    let list =      
-        allServices.filter(      
-            product =>      
-                categoryMatches(      
-                    product.category,      
-                    selectedCategory      
-                )      
-        );      
-      
-      
-    /*      
-       Search only inside      
-       the selected category.      
-    */      
-      
-    if(search){      
-      
-        list =      
-            list.filter(      
-                product =>      
-      
-                    String(      
-                        product.name || ""      
-                    )      
-                    .toLowerCase()      
-                    .includes(search)      
-      
-                    ||      
-      
-                    String(      
-                        product.description ||      
-                        ""      
-                    )      
-                    .toLowerCase()      
-                    .includes(search)      
-            );      
-    }      
-      
-      
-    if(!list.length){      
-      
-        box.innerHTML =      
-            '<div class="msg">' +      
-      
-                '<div style="font-size:40px">' +      
-                    '🔍' +      
-                '</div>' +      
-      
-                '<br>' +      
-      
-                '<strong>' +      
-                    'No services found' +      
-                '</strong>' +      
-      
-                '<p>' +      
-                    'There are currently no services in this category.' +      
-                '</p>' +      
-      
-            '</div>';      
-      
-        return;      
-    }      
-      
-      
-    box.innerHTML = "";      
-      
-      
-    list.forEach(product => {      
-      
-      
-        const stock =      
-            Number(      
-                product.stock || 0      
-            );      
-      
-      
-        const track =      
-            product.track_stock !== false;      
-      
-      
-        const status =      
-            String(      
-                product.status ||      
-                "Available"      
-            )      
-            .trim()      
-            .toLowerCase();      
-      
-      
-        const soldOut =      
-            track      
-            ?      
-            (      
-                stock <= 0 ||      
-      
-                status === "sold" ||      
-      
-                status === "sold out" ||      
-      
-                status === "unavailable"      
-            )      
-            :      
-            status === "unavailable";      
-      
-      
-        let imageHTML;      
-      
-      
-        if(      
-            product.image_url &&      
-            String(      
-                product.image_url      
-            ).trim()      
-        ){      
-      
-            imageHTML =      
-      
-                '<img ' +      
-      
-                    'src="' +      
-                    escapeHTML(      
-                        product.image_url      
-                    ) +      
-                    '" ' +      
-      
-                    'alt="" ' +      
-      
-                    'onerror="' +      
-                        "this.style.display='none';" +      
-                        "this.nextElementSibling.style.display='flex'" +      
-                    '"' +      
-      
-                '>' +      
-      
-                '<div ' +      
-                    'class="no-image" ' +      
-                    'style="display:none"' +      
-                '>' +      
-                    '🛍️' +      
-                '</div>';      
-      
-        }else{      
-      
-            imageHTML =      
-                '<div class="no-image">' +      
-                    '🛍️' +      
-                '</div>';      
-        }      
-      
-      
-        const card =      
-            document.createElement(      
-                "div"      
-            );      
-      
-      
-        card.className =      
-            "product";      
-      
-      
-        card.innerHTML =      
-      
-            imageHTML +      
-      
-            '<h3>' +      
-                escapeHTML(      
-                    product.name ||      
-                    "Unnamed Service"      
-                ) +      
-            '</h3>' +      
-      
-            '<span class="badge">' +      
-                escapeHTML(      
-                    product.category ||      
-                    "Service"      
-                ) +      
-            '</span>' +      
-      
-            '<p class="desc">' +      
-                escapeHTML(      
-                    product.description ||      
-                    ""      
-                ) +      
-            '</p>' +      
-      
-            '<p class="price">' +      
-                '₦' +      
-                Number(      
-                    product.price || 0      
-                ).toLocaleString(      
-                    "en-NG",      
-                    {      
-                        minimumFractionDigits:0,      
-                        maximumFractionDigits:2      
-                    }      
-                ) +      
-            '</p>' +      
-      
-            '<p class="stock">' +      
-                (      
-                    soldOut      
-                    ?      
-                    "❌ Sold Out / Unavailable"      
-                    :      
-                    "✅ Available"      
-                ) +      
-            '</p>' +      
-      
-            '<button ' +      
-                'class="buy" ' +      
-                (      
-                    soldOut      
-                    ? "disabled"      
-                    : ""      
-                ) +      
-                ' onclick="buyProduct(' +      
-                    Number(product.id) +      
-                ')"' +      
-            '>' +      
-      
-                (      
-                    soldOut      
-                    ? "Sold Out"      
-                    : "Buy Now"      
-                ) +      
-      
-            '</button>';      
-      
-      
-        box.appendChild(card);      
-      
-    });      
-}      
-      
-      
-/* =========================================================      
-   BUY PRODUCT      
-========================================================= */      
-      
-function buyProduct(id){      
-      
-    location.href =      
-        "products.html?id=" +      
-        encodeURIComponent(id);      
-}      
-      
-      
-/* =========================================================      
-   TRANSACTION ICON      
-========================================================= */      
-      
-function txIcon(type){      
-      
-    const t =      
-        String(type || "")      
-            .toLowerCase();      
-      
-      
-    if(      
-        t.includes("fund") ||      
-        t.includes("deposit") ||      
-        t.includes("credit")      
-    ){      
-      
-        return "＋";      
-    }      
-      
-      
-    if(      
-        t.includes("refund")      
-    ){      
-      
-        return "↩️";      
-    }      
-      
-      
-    if(      
-        t.includes("purchase") ||      
-        t.includes("buy") ||      
-        t.includes("order")      
-    ){      
-      
-        return "🛒";      
-    }      
-      
-      
-    return "🧾";      
-}      
-      
-      
-/* =========================================================      
-   TRANSACTION DATE      
-========================================================= */      
-      
-function txDate(value){      
-      
-    const date =      
-        new Date(value);      
-      
-      
-    if(      
-        isNaN(      
-            date.getTime()      
-        )      
-    ){      
-      
-        return "";      
-    }      
-      
-      
-    return date.toLocaleString(      
-        "en-NG",      
-        {      
-            day:"numeric",      
-            month:"short",      
-            year:"numeric",      
-            hour:"numeric",      
-            minute:"2-digit"      
-        }      
-    );      
-}      
-      
-      
-/* =========================================================      
-   TRANSACTION EMPTY      
-========================================================= */      
-      
-function showTxEmpty(message){      
-      
-    document      
-        .getElementById(      
-            "txLoading"      
-        )      
-        .style.display =      
-            "none";      
-      
-      
-    const empty =      
-        document.getElementById(      
-            "txEmpty"      
-        );      
-      
-      
-    empty.style.display =      
-        "flex";      
-      
-      
-    empty.innerHTML =      
-      
-        '<div>' +      
-      
-            '<div style="font-size:38px">' +      
-                '🧾' +      
-            '</div>' +      
-      
-            '<strong>' +      
-                escapeHTML(message) +      
-            '</strong>' +      
-      
-        '</div>';      
-}      
-      
-      
-/* =========================================================      
-   LOAD TRANSACTIONS      
-========================================================= */      
-      
-async function loadTransactions(){      
-      
-    const loading =      
-        document.getElementById(      
-            "txLoading"      
-        );      
-      
-      
-    const list =      
-        document.getElementById(      
-            "txList"      
-        );      
-      
-      
-    const empty =      
-        document.getElementById(      
-            "txEmpty"      
-        );      
-      
-      
-    loading.style.display =      
-        "flex";      
-      
-      
-    list.style.display =      
-        "none";      
-      
-      
-    empty.style.display =      
-        "none";      
-      
-      
-    const user =      
-        await getUserFast();      
-      
-      
-    if(!user){      
-      
-        showTxEmpty(      
-            "Login session not found."      
-        );      
-      
-        return;      
-    }      
-      
-      
-    try{      
-      
-        /*      
-           Limit this dashboard request      
-           to the newest 5 transactions.      
-      
-           Abort after 8 seconds so a slow      
-           request cannot leave the page      
-           stuck forever.      
-        */      
-      
-        const query =      
-            supabaseClient      
-                .from("transactions")      
-                .select(      
-                    "id,user_id,type,amount,status,description,created_at"      
-                )      
-                .eq(      
-                    "user_id",      
-                    user.id      
-                )      
-                .order(      
-                    "created_at",      
-                    {      
-                        ascending:false      
-                    }      
-                )      
-                .limit(5)      
-                .abortSignal(      
-                    AbortSignal.timeout(8000)      
-                );      
-      
-      
-        const {      
-            data,      
-            error      
-        } =      
-            await query;      
-      
-      
-        if(error){      
-      
-            console.error(      
-                "TRANSACTIONS ERROR:",      
-                error      
-            );      
-      
-      
-            showTxEmpty(      
-                "Unable to load transactions right now."      
-            );      
-      
-            return;      
-        }      
-      
-      
-        if(      
-            !data ||      
-            !data.length      
-        ){      
-      
-            showTxEmpty(      
-                "No transactions yet."      
-            );      
-      
-            return;      
-        }      
-      
-      
-        list.innerHTML = "";      
-      
-      
-        data.forEach(transaction => {      
-      
-      
-            const amount =      
-                Number(      
-                    transaction.amount || 0      
-                );      
-      
-      
-            const type =      
-                String(      
-                    transaction.type || ""      
-                )      
-                .toLowerCase();      
-      
-      
-            const isCredit =      
-      
-                type.includes("fund") ||      
-      
-                type.includes("deposit") ||      
-      
-                type.includes("credit") ||      
-      
-                type.includes("refund");      
-      
-      
-            const row =      
-                document.createElement(      
-                    "div"      
-                );      
-      
-      
-            row.className =      
-                "tx";      
-      
-      
-            row.innerHTML =      
-      
-                '<div class="tx-left">' +      
-      
-                    '<div class="tx-icon">' +      
-                        txIcon(      
-                            transaction.type      
-                        ) +      
-                    '</div>' +      
-      
-                    '<div class="tx-info">' +      
-      
-                        '<strong>' +      
-                            escapeHTML(      
-                                transaction.description ||      
-                                transaction.type ||      
-                                "Transaction"      
-                            ) +      
-                        '</strong>' +      
-      
-                        '<div class="tx-date">' +      
-                            escapeHTML(      
-                                txDate(      
-                                    transaction.created_at      
-                                )      
-                            ) +      
-                        '</div>' +      
-      
-                    '</div>' +      
-      
-                '</div>' +      
-      
-      
-                '<div class="tx-right">' +      
-      
-                    '<div class="tx-amount ' +      
-                        (      
-                            isCredit      
-                            ? "credit"      
-                            : "debit"      
-                        ) +      
-                    '">' +      
-      
-                        (      
-                            isCredit      
-                            ? "+"      
-                            : "-"      
-                        ) +      
-      
-                        '₦' +      
-      
-                        Math.abs(      
-                            amount      
-                        ).toLocaleString(      
-                            "en-NG",      
-                            {      
-                                minimumFractionDigits:2,      
-                                maximumFractionDigits:2      
-                            }      
-                        ) +      
-      
-                    '</div>' +      
-      
-                    '<div class="tx-status">' +      
-      
-                        escapeHTML(      
-                            transaction.status ||      
-                            "completed"      
-                        ) +      
-      
-                    '</div>' +      
-      
-                '</div>';      
-      
-      
-            list.appendChild(row);      
-      
-        });      
-      
-      
-        loading.style.display =      
-            "none";      
-      
-      
-        list.style.display =      
-            "block";      
-      
-      
-    }catch(error){      
-      
-        console.error(      
-            "TRANSACTIONS ERROR:",      
-            error      
-        );      
-      
-      
-        showTxEmpty(      
-            "Unable to load transactions right now."      
-        );      
-    }      
-}      
-      
-      
-/* =========================================================      
-   START DASHBOARD      
-========================================================= */      
-      
-async function startDashboard(){      
-      
-    updateGreeting();      
-      
-      
-    /*      
-       All four load independently.      
-      
-       So if transactions are slow,      
-       the wallet/products/watermark don't      
-       have to wait for transactions.      
-    */      
-      
-    await Promise.allSettled([      
-      
-        loadWallet(),      
-      
-        loadWatermark(),      
-      
-        loadProducts(),      
-      
-        loadTransactions()      
-      
-    ]);      
-}      
-      
-      
-startDashboard();      
-      
-</script>      
-      
-</body>      
+    document
+        .getElementById("greeting")
+        .textContent =
+            greeting +
+            ", Delight 👋";
+}
+
+
+/* =========================================================
+   BALANCE DISPLAY
+========================================================= */
+
+function showBalance(){
+
+    const element =
+        document.getElementById(
+            "walletBalance"
+        );
+
+
+    if(balanceHidden){
+
+        element.textContent =
+            "₦••••••";
+
+        return;
+    }
+
+
+    element.textContent =
+        "₦" +
+        Number(realBalance || 0)
+            .toLocaleString(
+                "en-NG",
+                {
+                    minimumFractionDigits:2,
+                    maximumFractionDigits:2
+                }
+            );
+}
+
+
+function toggleBalance(){
+
+    balanceHidden =
+        !balanceHidden;
+
+
+    document
+        .querySelector(".eye")
+        .textContent =
+            balanceHidden
+            ? "🙈"
+            : "👁";
+
+
+    showBalance();
+}
+
+
+/* =========================================================
+   GET USER
+========================================================= */
+
+async function getUserFast(){
+
+    /*
+       getSession() is faster because the current
+       session is already stored locally.
+    */
+
+    const sessionResult =
+        await supabaseClient.auth.getSession();
+
+
+    const sessionUser =
+        sessionResult
+            ?.data
+            ?.session
+            ?.user;
+
+
+    if(sessionUser){
+
+        return sessionUser;
+    }
+
+
+    /*
+       Only fall back to getUser()
+       if there is no local session.
+    */
+
+    const userResult =
+        await supabaseClient.auth.getUser();
+
+
+    return userResult
+        ?.data
+        ?.user || null;
+}
+
+
+/* =========================================================
+   WALLET
+========================================================= */
+
+async function loadWallet(){
+
+    const user =
+        await getUserFast();
+
+
+    if(!user){
+
+        location.href =
+            "login.html";
+
+        return;
+    }
+
+
+    try{
+
+        /*
+           Keep the same wallet RPC
+           that your old dashboard used.
+        */
+
+        const result =
+            await supabaseClient
+                .rpc("ensure_my_wallet");
+
+
+        if(result.error){
+
+            console.error(
+                "Wallet error:",
+                result.error
+            );
+
+
+            document
+                .getElementById(
+                    "walletBalance"
+                )
+                .textContent =
+                    "₦0.00";
+
+            return;
+        }
+
+
+        let wallet =
+            result.data;
+
+
+        if(Array.isArray(wallet)){
+
+            wallet =
+                wallet[0];
+        }
+
+
+        realBalance =
+            Number(
+                wallet?.balance ?? 0
+            );
+
+
+        showBalance();
+
+
+    }catch(error){
+
+        console.error(
+            "Wallet error:",
+            error
+        );
+
+
+        document
+            .getElementById(
+                "walletBalance"
+            )
+            .textContent =
+                "₦0.00";
+    }
+}
+
+
+/* =========================================================
+   WATERMARK
+========================================================= */
+
+async function loadWatermark(){
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("site_settings")
+                .select("value")
+                .eq("key","watermark")
+                .maybeSingle();
+
+
+        if(error){
+
+            console.error(
+                "Watermark error:",
+                error
+            );
+
+            return;
+        }
+
+
+        const text =
+            String(
+                data?.value || ""
+            ).trim();
+
+
+        const box =
+            document.getElementById(
+                "watermark"
+            );
+
+
+        box.textContent =
+            text;
+
+
+        box.style.display =
+            text
+            ? "block"
+            : "none";
+
+
+    }catch(error){
+
+        console.error(
+            "Watermark error:",
+            error
+        );
+    }
+}
+
+
+/* =========================================================
+   CATEGORY NORMALIZER
+========================================================= */
+
+function categoryKey(value){
+
+    return String(value ?? "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g," ")
+        .replace(/&/g,"and")
+        .replace(/[^a-z0-9 ]/g,"")
+        .replace(/\s+/g,"");
+}
+
+
+/* =========================================================
+   CATEGORY MATCHING
+========================================================= */
+
+function categoryMatches(
+    productCategory,
+    wantedCategory
+){
+
+    const product =
+        categoryKey(
+            productCategory
+        );
+
+
+    const wanted =
+        categoryKey(
+            wantedCategory
+        );
+
+
+    /*
+       Exact match first.
+    */
+
+    if(product === wanted){
+
+        return true;
+    }
+
+
+    /*
+       Allow the common variations
+       already present in products.
+    */
+
+    const aliases = {
+
+        "esims":[
+            "esim",
+            "esims"
+        ],
+
+        "streamingandmore":[
+            "streamingandmore",
+            "streamingmore",
+            "streamersandmore"
+        ],
+
+        "voiceclonerfakevideocall":[
+            "voiceclonerfakevideocall",
+            "voicecloner",
+            "fakevideocall"
+        ],
+
+        "allsociallogs":[
+            "allsociallogs",
+            "sociallogs"
+        ],
+
+        "allcountriesnumber":[
+            "allcountriesnumber",
+            "allcountrynumber",
+            "countriesnumber"
+        ],
+
+        "workingpictures":[
+            "workingpictures",
+            "workingpicture"
+        ],
+
+        "workinglinks":[
+            "workinglinks",
+            "workinglink"
+        ]
+
+    };
+
+
+    return (
+        aliases[wanted] || []
+    ).includes(product);
+}
+
+
+/* =========================================================
+   LOAD PRODUCTS
+========================================================= */
+
+async function loadProducts(){
+
+    /*
+       Product request has started.
+       Do not allow renderServices()
+       to say "No services found" yet.
+    */
+
+    productsLoading = true;
+
+    productsLoaded = false;
+
+
+    try{
+
+        /*
+           IMPORTANT:
+
+           There is NO is_active filter here.
+
+           Your Product records need to be loaded
+           based on the actual category stored in
+           the Product table.
+        */
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("Product")
+                .select("*")
+                .order(
+                    "id",
+                    {
+                        ascending:false
+                    }
+                );
+
+
+        if(error){
+
+            console.error(
+                "Product error:",
+                error
+            );
+
+
+            allServices = [];
+
+            productsLoading = false;
+
+            productsLoaded = true;
+
+            /*
+               If a category is already open,
+               show the final empty/error state.
+            */
+
+            if(
+                selectedCategory !==
+                "Home"
+            ){
+
+                renderServices();
+            }
+
+            return;
+        }
+
+
+        allServices =
+            data || [];
+
+
+        /*
+           Product request has completely
+           finished.
+        */
+
+        productsLoading = false;
+
+        productsLoaded = true;
+
+
+        /*
+           If a category is already open,
+           render it immediately after the
+           data arrives.
+        */
+
+        if(
+            selectedCategory !==
+            "Home"
+        ){
+
+            renderServices();
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Product error:",
+            error
+        );
+
+
+        allServices = [];
+
+        productsLoading = false;
+
+        productsLoaded = true;
+
+
+        /*
+           The request has finished even
+           though it failed, so now it is
+           safe to show the final state.
+        */
+
+        if(
+            selectedCategory !==
+            "Home"
+        ){
+
+            renderServices();
+        }
+    }
+}
+
+
+/* =========================================================
+   SELECT CATEGORY
+========================================================= */
+
+function selectCategory(category){
+
+    /*
+       Keep your virtual number system
+       exactly as it was.
+    */
+
+    if(
+        category ===
+        "All Countries Number"
+    ){
+
+        location.href =
+            "virtualnumber.html";
+
+        return;
+    }
+
+
+    selectedCategory =
+        category;
+
+
+    document
+        .getElementById(
+            "homeView"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "servicesView"
+        )
+        .classList.add(
+            "active"
+        );
+
+
+    document
+        .getElementById(
+            "categoryTitle"
+        )
+        .textContent =
+            category;
+
+
+    document
+        .getElementById(
+            "categoryDescription"
+        )
+        .textContent =
+            "Services available under " +
+            category +
+            ".";
+
+
+    document
+        .getElementById(
+            "serviceSearch"
+        )
+        .value = "";
+
+
+    /*
+       Render immediately.
+
+       If Product data is still loading,
+       renderServices() now shows the
+       proper loading message instead of
+       falsely saying "No services found".
+    */
+
+    renderServices();
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+}
+
+
+/* =========================================================
+   BACK HOME
+========================================================= */
+
+function backHome(){
+
+    selectedCategory =
+        "Home";
+
+
+    document
+        .getElementById(
+            "servicesView"
+        )
+        .classList.remove(
+            "active"
+        );
+
+
+    document
+        .getElementById(
+            "homeView"
+        )
+        .style.display =
+            "block";
+
+
+    document
+        .getElementById(
+            "serviceSearch"
+        )
+        .value = "";
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+}
+
+
+/* =========================================================
+   RENDER SERVICES
+========================================================= */
+
+function renderServices(){
+
+    const box =
+        document.getElementById(
+            "products"
+        );
+
+
+    if(
+        selectedCategory ===
+        "Home"
+    ){
+
+        box.innerHTML = "";
+
+        return;
+    }
+
+
+    /*
+       IMPORTANT:
+
+       Product data is still being fetched.
+
+       Do NOT show "No services found"
+       during this period.
+
+       Show a real loading state instead.
+    */
+
+    if(productsLoading){
+
+        box.innerHTML =
+
+            '<div class="msg">' +
+
+                '<div style="font-size:40px">' +
+                    '⏳' +
+                '</div>' +
+
+                '<br>' +
+
+                '<strong>' +
+                    'Loading services...' +
+                '</strong>' +
+
+                '<p>' +
+                    'Please wait while the services load.' +
+                '</p>' +
+
+            '</div>';
+
+        return;
+    }
+
+
+    /*
+       Product request has finished.
+       Now it is safe to check whether
+       the selected category actually
+       contains services.
+    */
+
+    if(!productsLoaded){
+
+        box.innerHTML =
+
+            '<div class="msg">' +
+
+                '<div style="font-size:40px">' +
+                    '⏳' +
+                '</div>' +
+
+                '<br>' +
+
+                '<strong>' +
+                    'Loading services...' +
+                '</strong>' +
+
+            '</div>';
+
+        return;
+    }
+
+
+    const search =
+        document
+            .getElementById(
+                "serviceSearch"
+            )
+            .value
+            .trim()
+            .toLowerCase();
+
+
+    let list =
+        allServices.filter(
+            product =>
+                categoryMatches(
+                    product.category,
+                    selectedCategory
+                )
+        );
+
+
+    /*
+       Search only inside
+       the selected category.
+    */
+
+    if(search){
+
+        list =
+            list.filter(
+                product =>
+
+                    String(
+                        product.name || ""
+                    )
+                    .toLowerCase()
+                    .includes(search)
+
+                    ||
+
+                    String(
+                        product.description ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(search)
+            );
+    }
+
+
+    if(!list.length){
+
+        box.innerHTML =
+            '<div class="msg">' +
+
+                '<div style="font-size:40px">' +
+                    '🔍' +
+                '</div>' +
+
+                '<br>' +
+
+                '<strong>' +
+                    'No services found' +
+                '</strong>' +
+
+                '<p>' +
+                    'There are currently no services in this category.' +
+                '</p>' +
+
+            '</div>';
+
+        return;
+    }
+
+
+    box.innerHTML = "";
+
+
+    list.forEach(product => {
+
+
+        const stock =
+            Number(
+                product.stock || 0
+            );
+
+
+        const track =
+            product.track_stock !== false;
+
+
+        const status =
+            String(
+                product.status ||
+                "Available"
+            )
+            .trim()
+            .toLowerCase();
+
+
+        const soldOut =
+            track
+            ?
+            (
+                stock <= 0 ||
+
+                status === "sold" ||
+
+                status === "sold out" ||
+
+                status === "unavailable"
+            )
+            :
+            status === "unavailable";
+
+
+        let imageHTML;
+
+
+        if(
+            product.image_url &&
+            String(
+                product.image_url
+            ).trim()
+        ){
+
+            imageHTML =
+
+                '<img ' +
+
+                    'src="' +
+                    escapeHTML(
+                        product.image_url
+                    ) +
+                    '" ' +
+
+                    'alt="" ' +
+
+                    'onerror="' +
+                        "this.style.display='none';" +
+                        "this.nextElementSibling.style.display='flex'" +
+                    '"' +
+
+                '>' +
+
+                '<div ' +
+                    'class="no-image" ' +
+                    'style="display:none"' +
+                '>' +
+                    '🛍️' +
+                '</div>';
+
+        }else{
+
+            imageHTML =
+                '<div class="no-image">' +
+                    '🛍️' +
+                '</div>';
+        }
+
+
+        const card =
+            document.createElement(
+                "div"
+            );
+
+
+        card.className =
+            "product";
+
+
+        card.innerHTML =
+
+            imageHTML +
+
+            '<h3>' +
+                escapeHTML(
+                    product.name ||
+                    "Unnamed Service"
+                ) +
+            '</h3>' +
+
+            '<span class="badge">' +
+                escapeHTML(
+                    product.category ||
+                    "Service"
+                ) +
+            '</span>' +
+
+            '<p class="desc">' +
+                escapeHTML(
+                    product.description ||
+                    ""
+                ) +
+            '</p>' +
+
+            '<p class="price">' +
+                '₦' +
+                Number(
+                    product.price || 0
+                ).toLocaleString(
+                    "en-NG",
+                    {
+                        minimumFractionDigits:0,
+                        maximumFractionDigits:2
+                    }
+                ) +
+            '</p>' +
+
+            '<p class="stock">' +
+                (
+                    soldOut
+                    ?
+                    "❌ Sold Out / Unavailable"
+                    :
+                    "✅ Available"
+                ) +
+            '</p>' +
+
+            '<button ' +
+                'class="buy" ' +
+                (
+                    soldOut
+                    ? "disabled"
+                    : ""
+                ) +
+                ' onclick="buyProduct(' +
+                    Number(product.id) +
+                ')"' +
+            '>' +
+
+                (
+                    soldOut
+                    ? "Sold Out"
+                    : "Buy Now"
+                ) +
+
+            '</button>';
+
+
+        box.appendChild(card);
+
+    });
+}
+
+
+/* =========================================================
+   BUY PRODUCT
+========================================================= */
+
+function buyProduct(id){
+
+    location.href =
+        "products.html?id=" +
+        encodeURIComponent(id);
+}
+
+
+/* =========================================================
+   TRANSACTION ICON
+========================================================= */
+
+function txIcon(type){
+
+    const t =
+        String(type || "")
+            .toLowerCase();
+
+
+    if(
+        t.includes("fund") ||
+        t.includes("deposit") ||
+        t.includes("credit")
+    ){
+
+        return "＋";
+    }
+
+
+    if(
+        t.includes("refund")
+    ){
+
+        return "↩️";
+    }
+
+
+    if(
+        t.includes("purchase") ||
+        t.includes("buy") ||
+        t.includes("order")
+    ){
+
+        return "🛒";
+    }
+
+
+    return "🧾";
+}
+
+
+/* =========================================================
+   TRANSACTION DATE
+========================================================= */
+
+function txDate(value){
+
+    const date =
+        new Date(value);
+
+
+    if(
+        isNaN(
+            date.getTime()
+        )
+    ){
+
+        return "";
+    }
+
+
+    return date.toLocaleString(
+        "en-NG",
+        {
+            day:"numeric",
+            month:"short",
+            year:"numeric",
+            hour:"numeric",
+            minute:"2-digit"
+        }
+    );
+}
+
+
+/* =========================================================
+   TRANSACTION EMPTY
+========================================================= */
+
+function showTxEmpty(message){
+
+    document
+        .getElementById(
+            "txLoading"
+        )
+        .style.display =
+            "none";
+
+
+    const empty =
+        document.getElementById(
+            "txEmpty"
+        );
+
+
+    empty.style.display =
+        "flex";
+
+
+    empty.innerHTML =
+
+        '<div>' +
+
+            '<div style="font-size:38px">' +
+                '🧾' +
+            '</div>' +
+
+            '<strong>' +
+                escapeHTML(message) +
+            '</strong>' +
+
+        '</div>';
+}
+
+
+/* =========================================================
+   LOAD TRANSACTIONS
+========================================================= */
+
+async function loadTransactions(){
+
+    const loading =
+        document.getElementById(
+            "txLoading"
+        );
+
+
+    const list =
+        document.getElementById(
+            "txList"
+        );
+
+
+    const empty =
+        document.getElementById(
+            "txEmpty"
+        );
+
+
+    loading.style.display =
+        "flex";
+
+
+    list.style.display =
+        "none";
+
+
+    empty.style.display =
+        "none";
+
+
+    const user =
+        await getUserFast();
+
+
+    if(!user){
+
+        showTxEmpty(
+            "Login session not found."
+        );
+
+        return;
+    }
+
+
+    try{
+
+        /*
+           Limit this dashboard request
+           to the newest 5 transactions.
+
+           Abort after 8 seconds so a slow
+           request cannot leave the page
+           stuck forever.
+        */
+
+        const query =
+            supabaseClient
+                .from("transactions")
+                .select(
+                    "id,user_id,type,amount,status,description,created_at"
+                )
+                .eq(
+                    "user_id",
+                    user.id
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending:false
+                    }
+                )
+                .limit(5)
+                .abortSignal(
+                    AbortSignal.timeout(8000)
+                );
+
+
+        const {
+            data,
+            error
+        } =
+            await query;
+
+
+        if(error){
+
+            console.error(
+                "TRANSACTIONS ERROR:",
+                error
+            );
+
+
+            showTxEmpty(
+                "Unable to load transactions right now."
+            );
+
+            return;
+        }
+
+
+        if(
+            !data ||
+            !data.length
+        ){
+
+            showTxEmpty(
+                "No transactions yet."
+            );
+
+            return;
+        }
+
+
+        list.innerHTML = "";
+
+
+        data.forEach(transaction => {
+
+
+            const amount =
+                Number(
+                    transaction.amount || 0
+                );
+
+
+            const type =
+                String(
+                    transaction.type || ""
+                )
+                .toLowerCase();
+
+
+            const isCredit =
+
+                type.includes("fund") ||
+
+                type.includes("deposit") ||
+
+                type.includes("credit") ||
+
+                type.includes("refund");
+
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "tx";
+
+
+            row.innerHTML =
+
+                '<div class="tx-left">' +
+
+                    '<div class="tx-icon">' +
+                        txIcon(
+                            transaction.type
+                        ) +
+                    '</div>' +
+
+                    '<div class="tx-info">' +
+
+                        '<strong>' +
+                            escapeHTML(
+                                transaction.description ||
+                                transaction.type ||
+                                "Transaction"
+                            ) +
+                        '</strong>' +
+
+                        '<div class="tx-date">' +
+                            escapeHTML(
+                                txDate(
+                                    transaction.created_at
+                                )
+                            ) +
+                        '</div>' +
+
+                    '</div>' +
+
+                '</div>' +
+
+
+                '<div class="tx-right">' +
+
+                    '<div class="tx-amount ' +
+                        (
+                            isCredit
+                            ? "credit"
+                            : "debit"
+                        ) +
+                    '">' +
+
+                        (
+                            isCredit
+                            ? "+"
+                            : "-"
+                        ) +
+
+                        '₦' +
+
+                        Math.abs(
+                            amount
+                        ).toLocaleString(
+                            "en-NG",
+                            {
+                                minimumFractionDigits:2,
+                                maximumFractionDigits:2
+                            }
+                        ) +
+
+                    '</div>' +
+
+                    '<div class="tx-status">' +
+
+                        escapeHTML(
+                            transaction.status ||
+                            "completed"
+                        ) +
+
+                    '</div>' +
+
+                '</div>';
+
+
+            list.appendChild(row);
+
+        });
+
+
+        loading.style.display =
+            "none";
+
+
+        list.style.display =
+            "block";
+
+
+    }catch(error){
+
+        console.error(
+            "TRANSACTIONS ERROR:",
+            error
+        );
+
+
+        showTxEmpty(
+            "Unable to load transactions right now."
+        );
+    }
+}
+
+
+/* =========================================================
+   START DASHBOARD
+========================================================= */
+
+async function startDashboard(){
+
+    updateGreeting();
+
+
+    /*
+       All four load independently.
+
+       So if transactions are slow,
+       the wallet/products/watermark don't
+       have to wait for transactions.
+    */
+
+    await Promise.allSettled([
+
+        loadWallet(),
+
+        loadWatermark(),
+
+        loadProducts(),
+
+        loadTransactions()
+
+    ]);
+}
+
+
+startDashboard();
+
+</script>
+
+</body>
 </html>
