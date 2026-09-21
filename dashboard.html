@@ -1889,12 +1889,6 @@ let balanceHidden = false;
 
 /*
    PRODUCT STATE
-
-   Products are fetched in the background.
-
-   IMPORTANT:
-   There is NO visible loading screen
-   for categories anymore.
 */
 
 let productsLoading = true;
@@ -1903,14 +1897,7 @@ let productsLoaded = false;
 
 
 /*
-   Persistent cache.
-
-   localStorage survives page reloads
-   and reopening the browser.
-
-   This is different from sessionStorage,
-   which can disappear when the session/tab
-   ends.
+   Persistent product cache.
 */
 
 const PRODUCTS_CACHE_KEY =
@@ -1961,10 +1948,47 @@ function closeMenu(){
 
 
 /* =========================================================
+   GET USER
+========================================================= */
+
+async function getUserFast(){
+
+    const sessionResult =
+        await supabaseClient
+            .auth
+            .getSession();
+
+
+    const sessionUser =
+        sessionResult
+            ?.data
+            ?.session
+            ?.user;
+
+
+    if(sessionUser){
+
+        return sessionUser;
+    }
+
+
+    const userResult =
+        await supabaseClient
+            .auth
+            .getUser();
+
+
+    return userResult
+        ?.data
+        ?.user || null;
+}
+
+
+/* =========================================================
    GREETING
 ========================================================= */
 
-function updateGreeting(){
+async function updateGreeting(){
 
     const hour =
         new Date().getHours();
@@ -1986,11 +2010,122 @@ function updateGreeting(){
     }
 
 
+    let user = null;
+
+
+    try{
+
+        user =
+            await getUserFast();
+
+    }catch(error){
+
+        console.error(
+            "Greeting user error:",
+            error
+        );
+    }
+
+
+    /*
+       Get the customer's actual profile
+       name from Supabase Auth metadata.
+
+       Supported name fields:
+
+       name
+       first_name + last_name
+       first_name
+       last_name
+    */
+
+    const metadata =
+        user?.user_metadata || {};
+
+
+    let profileName =
+        String(
+            metadata.name || ""
+        ).trim();
+
+
+    if(!profileName){
+
+        const firstName =
+            String(
+                metadata.first_name || ""
+            ).trim();
+
+
+        const lastName =
+            String(
+                metadata.last_name || ""
+            ).trim();
+
+
+        profileName =
+            (
+                firstName +
+                " " +
+                lastName
+            ).trim();
+    }
+
+
+    if(!profileName){
+
+        profileName =
+            String(
+                metadata.first_name || ""
+            ).trim();
+    }
+
+
+    if(!profileName){
+
+        profileName =
+            String(
+                metadata.last_name || ""
+            ).trim();
+    }
+
+
+    /*
+       If the customer has no saved name,
+       use the beginning of their email.
+
+       This prevents your name from being
+       displayed for everybody.
+    */
+
+    if(
+        !profileName &&
+        user?.email
+    ){
+
+        profileName =
+            String(
+                user.email
+            )
+            .split("@")[0]
+            .trim();
+    }
+
+
+    if(!profileName){
+
+        profileName =
+            "Delight";
+    }
+
+
     document
         .getElementById("greeting")
         .textContent =
             greeting +
-            ", Delight 👋";
+            ", " +
+            profileName +
+            " 👋";
 }
 
 
@@ -2045,43 +2180,6 @@ function toggleBalance(){
 
 
     showBalance();
-}
-
-
-/* =========================================================
-   GET USER
-========================================================= */
-
-async function getUserFast(){
-
-    const sessionResult =
-        await supabaseClient
-            .auth
-            .getSession();
-
-
-    const sessionUser =
-        sessionResult
-            ?.data
-            ?.session
-            ?.user;
-
-
-    if(sessionUser){
-
-        return sessionUser;
-    }
-
-
-    const userResult =
-        await supabaseClient
-            .auth
-            .getUser();
-
-
-    return userResult
-        ?.data
-        ?.user || null;
 }
 
 
@@ -2364,23 +2462,18 @@ function loadProductsFromCache(){
             parsed;
 
 
-        /*
-           Cached products are immediately
-           considered usable.
+        productsLoaded = true;
 
-           Fresh data will still be fetched
+
+        /*
+           Cache is available immediately.
+
+           Fresh data will still be requested
            in the background.
         */
 
-        productsLoaded = true;
-
         productsLoading = false;
 
-
-        /*
-           If a category is already open,
-           display the cached products now.
-        */
 
         if(
             selectedCategory !== "Home"
@@ -2435,13 +2528,7 @@ function saveProductsToCache(products){
 async function loadProducts(){
 
     /*
-       FIRST:
-
-       Read existing products from the
-       device immediately.
-
-       This is what makes category
-       opening instant on future visits.
+       Read saved products first.
     */
 
     const hasCache =
@@ -2449,13 +2536,29 @@ async function loadProducts(){
 
 
     /*
-       Fresh data is ALWAYS requested
-       in the background.
+       A fresh request is always made.
 
-       We don't make the user wait for it.
+       If there is no cache yet,
+       productsLoading stays true and
+       the category displays:
+
+       Loading services...
     */
 
     productsLoading = true;
+
+
+    /*
+       If cache exists, show it immediately.
+    */
+
+    if(
+        hasCache &&
+        selectedCategory !== "Home"
+    ){
+
+        renderServices();
+    }
 
 
     try{
@@ -2486,8 +2589,8 @@ async function loadProducts(){
 
 
             /*
-               Keep the cached products if
-               the fresh request fails.
+               Keep cached services if
+               fresh loading fails.
             */
 
             if(hasCache){
@@ -2495,6 +2598,7 @@ async function loadProducts(){
                 productsLoaded = true;
 
                 productsLoading = false;
+
 
                 if(
                     selectedCategory !== "Home"
@@ -2526,7 +2630,7 @@ async function loadProducts(){
 
 
         /*
-           Fresh Product data.
+           Fresh products received.
         */
 
         allServices =
@@ -2534,8 +2638,7 @@ async function loadProducts(){
 
 
         /*
-           Save fresh data permanently
-           to this device.
+           Save immediately to localStorage.
         */
 
         saveProductsToCache(
@@ -2549,10 +2652,8 @@ async function loadProducts(){
 
 
         /*
-           If the user tapped a category
-           while the fresh request was
-           running, display the products
-           immediately now.
+           Replace the loading/cache view
+           with the fresh services.
         */
 
         if(
@@ -2614,8 +2715,7 @@ function selectCategory(category){
 
 
     /*
-       Virtual numbers remain completely
-       separate.
+       Virtual numbers remain completely separate.
     */
 
     if(
@@ -2677,23 +2777,17 @@ function selectCategory(category){
 
 
     /*
-       IMPORTANT:
+       Render immediately.
 
-       Render immediately from the
-       cached products.
+       Cached products:
+       show immediately.
 
-       There is NO visible loading
-       screen here.
+       No cache:
+       show Loading services...
     */
 
     renderServices();
 
-
-    /*
-       Jump directly to the category.
-
-       No smooth scrolling delay.
-    */
 
     window.scrollTo({
         top:0,
@@ -2766,24 +2860,6 @@ function renderServices(){
     }
 
 
-    /*
-       IMPORTANT:
-
-       We DO NOT show:
-
-       "Loading services..."
-
-       anymore.
-
-       If cached products exist,
-       they are shown immediately.
-
-       If this is the very first visit
-       and there is no cache yet, the area
-       simply remains empty until the
-       background request finishes.
-    */
-
     const search =
         document
             .getElementById(
@@ -2805,8 +2881,7 @@ function renderServices(){
 
 
     /*
-       Search only inside
-       selected category.
+       Search inside selected category.
     */
 
     if(search){
@@ -2834,11 +2909,10 @@ function renderServices(){
 
 
     /*
-       If the background request is still
-       running AND there is no cached data,
-       don't show a fake "No services found".
+       NO CACHE / NO PRODUCTS YET.
 
-       Just wait silently.
+       Show Loading services instead
+       of showing a blank screen.
     */
 
     if(
@@ -2846,33 +2920,68 @@ function renderServices(){
         productsLoading
     ){
 
-        box.innerHTML = "";
+        box.innerHTML =
+
+            '<div class="msg">' +
+
+                '<div style="font-size:40px">' +
+                    '⏳' +
+                '</div>' +
+
+                '<br>' +
+
+                '<strong>' +
+                    'Loading services...' +
+                '</strong>' +
+
+                '<p>' +
+                    'Please wait while we load the available services.' +
+                '</p>' +
+
+            '</div>';
 
         return;
     }
 
 
     /*
-       Product request finished but there
-       are genuinely no matching products.
+       If there are no matching services
+       while fresh data is still loading,
+       continue showing Loading services.
     */
 
     if(!list.length){
 
-        /*
-           If the request is still running,
-           don't show "No services found"
-           because fresh products may still
-           arrive.
-        */
-
         if(productsLoading){
 
-            box.innerHTML = "";
+            box.innerHTML =
+
+                '<div class="msg">' +
+
+                    '<div style="font-size:40px">' +
+                        '⏳' +
+                    '</div>' +
+
+                    '<br>' +
+
+                    '<strong>' +
+                        'Loading services...' +
+                    '</strong>' +
+
+                    '<p>' +
+                        'Please wait while we load the available services.' +
+                    '</p>' +
+
+                '</div>';
 
             return;
         }
 
+
+        /*
+           Loading finished and there are
+           genuinely no products in this category.
+        */
 
         box.innerHTML =
 
@@ -2900,8 +3009,6 @@ function renderServices(){
 
     /*
        Products exist.
-
-       Render them immediately.
     */
 
     box.innerHTML = "";
@@ -3489,28 +3596,31 @@ async function loadTransactions(){
 
 async function startDashboard(){
 
+    /*
+       Greeting starts immediately.
+    */
+
     updateGreeting();
 
 
     /*
-       VERY IMPORTANT:
-
        Product loading starts immediately.
 
-       Cache is checked first, so products
-       already stored on the device become
-       available immediately.
+       No cache:
+       Loading services...
 
-       Fresh Supabase data is fetched
-       silently in the background.
+       Cache:
+       services appear immediately.
+
+       Fresh data:
+       updates silently.
     */
 
     loadProducts();
 
 
     /*
-       These remain independent and do not
-       block Product/category loading.
+       These remain independent.
     */
 
     loadWallet();
