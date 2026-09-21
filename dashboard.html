@@ -1043,7 +1043,7 @@ from turning it into a white box.
                     </button>
 
 
-                    <!-- NEW GMAIL CATEGORY -->
+                    <!-- ONLY NEW GMAIL CATEGORY -->
 
                     <button
                         class="cat"
@@ -1832,26 +1832,6 @@ async function loadProducts(){
 function selectCategory(category){
 
     /*
-       NEW GMAIL FLOW ONLY.
-
-       Gmail does NOT use the normal
-       Product/services flow.
-
-       It opens the separate gmail.html
-       page which handles gmail_inventory
-       and buy_gmail().
-    */
-
-    if(category === "Gmail"){
-
-        location.href =
-            "gmail.html";
-
-        return;
-    }
-
-
-    /*
        Keep your virtual number system
        exactly as it was.
     */
@@ -1863,6 +1843,23 @@ function selectCategory(category){
 
         location.href =
             "virtualnumber.html";
+
+        return;
+    }
+
+
+    /*
+       GMAIL ONLY:
+       Open the separate Gmail page.
+    */
+
+    if(
+        category ===
+        "Gmail"
+    ){
+
+        location.href =
+            "gmail.html";
 
         return;
     }
