@@ -1,23 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
 <title>Delight Vendor Logs</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{box-sizing:border-box}
-html,body{margin:0;padding:0}
+
+*{
+    box-sizing:border-box;
+}
+
+html,
+body{
+    margin:0;
+    padding:0;
+}
 
 body{
-    font-family:Arial,Helvetica,sans-serif;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
     background:#f3f6ff;
     color:#18203a;
 }
 
-button,input{
+button,
+input{
     font-family:inherit;
 }
 
@@ -25,85 +45,159 @@ button{
     cursor:pointer;
 }
 
-/* HEADER */
+
+/* =========================================================
+   HEADER
+========================================================= */
 
 header{
-    padding:20px 18px 14px;
+
+    padding:
+        20px
+        18px
+        14px;
+
     display:flex;
+
     align-items:center;
+
     justify-content:space-between;
+
     gap:12px;
 }
 
 .brand{
+
     display:flex;
+
     align-items:center;
+
     gap:13px;
 }
 
 .logo{
+
     width:52px;
     height:52px;
+
     border-radius:16px;
+
     background:#1028d8;
+
     color:#fff;
+
     display:flex;
+
     align-items:center;
+
     justify-content:center;
+
     font-size:25px;
+
     font-weight:900;
-    box-shadow:0 5px 14px #1028d833;
+
+    box-shadow:
+        0 5px 14px #1028d833;
 }
 
 .brand h1{
+
     margin:0;
+
     font-size:20px;
+
     color:#18203a;
 }
 
 .brand p{
-    margin:5px 0 0;
+
+    margin:
+        5px
+        0
+        0;
+
     color:#8d95b1;
+
     font-size:14px;
 }
 
 .menu-btn{
+
     width:50px;
     height:50px;
-    border:1px solid #e1e5f0;
+
+    border:
+        1px solid
+        #e1e5f0;
+
     background:#fff;
+
     border-radius:16px;
+
     font-size:24px;
+
     color:#18203a;
 }
 
-/* MAIN */
+
+/* =========================================================
+   MAIN
+========================================================= */
 
 main{
+
     max-width:850px;
+
     margin:auto;
-    padding:4px 18px 100px;
+
+    padding:
+        4px
+        18px
+        100px;
 }
 
-/* WATERMARK */
+
+/* =========================================================
+   WATERMARK
+========================================================= */
 
 .watermark{
+
     display:none;
+
     background:#fff;
-    border-left:4px solid #1028d8;
+
+    border-left:
+        4px solid
+        #1028d8;
+
     border-radius:13px;
+
     padding:14px;
-    margin:4px 0 18px;
+
+    margin:
+        4px
+        0
+        18px;
+
     color:#687089;
+
     font-size:14px;
+
     line-height:1.55;
 }
 
-/* WALLET */
+
+/* =========================================================
+   WALLET
+========================================================= */
 
 .wallet{
+
     position:relative;
+
     overflow:hidden;
+
     background:
         linear-gradient(
             135deg,
@@ -111,653 +205,1107 @@ main{
             #1020bd 58%,
             #1534e9
         );
+
     border-radius:27px;
-    padding:26px 24px 24px;
+
+    padding:
+        26px
+        24px
+        24px;
+
     color:#fff;
-    box-shadow:0 12px 30px #1028d833;
+
+    box-shadow:
+        0 12px 30px
+        #1028d833;
+
     margin-bottom:29px;
 }
 
 .wallet:before{
+
     content:"";
+
     position:absolute;
+
     width:360px;
     height:360px;
-    border:1px solid #ffffff16;
+
+    border:
+        1px solid
+        #ffffff16;
+
     border-radius:50%;
+
     right:-180px;
     top:-180px;
 }
 
 .wallet:after{
+
     content:"";
+
     position:absolute;
+
     width:330px;
     height:330px;
-    border:1px solid #ffffff12;
+
+    border:
+        1px solid
+        #ffffff12;
+
     border-radius:50%;
+
     left:-190px;
     bottom:-200px;
 }
 
-.wallet>*{
+.wallet > *{
+
     position:relative;
+
     z-index:2;
 }
 
 .wallet-top{
+
     display:flex;
+
     align-items:center;
+
     justify-content:space-between;
 }
 
 .wallet-label{
+
     margin:0;
+
     color:#b9c1eb;
+
     font-size:14px;
+
     font-weight:bold;
+
     letter-spacing:.5px;
 }
 
 .status{
+
     background:#ffffff14;
-    border:1px solid #ffffff22;
+
+    border:
+        1px solid
+        #ffffff22;
+
     color:#28e1ad;
-    padding:9px 14px;
+
+    padding:
+        9px
+        14px;
+
     border-radius:25px;
+
     font-weight:bold;
 }
 
 .status i{
+
     display:inline-block;
+
     width:8px;
     height:8px;
+
     background:#26dca8;
+
     border-radius:50%;
+
     margin-right:6px;
 }
 
 .balance-row{
+
     display:flex;
+
     align-items:center;
+
     gap:12px;
-    margin:14px 0 25px;
+
+    margin:
+        14px
+        0
+        25px;
 }
 
-/*
-IMPORTANT:
-Force the balance itself to remain transparent.
-This prevents style.css or another CSS rule
-from turning it into a white box.
-*/
-
 #walletBalance{
+
     display:block !important;
+
     width:auto !important;
+
     height:auto !important;
+
     min-height:0 !important;
+
     margin:0 !important;
+
     padding:0 !important;
+
     background:transparent !important;
+
     border:0 !important;
+
     border-radius:0 !important;
+
     color:#fff !important;
+
     font-size:36px !important;
+
     font-weight:900 !important;
+
     line-height:1.15 !important;
+
     box-shadow:none !important;
 }
 
 .eye{
+
     width:46px;
     height:46px;
+
     border-radius:50%;
-    border:1px solid #ffffff22;
+
+    border:
+        1px solid
+        #ffffff22;
+
     background:#ffffff18;
+
     color:#fff;
+
     font-size:21px;
 }
 
 .wallet-actions{
+
     display:grid;
-    grid-template-columns:1fr 1fr;
+
+    grid-template-columns:
+        1fr
+        1fr;
+
     gap:14px;
 }
 
 .wallet-action{
+
     height:58px;
+
     border-radius:17px;
+
     font-size:16px;
+
     font-weight:bold;
 }
 
 .fund{
+
     border:0;
+
     background:#fff;
+
     color:#1735c8;
 }
 
 .history{
-    border:1px solid #ffffff30;
+
+    border:
+        1px solid
+        #ffffff30;
+
     background:#ffffff15;
+
     color:#fff;
 }
 
-/* SECTION HEAD */
+
+/* =========================================================
+   SECTION HEAD
+========================================================= */
 
 .section-head{
+
     display:flex;
+
     align-items:center;
+
     justify-content:space-between;
-    margin:0 0 14px;
+
+    margin:
+        0
+        0
+        14px;
 }
 
 .section-head h2{
+
     margin:0;
+
     color:#929bb7;
+
     font-size:16px;
+
     letter-spacing:1px;
+
     text-transform:uppercase;
 }
 
 .section-head h2:after{
+
     content:"";
+
     display:inline-block;
+
     width:60px;
     height:2px;
+
     background:#dfe3ee;
+
     vertical-align:middle;
+
     margin-left:12px;
 }
 
 .view{
+
     border:0;
+
     background:none;
+
     color:#123bc8;
+
     font-size:15px;
+
     font-weight:bold;
 }
 
-/* CATEGORIES */
+
+/* =========================================================
+   CATEGORIES
+========================================================= */
 
 .categories{
+
     background:#fff;
-    border:1px solid #e1e5ef;
+
+    border:
+        1px solid
+        #e1e5ef;
+
     border-radius:25px;
+
     overflow:hidden;
-    box-shadow:0 3px 12px #00000008;
+
+    box-shadow:
+        0 3px 12px
+        #00000008;
+
     margin-bottom:31px;
 }
 
 .grid{
+
     display:grid;
-    grid-template-columns:repeat(4,1fr);
+
+    grid-template-columns:
+        repeat(4,1fr);
 }
 
 .cat{
+
     min-height:132px;
+
     border:0;
-    border-right:1px solid #e8eaf0;
-    border-bottom:1px solid #e8eaf0;
+
+    border-right:
+        1px solid
+        #e8eaf0;
+
+    border-bottom:
+        1px solid
+        #e8eaf0;
+
     background:#fff;
+
     color:#58617e;
+
     display:flex;
+
     flex-direction:column;
+
     align-items:center;
+
     justify-content:center;
+
     gap:10px;
-    padding:14px 5px;
+
+    padding:
+        14px
+        5px;
 }
 
 .cat:nth-child(4n){
+
     border-right:0;
 }
 
-.cat:nth-last-child(-n+4){
+.cat:last-child{
+
     border-bottom:0;
 }
 
 .cat:active{
+
     transform:scale(.98);
 }
 
 .cat-icon{
+
     width:55px;
     height:55px;
+
     border-radius:17px;
+
     display:flex;
+
     align-items:center;
+
     justify-content:center;
+
     font-size:27px;
+
     background:#eaf0ff;
-    border:1px solid #dce3fb;
+
+    border:
+        1px solid
+        #dce3fb;
 }
 
-.cat:nth-child(2) .cat-icon{
+.cat:nth-child(2)
+.cat-icon{
+
     background:#f3eaff;
 }
 
-.cat:nth-child(3) .cat-icon{
+.cat:nth-child(3)
+.cat-icon{
+
     background:#e6faf3;
 }
 
-.cat:nth-child(4) .cat-icon{
+.cat:nth-child(4)
+.cat-icon{
+
     background:#fff1dc;
 }
 
-.cat:nth-child(5) .cat-icon{
+.cat:nth-child(5)
+.cat-icon{
+
     background:#e8f5ff;
 }
 
-.cat:nth-child(6) .cat-icon{
+.cat:nth-child(6)
+.cat-icon{
+
     background:#eeeaff;
 }
 
-.cat:nth-child(7) .cat-icon{
+.cat:nth-child(7)
+.cat-icon{
+
     background:#e6faf4;
 }
 
-.cat:nth-child(8) .cat-icon{
+.cat:nth-child(8)
+.cat-icon{
+
     background:#fff0df;
 }
 
-.cat:nth-child(9) .cat-icon{
+.cat:nth-child(9)
+.cat-icon{
+
     background:#e8efff;
 }
 
+.cat:nth-child(10)
+.cat-icon{
+
+    background:#ffeaf0;
+}
+
 .cat-name{
+
     text-align:center;
+
     font-size:13px;
+
     line-height:1.25;
+
     font-weight:bold;
 }
 
-/* TRANSACTIONS */
+
+/* =========================================================
+   TRANSACTIONS
+========================================================= */
 
 .transactions{
+
     margin-bottom:25px;
 }
 
 .tx-card{
+
     background:#fff;
-    border:1px solid #e1e5ef;
+
+    border:
+        1px solid
+        #e1e5ef;
+
     border-radius:22px;
+
     overflow:hidden;
-    box-shadow:0 3px 12px #00000008;
+
+    box-shadow:
+        0 3px 12px
+        #00000008;
 }
 
 .tx-loading,
 .tx-empty{
+
     min-height:180px;
+
     display:flex;
+
     align-items:center;
+
     justify-content:center;
+
     text-align:center;
+
     padding:30px;
+
     color:#737c99;
 }
 
 .tx-list{
+
     width:100%;
 }
 
 .tx{
-    padding:17px 18px;
-    border-bottom:1px solid #edf0f5;
+
+    padding:
+        17px
+        18px;
+
+    border-bottom:
+        1px solid
+        #edf0f5;
+
     display:flex;
+
     justify-content:space-between;
+
     align-items:center;
+
     gap:12px;
 }
 
 .tx:last-child{
+
     border-bottom:0;
 }
 
 .tx-left{
+
     display:flex;
+
     align-items:center;
+
     gap:12px;
+
     min-width:0;
 }
 
 .tx-icon{
+
     width:43px;
     height:43px;
+
     flex:0 0 43px;
+
     border-radius:13px;
+
     background:#edf1ff;
+
     display:flex;
+
     align-items:center;
+
     justify-content:center;
+
     font-size:19px;
 }
 
 .tx-info{
+
     min-width:0;
 }
 
 .tx-info strong{
+
     display:block;
+
     font-size:14px;
+
     margin-bottom:5px;
+
     white-space:nowrap;
+
     overflow:hidden;
+
     text-overflow:ellipsis;
 }
 
 .tx-date{
+
     font-size:12px;
+
     color:#969db5;
 }
 
 .tx-right{
+
     text-align:right;
+
     flex:0 0 auto;
 }
 
 .tx-amount{
+
     font-size:14px;
+
     font-weight:800;
 }
 
 .credit{
+
     color:#009b72;
 }
 
 .debit{
+
     color:#d13c3c;
 }
 
 .tx-status{
+
     font-size:11px;
+
     color:#8d95ab;
+
     margin-top:4px;
 }
 
-/* SERVICES */
+
+/* =========================================================
+   SERVICES
+========================================================= */
 
 #servicesView{
+
     display:none;
 }
 
 #servicesView.active{
+
     display:block;
 }
 
 .services-top{
+
     display:flex;
+
     align-items:center;
+
     gap:12px;
+
     margin-bottom:18px;
 }
 
 .back{
+
     width:45px;
     height:45px;
-    border:1px solid #e0e4ef;
+
+    border:
+        1px solid
+        #e0e4ef;
+
     background:#fff;
+
     border-radius:14px;
+
     font-size:20px;
 }
 
 .services-title h2{
+
     margin:0;
+
     font-size:21px;
 }
 
 .services-title p{
-    margin:4px 0 0;
+
+    margin:
+        4px
+        0
+        0;
+
     color:#8a91aa;
+
     font-size:13px;
 }
 
 .search{
+
     width:100%;
+
     height:52px;
-    border:1px solid #e0e4ef;
+
+    border:
+        1px solid
+        #e0e4ef;
+
     border-radius:15px;
+
     background:#fff;
-    padding:0 16px;
+
+    padding:
+        0
+        16px;
+
     font-size:15px;
+
     outline:none;
+
     margin-bottom:17px;
 }
 
 .search:focus{
+
     border-color:#1028d8;
 }
 
 .products{
+
     display:grid;
+
     grid-template-columns:1fr;
+
     gap:15px;
 }
 
 .product{
+
     background:#fff;
-    border:1px solid #e3e6ef;
+
+    border:
+        1px solid
+        #e3e6ef;
+
     border-radius:20px;
+
     padding:15px;
-    box-shadow:0 3px 12px #00000008;
+
+    box-shadow:
+        0 3px 12px
+        #00000008;
+
     overflow:hidden;
 }
 
 .product img,
 .no-image{
+
     width:100%;
+
     height:190px;
+
     border-radius:14px;
+
     object-fit:cover;
+
     background:#edf0f6;
 }
 
 .no-image{
+
     display:flex;
+
     align-items:center;
+
     justify-content:center;
+
     font-size:45px;
 }
 
 .product h3{
-    margin:14px 0 8px;
+
+    margin:
+        14px
+        0
+        8px;
+
     font-size:18px;
 }
 
 .badge{
+
     display:inline-block;
+
     background:#edf1ff;
+
     color:#3149bb;
-    padding:6px 9px;
+
+    padding:
+        6px
+        9px;
+
     border-radius:8px;
+
     font-size:11px;
+
     font-weight:bold;
 }
 
 .desc{
+
     color:#69708b;
+
     font-size:14px;
+
     line-height:1.5;
+
     white-space:pre-wrap;
 }
 
 .price{
+
     font-size:20px;
+
     font-weight:900;
-    margin:13px 0 7px;
+
+    margin:
+        13px
+        0
+        7px;
 }
 
 .stock{
-    margin:0 0 9px;
+
+    margin:
+        0
+        0
+        9px;
+
     color:#666d83;
+
     font-size:13px;
 }
 
 .buy{
+
     width:100%;
+
     height:48px;
+
     border:0;
+
     border-radius:12px;
+
     background:#1028d8;
+
     color:#fff;
+
     font-size:15px;
+
     font-weight:bold;
 }
 
 .buy:disabled{
+
     background:#999;
+
     cursor:not-allowed;
 }
 
 .msg{
+
     background:#fff;
-    border:1px solid #e3e6ee;
+
+    border:
+        1px solid
+        #e3e6ee;
+
     border-radius:18px;
-    padding:35px 20px;
+
+    padding:
+        35px
+        20px;
+
     text-align:center;
+
     color:#747b95;
 }
 
-/* WHATSAPP */
+
+/* =========================================================
+   WHATSAPP
+========================================================= */
 
 .whatsapp{
+
     position:fixed;
+
     right:18px;
+
     bottom:19px;
+
     width:57px;
     height:57px;
+
     border-radius:50%;
+
     background:#25d366;
+
     color:#fff;
+
     text-decoration:none;
+
     display:flex;
+
     align-items:center;
+
     justify-content:center;
+
     font-size:27px;
-    box-shadow:0 4px 15px #00000025;
+
+    box-shadow:
+        0 4px 15px
+        #00000025;
+
     z-index:90;
 }
 
-/* MENU */
+
+/* =========================================================
+   MENU
+========================================================= */
 
 .overlay{
+
     display:none;
+
     position:fixed;
+
     inset:0;
+
     background:#00000045;
+
     z-index:199;
 }
 
 .overlay.open{
+
     display:block;
 }
 
 #menu{
+
     position:fixed;
+
     right:0;
+
     top:0;
+
     width:300px;
+
     max-width:88%;
+
     height:100vh;
+
     background:#fff;
+
     z-index:200;
+
     padding:23px;
-    box-shadow:-5px 0 20px #00000020;
-    transform:translateX(100%);
+
+    box-shadow:
+        -5px 0 20px
+        #00000020;
+
+    transform:
+        translateX(100%);
+
     transition:.2s;
+
     overflow-y:auto;
 }
 
 #menu.open{
-    transform:translateX(0);
+
+    transform:
+        translateX(0);
 }
 
 .menu-head{
+
     display:flex;
+
     align-items:center;
+
     justify-content:space-between;
+
     margin-bottom:15px;
 }
 
 .menu-head h3{
+
     margin:0;
+
     font-size:20px;
 }
 
 .menu-close-btn{
+
     width:40px;
     height:40px;
+
     border:0;
+
     background:#f1f3f8;
+
     border-radius:12px;
 }
 
 .menu-item{
-    padding:16px 5px;
-    border-bottom:1px solid #edf0f4;
+
+    padding:
+        16px
+        5px;
+
+    border-bottom:
+        1px solid
+        #edf0f4;
+
     font-weight:bold;
+
     color:#33394f;
 }
 
 .menu-item a{
+
     color:inherit;
+
     text-decoration:none;
+
     display:block;
 }
 
-/* MOBILE */
+
+/* =========================================================
+   MOBILE
+========================================================= */
 
 @media(max-width:600px){
 
     header{
-        padding:17px 15px 13px;
+
+        padding:
+            17px
+            15px
+            13px;
     }
 
     main{
+
         padding-left:15px;
         padding-right:15px;
     }
 
     .logo{
+
         width:48px;
         height:48px;
     }
 
     .brand h1{
+
         font-size:18px;
     }
 
     .wallet{
-        padding:24px 19px 21px;
+
+        padding:
+            24px
+            19px
+            21px;
+
         border-radius:24px;
     }
 
     #walletBalance{
+
         font-size:32px !important;
     }
 
     .cat{
+
         min-height:122px;
     }
 
     .cat-icon{
+
         width:48px;
         height:48px;
+
         font-size:23px;
+
         border-radius:15px;
     }
 
     .cat-name{
+
         font-size:11.5px;
     }
 
     .tx{
-        padding:15px 13px;
+
+        padding:
+            15px
+            13px;
     }
 
     .tx-icon{
+
         width:39px;
         height:39px;
+
         flex-basis:39px;
     }
 }
@@ -765,28 +1313,31 @@ from turning it into a white box.
 @media(max-width:380px){
 
     .wallet-actions{
+
         grid-template-columns:1fr;
     }
 
     .cat-name{
+
         font-size:10.5px;
     }
 
     .cat-icon{
+
         width:43px;
         height:43px;
+
         font-size:21px;
     }
 }
 
 </style>
+
 </head>
 
 
 <body>
 
-
-<!-- HEADER -->
 
 <header>
 
@@ -824,8 +1375,6 @@ from turning it into a white box.
 
 <main>
 
-
-    <!-- WATERMARK -->
 
     <div
         id="watermark"
@@ -918,13 +1467,16 @@ from turning it into a white box.
                         class="cat"
                         onclick="selectCategory('All Social Logs')"
                     >
+
                         <div class="cat-icon">
                             📱
                         </div>
 
                         <div class="cat-name">
-                            All Social<br>Logs
+                            All Social<br>
+                            Logs
                         </div>
+
                     </button>
 
 
@@ -932,13 +1484,16 @@ from turning it into a white box.
                         class="cat"
                         onclick="selectCategory('Working Pictures')"
                     >
+
                         <div class="cat-icon">
                             🖼️
                         </div>
 
                         <div class="cat-name">
-                            Working<br>Pictures
+                            Working<br>
+                            Pictures
                         </div>
+
                     </button>
 
 
@@ -946,6 +1501,7 @@ from turning it into a white box.
                         class="cat"
                         onclick="selectCategory('Formats')"
                     >
+
                         <div class="cat-icon">
                             📄
                         </div>
@@ -953,6 +1509,7 @@ from turning it into a white box.
                         <div class="cat-name">
                             Formats
                         </div>
+
                     </button>
 
 
@@ -960,13 +1517,16 @@ from turning it into a white box.
                         class="cat"
                         onclick="selectCategory('Working Links')"
                     >
+
                         <div class="cat-icon">
                             🔗
                         </div>
 
                         <div class="cat-name">
-                            Working<br>Links
+                            Working<br>
+                            Links
                         </div>
+
                     </button>
 
 
@@ -974,6 +1534,7 @@ from turning it into a white box.
                         class="cat"
                         onclick="selectCategory('Voice Cloner/Fake Video Call')"
                     >
+
                         <div class="cat-icon">
                             🎙️
                         </div>
@@ -982,6 +1543,7 @@ from turning it into a white box.
                             Voice Cloner/<br>
                             Fake Video Call
                         </div>
+
                     </button>
 
 
@@ -989,6 +1551,7 @@ from turning it into a white box.
                         class="cat"
                         onclick="selectCategory('All Countries Number')"
                     >
+
                         <div class="cat-icon">
                             📞
                         </div>
@@ -997,6 +1560,7 @@ from turning it into a white box.
                             All Countries<br>
                             Number
                         </div>
+
                     </button>
 
 
@@ -1004,6 +1568,7 @@ from turning it into a white box.
                         class="cat"
                         onclick="selectCategory('Streaming & More')"
                     >
+
                         <div class="cat-icon">
                             📺
                         </div>
@@ -1012,6 +1577,7 @@ from turning it into a white box.
                             Streaming<br>
                             & More
                         </div>
+
                     </button>
 
 
@@ -1019,6 +1585,7 @@ from turning it into a white box.
                         class="cat"
                         onclick="selectCategory('ESIMS')"
                     >
+
                         <div class="cat-icon">
                             📡
                         </div>
@@ -1026,6 +1593,7 @@ from turning it into a white box.
                         <div class="cat-name">
                             ESIMS
                         </div>
+
                     </button>
 
 
@@ -1033,6 +1601,7 @@ from turning it into a white box.
                         class="cat"
                         onclick="selectCategory('VPN')"
                     >
+
                         <div class="cat-icon">
                             🔐
                         </div>
@@ -1040,6 +1609,25 @@ from turning it into a white box.
                         <div class="cat-name">
                             VPN
                         </div>
+
+                    </button>
+
+
+                    <!-- GMAIL ADDED BACK -->
+
+                    <button
+                        class="cat"
+                        onclick="selectCategory('Gmail')"
+                    >
+
+                        <div class="cat-icon">
+                            📧
+                        </div>
+
+                        <div class="cat-name">
+                            Gmail
+                        </div>
+
                     </button>
 
 
@@ -1059,7 +1647,6 @@ from turning it into a white box.
                 <h2>
                     Recent Transactions
                 </h2>
-
 
                 <button
                     class="view"
@@ -1103,13 +1690,12 @@ from turning it into a white box.
     </div>
 
 
-    <!-- CATEGORY SERVICES -->
+    <!-- SERVICES -->
 
     <div id="servicesView">
 
 
         <div class="services-top">
-
 
             <button
                 class="back"
@@ -1122,12 +1708,15 @@ from turning it into a white box.
 
             <div class="services-title">
 
-                <h2 id="categoryTitle"></h2>
+                <h2
+                    id="categoryTitle"
+                ></h2>
 
-                <p id="categoryDescription"></p>
+                <p
+                    id="categoryDescription"
+                ></p>
 
             </div>
-
 
         </div>
 
@@ -1269,12 +1858,14 @@ from turning it into a white box.
 
 <script>
 
+
 /* =========================================================
    SUPABASE
 ========================================================= */
 
 const SUPABASE_URL =
     "https://hkfhehbhmucymusaytoe.supabase.co";
+
 
 const SUPABASE_KEY =
     "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
@@ -1307,13 +1898,21 @@ let realBalance = 0;
 let balanceHidden = false;
 
 
-/* =========================================================
+/*
    PRODUCT LOADING STATE
-========================================================= */
+*/
 
 let productsLoading = true;
 
 let productsLoaded = false;
+
+
+/*
+   SESSION CACHE KEY
+*/
+
+const PRODUCTS_CACHE_KEY =
+    "delight_vendor_products_cache_v1";
 
 
 /* =========================================================
@@ -1394,7 +1993,7 @@ function updateGreeting(){
 
 
 /* =========================================================
-   BALANCE DISPLAY
+   BALANCE
 ========================================================= */
 
 function showBalance(){
@@ -1416,14 +2015,16 @@ function showBalance(){
 
     element.textContent =
         "₦" +
-        Number(realBalance || 0)
-            .toLocaleString(
-                "en-NG",
-                {
-                    minimumFractionDigits:2,
-                    maximumFractionDigits:2
-                }
-            );
+        Number(
+            realBalance || 0
+        )
+        .toLocaleString(
+            "en-NG",
+            {
+                minimumFractionDigits:2,
+                maximumFractionDigits:2
+            }
+        );
 }
 
 
@@ -1451,13 +2052,10 @@ function toggleBalance(){
 
 async function getUserFast(){
 
-    /*
-       getSession() is faster because the current
-       session is already stored locally.
-    */
-
     const sessionResult =
-        await supabaseClient.auth.getSession();
+        await supabaseClient
+            .auth
+            .getSession();
 
 
     const sessionUser =
@@ -1473,13 +2071,10 @@ async function getUserFast(){
     }
 
 
-    /*
-       Only fall back to getUser()
-       if there is no local session.
-    */
-
     const userResult =
-        await supabaseClient.auth.getUser();
+        await supabaseClient
+            .auth
+            .getUser();
 
 
     return userResult
@@ -1509,14 +2104,11 @@ async function loadWallet(){
 
     try{
 
-        /*
-           Keep the same wallet RPC
-           that your old dashboard used.
-        */
-
         const result =
             await supabaseClient
-                .rpc("ensure_my_wallet");
+                .rpc(
+                    "ensure_my_wallet"
+                );
 
 
         if(result.error){
@@ -1591,7 +2183,10 @@ async function loadWatermark(){
             await supabaseClient
                 .from("site_settings")
                 .select("value")
-                .eq("key","watermark")
+                .eq(
+                    "key",
+                    "watermark"
+                )
                 .maybeSingle();
 
 
@@ -1639,7 +2234,7 @@ async function loadWatermark(){
 
 
 /* =========================================================
-   CATEGORY NORMALIZER
+   CATEGORY KEY
 ========================================================= */
 
 function categoryKey(value){
@@ -1675,20 +2270,11 @@ function categoryMatches(
         );
 
 
-    /*
-       Exact match first.
-    */
-
     if(product === wanted){
 
         return true;
     }
 
-
-    /*
-       Allow the common variations
-       already present in products.
-    */
 
     const aliases = {
 
@@ -1740,32 +2326,147 @@ function categoryMatches(
 
 
 /* =========================================================
+   READ PRODUCT CACHE
+========================================================= */
+
+function loadProductsFromCache(){
+
+    try{
+
+        const saved =
+            sessionStorage.getItem(
+                PRODUCTS_CACHE_KEY
+            );
+
+
+        if(!saved){
+
+            return false;
+        }
+
+
+        const parsed =
+            JSON.parse(saved);
+
+
+        if(
+            !Array.isArray(parsed)
+        ){
+
+            return false;
+        }
+
+
+        if(!parsed.length){
+
+            return false;
+        }
+
+
+        allServices =
+            parsed;
+
+
+        productsLoading =
+            false;
+
+
+        productsLoaded =
+            true;
+
+
+        /*
+           If user already opened a
+           category, show cached products
+           immediately.
+        */
+
+        if(
+            selectedCategory !==
+            "Home"
+        ){
+
+            renderServices();
+        }
+
+
+        return true;
+
+
+    }catch(error){
+
+        console.error(
+            "Product cache error:",
+            error
+        );
+
+        return false;
+    }
+}
+
+
+/* =========================================================
+   SAVE PRODUCT CACHE
+========================================================= */
+
+function saveProductsToCache(products){
+
+    try{
+
+        sessionStorage.setItem(
+            PRODUCTS_CACHE_KEY,
+            JSON.stringify(products)
+        );
+
+    }catch(error){
+
+        console.error(
+            "Product cache save error:",
+            error
+        );
+    }
+}
+
+
+/* =========================================================
    LOAD PRODUCTS
 ========================================================= */
 
 async function loadProducts(){
 
     /*
-       Product request has started.
-       Do not allow renderServices()
-       to say "No services found" yet.
+       First try cached products.
+
+       This makes the dashboard feel
+       instant when the user has already
+       opened it before.
     */
 
-    productsLoading = true;
+    const hasCache =
+        loadProductsFromCache();
 
-    productsLoaded = false;
+
+    /*
+       If there is no cache, keep the
+       real loading state active.
+    */
+
+    if(!hasCache){
+
+        productsLoading = true;
+
+        productsLoaded = false;
+    }
 
 
     try{
 
         /*
-           IMPORTANT:
+           Only select columns actually
+           needed by the dashboard.
 
-           There is NO is_active filter here.
-
-           Your Product records need to be loaded
-           based on the actual category stored in
-           the Product table.
+           This is lighter than select("*")
+           and reduces the response size.
         */
 
         const {
@@ -1774,7 +2475,9 @@ async function loadProducts(){
         } =
             await supabaseClient
                 .from("Product")
-                .select("*")
+                .select(
+                    "id,name,price,category,description,image_url,stock,status,track_stock"
+                )
                 .order(
                     "id",
                     {
@@ -1791,16 +2494,23 @@ async function loadProducts(){
             );
 
 
-            allServices = [];
+            /*
+               If cache exists, keep using it.
+               Do not wipe the working cached
+               products just because the fresh
+               request failed.
+            */
+
+            if(!hasCache){
+
+                allServices = [];
+            }
+
 
             productsLoading = false;
 
             productsLoaded = true;
 
-            /*
-               If a category is already open,
-               show the final empty/error state.
-            */
 
             if(
                 selectedCategory !==
@@ -1809,6 +2519,7 @@ async function loadProducts(){
 
                 renderServices();
             }
+
 
             return;
         }
@@ -1819,9 +2530,15 @@ async function loadProducts(){
 
 
         /*
-           Product request has completely
-           finished.
+           Save the newest Product data
+           so next dashboard opening can
+           show it immediately.
         */
+
+        saveProductsToCache(
+            allServices
+        );
+
 
         productsLoading = false;
 
@@ -1829,9 +2546,9 @@ async function loadProducts(){
 
 
         /*
-           If a category is already open,
-           render it immediately after the
-           data arrives.
+           If user opened a category while
+           the request was loading, render
+           it immediately now.
         */
 
         if(
@@ -1851,18 +2568,16 @@ async function loadProducts(){
         );
 
 
-        allServices = [];
+        if(!hasCache){
+
+            allServices = [];
+        }
+
 
         productsLoading = false;
 
         productsLoaded = true;
 
-
-        /*
-           The request has finished even
-           though it failed, so now it is
-           safe to show the final state.
-        */
 
         if(
             selectedCategory !==
@@ -1880,6 +2595,27 @@ async function loadProducts(){
 ========================================================= */
 
 function selectCategory(category){
+
+    /*
+       Gmail is a separate system.
+
+       It MUST NOT enter the normal
+       Product/category rendering system.
+
+       It goes directly to gmail.html.
+    */
+
+    if(
+        category ===
+        "Gmail"
+    ){
+
+        location.href =
+            "gmail.html";
+
+        return;
+    }
+
 
     /*
        Keep your virtual number system
@@ -1945,12 +2681,11 @@ function selectCategory(category){
 
 
     /*
-       Render immediately.
+       If products are already cached/loaded,
+       this renders immediately.
 
-       If Product data is still loading,
-       renderServices() now shows the
-       proper loading message instead of
-       falsely saying "No services found".
+       If they are still loading,
+       it shows the loading state.
     */
 
     renderServices();
@@ -2028,14 +2763,10 @@ function renderServices(){
 
 
     /*
-       IMPORTANT:
+       REAL loading state.
 
-       Product data is still being fetched.
-
-       Do NOT show "No services found"
-       during this period.
-
-       Show a real loading state instead.
+       This prevents the false
+       "No services found" message.
     */
 
     if(productsLoading){
@@ -2065,10 +2796,7 @@ function renderServices(){
 
 
     /*
-       Product request has finished.
-       Now it is safe to check whether
-       the selected category actually
-       contains services.
+       Product request has completed.
     */
 
     if(!productsLoaded){
@@ -2115,7 +2843,7 @@ function renderServices(){
 
     /*
        Search only inside
-       the selected category.
+       selected category.
     */
 
     if(search){
@@ -2145,6 +2873,7 @@ function renderServices(){
     if(!list.length){
 
         box.innerHTML =
+
             '<div class="msg">' +
 
                 '<div style="font-size:40px">' +
@@ -2241,14 +2970,19 @@ function renderServices(){
                     'class="no-image" ' +
                     'style="display:none"' +
                 '>' +
+
                     '🛍️' +
+
                 '</div>';
 
         }else{
 
             imageHTML =
+
                 '<div class="no-image">' +
+
                     '🛍️' +
+
                 '</div>';
         }
 
@@ -2268,28 +3002,36 @@ function renderServices(){
             imageHTML +
 
             '<h3>' +
+
                 escapeHTML(
                     product.name ||
                     "Unnamed Service"
                 ) +
+
             '</h3>' +
 
             '<span class="badge">' +
+
                 escapeHTML(
                     product.category ||
                     "Service"
                 ) +
+
             '</span>' +
 
             '<p class="desc">' +
+
                 escapeHTML(
                     product.description ||
                     ""
                 ) +
+
             '</p>' +
 
             '<p class="price">' +
+
                 '₦' +
+
                 Number(
                     product.price || 0
                 ).toLocaleString(
@@ -2299,9 +3041,11 @@ function renderServices(){
                         maximumFractionDigits:2
                     }
                 ) +
+
             '</p>' +
 
             '<p class="stock">' +
+
                 (
                     soldOut
                     ?
@@ -2309,18 +3053,27 @@ function renderServices(){
                     :
                     "✅ Available"
                 ) +
+
             '</p>' +
 
             '<button ' +
+
                 'class="buy" ' +
+
                 (
                     soldOut
                     ? "disabled"
                     : ""
                 ) +
+
                 ' onclick="buyProduct(' +
-                    Number(product.id) +
+
+                    Number(
+                        product.id
+                    ) +
+
                 ')"' +
+
             '>' +
 
                 (
@@ -2357,8 +3110,10 @@ function buyProduct(id){
 function txIcon(type){
 
     const t =
-        String(type || "")
-            .toLowerCase();
+        String(
+            type || ""
+        )
+        .toLowerCase();
 
 
     if(
@@ -2518,17 +3273,11 @@ async function loadTransactions(){
 
     try{
 
-        /*
-           Limit this dashboard request
-           to the newest 5 transactions.
-
-           Abort after 8 seconds so a slow
-           request cannot leave the page
-           stuck forever.
-        */
-
-        const query =
-            supabaseClient
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
                 .from("transactions")
                 .select(
                     "id,user_id,type,amount,status,description,created_at"
@@ -2543,17 +3292,7 @@ async function loadTransactions(){
                         ascending:false
                     }
                 )
-                .limit(5)
-                .abortSignal(
-                    AbortSignal.timeout(8000)
-                );
-
-
-        const {
-            data,
-            error
-        } =
-            await query;
+                .limit(5);
 
 
         if(error){
@@ -2630,42 +3369,49 @@ async function loadTransactions(){
                 '<div class="tx-left">' +
 
                     '<div class="tx-icon">' +
+
                         txIcon(
                             transaction.type
                         ) +
+
                     '</div>' +
 
                     '<div class="tx-info">' +
 
                         '<strong>' +
+
                             escapeHTML(
                                 transaction.description ||
                                 transaction.type ||
                                 "Transaction"
                             ) +
+
                         '</strong>' +
 
                         '<div class="tx-date">' +
+
                             escapeHTML(
                                 txDate(
                                     transaction.created_at
                                 )
                             ) +
+
                         '</div>' +
 
                     '</div>' +
 
                 '</div>' +
 
-
                 '<div class="tx-right">' +
 
                     '<div class="tx-amount ' +
+
                         (
                             isCredit
                             ? "credit"
                             : "debit"
                         ) +
+
                     '">' +
 
                         (
@@ -2678,7 +3424,8 @@ async function loadTransactions(){
 
                         Math.abs(
                             amount
-                        ).toLocaleString(
+                        )
+                        .toLocaleString(
                             "en-NG",
                             {
                                 minimumFractionDigits:2,
@@ -2738,30 +3485,40 @@ async function startDashboard(){
 
 
     /*
-       All four load independently.
+       Start Product loading immediately.
 
-       So if transactions are slow,
-       the wallet/products/watermark don't
-       have to wait for transactions.
+       loadProducts() first checks the
+       session cache, so returning users
+       can get the products almost instantly.
+
+       The fresh Supabase request continues
+       in the background.
     */
 
-    await Promise.allSettled([
+    loadProducts();
 
-        loadWallet(),
 
-        loadWatermark(),
+    /*
+       Other dashboard data loads separately.
+    */
 
-        loadProducts(),
+    loadWallet();
 
-        loadTransactions()
+    loadWatermark();
 
-    ]);
+    loadTransactions();
 }
 
 
+/* =========================================================
+   START
+========================================================= */
+
 startDashboard();
+
 
 </script>
 
 </body>
+
 </html>
