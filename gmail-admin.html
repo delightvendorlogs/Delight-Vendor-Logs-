@@ -258,23 +258,39 @@
   <h1>⚡ Delight Vendor Logs — Gmail Admin</h1>
 
   <div class="header-actions">
-    <button class="reset-btn" onclick="resetPassword()">
+
+    <button
+      class="reset-btn"
+      onclick="resetPassword()"
+    >
       Reset Password
     </button>
 
-    <button class="logout-btn" onclick="logout()">
+    <button
+      class="logout-btn"
+      onclick="logout()"
+    >
       Logout
     </button>
+
   </div>
 </header>
 
+
 <div class="container">
 
-  <div id="message" class="message"></div>
+  <div
+    id="message"
+    class="message"
+  ></div>
+
 
   <div class="top-grid">
 
-    <!-- ADD GMAIL -->
+    <!-- =========================
+         ADD GMAIL
+    ========================== -->
+
     <div class="card">
 
       <h2>ADD GMAIL</h2>
@@ -313,7 +329,10 @@
     </div>
 
 
-    <!-- ADD CREDENTIAL -->
+    <!-- =========================
+         ADD CREDENTIAL
+    ========================== -->
+
     <div class="card">
 
       <h2>ADD CREDENTIAL</h2>
@@ -323,10 +342,13 @@
       </label>
 
       <select id="gmailSelect">
+
         <option value="">
           Select Gmail
         </option>
+
       </select>
+
 
       <label for="credentialInput">
         Credential
@@ -338,9 +360,11 @@
         placeholder="Enter Gmail credential"
       ></textarea>
 
+
       <div class="small-note">
         Adding a credential again for the same Gmail replaces the existing credential.
       </div>
+
 
       <button
         id="addCredentialBtn"
@@ -355,7 +379,10 @@
   </div>
 
 
-  <!-- INVENTORY -->
+  <!-- =========================
+       INVENTORY
+  ========================== -->
+
   <div class="card inventory-card">
 
     <div class="inventory-header">
@@ -373,6 +400,7 @@
 
     </div>
 
+
     <input
       id="searchInput"
       class="search-box"
@@ -381,11 +409,13 @@
       oninput="renderInventory()"
     >
 
+
     <div class="table-wrap">
 
       <table>
 
         <thead>
+
           <tr>
             <th>Gmail</th>
             <th>Price</th>
@@ -394,7 +424,9 @@
             <th>Created</th>
             <th>Action</th>
           </tr>
+
         </thead>
+
 
         <tbody id="inventoryBody"></tbody>
 
@@ -409,13 +441,21 @@
 
 <script>
 
+  // =====================================================
+  // SUPABASE
+  // =====================================================
+
   const SUPABASE_URL =
     'https://hkfhehbhmucymusaytoe.supabase.co';
 
   const SUPABASE_ANON_KEY =
     'sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_';
 
-  const { createClient } =
+
+  // IMPORTANT:
+  // Use the Supabase client created here.
+  // Do NOT use "supabase.rpc()" or "supabase.auth".
+  const supabaseClient =
     supabase.createClient(
       SUPABASE_URL,
       SUPABASE_ANON_KEY
@@ -425,143 +465,256 @@
   let inventory = [];
 
 
-  // =========================
+  // =====================================================
   // MESSAGE
-  // =========================
+  // =====================================================
 
-  function showMessage(message, type = 'success') {
+  function showMessage(
+    message,
+    type = 'success'
+  ) {
 
     const box =
-      document.getElementById('message');
+      document.getElementById(
+        'message'
+      );
 
     box.textContent = message;
 
     box.className =
       'message ' + type;
 
-    box.style.display = 'block';
+    box.style.display =
+      'block';
+
 
     setTimeout(() => {
-      box.style.display = 'none';
+
+      box.style.display =
+        'none';
+
     }, 5000);
   }
 
 
-  // =========================
+  // =====================================================
   // AUTH CHECK
-  // =========================
+  // =====================================================
 
   async function checkAdmin() {
 
-    const {
-      data: {
-        session
+    try {
+
+      const {
+        data: {
+          session
+        },
+        error: sessionError
+      } =
+        await supabaseClient.auth.getSession();
+
+
+      if (sessionError) {
+
+        console.error(
+          'Session error:',
+          sessionError
+        );
+
+        window.location.href =
+          'login.html';
+
+        return false;
       }
-    } = await supabase.auth.getSession();
 
-    if (!session) {
-      window.location.href = 'login.html';
+
+      if (!session) {
+
+        window.location.href =
+          'login.html';
+
+        return false;
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.rpc(
+          'is_admin'
+        );
+
+
+      if (error) {
+
+        console.error(
+          'Admin check error:',
+          error
+        );
+
+        alert(
+          error.message ||
+          'Unable to verify admin access.'
+        );
+
+        window.location.href =
+          'login.html';
+
+        return false;
+      }
+
+
+      if (!data) {
+
+        alert(
+          'Not authorized.'
+        );
+
+        window.location.href =
+          'login.html';
+
+        return false;
+      }
+
+
+      return true;
+
+    } catch (error) {
+
+      console.error(
+        'Auth check failed:',
+        error
+      );
+
+      window.location.href =
+        'login.html';
+
       return false;
     }
-
-    const {
-      data,
-      error
-    } = await supabase.rpc('is_admin');
-
-    if (error || !data) {
-      alert('Not authorized.');
-      window.location.href = 'login.html';
-      return false;
-    }
-
-    return true;
   }
 
 
-  // =========================
+  // =====================================================
   // ADD GMAIL
-  // =========================
+  // =====================================================
 
   async function addGmail() {
 
     const gmail =
-      document.getElementById('gmailInput')
-        .value
-        .trim();
+      document.getElementById(
+        'gmailInput'
+      )
+      .value
+      .trim();
+
 
     const price =
-      document.getElementById('priceInput')
-        .value;
+      document.getElementById(
+        'priceInput'
+      )
+      .value;
+
 
     if (!gmail) {
+
       showMessage(
         'Enter the Gmail address.',
         'error'
       );
+
       return;
     }
 
-    if (price === '' || Number(price) < 0) {
+
+    if (
+      price === '' ||
+      Number(price) < 0 ||
+      !Number.isFinite(Number(price))
+    ) {
+
       showMessage(
         'Enter a valid price.',
         'error'
       );
+
       return;
     }
 
+
     const button =
-      document.getElementById('addGmailBtn');
+      document.getElementById(
+        'addGmailBtn'
+      );
+
 
     button.disabled = true;
-    button.textContent = 'ADDING...';
+
+    button.textContent =
+      'ADDING...';
+
 
     try {
 
       const {
         data,
         error
-      } = await supabase.rpc(
-        'admin_add_gmail',
-        {
-          p_gmail: gmail,
-          p_price: Number(price)
-        }
-      );
+      } =
+        await supabaseClient.rpc(
+          'admin_add_gmail',
+          {
+            p_gmail: gmail,
+            p_price: Number(price)
+          }
+        );
+
 
       if (error) {
         throw error;
       }
 
+
       showMessage(
         'Gmail added successfully.'
       );
+
 
       document.getElementById(
         'gmailInput'
       ).value = '';
 
+
       document.getElementById(
         'priceInput'
       ).value = '';
 
+
       await loadInventory();
+
 
       // Automatically select newly-added Gmail
       if (data && data.id) {
+
         const select =
           document.getElementById(
             'gmailSelect'
           );
 
-        select.value = data.id;
+
+        select.value =
+          data.id;
+
 
         await loadCredentialForSelectedGmail();
       }
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        'Add Gmail error:',
+        error
+      );
+
 
       showMessage(
         error.message ||
@@ -572,15 +725,16 @@
     } finally {
 
       button.disabled = false;
-      button.textContent = 'ADD NOW';
 
+      button.textContent =
+        'ADD NOW';
     }
   }
 
 
-  // =========================
+  // =====================================================
   // LOAD INVENTORY
-  // =========================
+  // =====================================================
 
   async function loadInventory() {
 
@@ -589,15 +743,20 @@
       const {
         data,
         error
-      } = await supabase.rpc(
-        'admin_list_gmail_inventory'
-      );
+      } =
+        await supabaseClient.rpc(
+          'admin_list_gmail_inventory'
+        );
+
 
       if (error) {
         throw error;
       }
 
-      inventory = data || [];
+
+      inventory =
+        data || [];
+
 
       populateGmailSelect();
 
@@ -605,7 +764,11 @@
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        'Load inventory error:',
+        error
+      );
+
 
       showMessage(
         error.message ||
@@ -616,9 +779,9 @@
   }
 
 
-  // =========================
-  // POPULATE SELECT
-  // =========================
+  // =====================================================
+  // POPULATE GMAIL SELECT
+  // =====================================================
 
   function populateGmailSelect(
     selectedId = null
@@ -629,19 +792,26 @@
         'gmailSelect'
       );
 
+
     const previous =
       selectedId ||
       select.value;
 
+
     select.innerHTML = '';
 
+
     const defaultOption =
-      document.createElement('option');
+      document.createElement(
+        'option'
+      );
+
 
     defaultOption.value = '';
 
     defaultOption.textContent =
       'Select Gmail';
+
 
     select.appendChild(
       defaultOption
@@ -651,15 +821,22 @@
     inventory.forEach(item => {
 
       const option =
-        document.createElement('option');
+        document.createElement(
+          'option'
+        );
 
-      option.value = item.id;
+
+      option.value =
+        item.id;
+
 
       option.textContent =
         item.gmail +
         ' — ₦' +
-        Number(item.price)
-          .toLocaleString();
+        Number(
+          item.price
+        ).toLocaleString();
+
 
       select.appendChild(
         option
@@ -669,14 +846,16 @@
 
 
     if (previous) {
-      select.value = previous;
+
+      select.value =
+        previous;
     }
   }
 
 
-  // =========================
-  // LOAD CREDENTIAL
-  // =========================
+  // =====================================================
+  // LOAD CREDENTIAL FOR SELECTED GMAIL
+  // =====================================================
 
   async function loadCredentialForSelectedGmail() {
 
@@ -685,21 +864,28 @@
         'gmailSelect'
       ).value;
 
+
     const credentialInput =
       document.getElementById(
         'credentialInput'
       );
 
+
     credentialInput.value = '';
+
 
     if (!gmailId) {
       return;
     }
 
-    // We intentionally do NOT load
-    // the existing credential into the
-    // browser. Admin can replace it by
-    // entering the new credential.
+
+    /*
+      We intentionally DO NOT retrieve
+      the existing credential into the browser.
+
+      To replace a credential, simply type
+      the new credential and click ADD CREDENTIAL.
+    */
   }
 
 
@@ -711,9 +897,9 @@
   );
 
 
-  // =========================
+  // =====================================================
   // SAVE CREDENTIAL
-  // =========================
+  // =====================================================
 
   async function saveCredential() {
 
@@ -722,11 +908,14 @@
         'gmailSelect'
       ).value;
 
+
     const credential =
       document.getElementById(
         'credentialInput'
-      ).value
+      )
+      .value
       .trim();
+
 
     if (!gmailId) {
 
@@ -738,6 +927,7 @@
       return;
     }
 
+
     if (!credential) {
 
       showMessage(
@@ -748,43 +938,57 @@
       return;
     }
 
+
     const button =
       document.getElementById(
         'addCredentialBtn'
       );
 
+
     button.disabled = true;
-    button.textContent = 'SAVING...';
+
+    button.textContent =
+      'SAVING...';
+
 
     try {
 
       const {
         error
-      } = await supabase.rpc(
-        'admin_save_gmail_credential',
-        {
-          p_gmail_id: gmailId,
-          p_credential: credential
-        }
-      );
+      } =
+        await supabaseClient.rpc(
+          'admin_save_gmail_credential',
+          {
+            p_gmail_id: gmailId,
+            p_credential: credential
+          }
+        );
+
 
       if (error) {
         throw error;
       }
 
+
       showMessage(
         'Credential saved successfully.'
       );
+
 
       document.getElementById(
         'credentialInput'
       ).value = '';
 
+
       await loadInventory();
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        'Save credential error:',
+        error
+      );
+
 
       showMessage(
         error.message ||
@@ -795,16 +999,16 @@
     } finally {
 
       button.disabled = false;
+
       button.textContent =
         'ADD CREDENTIAL';
-
     }
   }
 
 
-  // =========================
+  // =====================================================
   // RENDER INVENTORY
-  // =========================
+  // =====================================================
 
   function renderInventory() {
 
@@ -813,17 +1017,19 @@
         'inventoryBody'
       );
 
+
     const search =
       document.getElementById(
         'searchInput'
-      ).value
+      )
+      .value
       .trim()
       .toLowerCase();
 
 
     const filtered =
       inventory.filter(item =>
-        item.gmail
+        String(item.gmail)
           .toLowerCase()
           .includes(search)
       );
@@ -844,86 +1050,119 @@
 
 
     body.innerHTML =
-      filtered.map(item => {
+      filtered
+        .map(item => {
 
-        const status =
-          String(item.status)
-            .toLowerCase();
-
-        const statusClass =
-          status === 'available'
-            ? 'available'
-            : 'sold';
-
-        const created =
-          item.created_at
-            ? new Date(
-                item.created_at
-              ).toLocaleString()
-            : '—';
+          const status =
+            String(
+              item.status
+            ).toLowerCase();
 
 
-        return `
-          <tr>
+          const statusClass =
+            status === 'available'
+              ? 'available'
+              : 'sold';
 
-            <td>
-              ${escapeHtml(item.gmail)}
-            </td>
 
-            <td>
-              ₦${Number(item.price)
-                .toLocaleString()}
-            </td>
+          const created =
+            item.created_at
+              ? new Date(
+                  item.created_at
+                ).toLocaleString()
+              : '—';
 
-            <td>
-              <span class="status ${statusClass}">
+
+          return `
+            <tr>
+
+              <td>
                 ${escapeHtml(
-                  item.status
-                    .toUpperCase()
+                  item.gmail
                 )}
-              </span>
-            </td>
+              </td>
 
-            <td>
-              ${
-                item.has_credential
-                  ? '<span class="credential-ok">✓ Added</span>'
-                  : '<span class="credential-missing">✕ Missing</span>'
-              }
-            </td>
 
-            <td>
-              ${escapeHtml(created)}
-            </td>
+              <td>
+                ₦${Number(
+                  item.price
+                ).toLocaleString()}
+              </td>
 
-            <td>
 
-              <button
-                class="edit-btn"
-                onclick="selectGmail('${item.id}')"
-              >
-                Edit
-              </button>
+              <td>
 
-              <button
-                class="delete-btn"
-                onclick="deleteGmail('${item.id}')"
-              >
-                Delete
-              </button>
+                <span
+                  class="status ${statusClass}"
+                >
+                  ${escapeHtml(
+                    String(
+                      item.status
+                    ).toUpperCase()
+                  )}
+                </span>
 
-            </td>
+              </td>
 
-          </tr>
-        `;
 
-      }).join('');
+              <td>
+
+                ${
+                  item.has_credential
+
+                    ? `
+                      <span class="credential-ok">
+                        ✓ Added
+                      </span>
+                    `
+
+                    : `
+                      <span class="credential-missing">
+                        ✕ Missing
+                      </span>
+                    `
+                }
+
+              </td>
+
+
+              <td>
+                ${escapeHtml(
+                  created
+                )}
+              </td>
+
+
+              <td>
+
+                <button
+                  class="edit-btn"
+                  onclick="selectGmail('${item.id}')"
+                >
+                  Edit
+                </button>
+
+
+                <button
+                  class="delete-btn"
+                  onclick="deleteGmail('${item.id}')"
+                >
+                  Delete
+                </button>
+
+              </td>
+
+            </tr>
+          `;
+
+        })
+        .join('');
   }
 
 
-  // =========================
+  // =====================================================
   // SELECT GMAIL FOR EDIT
-  // =========================
+  // =====================================================
 
   function selectGmail(id) {
 
@@ -932,11 +1171,15 @@
         'gmailSelect'
       );
 
-    select.value = id;
+
+    select.value =
+      id;
+
 
     document.getElementById(
       'credentialInput'
     ).focus();
+
 
     window.scrollTo({
       top: 0,
@@ -945,9 +1188,9 @@
   }
 
 
-  // =========================
+  // =====================================================
   // DELETE GMAIL
-  // =========================
+  // =====================================================
 
   async function deleteGmail(id) {
 
@@ -956,9 +1199,11 @@
         x => x.id === id
       );
 
+
     if (!item) {
       return;
     }
+
 
     const confirmed =
       confirm(
@@ -966,6 +1211,7 @@
         `If this Gmail has already been sold, ` +
         `this removes the inventory record but does not remove the customer's purchase history.`
       );
+
 
     if (!confirmed) {
       return;
@@ -976,26 +1222,34 @@
 
       const {
         error
-      } = await supabase.rpc(
-        'admin_delete_gmail',
-        {
-          p_gmail_id: id
-        }
-      );
+      } =
+        await supabaseClient.rpc(
+          'admin_delete_gmail',
+          {
+            p_gmail_id: id
+          }
+        );
+
 
       if (error) {
         throw error;
       }
 
+
       showMessage(
         'Gmail deleted successfully.'
       );
+
 
       await loadInventory();
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        'Delete Gmail error:',
+        error
+      );
+
 
       showMessage(
         error.message ||
@@ -1006,19 +1260,41 @@
   }
 
 
-  // =========================
+  // =====================================================
   // RESET PASSWORD
-  // =========================
+  // =====================================================
 
   async function resetPassword() {
 
     const {
       data: {
         user
-      }
-    } = await supabase.auth.getUser();
+      },
+      error: userError
+    } =
+      await supabaseClient.auth.getUser();
 
-    if (!user || !user.email) {
+
+    if (userError) {
+
+      console.error(
+        userError
+      );
+
+      showMessage(
+        userError.message ||
+        'Unable to get your account.',
+        'error'
+      );
+
+      return;
+    }
+
+
+    if (
+      !user ||
+      !user.email
+    ) {
 
       showMessage(
         'Unable to determine your email.',
@@ -1034,6 +1310,7 @@
         `Send a password reset email to ${user.email}?`
       );
 
+
     if (!confirmed) {
       return;
     }
@@ -1041,15 +1318,16 @@
 
     const {
       error
-    } = await supabase.auth
-      .resetPasswordForEmail(
-        user.email,
-        {
-          redirectTo:
-            window.location.origin +
-            '/reset-password.html'
-        }
-      );
+    } =
+      await supabaseClient.auth
+        .resetPasswordForEmail(
+          user.email,
+          {
+            redirectTo:
+              window.location.origin +
+              '/reset-password.html'
+          }
+        );
 
 
     if (error) {
@@ -1069,46 +1347,81 @@
   }
 
 
-  // =========================
+  // =====================================================
   // LOGOUT
-  // =========================
+  // =====================================================
 
   async function logout() {
 
-    await supabase.auth.signOut();
+    try {
+
+      await supabaseClient.auth
+        .signOut();
+
+    } catch (error) {
+
+      console.error(
+        'Logout error:',
+        error
+      );
+
+    }
+
 
     window.location.href =
       'login.html';
   }
 
 
-  // =========================
+  // =====================================================
   // HTML ESCAPE
-  // =========================
+  // =====================================================
 
   function escapeHtml(value) {
 
     return String(value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
+
+      .replace(
+        /&/g,
+        '&amp;'
+      )
+
+      .replace(
+        /</g,
+        '&lt;'
+      )
+
+      .replace(
+        />/g,
+        '&gt;'
+      )
+
+      .replace(
+        /"/g,
+        '&quot;'
+      )
+
+      .replace(
+        /'/g,
+        '&#039;'
+      );
   }
 
 
-  // =========================
+  // =====================================================
   // START
-  // =========================
+  // =====================================================
 
   async function init() {
 
     const allowed =
       await checkAdmin();
 
+
     if (!allowed) {
       return;
     }
+
 
     await loadInventory();
   }
