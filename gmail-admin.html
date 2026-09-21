@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Gmail Admin — Delight Vendor Logs</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #111;
+    }
+
+    header {
+      background: #111;
+      color: white;
+      padding: 18px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 11px 15px;
+      font-weight: 700;
+    }
+
+    .logout-btn {
+      background: #fff;
+      color: #111;
+    }
+
+    .reset-btn {
+      background: #e5e7eb;
+      color: #111;
+    }
+
+    .container {
+      width: min(1200px, 94%);
+      margin: 25px auto;
+    }
+
+    .top-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.07);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-size: 18px;
+    }
+
+    label {
+      display: block;
+      margin: 13px 0 7px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #111;
+    }
+
+    .primary-btn {
+      width: 100%;
+      margin-top: 18px;
+      background: #111;
+      color: white;
+    }
+
+    .primary-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .inventory-card {
+      margin-top: 20px;
+    }
+
+    .inventory-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .refresh-btn {
+      background: #e5e7eb;
+      color: #111;
+    }
+
+    .search-box {
+      margin-bottom: 15px;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 13px 10px;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f8fafc;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 6px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .available {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .sold {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .credential-ok {
+      color: #166534;
+      font-weight: 700;
+    }
+
+    .credential-missing {
+      color: #991b1b;
+      font-weight: 700;
+    }
+
+    .delete-btn {
+      background: #dc2626;
+      color: white;
+    }
+
+    .edit-btn {
+      background: #111;
+      color: white;
+      margin-right: 5px;
+    }
+
+    .message {
+      display: none;
+      margin-bottom: 18px;
+      padding: 13px;
+      border-radius: 8px;
+      font-weight: 700;
+    }
+
+    .success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 30px;
+      color: #6b7280;
+    }
+
+    .small-note {
+      margin-top: 8px;
+      color: #6b7280;
+      font-size: 12px;
+    }
+
+    @media (max-width: 800px) {
+      .top-grid {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .header-actions {
+        width: 100%;
+      }
+
+      .header-actions button {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>⚡ Delight Vendor Logs — Gmail Admin</h1>
+
+  <div class="header-actions">
+    <button class="reset-btn" onclick="resetPassword()">
+      Reset Password
+    </button>
+
+    <button class="logout-btn" onclick="logout()">
+      Logout
+    </button>
+  </div>
+</header>
+
+<div class="container">
+
+  <div id="message" class="message"></div>
+
+  <div class="top-grid">
+
+    <!-- ADD GMAIL -->
+    <div class="card">
+
+      <h2>ADD GMAIL</h2>
+
+      <label for="gmailInput">
+        Gmail
+      </label>
+
+      <input
+        id="gmailInput"
+        type="email"
+        placeholder="example@gmail.com"
+        autocomplete="off"
+      >
+
+      <label for="priceInput">
+        Price
+      </label>
+
+      <input
+        id="priceInput"
+        type="number"
+        min="0"
+        step="0.01"
+        placeholder="1000"
+      >
+
+      <button
+        id="addGmailBtn"
+        class="primary-btn"
+        onclick="addGmail()"
+      >
+        ADD NOW
+      </button>
+
+    </div>
+
+
+    <!-- ADD CREDENTIAL -->
+    <div class="card">
+
+      <h2>ADD CREDENTIAL</h2>
+
+      <label for="gmailSelect">
+        Gmail
+      </label>
+
+      <select id="gmailSelect">
+        <option value="">
+          Select Gmail
+        </option>
+      </select>
+
+      <label for="credentialInput">
+        Credential
+      </label>
+
+      <textarea
+        id="credentialInput"
+        rows="4"
+        placeholder="Enter Gmail credential"
+      ></textarea>
+
+      <div class="small-note">
+        Adding a credential again for the same Gmail replaces the existing credential.
+      </div>
+
+      <button
+        id="addCredentialBtn"
+        class="primary-btn"
+        onclick="saveCredential()"
+      >
+        ADD CREDENTIAL
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- INVENTORY -->
+  <div class="card inventory-card">
+
+    <div class="inventory-header">
+
+      <h2 style="margin:0;">
+        GMAIL INVENTORY
+      </h2>
+
+      <button
+        class="refresh-btn"
+        onclick="loadInventory()"
+      >
+        Refresh
+      </button>
+
+    </div>
+
+    <input
+      id="searchInput"
+      class="search-box"
+      type="text"
+      placeholder="Search Gmail..."
+      oninput="renderInventory()"
+    >
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Gmail</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Credential</th>
+            <th>Created</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody id="inventoryBody"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  const SUPABASE_URL =
+    'https://hkfhehbhmucymusaytoe.supabase.co';
+
+  const SUPABASE_ANON_KEY =
+    'YOUR_SUPABASE_ANON_KEY';
+
+  const { createClient } =
+    supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+
+  let inventory = [];
+
+
+  // =========================
+  // MESSAGE
+  // =========================
+
+  function showMessage(message, type = 'success') {
+
+    const box =
+      document.getElementById('message');
+
+    box.textContent = message;
+
+    box.className =
+      'message ' + type;
+
+    box.style.display = 'block';
+
+    setTimeout(() => {
+      box.style.display = 'none';
+    }, 5000);
+  }
+
+
+  // =========================
+  // AUTH CHECK
+  // =========================
+
+  async function checkAdmin() {
+
+    const {
+      data: {
+        session
+      }
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      window.location.href = 'login.html';
+      return false;
+    }
+
+    const {
+      data,
+      error
+    } = await supabase.rpc('is_admin');
+
+    if (error || !data) {
+      alert('Not authorized.');
+      window.location.href = 'login.html';
+      return false;
+    }
+
+    return true;
+  }
+
+
+  // =========================
+  // ADD GMAIL
+  // =========================
+
+  async function addGmail() {
+
+    const gmail =
+      document.getElementById('gmailInput')
+        .value
+        .trim();
+
+    const price =
+      document.getElementById('priceInput')
+        .value;
+
+    if (!gmail) {
+      showMessage(
+        'Enter the Gmail address.',
+        'error'
+      );
+      return;
+    }
+
+    if (price === '' || Number(price) < 0) {
+      showMessage(
+        'Enter a valid price.',
+        'error'
+      );
+      return;
+    }
+
+    const button =
+      document.getElementById('addGmailBtn');
+
+    button.disabled = true;
+    button.textContent = 'ADDING...';
+
+    try {
+
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        'admin_add_gmail',
+        {
+          p_gmail: gmail,
+          p_price: Number(price)
+        }
+      );
+
+      if (error) {
+        throw error;
+      }
+
+      showMessage(
+        'Gmail added successfully.'
+      );
+
+      document.getElementById(
+        'gmailInput'
+      ).value = '';
+
+      document.getElementById(
+        'priceInput'
+      ).value = '';
+
+      await loadInventory();
+
+      // Automatically select newly-added Gmail
+      if (data && data.id) {
+        const select =
+          document.getElementById(
+            'gmailSelect'
+          );
+
+        select.value = data.id;
+
+        await loadCredentialForSelectedGmail();
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+      showMessage(
+        error.message ||
+        'Failed to add Gmail.',
+        'error'
+      );
+
+    } finally {
+
+      button.disabled = false;
+      button.textContent = 'ADD NOW';
+
+    }
+  }
+
+
+  // =========================
+  // LOAD INVENTORY
+  // =========================
+
+  async function loadInventory() {
+
+    try {
+
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        'admin_list_gmail_inventory'
+      );
+
+      if (error) {
+        throw error;
+      }
+
+      inventory = data || [];
+
+      populateGmailSelect();
+
+      renderInventory();
+
+    } catch (error) {
+
+      console.error(error);
+
+      showMessage(
+        error.message ||
+        'Failed to load Gmail inventory.',
+        'error'
+      );
+    }
+  }
+
+
+  // =========================
+  // POPULATE SELECT
+  // =========================
+
+  function populateGmailSelect(
+    selectedId = null
+  ) {
+
+    const select =
+      document.getElementById(
+        'gmailSelect'
+      );
+
+    const previous =
+      selectedId ||
+      select.value;
+
+    select.innerHTML = '';
+
+    const defaultOption =
+      document.createElement('option');
+
+    defaultOption.value = '';
+
+    defaultOption.textContent =
+      'Select Gmail';
+
+    select.appendChild(
+      defaultOption
+    );
+
+
+    inventory.forEach(item => {
+
+      const option =
+        document.createElement('option');
+
+      option.value = item.id;
+
+      option.textContent =
+        item.gmail +
+        ' — ₦' +
+        Number(item.price)
+          .toLocaleString();
+
+      select.appendChild(
+        option
+      );
+
+    });
+
+
+    if (previous) {
+      select.value = previous;
+    }
+  }
+
+
+  // =========================
+  // LOAD CREDENTIAL
+  // =========================
+
+  async function loadCredentialForSelectedGmail() {
+
+    const gmailId =
+      document.getElementById(
+        'gmailSelect'
+      ).value;
+
+    const credentialInput =
+      document.getElementById(
+        'credentialInput'
+      );
+
+    credentialInput.value = '';
+
+    if (!gmailId) {
+      return;
+    }
+
+    // We intentionally do NOT load
+    // the existing credential into the
+    // browser. Admin can replace it by
+    // entering the new credential.
+  }
+
+
+  document.getElementById(
+    'gmailSelect'
+  ).addEventListener(
+    'change',
+    loadCredentialForSelectedGmail
+  );
+
+
+  // =========================
+  // SAVE CREDENTIAL
+  // =========================
+
+  async function saveCredential() {
+
+    const gmailId =
+      document.getElementById(
+        'gmailSelect'
+      ).value;
+
+    const credential =
+      document.getElementById(
+        'credentialInput'
+      ).value
+      .trim();
+
+    if (!gmailId) {
+
+      showMessage(
+        'Select a Gmail first.',
+        'error'
+      );
+
+      return;
+    }
+
+    if (!credential) {
+
+      showMessage(
+        'Enter the credential.',
+        'error'
+      );
+
+      return;
+    }
+
+    const button =
+      document.getElementById(
+        'addCredentialBtn'
+      );
+
+    button.disabled = true;
+    button.textContent = 'SAVING...';
+
+    try {
+
+      const {
+        error
+      } = await supabase.rpc(
+        'admin_save_gmail_credential',
+        {
+          p_gmail_id: gmailId,
+          p_credential: credential
+        }
+      );
+
+      if (error) {
+        throw error;
+      }
+
+      showMessage(
+        'Credential saved successfully.'
+      );
+
+      document.getElementById(
+        'credentialInput'
+      ).value = '';
+
+      await loadInventory();
+
+    } catch (error) {
+
+      console.error(error);
+
+      showMessage(
+        error.message ||
+        'Failed to save credential.',
+        'error'
+      );
+
+    } finally {
+
+      button.disabled = false;
+      button.textContent =
+        'ADD CREDENTIAL';
+
+    }
+  }
+
+
+  // =========================
+  // RENDER INVENTORY
+  // =========================
+
+  function renderInventory() {
+
+    const body =
+      document.getElementById(
+        'inventoryBody'
+      );
+
+    const search =
+      document.getElementById(
+        'searchInput'
+      ).value
+      .trim()
+      .toLowerCase();
+
+
+    const filtered =
+      inventory.filter(item =>
+        item.gmail
+          .toLowerCase()
+          .includes(search)
+      );
+
+
+    if (!filtered.length) {
+
+      body.innerHTML = `
+        <tr>
+          <td colspan="6" class="empty">
+            No Gmail inventory found.
+          </td>
+        </tr>
+      `;
+
+      return;
+    }
+
+
+    body.innerHTML =
+      filtered.map(item => {
+
+        const status =
+          String(item.status)
+            .toLowerCase();
+
+        const statusClass =
+          status === 'available'
+            ? 'available'
+            : 'sold';
+
+        const created =
+          item.created_at
+            ? new Date(
+                item.created_at
+              ).toLocaleString()
+            : '—';
+
+
+        return `
+          <tr>
+
+            <td>
+              ${escapeHtml(item.gmail)}
+            </td>
+
+            <td>
+              ₦${Number(item.price)
+                .toLocaleString()}
+            </td>
+
+            <td>
+              <span class="status ${statusClass}">
+                ${escapeHtml(
+                  item.status
+                    .toUpperCase()
+                )}
+              </span>
+            </td>
+
+            <td>
+              ${
+                item.has_credential
+                  ? '<span class="credential-ok">✓ Added</span>'
+                  : '<span class="credential-missing">✕ Missing</span>'
+              }
+            </td>
+
+            <td>
+              ${escapeHtml(created)}
+            </td>
+
+            <td>
+
+              <button
+                class="edit-btn"
+                onclick="selectGmail('${item.id}')"
+              >
+                Edit
+              </button>
+
+              <button
+                class="delete-btn"
+                onclick="deleteGmail('${item.id}')"
+              >
+                Delete
+              </button>
+
+            </td>
+
+          </tr>
+        `;
+
+      }).join('');
+  }
+
+
+  // =========================
+  // SELECT GMAIL FOR EDIT
+  // =========================
+
+  function selectGmail(id) {
+
+    const select =
+      document.getElementById(
+        'gmailSelect'
+      );
+
+    select.value = id;
+
+    document.getElementById(
+      'credentialInput'
+    ).focus();
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }
+
+
+  // =========================
+  // DELETE GMAIL
+  // =========================
+
+  async function deleteGmail(id) {
+
+    const item =
+      inventory.find(
+        x => x.id === id
+      );
+
+    if (!item) {
+      return;
+    }
+
+    const confirmed =
+      confirm(
+        `Delete ${item.gmail}?\n\n` +
+        `If this Gmail has already been sold, ` +
+        `this removes the inventory record but does not remove the customer's purchase history.`
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    try {
+
+      const {
+        error
+      } = await supabase.rpc(
+        'admin_delete_gmail',
+        {
+          p_gmail_id: id
+        }
+      );
+
+      if (error) {
+        throw error;
+      }
+
+      showMessage(
+        'Gmail deleted successfully.'
+      );
+
+      await loadInventory();
+
+    } catch (error) {
+
+      console.error(error);
+
+      showMessage(
+        error.message ||
+        'Failed to delete Gmail.',
+        'error'
+      );
+    }
+  }
+
+
+  // =========================
+  // RESET PASSWORD
+  // =========================
+
+  async function resetPassword() {
+
+    const {
+      data: {
+        user
+      }
+    } = await supabase.auth.getUser();
+
+    if (!user || !user.email) {
+
+      showMessage(
+        'Unable to determine your email.',
+        'error'
+      );
+
+      return;
+    }
+
+
+    const confirmed =
+      confirm(
+        `Send a password reset email to ${user.email}?`
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    const {
+      error
+    } = await supabase.auth
+      .resetPasswordForEmail(
+        user.email,
+        {
+          redirectTo:
+            window.location.origin +
+            '/reset-password.html'
+        }
+      );
+
+
+    if (error) {
+
+      showMessage(
+        error.message,
+        'error'
+      );
+
+      return;
+    }
+
+
+    showMessage(
+      'Password reset email sent.'
+    );
+  }
+
+
+  // =========================
+  // LOGOUT
+  // =========================
+
+  async function logout() {
+
+    await supabase.auth.signOut();
+
+    window.location.href =
+      'login.html';
+  }
+
+
+  // =========================
+  // HTML ESCAPE
+  // =========================
+
+  function escapeHtml(value) {
+
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+
+  // =========================
+  // START
+  // =========================
+
+  async function init() {
+
+    const allowed =
+      await checkAdmin();
+
+    if (!allowed) {
+      return;
+    }
+
+    await loadInventory();
+  }
+
+
+  init();
+
+</script>
+
+</body>
+</html>
