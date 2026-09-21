@@ -200,11 +200,8 @@
             font-weight:900;
         }
 
-        /*
-         * IMPORTANT:
-         * Hide these views when Gmail page first opens.
-         * JavaScript will show them when needed.
-         */
+        /* Only one view is shown at a time */
+
         #detailView,
         #purchaseView{
             display:none;
@@ -426,7 +423,9 @@
 
 <main>
 
-    <!-- LIST VIEW -->
+    <!-- =========================
+         GMAIL LIST VIEW
+    ========================== -->
 
     <section id="listView">
 
@@ -452,7 +451,9 @@
     </section>
 
 
-    <!-- DETAIL VIEW -->
+    <!-- =========================
+         GMAIL DETAIL VIEW
+    ========================== -->
 
     <section id="detailView">
 
@@ -480,8 +481,7 @@
                 <div
                     id="detailPrice"
                     class="price"
-                >
-                </div>
+                ></div>
 
             </div>
 
@@ -509,7 +509,9 @@
     </section>
 
 
-    <!-- PURCHASE RESULT -->
+    <!-- =========================
+         PURCHASE SUCCESS VIEW
+    ========================== -->
 
     <section id="purchaseView">
 
@@ -563,6 +565,7 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
+
 const supabaseClient =
     window.supabase.createClient(
         SUPABASE_URL,
@@ -583,12 +586,76 @@ let selectedGmail = null;
 
 
 /* =========================
+   FORCE FIRST PAGE
+   EVERY TIME GMAIL.HTML OPENS
+========================= */
+
+function resetToListView(){
+
+    selectedGmail = null;
+
+
+    document
+        .getElementById("listView")
+        .style.display =
+            "block";
+
+
+    document
+        .getElementById("detailView")
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById("purchaseView")
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById("credential")
+        .textContent =
+            "";
+
+
+    document
+        .getElementById("detailGmail")
+        .textContent =
+            "";
+
+
+    document
+        .getElementById("detailPrice")
+        .textContent =
+            "";
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"auto"
+    });
+
+}
+
+
+/* =========================
    PAGE START
 ========================= */
 
 document.addEventListener(
     "DOMContentLoaded",
     async function(){
+
+        /*
+         * Always start on the Gmail list.
+         * This prevents the detail or purchase
+         * screen from being shown when returning
+         * to gmail.html.
+         */
+
+        resetToListView();
+
 
         const {
             data:{
@@ -599,6 +666,7 @@ document.addEventListener(
             .auth
             .getSession();
 
+
         if(!session){
 
             location.href =
@@ -606,6 +674,7 @@ document.addEventListener(
 
             return;
         }
+
 
         loadGmails();
 
@@ -621,15 +690,26 @@ async function loadGmails(){
 
     hideMessage();
 
+
+    /*
+     * Make sure loading always happens
+     * on the first/list page.
+     */
+
+    resetToListView();
+
+
     document
         .getElementById("loading")
         .style.display =
             "block";
 
+
     document
         .getElementById("gmailList")
         .innerHTML =
             "";
+
 
     const {
         data,
@@ -731,6 +811,7 @@ function renderGmails(){
                     "div"
                 );
 
+
             item.className =
                 "gmail-item";
 
@@ -813,6 +894,10 @@ function openGmail(gmail){
                 gmail.price
             );
 
+
+    /*
+     * Only detail page is shown.
+     */
 
     document
         .getElementById(
@@ -910,6 +995,7 @@ async function buySelectedGmail(){
         buyButton.disabled =
             false;
 
+
         buyButton.textContent =
             "BUY NOW";
 
@@ -948,6 +1034,7 @@ async function buySelectedGmail(){
         buyButton.disabled =
             false;
 
+
         buyButton.textContent =
             "BUY NOW";
 
@@ -974,9 +1061,31 @@ async function buySelectedGmail(){
 
 function showPurchaseResult(data){
 
+    /*
+     * Clear the selected Gmail after purchase.
+     * This prevents the old purchased Gmail
+     * from remaining as the active selection.
+     */
+
+    selectedGmail =
+        null;
+
+
     document
         .getElementById(
-            "detailView"
+            "credential"
+        )
+        .textContent =
+            data.credential || "";
+
+
+    /*
+     * Only purchase page is shown.
+     */
+
+    document
+        .getElementById(
+            "listView"
         )
         .style.display =
             "none";
@@ -984,7 +1093,7 @@ function showPurchaseResult(data){
 
     document
         .getElementById(
-            "listView"
+            "detailView"
         )
         .style.display =
             "none";
@@ -998,14 +1107,6 @@ function showPurchaseResult(data){
             "block";
 
 
-    document
-        .getElementById(
-            "credential"
-        )
-        .textContent =
-            data.credential || "";
-
-
     window.scrollTo({
         top:0,
         behavior:"smooth"
@@ -1015,14 +1116,46 @@ function showPurchaseResult(data){
 
 
 /* =========================
-   BACK TO LIST
+   BACK TO GMAIL LIST
 ========================= */
 
 function showList(){
 
+    /*
+     * Completely clear the old selection.
+     */
+
     selectedGmail =
         null;
 
+
+    document
+        .getElementById(
+            "detailGmail"
+        )
+        .textContent =
+            "";
+
+
+    document
+        .getElementById(
+            "detailPrice"
+        )
+        .textContent =
+            "";
+
+
+    document
+        .getElementById(
+            "credential"
+        )
+        .textContent =
+            "";
+
+
+    /*
+     * Hide every other page.
+     */
 
     document
         .getElementById(
@@ -1039,6 +1172,10 @@ function showList(){
         .style.display =
             "none";
 
+
+    /*
+     * Show ONLY Gmail list.
+     */
 
     document
         .getElementById(
@@ -1051,10 +1188,12 @@ function showList(){
     hideMessage();
 
 
-    window.scrollTo({
-        top:0,
-        behavior:"smooth"
-    });
+    /*
+     * Reload inventory so a Gmail that was
+     * just purchased is no longer displayed.
+     */
+
+    loadGmails();
 
 }
 
@@ -1064,6 +1203,14 @@ function showList(){
 ========================= */
 
 function goDashboard(){
+
+    /*
+     * Clear page state before leaving.
+     */
+
+    selectedGmail =
+        null;
+
 
     location.href =
         "dashboard.html";
@@ -1121,6 +1268,10 @@ function hideMessage(){
 
     box.textContent =
         "";
+
+
+    box.className =
+        "message";
 
 }
 
