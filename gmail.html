@@ -201,7 +201,7 @@
         }
 
         .detail-card{
-            display:none;
+            display:block;
             background:#ffffff;
             border:1px solid #e1e5ef;
             border-radius:25px;
@@ -286,7 +286,7 @@
         }
 
         .purchase-card{
-            display:none;
+            display:block;
             background:#ffffff;
             border:1px solid #ccebd6;
             border-radius:25px;
@@ -910,12 +910,6 @@ async function buySelectedGmail(){
         );
 
 
-        /*
-         * If somebody else purchased
-         * the Gmail first, reload the
-         * available inventory.
-         */
-
         if(
             error.message
                 .toLowerCase()
@@ -956,18 +950,6 @@ async function buySelectedGmail(){
         return;
     }
 
-
-    /*
-     * The RPC has already:
-     *
-     * - deducted wallet
-     * - inserted purchase
-     * - inserted transaction
-     * - marked Gmail as sold
-     *
-     * So we only display the
-     * returned credential here.
-     */
 
     showPurchaseResult(
         data
