@@ -420,6 +420,15 @@
 
 <main>
 
+    <!--
+        IMPORTANT:
+        Message is outside listView so it can also
+        appear while the Gmail detail page is open.
+    -->
+
+    <div id="message"></div>
+
+
     <!-- LIST VIEW -->
 
     <section id="listView">
@@ -432,9 +441,10 @@
             Select an available Gmail account to view its price and purchase it.
         </p>
 
-        <div id="message"></div>
-
-        <div id="loading" class="loading">
+        <div
+            id="loading"
+            class="loading"
+        >
             Loading available Gmail...
         </div>
 
@@ -916,7 +926,8 @@ async function buySelectedGmail(){
 
 
     /*
-     * Keep the RPC from staying stuck forever.
+     * Stop the customer UI from staying
+     * on PROCESSING forever.
      */
 
     let rpcResult;
@@ -960,8 +971,9 @@ async function buySelectedGmail(){
 
 
         showMessage(
-            error?.message ||
-            "Purchase could not be completed. Please try again.",
+            getPurchaseErrorMessage(
+                error
+            ),
             "error"
         );
 
@@ -989,11 +1001,6 @@ async function buySelectedGmail(){
             "BUY NOW";
 
 
-        /*
-         * Show the actual database/RPC
-         * error to the customer.
-         */
-
         showMessage(
             getPurchaseErrorMessage(
                 error
@@ -1002,14 +1009,12 @@ async function buySelectedGmail(){
         );
 
 
-        /*
-         * If Gmail was already sold,
-         * refresh the list.
-         */
-
         const errorText =
             String(
-                error.message || ""
+                error.message ||
+                error.details ||
+                error.hint ||
+                ""
             )
             .toLowerCase();
 
@@ -1032,7 +1037,7 @@ async function buySelectedGmail(){
 
 
     /* =========================
-       RPC RETURNED DATA
+       NO RPC RESPONSE
     ========================== */
 
     if(!data){
@@ -1054,11 +1059,11 @@ async function buySelectedGmail(){
 
 
     /*
-     * Some PostgreSQL functions return:
+     * Some RPC functions return:
      *
      * {
-     *   success: false,
-     *   message: "Insufficient wallet balance"
+     *     success:false,
+     *     message:"Insufficient wallet balance"
      * }
      *
      * instead of throwing a Supabase error.
@@ -1077,11 +1082,15 @@ async function buySelectedGmail(){
             data.message ||
             data.error ||
             data.reason ||
+            data.details ||
+            data.hint ||
             "Purchase could not be completed.";
 
 
         showMessage(
-            String(message),
+            getPurchaseErrorMessage({
+                message:String(message)
+            }),
             "error"
         );
 
@@ -1112,15 +1121,11 @@ function getPurchaseErrorMessage(error){
             error?.message ||
             error?.details ||
             error?.hint ||
+            error?.error_description ||
+            error?.reason ||
+            error?.code ||
             ""
         ).trim();
-
-
-    if(!raw){
-
-        return "Purchase could not be completed. Please try again.";
-
-    }
 
 
     const lower =
@@ -1128,15 +1133,26 @@ function getPurchaseErrorMessage(error){
 
 
     /*
-     * Convert common wallet messages
-     * into a clear customer message.
+     * WALLET / INSUFFICIENT FUNDS
+     *
+     * We intentionally check many common
+     * PostgreSQL/RPC wordings here.
      */
 
     if(
         lower.includes("insufficient") ||
         lower.includes("not enough") ||
         lower.includes("insufficient balance") ||
-        lower.includes("wallet balance")
+        lower.includes("wallet balance") ||
+        lower.includes("insufficient funds") ||
+        lower.includes("not enough balance") ||
+        lower.includes("balance is too low") ||
+        lower.includes("low balance") ||
+        lower.includes("wallet is low") ||
+        lower.includes("wallet does not have") ||
+        lower.includes("wallet doesn't have") ||
+        lower.includes("you need more") ||
+        lower.includes("funds are insufficient")
     ){
 
         return "Insufficient wallet balance. Please add funds to your wallet and try again.";
@@ -1144,11 +1160,17 @@ function getPurchaseErrorMessage(error){
     }
 
 
+    /*
+     * GMAIL NO LONGER AVAILABLE
+     */
+
     if(
         lower.includes("not available") ||
         lower.includes("unavailable") ||
         lower.includes("already sold") ||
-        lower.includes("sold")
+        lower.includes("sold") ||
+        lower.includes("already purchased") ||
+        lower.includes("already been purchased")
     ){
 
         return "This Gmail is no longer available. Please choose another Gmail.";
@@ -1156,7 +1178,13 @@ function getPurchaseErrorMessage(error){
     }
 
 
-    return raw;
+    /*
+     * If the database gives another error,
+     * show its actual message.
+     */
+
+    return raw ||
+        "Purchase could not be completed. Please try again.";
 
 }
 
@@ -1193,6 +1221,9 @@ function showPurchaseResult(data){
         .getElementById("purchaseView")
         .style.display =
             "block";
+
+
+    hideMessage();
 
 
     window.scrollTo({
@@ -1293,7 +1324,7 @@ function showMessage(
 
 
     box.textContent =
-        message;
+        String(message);
 
 
     box.style.display =
