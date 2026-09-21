@@ -88,17 +88,16 @@
             margin-bottom:18px;
             font-size:14px;
             font-weight:700;
+            line-height:1.5;
         }
 
         .message.error{
-            display:block;
             background:#fff0f0;
             color:#c62828;
             border:1px solid #ffd0d0;
         }
 
         .message.success{
-            display:block;
             background:#effff4;
             color:#16803c;
             border:1px solid #c8f0d5;
@@ -199,8 +198,6 @@
             font-size:23px;
             font-weight:900;
         }
-
-        /* Only one view is shown at a time */
 
         #detailView,
         #purchaseView{
@@ -423,9 +420,7 @@
 
 <main>
 
-    <!-- =========================
-         GMAIL LIST VIEW
-    ========================== -->
+    <!-- LIST VIEW -->
 
     <section id="listView">
 
@@ -451,9 +446,7 @@
     </section>
 
 
-    <!-- =========================
-         GMAIL DETAIL VIEW
-    ========================== -->
+    <!-- DETAIL VIEW -->
 
     <section id="detailView">
 
@@ -509,9 +502,7 @@
     </section>
 
 
-    <!-- =========================
-         PURCHASE SUCCESS VIEW
-    ========================== -->
+    <!-- PURCHASE RESULT -->
 
     <section id="purchaseView">
 
@@ -586,55 +577,36 @@ let selectedGmail = null;
 
 
 /* =========================
-   FORCE FIRST PAGE
-   EVERY TIME GMAIL.HTML OPENS
+   RESET TO LIST
 ========================= */
 
 function resetToListView(){
 
     selectedGmail = null;
 
-
     document
         .getElementById("listView")
-        .style.display =
-            "block";
-
+        .style.display = "block";
 
     document
         .getElementById("detailView")
-        .style.display =
-            "none";
-
+        .style.display = "none";
 
     document
         .getElementById("purchaseView")
-        .style.display =
-            "none";
-
+        .style.display = "none";
 
     document
         .getElementById("credential")
-        .textContent =
-            "";
-
+        .textContent = "";
 
     document
         .getElementById("detailGmail")
-        .textContent =
-            "";
-
+        .textContent = "";
 
     document
         .getElementById("detailPrice")
-        .textContent =
-            "";
-
-
-    window.scrollTo({
-        top:0,
-        behavior:"auto"
-    });
+        .textContent = "";
 
 }
 
@@ -647,15 +619,7 @@ document.addEventListener(
     "DOMContentLoaded",
     async function(){
 
-        /*
-         * Always start on the Gmail list.
-         * This prevents the detail or purchase
-         * screen from being shown when returning
-         * to gmail.html.
-         */
-
         resetToListView();
-
 
         const {
             data:{
@@ -666,7 +630,6 @@ document.addEventListener(
             .auth
             .getSession();
 
-
         if(!session){
 
             location.href =
@@ -674,7 +637,6 @@ document.addEventListener(
 
             return;
         }
-
 
         loadGmails();
 
@@ -690,25 +652,15 @@ async function loadGmails(){
 
     hideMessage();
 
-
-    /*
-     * Make sure loading always happens
-     * on the first/list page.
-     */
-
     resetToListView();
-
 
     document
         .getElementById("loading")
-        .style.display =
-            "block";
-
+        .style.display = "block";
 
     document
         .getElementById("gmailList")
-        .innerHTML =
-            "";
+        .innerHTML = "";
 
 
     const {
@@ -734,8 +686,7 @@ async function loadGmails(){
 
     document
         .getElementById("loading")
-        .style.display =
-            "none";
+        .style.display = "none";
 
 
     if(error){
@@ -759,7 +710,7 @@ async function loadGmails(){
 
 
 /* =========================
-   RENDER GMAIL LIST
+   RENDER GMAILS
 ========================= */
 
 function renderGmails(){
@@ -769,9 +720,7 @@ function renderGmails(){
             "gmailList"
         );
 
-
-    list.innerHTML =
-        "";
+    list.innerHTML = "";
 
 
     if(
@@ -810,7 +759,6 @@ function renderGmails(){
                 document.createElement(
                     "div"
                 );
-
 
             item.className =
                 "gmail-item";
@@ -868,7 +816,7 @@ function renderGmails(){
 
 
 /* =========================
-   OPEN GMAIL DETAILS
+   OPEN GMAIL
 ========================= */
 
 function openGmail(gmail){
@@ -878,65 +826,52 @@ function openGmail(gmail){
 
 
     document
-        .getElementById(
-            "detailGmail"
-        )
+        .getElementById("detailGmail")
         .textContent =
             gmail.gmail;
 
 
     document
-        .getElementById(
-            "detailPrice"
-        )
+        .getElementById("detailPrice")
         .textContent =
             formatNaira(
                 gmail.price
             );
 
 
-    /*
-     * Only detail page is shown.
-     */
-
     document
-        .getElementById(
-            "listView"
-        )
+        .getElementById("listView")
         .style.display =
             "none";
 
 
     document
-        .getElementById(
-            "purchaseView"
-        )
+        .getElementById("purchaseView")
         .style.display =
             "none";
 
 
     document
-        .getElementById(
-            "detailView"
-        )
+        .getElementById("detailView")
         .style.display =
             "block";
 
 
-    document
-        .getElementById(
+    const buyButton =
+        document.getElementById(
             "buyButton"
-        )
-        .disabled =
-            false;
+        );
 
 
-    document
-        .getElementById(
-            "buyButton"
-        )
-        .textContent =
-            "BUY NOW";
+    buyButton.disabled =
+        false;
+
+
+    buyButton.textContent =
+        "BUY NOW";
+
+
+    hideMessage();
 
 
     window.scrollTo({
@@ -955,6 +890,11 @@ async function buySelectedGmail(){
 
     if(!selectedGmail){
 
+        showMessage(
+            "Please select a Gmail account first.",
+            "error"
+        );
+
         return;
     }
 
@@ -968,7 +908,6 @@ async function buySelectedGmail(){
     buyButton.disabled =
         true;
 
-
     buyButton.textContent =
         "PROCESSING...";
 
@@ -976,43 +915,109 @@ async function buySelectedGmail(){
     hideMessage();
 
 
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
-        .rpc(
-            "buy_gmail",
-            {
-                p_gmail_id:
-                    selectedGmail.id
-            }
-        );
+    /*
+     * Keep the RPC from staying stuck forever.
+     */
 
+    let rpcResult;
 
-    if(error){
+    try{
+
+        rpcResult =
+            await Promise.race([
+
+                supabaseClient
+                    .rpc(
+                        "buy_gmail",
+                        {
+                            p_gmail_id:
+                                selectedGmail.id
+                        }
+                    ),
+
+                new Promise(
+                    (_,reject) =>
+                        setTimeout(
+                            () =>
+                                reject(
+                                    new Error(
+                                        "The purchase is taking too long. Please try again."
+                                    )
+                                ),
+                            15000
+                        )
+                )
+
+            ]);
+
+    }catch(error){
 
         buyButton.disabled =
             false;
-
 
         buyButton.textContent =
             "BUY NOW";
 
 
         showMessage(
-            error.message,
+            error?.message ||
+            "Purchase could not be completed. Please try again.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+    rpcResult;
+
+
+    /* =========================
+       SUPABASE ERROR
+    ========================== */
+
+    if(error){
+
+        buyButton.disabled =
+            false;
+
+        buyButton.textContent =
+            "BUY NOW";
+
+
+        /*
+         * Show the actual database/RPC
+         * error to the customer.
+         */
+
+        showMessage(
+            getPurchaseErrorMessage(
+                error
+            ),
             "error"
         );
 
 
+        /*
+         * If Gmail was already sold,
+         * refresh the list.
+         */
+
+        const errorText =
+            String(
+                error.message || ""
+            )
+            .toLowerCase();
+
+
         if(
-            error.message
-                .toLowerCase()
-                .includes("available") ||
-            error.message
-                .toLowerCase()
-                .includes("sold")
+            errorText.includes("available") ||
+            errorText.includes("sold") ||
+            errorText.includes("already")
         ){
 
             setTimeout(
@@ -1026,21 +1031,21 @@ async function buySelectedGmail(){
     }
 
 
-    if(
-        !data ||
-        data.success !== true
-    ){
+    /* =========================
+       RPC RETURNED DATA
+    ========================== */
+
+    if(!data){
 
         buyButton.disabled =
             false;
-
 
         buyButton.textContent =
             "BUY NOW";
 
 
         showMessage(
-            "Purchase could not be completed.",
+            "Purchase could not be completed. No response was returned.",
             "error"
         );
 
@@ -1048,9 +1053,110 @@ async function buySelectedGmail(){
     }
 
 
+    /*
+     * Some PostgreSQL functions return:
+     *
+     * {
+     *   success: false,
+     *   message: "Insufficient wallet balance"
+     * }
+     *
+     * instead of throwing a Supabase error.
+     */
+
+    if(data.success !== true){
+
+        buyButton.disabled =
+            false;
+
+        buyButton.textContent =
+            "BUY NOW";
+
+
+        const message =
+            data.message ||
+            data.error ||
+            data.reason ||
+            "Purchase could not be completed.";
+
+
+        showMessage(
+            String(message),
+            "error"
+        );
+
+
+        return;
+    }
+
+
+    /* =========================
+       SUCCESS
+    ========================== */
+
     showPurchaseResult(
         data
     );
+
+}
+
+
+/* =========================
+   PURCHASE ERROR MESSAGE
+========================= */
+
+function getPurchaseErrorMessage(error){
+
+    const raw =
+        String(
+            error?.message ||
+            error?.details ||
+            error?.hint ||
+            ""
+        ).trim();
+
+
+    if(!raw){
+
+        return "Purchase could not be completed. Please try again.";
+
+    }
+
+
+    const lower =
+        raw.toLowerCase();
+
+
+    /*
+     * Convert common wallet messages
+     * into a clear customer message.
+     */
+
+    if(
+        lower.includes("insufficient") ||
+        lower.includes("not enough") ||
+        lower.includes("insufficient balance") ||
+        lower.includes("wallet balance")
+    ){
+
+        return "Insufficient wallet balance. Please add funds to your wallet and try again.";
+
+    }
+
+
+    if(
+        lower.includes("not available") ||
+        lower.includes("unavailable") ||
+        lower.includes("already sold") ||
+        lower.includes("sold")
+    ){
+
+        return "This Gmail is no longer available. Please choose another Gmail.";
+
+    }
+
+
+    return raw;
 
 }
 
@@ -1061,48 +1167,30 @@ async function buySelectedGmail(){
 
 function showPurchaseResult(data){
 
-    /*
-     * Clear the selected Gmail after purchase.
-     * This prevents the old purchased Gmail
-     * from remaining as the active selection.
-     */
-
     selectedGmail =
         null;
 
 
     document
-        .getElementById(
-            "credential"
-        )
+        .getElementById("credential")
         .textContent =
             data.credential || "";
 
 
-    /*
-     * Only purchase page is shown.
-     */
-
     document
-        .getElementById(
-            "listView"
-        )
+        .getElementById("listView")
         .style.display =
             "none";
 
 
     document
-        .getElementById(
-            "detailView"
-        )
+        .getElementById("detailView")
         .style.display =
             "none";
 
 
     document
-        .getElementById(
-            "purchaseView"
-        )
+        .getElementById("purchaseView")
         .style.display =
             "block";
 
@@ -1121,77 +1209,48 @@ function showPurchaseResult(data){
 
 function showList(){
 
-    /*
-     * Completely clear the old selection.
-     */
-
     selectedGmail =
         null;
 
 
     document
-        .getElementById(
-            "detailGmail"
-        )
+        .getElementById("detailGmail")
         .textContent =
             "";
 
 
     document
-        .getElementById(
-            "detailPrice"
-        )
+        .getElementById("detailPrice")
         .textContent =
             "";
 
 
     document
-        .getElementById(
-            "credential"
-        )
+        .getElementById("credential")
         .textContent =
             "";
 
 
-    /*
-     * Hide every other page.
-     */
-
     document
-        .getElementById(
-            "detailView"
-        )
+        .getElementById("detailView")
         .style.display =
             "none";
 
 
     document
-        .getElementById(
-            "purchaseView"
-        )
+        .getElementById("purchaseView")
         .style.display =
             "none";
 
 
-    /*
-     * Show ONLY Gmail list.
-     */
-
     document
-        .getElementById(
-            "listView"
-        )
+        .getElementById("listView")
         .style.display =
             "block";
 
 
     hideMessage();
 
-
-    /*
-     * Reload inventory so a Gmail that was
-     * just purchased is no longer displayed.
-     */
 
     loadGmails();
 
@@ -1204,13 +1263,8 @@ function showList(){
 
 function goDashboard(){
 
-    /*
-     * Clear page state before leaving.
-     */
-
     selectedGmail =
         null;
-
 
     location.href =
         "dashboard.html";
