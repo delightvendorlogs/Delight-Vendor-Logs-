@@ -590,56 +590,47 @@ main{
         #dce3fb;
 }
 
-.cat:nth-child(2)
-.cat-icon{
+.cat:nth-child(2) .cat-icon{
 
     background:#f3eaff;
 }
 
-.cat:nth-child(3)
-.cat-icon{
+.cat:nth-child(3) .cat-icon{
 
     background:#e6faf3;
 }
 
-.cat:nth-child(4)
-.cat-icon{
+.cat:nth-child(4) .cat-icon{
 
     background:#fff1dc;
 }
 
-.cat:nth-child(5)
-.cat-icon{
+.cat:nth-child(5) .cat-icon{
 
     background:#e8f5ff;
 }
 
-.cat:nth-child(6)
-.cat-icon{
+.cat:nth-child(6) .cat-icon{
 
     background:#eeeaff;
 }
 
-.cat:nth-child(7)
-.cat-icon{
+.cat:nth-child(7) .cat-icon{
 
     background:#e6faf4;
 }
 
-.cat:nth-child(8)
-.cat-icon{
+.cat:nth-child(8) .cat-icon{
 
     background:#fff0df;
 }
 
-.cat:nth-child(9)
-.cat-icon{
+.cat:nth-child(9) .cat-icon{
 
     background:#e8efff;
 }
 
-.cat:nth-child(10)
-.cat-icon{
+.cat:nth-child(10) .cat-icon{
 
     background:#ffeaf0;
 }
@@ -1613,8 +1604,6 @@ main{
                     </button>
 
 
-                    <!-- GMAIL ADDED BACK -->
-
                     <button
                         class="cat"
                         onclick="selectCategory('Gmail')"
@@ -1899,7 +1888,13 @@ let balanceHidden = false;
 
 
 /*
-   PRODUCT LOADING STATE
+   PRODUCT STATE
+
+   Products are fetched in the background.
+
+   IMPORTANT:
+   There is NO visible loading screen
+   for categories anymore.
 */
 
 let productsLoading = true;
@@ -1908,11 +1903,18 @@ let productsLoaded = false;
 
 
 /*
-   SESSION CACHE KEY
+   Persistent cache.
+
+   localStorage survives page reloads
+   and reopening the browser.
+
+   This is different from sessionStorage,
+   which can disappear when the session/tab
+   ends.
 */
 
 const PRODUCTS_CACHE_KEY =
-    "delight_vendor_products_cache_v1";
+    "delight_vendor_products_cache_v2";
 
 
 /* =========================================================
@@ -2334,7 +2336,7 @@ function loadProductsFromCache(){
     try{
 
         const saved =
-            sessionStorage.getItem(
+            localStorage.getItem(
                 PRODUCTS_CACHE_KEY
             );
 
@@ -2350,14 +2352,9 @@ function loadProductsFromCache(){
 
 
         if(
-            !Array.isArray(parsed)
+            !Array.isArray(parsed) ||
+            !parsed.length
         ){
-
-            return false;
-        }
-
-
-        if(!parsed.length){
 
             return false;
         }
@@ -2367,23 +2364,26 @@ function loadProductsFromCache(){
             parsed;
 
 
-        productsLoading =
-            false;
+        /*
+           Cached products are immediately
+           considered usable.
 
+           Fresh data will still be fetched
+           in the background.
+        */
 
-        productsLoaded =
-            true;
+        productsLoaded = true;
+
+        productsLoading = false;
 
 
         /*
-           If user already opened a
-           category, show cached products
-           immediately.
+           If a category is already open,
+           display the cached products now.
         */
 
         if(
-            selectedCategory !==
-            "Home"
+            selectedCategory !== "Home"
         ){
 
             renderServices();
@@ -2413,7 +2413,7 @@ function saveProductsToCache(products){
 
     try{
 
-        sessionStorage.setItem(
+        localStorage.setItem(
             PRODUCTS_CACHE_KEY,
             JSON.stringify(products)
         );
@@ -2435,11 +2435,13 @@ function saveProductsToCache(products){
 async function loadProducts(){
 
     /*
-       First try cached products.
+       FIRST:
 
-       This makes the dashboard feel
-       instant when the user has already
-       opened it before.
+       Read existing products from the
+       device immediately.
+
+       This is what makes category
+       opening instant on future visits.
     */
 
     const hasCache =
@@ -2447,27 +2449,16 @@ async function loadProducts(){
 
 
     /*
-       If there is no cache, keep the
-       real loading state active.
+       Fresh data is ALWAYS requested
+       in the background.
+
+       We don't make the user wait for it.
     */
 
-    if(!hasCache){
-
-        productsLoading = true;
-
-        productsLoaded = false;
-    }
+    productsLoading = true;
 
 
     try{
-
-        /*
-           Only select columns actually
-           needed by the dashboard.
-
-           This is lighter than select("*")
-           and reduces the response size.
-        */
 
         const {
             data,
@@ -2495,44 +2486,56 @@ async function loadProducts(){
 
 
             /*
-               If cache exists, keep using it.
-               Do not wipe the working cached
-               products just because the fresh
-               request failed.
+               Keep the cached products if
+               the fresh request fails.
             */
 
-            if(!hasCache){
+            if(hasCache){
 
-                allServices = [];
+                productsLoaded = true;
+
+                productsLoading = false;
+
+                if(
+                    selectedCategory !== "Home"
+                ){
+
+                    renderServices();
+                }
+
+                return;
             }
 
 
-            productsLoading = false;
+            allServices = [];
 
             productsLoaded = true;
 
+            productsLoading = false;
+
 
             if(
-                selectedCategory !==
-                "Home"
+                selectedCategory !== "Home"
             ){
 
                 renderServices();
             }
 
-
             return;
         }
 
+
+        /*
+           Fresh Product data.
+        */
 
         allServices =
             data || [];
 
 
         /*
-           Save the newest Product data
-           so next dashboard opening can
-           show it immediately.
+           Save fresh data permanently
+           to this device.
         */
 
         saveProductsToCache(
@@ -2540,20 +2543,20 @@ async function loadProducts(){
         );
 
 
-        productsLoading = false;
-
         productsLoaded = true;
+
+        productsLoading = false;
 
 
         /*
-           If user opened a category while
-           the request was loading, render
-           it immediately now.
+           If the user tapped a category
+           while the fresh request was
+           running, display the products
+           immediately now.
         */
 
         if(
-            selectedCategory !==
-            "Home"
+            selectedCategory !== "Home"
         ){
 
             renderServices();
@@ -2568,20 +2571,19 @@ async function loadProducts(){
         );
 
 
+        productsLoading = false;
+
+        productsLoaded = true;
+
+
         if(!hasCache){
 
             allServices = [];
         }
 
 
-        productsLoading = false;
-
-        productsLoaded = true;
-
-
         if(
-            selectedCategory !==
-            "Home"
+            selectedCategory !== "Home"
         ){
 
             renderServices();
@@ -2597,17 +2599,11 @@ async function loadProducts(){
 function selectCategory(category){
 
     /*
-       Gmail is a separate system.
-
-       It MUST NOT enter the normal
-       Product/category rendering system.
-
-       It goes directly to gmail.html.
+       Gmail remains completely separate.
     */
 
     if(
-        category ===
-        "Gmail"
+        category === "Gmail"
     ){
 
         location.href =
@@ -2618,8 +2614,8 @@ function selectCategory(category){
 
 
     /*
-       Keep your virtual number system
-       exactly as it was.
+       Virtual numbers remain completely
+       separate.
     */
 
     if(
@@ -2681,19 +2677,27 @@ function selectCategory(category){
 
 
     /*
-       If products are already cached/loaded,
-       this renders immediately.
+       IMPORTANT:
 
-       If they are still loading,
-       it shows the loading state.
+       Render immediately from the
+       cached products.
+
+       There is NO visible loading
+       screen here.
     */
 
     renderServices();
 
 
+    /*
+       Jump directly to the category.
+
+       No smooth scrolling delay.
+    */
+
     window.scrollTo({
         top:0,
-        behavior:"smooth"
+        behavior:"auto"
     });
 }
 
@@ -2734,7 +2738,7 @@ function backHome(){
 
     window.scrollTo({
         top:0,
-        behavior:"smooth"
+        behavior:"auto"
     });
 }
 
@@ -2763,63 +2767,22 @@ function renderServices(){
 
 
     /*
-       REAL loading state.
+       IMPORTANT:
 
-       This prevents the false
-       "No services found" message.
+       We DO NOT show:
+
+       "Loading services..."
+
+       anymore.
+
+       If cached products exist,
+       they are shown immediately.
+
+       If this is the very first visit
+       and there is no cache yet, the area
+       simply remains empty until the
+       background request finishes.
     */
-
-    if(productsLoading){
-
-        box.innerHTML =
-
-            '<div class="msg">' +
-
-                '<div style="font-size:40px">' +
-                    '⏳' +
-                '</div>' +
-
-                '<br>' +
-
-                '<strong>' +
-                    'Loading services...' +
-                '</strong>' +
-
-                '<p>' +
-                    'Please wait while the services load.' +
-                '</p>' +
-
-            '</div>';
-
-        return;
-    }
-
-
-    /*
-       Product request has completed.
-    */
-
-    if(!productsLoaded){
-
-        box.innerHTML =
-
-            '<div class="msg">' +
-
-                '<div style="font-size:40px">' +
-                    '⏳' +
-                '</div>' +
-
-                '<br>' +
-
-                '<strong>' +
-                    'Loading services...' +
-                '</strong>' +
-
-            '</div>';
-
-        return;
-    }
-
 
     const search =
         document
@@ -2870,7 +2833,46 @@ function renderServices(){
     }
 
 
+    /*
+       If the background request is still
+       running AND there is no cached data,
+       don't show a fake "No services found".
+
+       Just wait silently.
+    */
+
+    if(
+        !allServices.length &&
+        productsLoading
+    ){
+
+        box.innerHTML = "";
+
+        return;
+    }
+
+
+    /*
+       Product request finished but there
+       are genuinely no matching products.
+    */
+
     if(!list.length){
+
+        /*
+           If the request is still running,
+           don't show "No services found"
+           because fresh products may still
+           arrive.
+        */
+
+        if(productsLoading){
+
+            box.innerHTML = "";
+
+            return;
+        }
+
 
         box.innerHTML =
 
@@ -2895,6 +2897,12 @@ function renderServices(){
         return;
     }
 
+
+    /*
+       Products exist.
+
+       Render them immediately.
+    */
 
     box.innerHTML = "";
 
@@ -3485,21 +3493,24 @@ async function startDashboard(){
 
 
     /*
-       Start Product loading immediately.
+       VERY IMPORTANT:
 
-       loadProducts() first checks the
-       session cache, so returning users
-       can get the products almost instantly.
+       Product loading starts immediately.
 
-       The fresh Supabase request continues
-       in the background.
+       Cache is checked first, so products
+       already stored on the device become
+       available immediately.
+
+       Fresh Supabase data is fetched
+       silently in the background.
     */
 
     loadProducts();
 
 
     /*
-       Other dashboard data loads separately.
+       These remain independent and do not
+       block Product/category loading.
     */
 
     loadWallet();
