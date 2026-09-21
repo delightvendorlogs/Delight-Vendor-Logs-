@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Gmail - Delight Vendor Logs</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+
+        *{
+            box-sizing:border-box;
+        }
+
+        body{
+            margin:0;
+            font-family:Arial,Helvetica,sans-serif;
+            background:#f3f6ff;
+            color:#18203a;
+        }
+
+        header{
+            background:#ffffff;
+            border-bottom:1px solid #e1e5ef;
+            padding:18px 20px;
+            position:sticky;
+            top:0;
+            z-index:20;
+        }
+
+        .header-inner{
+            max-width:900px;
+            margin:auto;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:15px;
+        }
+
+        .logo{
+            font-size:22px;
+            font-weight:900;
+            color:#1028d8;
+        }
+
+        .back-btn{
+            border:0;
+            background:#eef2ff;
+            color:#1028d8;
+            font-size:14px;
+            font-weight:800;
+            padding:11px 16px;
+            border-radius:12px;
+            cursor:pointer;
+        }
+
+        main{
+            max-width:900px;
+            margin:auto;
+            padding:25px 16px 100px;
+        }
+
+        .page-title{
+            margin:5px 0 7px;
+            font-size:28px;
+            font-weight:900;
+        }
+
+        .page-description{
+            margin:0 0 22px;
+            color:#6c748c;
+            font-size:14px;
+            line-height:1.5;
+        }
+
+        .message{
+            display:none;
+            padding:14px 16px;
+            border-radius:15px;
+            margin-bottom:18px;
+            font-size:14px;
+            font-weight:700;
+        }
+
+        .message.error{
+            display:block;
+            background:#fff0f0;
+            color:#c62828;
+            border:1px solid #ffd0d0;
+        }
+
+        .message.success{
+            display:block;
+            background:#effff4;
+            color:#16803c;
+            border:1px solid #c8f0d5;
+        }
+
+        .loading{
+            background:#ffffff;
+            border:1px solid #e1e5ef;
+            border-radius:20px;
+            padding:25px;
+            text-align:center;
+            color:#6c748c;
+            font-weight:700;
+        }
+
+        .empty{
+            background:#ffffff;
+            border:1px solid #e1e5ef;
+            border-radius:20px;
+            padding:35px 20px;
+            text-align:center;
+        }
+
+        .empty-icon{
+            font-size:42px;
+            margin-bottom:10px;
+        }
+
+        .empty-title{
+            font-size:18px;
+            font-weight:900;
+            margin-bottom:7px;
+        }
+
+        .empty-text{
+            color:#6c748c;
+            font-size:14px;
+            line-height:1.5;
+        }
+
+        .gmail-list{
+            display:flex;
+            flex-direction:column;
+            gap:13px;
+        }
+
+        .gmail-item{
+            background:#ffffff;
+            border:1px solid #e1e5ef;
+            border-radius:20px;
+            padding:18px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:15px;
+            cursor:pointer;
+            transition:.15s ease;
+        }
+
+        .gmail-item:hover{
+            transform:translateY(-1px);
+            border-color:#c9d2ff;
+        }
+
+        .gmail-left{
+            display:flex;
+            align-items:center;
+            gap:13px;
+            min-width:0;
+        }
+
+        .gmail-icon{
+            width:45px;
+            height:45px;
+            min-width:45px;
+            border-radius:14px;
+            background:#eef2ff;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:22px;
+        }
+
+        .gmail-address{
+            font-size:15px;
+            font-weight:800;
+            word-break:break-all;
+        }
+
+        .gmail-sub{
+            margin-top:4px;
+            color:#8a91a5;
+            font-size:12px;
+        }
+
+        .arrow{
+            color:#1028d8;
+            font-size:23px;
+            font-weight:900;
+        }
+
+        .detail-card{
+            display:none;
+            background:#ffffff;
+            border:1px solid #e1e5ef;
+            border-radius:25px;
+            padding:22px;
+        }
+
+        .detail-icon{
+            width:65px;
+            height:65px;
+            border-radius:19px;
+            background:#eef2ff;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:32px;
+            margin-bottom:18px;
+        }
+
+        .detail-label{
+            font-size:12px;
+            font-weight:800;
+            color:#8a91a5;
+            text-transform:uppercase;
+            letter-spacing:.5px;
+            margin-bottom:7px;
+        }
+
+        .detail-gmail{
+            font-size:20px;
+            font-weight:900;
+            word-break:break-all;
+            margin-bottom:22px;
+        }
+
+        .price-box{
+            background:#f3f6ff;
+            border-radius:17px;
+            padding:16px;
+            margin-bottom:20px;
+        }
+
+        .price-label{
+            color:#6c748c;
+            font-size:13px;
+            margin-bottom:5px;
+        }
+
+        .price{
+            color:#1028d8;
+            font-size:25px;
+            font-weight:900;
+        }
+
+        .buy-btn{
+            width:100%;
+            border:0;
+            background:#1028d8;
+            color:#ffffff;
+            padding:16px;
+            border-radius:15px;
+            font-size:16px;
+            font-weight:900;
+            cursor:pointer;
+        }
+
+        .buy-btn:disabled{
+            opacity:.6;
+            cursor:not-allowed;
+        }
+
+        .back-list{
+            width:100%;
+            margin-top:11px;
+            border:0;
+            background:#eef2ff;
+            color:#1028d8;
+            padding:14px;
+            border-radius:15px;
+            font-size:14px;
+            font-weight:900;
+            cursor:pointer;
+        }
+
+        .purchase-card{
+            display:none;
+            background:#ffffff;
+            border:1px solid #ccebd6;
+            border-radius:25px;
+            padding:22px;
+        }
+
+        .purchase-success{
+            width:60px;
+            height:60px;
+            border-radius:50%;
+            background:#e9fff0;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:30px;
+            margin-bottom:15px;
+        }
+
+        .purchase-title{
+            font-size:23px;
+            font-weight:900;
+            margin-bottom:7px;
+        }
+
+        .purchase-text{
+            color:#6c748c;
+            font-size:14px;
+            line-height:1.5;
+            margin-bottom:20px;
+        }
+
+        .credential-box{
+            background:#f3f6ff;
+            border:1px solid #dce3ff;
+            border-radius:17px;
+            padding:16px;
+            margin-bottom:18px;
+        }
+
+        .credential-label{
+            font-size:12px;
+            font-weight:900;
+            color:#6c748c;
+            margin-bottom:8px;
+            text-transform:uppercase;
+        }
+
+        .credential{
+            font-size:16px;
+            font-weight:900;
+            word-break:break-all;
+            line-height:1.5;
+        }
+
+        .done-btn{
+            width:100%;
+            border:0;
+            background:#1028d8;
+            color:#ffffff;
+            padding:15px;
+            border-radius:15px;
+            font-size:15px;
+            font-weight:900;
+            cursor:pointer;
+        }
+
+        .wallet-note{
+            margin-top:14px;
+            text-align:center;
+            color:#8a91a5;
+            font-size:12px;
+        }
+
+        @media(max-width:600px){
+
+            header{
+                padding:15px;
+            }
+
+            .logo{
+                font-size:19px;
+            }
+
+            main{
+                padding:22px 13px 80px;
+            }
+
+            .page-title{
+                font-size:24px;
+            }
+
+            .gmail-item{
+                padding:15px;
+            }
+
+            .gmail-address{
+                font-size:14px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<header>
+
+    <div class="header-inner">
+
+        <div class="logo">
+            Delight Vendor Logs
+        </div>
+
+        <button
+            class="back-btn"
+            onclick="goDashboard()"
+        >
+            ← Dashboard
+        </button>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <!-- LIST VIEW -->
+
+    <section id="listView">
+
+        <h1 class="page-title">
+            Gmail
+        </h1>
+
+        <p class="page-description">
+            Select an available Gmail account to view its price and purchase it.
+        </p>
+
+        <div id="message"></div>
+
+        <div id="loading" class="loading">
+            Loading available Gmail...
+        </div>
+
+        <div
+            id="gmailList"
+            class="gmail-list"
+        ></div>
+
+    </section>
+
+
+    <!-- DETAIL VIEW -->
+
+    <section id="detailView">
+
+        <div class="detail-card">
+
+            <div class="detail-icon">
+                📧
+            </div>
+
+            <div class="detail-label">
+                Gmail Account
+            </div>
+
+            <div
+                id="detailGmail"
+                class="detail-gmail"
+            ></div>
+
+            <div class="price-box">
+
+                <div class="price-label">
+                    Price
+                </div>
+
+                <div
+                    id="detailPrice"
+                    class="price"
+                >
+                </div>
+
+            </div>
+
+            <button
+                id="buyButton"
+                class="buy-btn"
+                onclick="buySelectedGmail()"
+            >
+                BUY NOW
+            </button>
+
+            <button
+                class="back-list"
+                onclick="showList()"
+            >
+                ← Back to Gmail List
+            </button>
+
+            <div class="wallet-note">
+                Payment will be deducted from your wallet.
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PURCHASE RESULT -->
+
+    <section id="purchaseView">
+
+        <div class="purchase-card">
+
+            <div class="purchase-success">
+                ✓
+            </div>
+
+            <div class="purchase-title">
+                Purchase Successful
+            </div>
+
+            <div class="purchase-text">
+                Your Gmail has been purchased successfully.
+                Your credential is shown below.
+            </div>
+
+            <div class="credential-box">
+
+                <div class="credential-label">
+                    Gmail Credential
+                </div>
+
+                <div
+                    id="credential"
+                    class="credential"
+                ></div>
+
+            </div>
+
+            <button
+                class="done-btn"
+                onclick="goDashboard()"
+            >
+                DONE
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+const SUPABASE_URL =
+    "https://hkfhehbhmucymusaytoe.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY,
+        {
+            auth:{
+                persistSession:true,
+                autoRefreshToken:true,
+                detectSessionInUrl:true
+            }
+        }
+    );
+
+
+let availableGmails = [];
+
+let selectedGmail = null;
+
+
+/* =========================
+   PAGE START
+========================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function(){
+
+        const {
+            data:{
+                session
+            }
+        } =
+        await supabaseClient
+            .auth
+            .getSession();
+
+        if(!session){
+
+            location.href =
+                "login.html";
+
+            return;
+        }
+
+        loadGmails();
+
+    }
+);
+
+
+/* =========================
+   LOAD GMAILS
+========================= */
+
+async function loadGmails(){
+
+    hideMessage();
+
+    document
+        .getElementById("loading")
+        .style.display =
+            "block";
+
+    document
+        .getElementById("gmailList")
+        .innerHTML =
+            "";
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("gmail_inventory")
+        .select(
+            "id,gmail,price,status,created_at"
+        )
+        .eq(
+            "status",
+            "available"
+        )
+        .order(
+            "created_at",
+            {
+                ascending:false
+            }
+        );
+
+
+    document
+        .getElementById("loading")
+        .style.display =
+            "none";
+
+
+    if(error){
+
+        showMessage(
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+
+    availableGmails =
+        data || [];
+
+
+    renderGmails();
+
+}
+
+
+/* =========================
+   RENDER GMAIL LIST
+========================= */
+
+function renderGmails(){
+
+    const list =
+        document.getElementById(
+            "gmailList"
+        );
+
+
+    list.innerHTML =
+        "";
+
+
+    if(
+        availableGmails.length === 0
+    ){
+
+        list.innerHTML = `
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    📧
+                </div>
+
+                <div class="empty-title">
+                    No Gmail Available
+                </div>
+
+                <div class="empty-text">
+                    There are currently no Gmail accounts available for purchase.
+                    Please check again later.
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    availableGmails.forEach(
+        gmail => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "gmail-item";
+
+
+            item.innerHTML = `
+
+                <div class="gmail-left">
+
+                    <div class="gmail-icon">
+                        📧
+                    </div>
+
+                    <div>
+
+                        <div class="gmail-address">
+                            ${escapeHtml(
+                                gmail.gmail
+                            )}
+                        </div>
+
+                        <div class="gmail-sub">
+                            Available
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="arrow">
+                    ›
+                </div>
+
+            `;
+
+
+            item.onclick =
+                function(){
+
+                    openGmail(
+                        gmail
+                    );
+
+                };
+
+
+            list.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================
+   OPEN GMAIL DETAILS
+========================= */
+
+function openGmail(gmail){
+
+    selectedGmail =
+        gmail;
+
+
+    document
+        .getElementById(
+            "detailGmail"
+        )
+        .textContent =
+            gmail.gmail;
+
+
+    document
+        .getElementById(
+            "detailPrice"
+        )
+        .textContent =
+            formatNaira(
+                gmail.price
+            );
+
+
+    document
+        .getElementById(
+            "listView"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "purchaseView"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "detailView"
+        )
+        .style.display =
+            "block";
+
+
+    document
+        .getElementById(
+            "buyButton"
+        )
+        .disabled =
+            false;
+
+
+    document
+        .getElementById(
+            "buyButton"
+        )
+        .textContent =
+            "BUY NOW";
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* =========================
+   BUY GMAIL
+========================= */
+
+async function buySelectedGmail(){
+
+    if(!selectedGmail){
+
+        return;
+    }
+
+
+    const buyButton =
+        document.getElementById(
+            "buyButton"
+        );
+
+
+    buyButton.disabled =
+        true;
+
+
+    buyButton.textContent =
+        "PROCESSING...";
+
+
+    hideMessage();
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .rpc(
+            "buy_gmail",
+            {
+                p_gmail_id:
+                    selectedGmail.id
+            }
+        );
+
+
+    if(error){
+
+        buyButton.disabled =
+            false;
+
+        buyButton.textContent =
+            "BUY NOW";
+
+
+        showMessage(
+            error.message,
+            "error"
+        );
+
+
+        /*
+         * If somebody else purchased
+         * the Gmail first, reload the
+         * available inventory.
+         */
+
+        if(
+            error.message
+                .toLowerCase()
+                .includes("available") ||
+            error.message
+                .toLowerCase()
+                .includes("sold")
+        ){
+
+            setTimeout(
+                loadGmails,
+                1200
+            );
+
+        }
+
+        return;
+    }
+
+
+    if(
+        !data ||
+        data.success !== true
+    ){
+
+        buyButton.disabled =
+            false;
+
+        buyButton.textContent =
+            "BUY NOW";
+
+
+        showMessage(
+            "Purchase could not be completed.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    /*
+     * The RPC has already:
+     *
+     * - deducted wallet
+     * - inserted purchase
+     * - inserted transaction
+     * - marked Gmail as sold
+     *
+     * So we only display the
+     * returned credential here.
+     */
+
+    showPurchaseResult(
+        data
+    );
+
+}
+
+
+/* =========================
+   PURCHASE RESULT
+========================= */
+
+function showPurchaseResult(data){
+
+    document
+        .getElementById(
+            "detailView"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "listView"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "purchaseView"
+        )
+        .style.display =
+            "block";
+
+
+    document
+        .getElementById(
+            "credential"
+        )
+        .textContent =
+            data.credential || "";
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* =========================
+   BACK TO LIST
+========================= */
+
+function showList(){
+
+    selectedGmail =
+        null;
+
+
+    document
+        .getElementById(
+            "detailView"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "purchaseView"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "listView"
+        )
+        .style.display =
+            "block";
+
+
+    hideMessage();
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* =========================
+   DASHBOARD
+========================= */
+
+function goDashboard(){
+
+    location.href =
+        "dashboard.html";
+
+}
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function showMessage(
+    message,
+    type
+){
+
+    const box =
+        document.getElementById(
+            "message"
+        );
+
+
+    box.className =
+        "message " +
+        type;
+
+
+    box.textContent =
+        message;
+
+
+    box.style.display =
+        "block";
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+function hideMessage(){
+
+    const box =
+        document.getElementById(
+            "message"
+        );
+
+
+    box.style.display =
+        "none";
+
+
+    box.textContent =
+        "";
+
+}
+
+
+/* =========================
+   NAIRA FORMAT
+========================= */
+
+function formatNaira(
+    amount
+){
+
+    return "₦" +
+        Number(amount || 0)
+            .toLocaleString(
+                "en-NG",
+                {
+                    minimumFractionDigits:2,
+                    maximumFractionDigits:2
+                }
+            );
+
+}
+
+
+/* =========================
+   HTML ESCAPE
+========================= */
+
+function escapeHtml(value){
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+</script>
+
+</body>
+
+</html>
