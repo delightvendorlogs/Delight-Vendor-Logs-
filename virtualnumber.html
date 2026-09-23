@@ -230,6 +230,20 @@ input:focus{
   background:#f5f5f5;
 }
 
+.server-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  margin-bottom:8px;
+  padding:4px 7px;
+  border-radius:999px;
+  background:#16a34a;
+  color:#fff;
+  font-size:10px;
+  line-height:1;
+  font-weight:700;
+}
+
 .server-name{
   font-weight:bold;
   margin-bottom:8px;
@@ -1192,6 +1206,67 @@ const FIVESIM_FUNCTION_URL =
 
 let provider =
   "smsbower";
+
+
+/* ============================================================
+   PREFERRED WHATSAPP PROVIDERS
+============================================================ */
+
+const PREFERRED_WHATSAPP_PROVIDERS = {
+
+  16: "3368",  // UK
+
+  12: "3209",  // USA Virtual
+
+  36: "2462",  // Canada
+
+  33: "3253",  // Colombia
+
+  6: "1329",   // Indonesia
+
+  73: "2933",  // Brazil
+
+  187: "3170"  // USA
+
+};
+
+
+function preferredWhatsappProviderId(
+  country,
+  service
+){
+
+  if(
+    provider !== "smsbower"
+  ){
+
+    return null;
+
+  }
+
+  const code =
+    serviceCode(service)
+      .toLowerCase();
+
+  if(
+    code !== "wa"
+  ){
+
+    return null;
+
+  }
+
+  const id =
+    Number(
+      countryId(country)
+    );
+
+  return (
+    PREFERRED_WHATSAPP_PROVIDERS[id] ||
+    null
+  );
+
+}
 
 
 /* ============================================================
@@ -2473,6 +2548,32 @@ function serverPrice(
 
 
 /* ============================================================
+   CHECK RECOMMENDED SERVER
+============================================================ */
+
+function isRecommendedServer(
+  server
+){
+
+  const preferredId =
+    preferredWhatsappProviderId(
+      selectedCountry,
+      selectedService
+    );
+
+  if(!preferredId){
+    return false;
+  }
+
+  return (
+    serverId(server) ===
+    String(preferredId)
+  );
+
+}
+
+
+/* ============================================================
    LOAD SERVERS
 ============================================================ */
 
@@ -2568,7 +2669,7 @@ function renderServers(){
       "serverList"
     );
 
-  const validServers =
+  let validServers =
     servers.filter(
       server => {
 
@@ -2608,6 +2709,45 @@ function renderServers(){
 
   }
 
+  /*
+    Keep the live servers exactly as returned,
+    but move the preferred WhatsApp provider
+    to the first position if it exists.
+  */
+
+  const preferredId =
+    preferredWhatsappProviderId(
+      selectedCountry,
+      selectedService
+    );
+
+  if(preferredId){
+
+    const preferredIndex =
+      validServers.findIndex(
+        server =>
+          serverId(server) ===
+          String(preferredId)
+      );
+
+    if(
+      preferredIndex > 0
+    ){
+
+      const preferred =
+        validServers.splice(
+          preferredIndex,
+          1
+        )[0];
+
+      validServers.unshift(
+        preferred
+      );
+
+    }
+
+  }
+
   list.innerHTML =
     validServers
       .map(
@@ -2620,6 +2760,11 @@ function renderServers(){
             ) ===
             serverId(server);
 
+          const recommended =
+            isRecommendedServer(
+              server
+            );
+
           return `
             <div
               class="server ${
@@ -2629,6 +2774,16 @@ function renderServers(){
               }"
               data-server-index="${index}"
             >
+
+              ${
+                recommended
+                  ? `
+                    <div class="server-badge">
+                      ✓ Recommended
+                    </div>
+                  `
+                  : ""
+              }
 
               <div class="server-name">
                 ${escapeHTML(
