@@ -421,6 +421,11 @@
           <div class="balance" id="walletBalance">₦0</div>
         </div>
 
+        <div class="info-box">
+          <small>Total Spent</small>
+          <div class="balance" id="totalSpent">₦0</div>
+        </div>
+
       </div>
 
     </section>
@@ -513,7 +518,7 @@
       <!-- PURCHASES -->
       <div id="purchasesTab" class="hidden">
 
-        <h2>Normal Purchases</h2>
+        <h2>Purchases</h2>
 
         <div class="table-wrap">
 
@@ -522,10 +527,10 @@
             <thead>
               <tr>
                 <th>Date</th>
-                <th>Product</th>
+                <th>Purchase</th>
                 <th>Amount</th>
                 <th>Status</th>
-                <th>Content</th>
+                <th>Details</th>
               </tr>
             </thead>
 
@@ -1006,6 +1011,14 @@
       Number(
         user?.balance || 0
       ).toLocaleString();
+
+
+    document
+      .getElementById(
+        "totalSpent"
+      )
+      .textContent =
+      "₦0";
 
 
     const newUrl =
@@ -1751,7 +1764,7 @@
 
   /*
   ==========================================
-  NORMAL PURCHASES
+  PURCHASES
   ==========================================
   */
 
@@ -1776,32 +1789,531 @@
     `;
 
 
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
+    try {
 
-        .from("purchases")
+      /*
+      ==========================================
+      NORMAL PURCHASES
+      ==========================================
+      */
 
-        .select(
-          "id,product_id,product_name,amount,content,status,created_at"
+      const {
+        data: normalData,
+        error: normalError
+      } =
+        await supabaseClient
+
+          .from("purchases")
+
+          .select(
+            "id,product_id,product_name,amount,content,status,created_at"
+          )
+
+          .eq(
+            "user_id",
+            selectedUserId
+          );
+
+
+      if (normalError) {
+        throw normalError;
+      }
+
+
+      /*
+      ==========================================
+      VIRTUAL NUMBER PURCHASES
+      ==========================================
+      */
+
+      const {
+        data: virtualAll,
+        error: virtualError
+      } =
+        await supabaseClient.rpc(
+          "admin_list_virtual_number_orders"
+        );
+
+
+      if (virtualError) {
+        throw virtualError;
+      }
+
+
+      const virtualData =
+        (virtualAll || []).filter(
+          order =>
+            String(
+              order.user_id
+            ) ===
+            String(
+              selectedUserId
+            )
+        );
+
+
+      /*
+      ==========================================
+      COMBINE BOTH PURCHASE TYPES
+      ==========================================
+      */
+
+      const combined = [];
+
+
+      /*
+      NORMAL
+      */
+
+      (normalData || []).forEach(
+        purchase => {
+
+          combined.push({
+
+            type: "normal",
+
+            date:
+              purchase.created_at,
+
+            data:
+              purchase
+
+          });
+
+        }
+      );
+
+
+      /*
+      VIRTUAL
+      */
+
+      virtualData.forEach(
+        order => {
+
+          combined.push({
+
+            type: "virtual",
+
+            date:
+              order.purchased_at ||
+              order.created_at,
+
+            data:
+              order
+
+          });
+
+        }
+      );
+
+
+      /*
+      ==========================================
+      NEWEST FIRST
+      ==========================================
+      */
+
+      combined.sort(
+        function(a, b) {
+
+          return (
+            new Date(
+              b.date || 0
+            ).getTime()
+            -
+            new Date(
+              a.date || 0
+            ).getTime()
+          );
+
+        }
+      );
+
+
+      /*
+      ==========================================
+      TOTAL SPENT
+      ==========================================
+      */
+
+      let totalSpent = 0;
+
+
+      combined.forEach(
+        item => {
+
+          if (
+            item.type === "virtual"
+          ) {
+
+            const order =
+              item.data;
+
+
+            const status =
+              String(
+                order.status || ""
+              )
+              .toLowerCase()
+              .trim();
+
+
+            /*
+            Same logic as customer
+            My Purchases page:
+            only received virtual
+            numbers count as spent.
+            */
+
+            if (
+              status === "received"
+            ) {
+
+              totalSpent +=
+                Number(
+                  order.customer_price_ngn ||
+                  0
+                );
+
+            }
+
+          }
+
+          else {
+
+            const purchase =
+              item.data;
+
+
+            const status =
+              String(
+                purchase.status || ""
+              )
+              .toLowerCase()
+              .trim();
+
+
+            /*
+            Same logic as customer
+            My Purchases page:
+            only completed normal
+            purchases count as spent.
+            */
+
+            if (
+              status === "completed"
+            ) {
+
+              totalSpent +=
+                Number(
+                  purchase.amount ||
+                  0
+                );
+
+            }
+
+          }
+
+        }
+      );
+
+
+      document
+        .getElementById(
+          "totalSpent"
         )
-
-        .eq(
-          "user_id",
-          selectedUserId
-        )
-
-        .order(
-          "created_at",
+        .textContent =
+        "₦" +
+        Number(
+          totalSpent
+        ).toLocaleString(
+          "en-NG",
           {
-            ascending: false
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
           }
         );
 
 
-    if (error) {
+      /*
+      ==========================================
+      EMPTY
+      ==========================================
+      */
+
+      if (
+        combined.length === 0
+      ) {
+
+        body.innerHTML = `
+
+          <tr>
+
+            <td
+              colspan="5"
+              class="empty"
+            >
+
+              No purchases found.
+
+            </td>
+
+          </tr>
+
+        `;
+
+        return;
+
+      }
+
+
+      /*
+      ==========================================
+      RENDER COMBINED PURCHASES
+      ==========================================
+      */
+
+      body.innerHTML =
+        combined.map(
+          item => {
+
+            /*
+            ======================================
+            VIRTUAL NUMBER PURCHASE
+            ======================================
+            */
+
+            if (
+              item.type === "virtual"
+            ) {
+
+              const order =
+                item.data;
+
+
+              const status =
+                String(
+                  order.status ||
+                  "unknown"
+                )
+                .toLowerCase()
+                .trim();
+
+
+              const statusClass =
+                getStatusClass(
+                  status
+                );
+
+
+              const price =
+                Number(
+                  order.customer_price_ngn ||
+                  0
+                );
+
+
+              const purchaseName =
+                (
+                  order.service_name ||
+                  order.service_code ||
+                  "Virtual Number"
+                ) +
+                (
+                  order.country_name
+                    ? " - " +
+                      order.country_name
+                    : ""
+                );
+
+
+              return `
+
+                <tr>
+
+                  <td>
+
+                    ${formatDate(
+                      order.purchased_at ||
+                      order.created_at
+                    )}
+
+                  </td>
+
+
+                  <td>
+
+                    📱
+                    ${escapeHtml(
+                      purchaseName
+                    )}
+
+                  </td>
+
+
+                  <td>
+
+                    ₦${price.toLocaleString()}
+
+                  </td>
+
+
+                  <td>
+
+                    <span
+                      class="status ${statusClass}"
+                    >
+
+                      ${escapeHtml(
+                        order.status ||
+                        "—"
+                      )}
+
+                    </span>
+
+                  </td>
+
+
+                  <td
+                    style="
+                      max-width:300px;
+                      word-break:break-word;
+                    "
+                  >
+
+                    <strong>
+                      Virtual Number
+                    </strong>
+
+                    <br>
+
+                    Country:
+                    ${escapeHtml(
+                      order.country_name ||
+                      "—"
+                    )}
+
+                    <br>
+
+                    Number:
+                    ${escapeHtml(
+                      order.number ||
+                      "—"
+                    )}
+
+                    ${
+                      order.otp_code
+                        ? `
+                          <br>
+                          OTP:
+                          ${escapeHtml(
+                            order.otp_code
+                          )}
+                        `
+                        : ""
+                    }
+
+                  </td>
+
+                </tr>
+
+              `;
+
+            }
+
+
+            /*
+            ======================================
+            NORMAL PURCHASE
+            ======================================
+            */
+
+            const purchase =
+              item.data;
+
+
+            return `
+
+              <tr>
+
+                <td>
+
+                  ${formatDate(
+                    purchase.created_at
+                  )}
+
+                </td>
+
+
+                <td>
+
+                  ${escapeHtml(
+                    purchase.product_name ||
+                    "—"
+                  )}
+
+                </td>
+
+
+                <td>
+
+                  ₦${Number(
+                    purchase.amount ||
+                    0
+                  ).toLocaleString()}
+
+                </td>
+
+
+                <td>
+
+                  <span
+                    class="status ${getStatusClass(
+                      purchase.status
+                    )}"
+                  >
+
+                    ${escapeHtml(
+                      purchase.status ||
+                      "—"
+                    )}
+
+                  </span>
+
+                </td>
+
+
+                <td
+                  style="
+                    max-width:300px;
+                    word-break:break-word;
+                  "
+                >
+
+                  ${escapeHtml(
+                    purchase.content ||
+                    "—"
+                  )}
+
+                </td>
+
+              </tr>
+
+            `;
+
+          }
+        ).join("");
+
+    }
+
+    catch (error) {
+
+      console.error(
+        "Purchase loading error:",
+        error
+      );
+
 
       body.innerHTML = `
 
@@ -1813,7 +2325,8 @@
           >
 
             ${escapeHtml(
-              error.message
+              error.message ||
+              "Unable to load purchases."
             )}
 
           </td>
@@ -1822,103 +2335,7 @@
 
       `;
 
-      return;
-
     }
-
-
-    if (
-      !data ||
-      data.length === 0
-    ) {
-
-      body.innerHTML = `
-
-        <tr>
-
-          <td
-            colspan="5"
-            class="empty"
-          >
-
-            No normal purchases found.
-
-          </td>
-
-        </tr>
-
-      `;
-
-      return;
-
-    }
-
-
-    body.innerHTML =
-      data.map(
-        item => `
-
-          <tr>
-
-            <td>
-              ${formatDate(
-                item.created_at
-              )}
-            </td>
-
-
-            <td>
-              ${escapeHtml(
-                item.product_name ||
-                "—"
-              )}
-            </td>
-
-
-            <td>
-              ₦${Number(
-                item.amount ||
-                0
-              ).toLocaleString()}
-            </td>
-
-
-            <td>
-
-              <span
-                class="status ${getStatusClass(
-                  item.status
-                )}"
-              >
-
-                ${escapeHtml(
-                  item.status ||
-                  "—"
-                )}
-
-              </span>
-
-            </td>
-
-
-            <td
-              style="
-                max-width:300px;
-                word-break:break-word;
-              "
-            >
-
-              ${escapeHtml(
-                item.content ||
-                "—"
-              )}
-
-            </td>
-
-          </tr>
-
-        `
-      ).join("");
 
   }
 
