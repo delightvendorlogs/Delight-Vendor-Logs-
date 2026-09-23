@@ -680,6 +680,7 @@ function buildCategoryUI(){
             }, 500);  
   
             return false;  
+  
         }  
   
         const {  
@@ -2128,7 +2129,9 @@ async function cancelPendingOrder(id){
     }  
   
               }  
-    async function loadUsers(){  
+  
+  
+async function loadUsers(){  
   
     const container =  
         document.getElementById(  
@@ -2175,7 +2178,53 @@ async function cancelPendingOrder(id){
   
 }  
   
+  
+/* =========================  
+   USER DETAILS  
+   NORMAL + VIRTUAL PURCHASES  
+========================= */  
+  
 async function loadUserDetails(){  
+  
+    /*  
+       Load all virtual-number orders once.  
+       The existing admin RPC is used so the  
+       rest of the admin dashboard permissions  
+       and functionality remain unchanged.  
+    */  
+  
+    let allVirtualOrders = [];  
+  
+    try{  
+  
+        const {  
+            data:virtualData,  
+            error:virtualError  
+        } = await supabaseClient  
+            .rpc("admin_list_virtual_number_orders");  
+  
+        if(virtualError){  
+  
+            console.error(  
+                "Virtual orders load error:",  
+                virtualError  
+            );  
+  
+        }else{  
+  
+            allVirtualOrders =  
+                virtualData || [];  
+  
+        }  
+  
+    }catch(error){  
+  
+        console.error(  
+            "Unexpected virtual orders load error:",  
+            error  
+        );  
+  
+    }  
   
     for(const user of users){  
   
@@ -2213,8 +2262,135 @@ async function loadUserDetails(){
                     }  
                 );  
   
-        user.purchases =  
+        const normalPurchases =  
             purchases || [];  
+  
+        /*  
+           Get this user's virtual-number purchases.  
+        */  
+  
+        const virtualPurchases =  
+            allVirtualOrders  
+                .filter(order =>  
+                    String(order.user_id) ===  
+                    String(user.id)  
+                );  
+  
+        /*  
+           Combine normal purchases and virtual  
+           purchases exactly like the customer  
+           purchase dashboard.  
+        */  
+  
+        const combinedPurchases = [];  
+  
+        normalPurchases.forEach(purchase => {  
+  
+            combinedPurchases.push({  
+  
+                type:"normal",  
+  
+                date:  
+                    purchase.created_at,  
+  
+                data:purchase  
+  
+            });  
+  
+        });  
+  
+        virtualPurchases.forEach(order => {  
+  
+            combinedPurchases.push({  
+  
+                type:"virtual",  
+  
+                date:  
+                    order.created_at ||  
+                    order.purchased_at,  
+  
+                data:order  
+  
+            });  
+  
+        });  
+  
+        /*  
+           Newest purchase always appears first,  
+           regardless of purchase type.  
+        */  
+  
+        combinedPurchases.sort((a,b) => {  
+  
+            return new Date(  
+                b.date || 0  
+            ).getTime() -  
+  
+            new Date(  
+                a.date || 0  
+            ).getTime();  
+  
+        });  
+  
+        user.purchases =  
+            combinedPurchases;  
+  
+        /*  
+           Calculate Total Spent using the same  
+           rules as the customer My Purchases page:  
+  
+           Normal purchase: completed only.  
+           Virtual number: received only.  
+        */  
+  
+        let totalSpent = 0;  
+  
+        combinedPurchases.forEach(purchase => {  
+  
+            if(purchase.type === "normal"){  
+  
+                const p =  
+                    purchase.data;  
+  
+                if(  
+                    String(p.status || "")  
+                        .toLowerCase() ===  
+                    "completed"  
+                ){  
+  
+                    totalSpent +=  
+                        Number(  
+                            p.amount || 0  
+                        );  
+  
+                }  
+  
+            }else if(  
+                purchase.type === "virtual"  
+            ){  
+  
+                const order =  
+                    purchase.data;  
+  
+                if(  
+                    String(order.status || "")  
+                        .toLowerCase() ===  
+                    "received"  
+                ){  
+  
+                    totalSpent +=  
+                        Number(  
+                            order.customer_price_ngn || 0  
+                        );  
+  
+                }  
+  
+            }  
+  
+        });  
+  
+        user.total_spent =  
+            totalSpent;  
   
         const {  
             data:transactions  
@@ -2378,6 +2554,12 @@ function renderUsers(){
                 <b>${purchases.length}</b>  
                 <br>  
   
+                💰 Total Spent:  
+                <b>₦${money(  
+                    user.total_spent  
+                )}</b>  
+                <br>  
+  
                 📜 Transactions:  
                 <b>${transactions.length}</b>  
                 <br>  
@@ -2396,56 +2578,166 @@ function renderUsers(){
                 ${  
                     purchases.length  
                     ?  
-                    purchases.map(p => `  
+                    purchases.map(purchase => {  
   
-                        <div class="user-details">  
+                        if(  
+                            purchase.type ===  
+                            "virtual"  
+                        ){  
   
-                            <b>  
+                            const p =  
+                                purchase.data;  
+  
+                            return `  
+  
+                                <div class="user-details">  
+  
+                                    <b>  
+                                        📱 ${escapeHTML(  
+                                            p.service_name ||  
+                                            p.service_code ||  
+                                            "Virtual Number"  
+                                        )}  
+  
+                                    </b>  
+  
+                                    <br>  
+  
+                                    Country:  
+                                    ${escapeHTML(  
+                                        p.country_name ||  
+                                        "Unknown"  
+                                    )}  
+  
+                                    <br>  
+  
+                                    Number:  
+                                    ${escapeHTML(  
+                                        p.number ||  
+                                        "Not available"  
+                                    )}  
+  
+                                    <br>  
+  
+                                    Amount:  
+                                    ₦${money(  
+                                        p.customer_price_ngn  
+                                    )}  
+  
+                                    <br>  
+  
+                                    Status:  
+                                    ${escapeHTML(  
+                                        p.status ||  
+                                        "Unknown"  
+                                    )}  
+  
+                                    <br>  
+  
+                                    OTP:  
+                                    ${escapeHTML(  
+                                        p.otp_code ||  
+                                        "Not received"  
+                                    )}  
+  
+                                    <br>  
+  
+                                    Date:  
+                                    ${  
+                                        purchase.date  
+                                        ? escapeHTML(  
+                                            new Date(  
+                                                purchase.date  
+                                            ).toLocaleString(  
+                                                "en-NG"  
+                                            )  
+                                        )  
+                                        : "Unknown"  
+                                    }  
+  
+                                    ${  
+                                        p.refunded_at  
+                                        ?  
+                                        `  
+                                        <br>  
+                                        Refunded:  
+                                        ${escapeHTML(  
+                                            new Date(  
+                                                p.refunded_at  
+                                            ).toLocaleString(  
+                                                "en-NG"  
+                                            )  
+                                        )}  
+                                        `  
+                                        :  
+                                        ""  
+                                    }  
+  
+                                </div>  
+  
+                            `;  
+  
+                        }  
+  
+                        const p =  
+                            purchase.data;  
+  
+                        return `  
+  
+                            <div class="user-details">  
+  
+                                <b>  
+                                    🛍️ ${escapeHTML(  
+                                        p.product_name  
+                                    )}  
+  
+                                </b>  
+  
+                                <br>  
+  
+                                Amount:  
+                                ₦${money(p.amount)}  
+  
+                                <br>  
+  
+                                Status:  
                                 ${escapeHTML(  
-                                    p.product_name  
+                                    p.status  
                                 )}  
-                            </b>  
-                            <br>  
   
-                            Amount:  
-                            ₦${money(p.amount)}  
-                            <br>  
+                                <br>  
   
-                            Status:  
-                            ${escapeHTML(  
-                                p.status  
-                            )}  
-                            <br>  
-  
-                            Date:  
-                            ${  
-                                p.created_at  
-                                ? escapeHTML(  
-                                    new Date(  
-                                        p.created_at  
-                                    ).toLocaleString(  
-                                        "en-NG"  
+                                Date:  
+                                ${  
+                                    purchase.date  
+                                    ? escapeHTML(  
+                                        new Date(  
+                                            purchase.date  
+                                        ).toLocaleString(  
+                                            "en-NG"  
+                                        )  
                                     )  
-                                )  
-                                : "Unknown"  
-                            }  
+                                    : "Unknown"  
+                                }  
   
-                            <details>  
+                                <details>  
   
-                                <summary>  
-                                    Delivery Information  
-                                </summary>  
+                                    <summary>  
+                                        Delivery Information  
+                                    </summary>  
   
-                                ${escapeHTML(  
-                                    p.content ||  
-                                    ""  
-                                )}  
+                                    ${escapeHTML(  
+                                        p.content ||  
+                                        ""  
+                                    )}  
   
-                            </details>  
+                                </details>  
   
-                        </div>  
+                            </div>  
   
-                    `).join("")  
+                        `;  
+  
+                    }).join("")  
                     :  
                     '<p class="small">No purchases.</p>'  
                 }  
@@ -2850,6 +3142,7 @@ async function loadWatermark(){
             "Unable to load watermark.";  
   
         return;  
+  
     }  
   
     const message =  
@@ -2897,6 +3190,7 @@ async function saveWatermark(){
             "message error";  
   
         return;  
+  
     }  
   
     message.textContent =  
@@ -2935,6 +3229,7 @@ async function saveWatermark(){
             "message error";  
   
         return;  
+  
     }  
   
     message.textContent =  
@@ -2976,6 +3271,7 @@ async function clearWatermark(){
         );  
   
         return;  
+  
     }  
   
     document.getElementById(  
@@ -3139,5 +3435,4 @@ startAdmin();
   
     </script>  
 </body>  
-</html>  
-               
+</html>
