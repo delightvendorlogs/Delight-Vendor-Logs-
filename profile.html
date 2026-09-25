@@ -293,6 +293,104 @@
     }
 
     /* =========================
+       CONTACT SUPPORT
+    ========================= */
+
+    .contact-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 15, 45, .55);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .contact-modal {
+      width: 100%;
+      max-width: 430px;
+      background: white;
+      border-radius: 25px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+      position: relative;
+    }
+
+    .contact-close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 50%;
+      background: #f1f4fb;
+      color: #68738f;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .contact-title {
+      margin: 0 45px 7px 0;
+      color: #10152b;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .contact-subtitle {
+      margin: 0 0 20px;
+      color: #8d99b8;
+      font-size: 14px;
+    }
+
+    .contact-option {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      width: 100%;
+      padding: 15px;
+      margin-top: 12px;
+      border-radius: 17px;
+      text-decoration: none;
+      color: white;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .contact-option.telegram {
+      background: #229ed9;
+    }
+
+    .contact-option.whatsapp {
+      background: #25d366;
+    }
+
+    .contact-icon {
+      width: 45px;
+      height: 45px;
+      min-width: 45px;
+      border-radius: 13px;
+      background: rgba(255,255,255,.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .contact-option-text {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .contact-option-text span {
+      font-size: 12px;
+      font-weight: 600;
+      opacity: .8;
+    }
+
+    /* =========================
        FOOTER
     ========================= */
 
@@ -481,7 +579,7 @@
 
     <div
       class="profile-row clickable"
-      onclick="openWhatsApp()"
+      onclick="openContactSupport()"
     >
 
       <div class="icon-box">
@@ -549,6 +647,84 @@
 <p id="message"></p>
 
 
+<!-- =========================
+     CONTACT SUPPORT MODAL
+========================= -->
+
+<div
+  class="contact-overlay"
+  id="contactOverlay"
+  onclick="closeContactSupport(event)"
+>
+
+  <div
+    class="contact-modal"
+    onclick="event.stopPropagation()"
+  >
+
+    <button
+      class="contact-close"
+      type="button"
+      onclick="closeContactSupport()"
+    >
+      ×
+    </button>
+
+    <h2 class="contact-title">
+      Contact Support
+    </h2>
+
+    <p class="contact-subtitle">
+      Choose where you want to contact us.
+    </p>
+
+
+    <a
+      class="contact-option telegram"
+      href="https://t.me/DelightVendorlogs1"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+
+      <div class="contact-icon">
+        ✈️
+      </div>
+
+      <div class="contact-option-text">
+        Contact Us on Telegram
+        <span>
+          @DelightVendorlogs1
+        </span>
+      </div>
+
+    </a>
+
+
+    <a
+      class="contact-option whatsapp"
+      href="https://wa.me/2347015908401"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+
+      <div class="contact-icon">
+        ☎
+      </div>
+
+      <div class="contact-option-text">
+        Contact Us on WhatsApp
+        <span>
+          WhatsApp Support
+        </span>
+      </div>
+
+    </a>
+
+  </div>
+
+</div>
+
+
 <script>
 
 /* =========================
@@ -566,6 +742,39 @@ const supabaseClient =
     SUPABASE_URL,
     SUPABASE_KEY
   );
+
+
+/* =========================
+   CONTACT SUPPORT
+========================= */
+
+function openContactSupport() {
+
+  document
+    .getElementById("contactOverlay")
+    .style.display = "flex";
+
+}
+
+
+function closeContactSupport(event) {
+
+  if (
+    event &&
+    event.target !==
+      document.getElementById("contactOverlay")
+  ) {
+
+    return;
+
+  }
+
+
+  document
+    .getElementById("contactOverlay")
+    .style.display = "none";
+
+}
 
 
 /* =========================
