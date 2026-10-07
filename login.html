@@ -541,6 +541,12 @@ function togglePassword(){
     const toggle =
         document.getElementById("togglePassword");
 
+
+    if(!password || !toggle){
+        return;
+    }
+
+
     if(password.type === "password"){
 
         password.type = "text";
