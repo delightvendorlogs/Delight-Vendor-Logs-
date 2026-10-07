@@ -12,215 +12,521 @@
     box-sizing:border-box;
 }
 
+:root{
+    --blue:#0b3d91;
+    --blue2:#1261d6;
+    --dark:#050b18;
+    --dark2:#0a1224;
+    --black:#03060d;
+    --bg:#eef3fa;
+    --card:#ffffff;
+    --text:#101828;
+    --muted:#667085;
+    --border:#dbe3ef;
+    --danger:#c62828;
+    --success:#14804a;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
 body{
     margin:0;
-    background:#f5f5f5;
-    color:#111;
-    font-family:Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+    font-size:14px;
+    line-height:1.45;
+    overflow-x:hidden;
+}
+
+button,
+input,
+textarea,
+select{
+    font-family:inherit;
+}
+
+button{
+    border:0;
+    border-radius:9px;
+    padding:10px 14px;
+    background:var(--dark);
+    color:#fff;
+    font-weight:700;
+    cursor:pointer;
+    transition:.18s ease;
+}
+
+button:hover{
+    transform:translateY(-1px);
+}
+
+button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+    transform:none;
+}
+
+button.danger{
+    background:var(--danger);
+}
+
+button.gray{
+    background:#475467;
 }
 
 header{
-    background:#111;
+    position:sticky;
+    top:0;
+    z-index:50;
+    background:
+        linear-gradient(
+            135deg,
+            #03060d 0%,
+            #07152d 55%,
+            #0b3d91 100%
+        );
     color:#fff;
-    padding:18px 15px;
+    padding:14px 20px;
     display:flex;
     justify-content:space-between;
     align-items:center;
+    border-bottom:1px solid #1d3f70;
+    box-shadow:0 4px 18px #00000025;
 }
 
 header h1{
     margin:0;
-    font-size:20px;
+    font-size:17px;
+    letter-spacing:-.2px;
+}
+
+.header-subtitle{
+    font-size:11px;
+    color:#b9c8df;
+    margin-top:2px;
 }
 
 header button{
-    border:0;
-    border-radius:9px;
-    padding:10px 13px;
-    background:#fff;
-    color:#111;
-    font-size:20px;
-    cursor:pointer;
+    width:40px;
+    height:40px;
+    padding:0;
+    border-radius:10px;
+    background:#ffffff12;
+    color:#fff;
+    border:1px solid #ffffff20;
+    font-size:17px;
 }
 
 main{
-    max-width:850px;
+    width:100%;
+    max-width:1280px;
     margin:auto;
-    padding:15px;
+    padding:20px;
 }
+
+/* =========================
+   ADMIN WELCOME DASHBOARD
+========================= */
+
+.admin-welcome{
+    position:relative;
+    overflow:hidden;
+    background:
+        radial-gradient(
+            circle at 90% 10%,
+            #1261d633,
+            transparent 38%
+        ),
+        linear-gradient(
+            135deg,
+            #050b18 0%,
+            #091a36 58%,
+            #0b3d91 100%
+        );
+    color:#fff;
+    border-radius:20px;
+    padding:28px;
+    margin-bottom:16px;
+    box-shadow:0 12px 30px #07152d25;
+}
+
+.admin-welcome::after{
+    content:"";
+    position:absolute;
+    width:180px;
+    height:180px;
+    border:1px solid #ffffff15;
+    border-radius:50%;
+    right:-65px;
+    bottom:-85px;
+}
+
+.welcome-content{
+    position:relative;
+    z-index:2;
+    max-width:760px;
+}
+
+.welcome-eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:1.2px;
+    color:#a9caff;
+    margin-bottom:8px;
+}
+
+.welcome-eyebrow::before{
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#4da3ff;
+    box-shadow:0 0 10px #4da3ff;
+}
+
+.admin-welcome h2{
+    margin:0 0 8px;
+    color:#fff;
+    font-size:27px;
+    line-height:1.2;
+    letter-spacing:-.7px;
+}
+
+.admin-welcome p{
+    margin:0;
+    max-width:680px;
+    color:#c9d6ea;
+    font-size:14px;
+    line-height:1.6;
+}
+
+.welcome-hint{
+    display:inline-flex;
+    margin-top:15px;
+    padding:8px 11px;
+    border-radius:9px;
+    background:#ffffff0d;
+    border:1px solid #ffffff16;
+    color:#e4edfb;
+    font-size:12px;
+}
+
+/* =========================
+   ADMIN SHORTCUTS
+========================= */
+
+.admin-tools{
+    margin-bottom:18px;
+}
+
+.section-heading{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:15px;
+    margin:0 0 10px;
+}
+
+.section-heading h2{
+    margin:0;
+    font-size:18px;
+    letter-spacing:-.3px;
+}
+
+.section-heading p{
+    margin:3px 0 0;
+    color:var(--muted);
+    font-size:12px;
+}
+
+.admin-tool-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:10px;
+}
+
+.admin-tool{
+    text-align:left;
+    text-decoration:none;
+    color:var(--text);
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:13px;
+    padding:14px;
+    min-height:116px;
+    box-shadow:0 3px 12px #0b19300c;
+    transition:.18s ease;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.admin-tool:hover{
+    transform:translateY(-2px);
+    border-color:#9bb9e6;
+    box-shadow:0 8px 20px #0b193018;
+}
+
+.tool-icon{
+    width:36px;
+    height:36px;
+    border-radius:10px;
+    background:#e9f1ff;
+    color:var(--blue);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+    margin-bottom:9px;
+}
+
+.admin-tool strong{
+    display:block;
+    font-size:13px;
+    margin-bottom:3px;
+}
+
+.admin-tool span{
+    display:block;
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.4;
+}
+
+.tool-arrow{
+    margin-top:9px;
+    color:var(--blue);
+    font-size:12px;
+    font-weight:800;
+}
+
+/* =========================
+   QUICK CMS
+========================= */
+
+.cms-nav{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+}
+
+.cms-nav button{
+    background:#fff;
+    color:#24324a;
+    border:1px solid var(--border);
+    font-size:12px;
+    padding:8px 11px;
+}
+
+.cms-nav button:hover{
+    color:var(--blue);
+    border-color:#9bb9e6;
+}
+
+/* =========================
+   CARDS
+========================= */
 
 .card{
-    background:#fff;
-    border-radius:14px;
-    padding:18px;
-    margin-bottom:16px;
-    box-shadow:0 2px 10px #00000012;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:15px;
+    padding:17px;
+    margin-bottom:15px;
+    box-shadow:0 3px 14px #0b19300b;
 }
 
-h2{
-    margin:0 0 14px;
-    font-size:19px;
+.card h2{
+    margin:0 0 11px;
+    font-size:17px;
+    letter-spacing:-.2px;
 }
 
 input,
 textarea,
 select{
     width:100%;
-    padding:13px;
-    border:1px solid #ddd;
+    padding:11px 12px;
+    border:1px solid #d5deea;
     border-radius:9px;
-    font-size:15px;
-    margin:6px 0 12px;
+    font-size:14px;
+    margin:5px 0 10px;
     background:#fff;
+    color:#111827;
+    outline:none;
+    transition:.15s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+    border-color:#6d9fe0;
+    box-shadow:0 0 0 3px #1261d612;
 }
 
 textarea{
-    min-height:110px;
+    min-height:105px;
     resize:vertical;
 }
 
-button{
-    border:0;
-    border-radius:9px;
-    padding:12px 15px;
-    background:#111;
-    color:#fff;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-button.danger{
-    background:#b00020;
-}
-
-button.gray{
-    background:#555;
-}
-
-button:disabled{
-    opacity:.6;
-    cursor:not-allowed;
+label{
+    display:block;
+    font-size:12px;
+    font-weight:700;
+    color:#344054;
+    margin-top:5px;
 }
 
 .row{
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:12px;
+    gap:10px;
 }
 
 .stats{
     display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:10px;
+    grid-template-columns:repeat(6,1fr);
+    gap:9px;
 }
 
 .stat{
-    background:#f5f5f5;
-    padding:15px;
+    background:#f5f8fc;
+    border:1px solid #e1e8f1;
+    padding:12px;
     border-radius:10px;
+    color:#667085;
+    font-size:11px;
+    font-weight:700;
 }
 
 .stat strong{
     display:block;
-    font-size:23px;
-    margin-top:6px;
+    color:#101828;
+    font-size:21px;
+    line-height:1.2;
+    margin-top:5px;
 }
 
 .item{
-    border:1px solid #eee;
+    border:1px solid #e3e8ef;
     border-radius:11px;
-    padding:14px;
-    margin-bottom:10px;
+    padding:13px;
+    margin-bottom:9px;
     background:#fff;
 }
 
 .item b{
-    font-size:16px;
+    font-size:14px;
 }
 
 .small{
-    font-size:13px;
-    color:#666;
-    line-height:1.5;
+    font-size:12px;
+    color:#667085;
+    line-height:1.55;
 }
 
 .actions{
     display:flex;
-    gap:8px;
+    gap:7px;
     flex-wrap:wrap;
-    margin-top:10px;
+    margin-top:9px;
+}
+
+.actions button{
+    font-size:12px;
+    padding:9px 11px;
 }
 
 .category-list{
     display:flex;
-    gap:8px;
+    gap:7px;
     flex-wrap:wrap;
 }
 
 .category-tag{
-    background:#eee;
-    padding:9px 11px;
+    background:#edf3fb;
+    color:#26364d;
+    border:1px solid #d8e3f1;
+    padding:7px 9px;
     border-radius:20px;
-    font-size:13px;
-    font-weight:bold;
+    font-size:12px;
+    font-weight:700;
     display:flex;
     align-items:center;
-    gap:7px;
+    gap:6px;
 }
 
 .category-delete{
-    background:#b00020;
+    background:var(--danger);
     color:#fff;
-    padding:3px 7px;
+    padding:3px 7px !important;
     border-radius:50%;
-    font-size:11px;
+    font-size:10px !important;
     line-height:1;
 }
 
 .message{
-    font-size:14px;
-    margin-top:8px;
+    font-size:12px;
+    margin-top:7px;
 }
 
 .success{
-    color:green;
+    color:var(--success);
 }
 
 .error{
-    color:#b00020;
+    color:var(--danger);
 }
 
 .user-details{
-    background:#f7f7f7;
-    padding:12px;
+    background:#f6f8fb;
+    border:1px solid #e3e8ef;
+    padding:10px;
     border-radius:9px;
-    margin-top:10px;
+    margin-top:9px;
     overflow-wrap:anywhere;
+    font-size:12px;
 }
 
 details{
-    margin-top:10px;
+    margin-top:9px;
 }
 
 summary{
     cursor:pointer;
-    font-weight:bold;
-    padding:7px 0;
+    font-weight:700;
+    padding:6px 0;
+    font-size:12px;
 }
 
 .floating{
     position:fixed;
     right:18px;
     bottom:18px;
-    width:55px;
-    height:55px;
+    width:51px;
+    height:51px;
     border-radius:50%;
     display:flex;
     align-items:center;
     justify-content:center;
     background:#25D366;
     color:white;
-    font-size:27px;
+    font-size:24px;
     text-decoration:none;
     box-shadow:0 3px 12px #0004;
     z-index:100;
@@ -229,7 +535,7 @@ summary{
 .loading{
     text-align:center;
     padding:15px;
-    color:#666;
+    color:#667085;
 }
 
 /* =========================
@@ -237,41 +543,101 @@ summary{
 ========================= */
 
 .inventory-editor{
-    margin-top:14px;
-    padding:15px;
-    border:1px solid #ddd;
-    border-radius:11px;
-    background:#f7f7f7;
+    margin-top:12px;
+    padding:13px;
+    border:1px solid #d8e1ed;
+    border-radius:10px;
+    background:#f6f8fb;
 }
 
 .inventory-editor textarea{
-    min-height:280px;
+    min-height:260px;
     resize:vertical;
     line-height:1.6;
     white-space:pre-wrap;
     overflow-wrap:anywhere;
 }
 
-.inventory-editor label{
-    display:block;
-    font-size:14px;
-    font-weight:bold;
-    margin-top:8px;
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:1050px){
+
+    .admin-tool-grid{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+    .stats{
+        grid-template-columns:repeat(3,1fr);
+    }
+
 }
 
-@media(max-width:600px){
+@media(max-width:700px){
 
-    .row{
-        grid-template-columns:1fr;
+    header{
+        padding:12px 14px;
+    }
+
+    header h1{
+        font-size:15px;
+    }
+
+    .header-subtitle{
+        display:none;
+    }
+
+    main{
+        padding:12px;
+    }
+
+    .admin-welcome{
+        padding:21px;
+        border-radius:16px;
+    }
+
+    .admin-welcome h2{
+        font-size:22px;
+    }
+
+    .admin-welcome p{
+        font-size:13px;
+    }
+
+    .admin-tool-grid{
+        grid-template-columns:1fr 1fr;
     }
 
     .stats{
         grid-template-columns:1fr 1fr;
     }
 
-    header h1{
-        font-size:18px;
+    .card{
+        padding:14px;
+        border-radius:13px;
     }
+
+    .row{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media(max-width:420px){
+
+    .admin-tool-grid{
+        grid-template-columns:1fr;
+    }
+
+    .admin-tool{
+        min-height:auto;
+    }
+
+    .stats{
+        grid-template-columns:1fr 1fr;
+    }
+
 }
 </style>
 </head>
@@ -279,19 +645,287 @@ summary{
 <body>
 
 <header>
-    <h1>⚡ Delight Vendor Logs — Admin</h1>
+
+    <div>
+        <h1>⚡ Delight Vendor Logs — Admin</h1>
+
+        <div class="header-subtitle">
+            Administration & Marketplace Control
+        </div>
+    </div>
 
     <button
         type="button"
         onclick="refreshEverything()"
+        title="Refresh Everything"
     >
         🔄
     </button>
+
 </header>
 
 <main>
 
-<div id="adminStatus" class="card">
+<!-- =========================
+     NEW ADMIN LANDING DASHBOARD
+========================= -->
+
+<section class="admin-welcome">
+
+    <div class="welcome-content">
+
+        <div class="welcome-eyebrow">
+            DELIGHT VENDOR LOGS ADMIN
+        </div>
+
+        <h2>
+            Welcome to Delight Vendor Logs Admin 👋
+        </h2>
+
+        <p>
+            Manage your marketplace, customers, wallet balances,
+            virtual-number pricing, Gmail services, boosting markup,
+            products, inventory, orders and other administration
+            tools from one place.
+        </p>
+
+        <div class="welcome-hint">
+            🧭 Use the admin tools below to get started.
+        </div>
+
+    </div>
+
+</section>
+
+<!-- =========================
+     ADMIN TOOLS
+========================= -->
+
+<section class="admin-tools">
+
+    <div class="section-heading">
+
+        <div>
+            <h2>Admin Tools</h2>
+
+            <p>
+                Open the administration area you need.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="admin-tool-grid">
+
+        <a
+            class="admin-tool"
+            href="view-user.html"
+        >
+
+            <div>
+
+                <div class="tool-icon">
+                    👤
+                </div>
+
+                <strong>
+                    View User
+                </strong>
+
+                <span>
+                    View customer information,
+                    orders and account details.
+                </span>
+
+            </div>
+
+            <div class="tool-arrow">
+                Open →
+            </div>
+
+        </a>
+
+        <a
+            class="admin-tool"
+            href="override-price.html"
+        >
+
+            <div>
+
+                <div class="tool-icon">
+                    📱
+                </div>
+
+                <strong>
+                    Virtual Numbers Markup
+                </strong>
+
+                <span>
+                    Manage virtual-number pricing
+                    and markup rules.
+                </span>
+
+            </div>
+
+            <div class="tool-arrow">
+                Open →
+            </div>
+
+        </a>
+
+        <a
+            class="admin-tool"
+            href="gmail-admin.html"
+        >
+
+            <div>
+
+                <div class="tool-icon">
+                    📧
+                </div>
+
+                <strong>
+                    Manage Gmail
+                </strong>
+
+                <span>
+                    Manage Gmail inventory and
+                    related administration.
+                </span>
+
+            </div>
+
+            <div class="tool-arrow">
+                Open →
+            </div>
+
+        </a>
+
+        <a
+            class="admin-tool"
+            href="boosting-admin.html"
+        >
+
+            <div>
+
+                <div class="tool-icon">
+                    🚀
+                </div>
+
+                <strong>
+                    Boosting Markup
+                </strong>
+
+                <span>
+                    Manage boosting services
+                    and their markup.
+                </span>
+
+            </div>
+
+            <div class="tool-arrow">
+                Open →
+            </div>
+
+        </a>
+
+        <a
+            class="admin-tool"
+            href="admin_wallet.html"
+        >
+
+            <div>
+
+                <div class="tool-icon">
+                    💰
+                </div>
+
+                <strong>
+                    Add / Deduct Balance
+                </strong>
+
+                <span>
+                    Manage customer wallet
+                    balances.
+                </span>
+
+            </div>
+
+            <div class="tool-arrow">
+                Open →
+            </div>
+
+        </a>
+
+    </div>
+
+</section>
+
+<!-- =========================
+     EXISTING CMS SHORTCUTS
+========================= -->
+
+<div class="cms-nav">
+
+    <button
+        type="button"
+        onclick="scrollToCMS('storeOverview')"
+    >
+        📊 Store Overview
+    </button>
+
+    <button
+        type="button"
+        onclick="scrollToCMS('watermarkSection')"
+    >
+        📢 Watermark
+    </button>
+
+    <button
+        type="button"
+        onclick="scrollToCMS('categorySection')"
+    >
+        📂 Categories
+    </button>
+
+    <button
+        type="button"
+        onclick="scrollToCMS('productSection')"
+    >
+        ➕ Add Service
+    </button>
+
+    <button
+        type="button"
+        onclick="scrollToCMS('inventorySection')"
+    >
+        📦 Inventory
+    </button>
+
+    <button
+        type="button"
+        onclick="scrollToCMS('ordersSection')"
+    >
+        🧾 Orders
+    </button>
+
+    <button
+        type="button"
+        onclick="scrollToCMS('usersSection')"
+    >
+        👥 Users
+    </button>
+
+</div>
+
+<!-- =========================
+     ADMIN STATUS
+========================= -->
+
+<div
+    id="adminStatus"
+    class="card"
+>
     Checking administrator access...
 </div>
 
@@ -316,11 +950,21 @@ summary{
 
     </div>
 
-    <div id="refreshMessage" class="message"></div>
+    <div
+        id="refreshMessage"
+        class="message"
+    ></div>
 
 </div>
 
-<div class="card">
+<!-- =========================
+     STORE OVERVIEW
+========================= -->
+
+<div
+    class="card"
+    id="storeOverview"
+>
 
     <h2>📊 Store Overview</h2>
 
@@ -360,7 +1004,14 @@ summary{
 
 </div>
 
-<div class="card">
+<!-- =========================
+     WATERMARK
+========================= -->
+
+<div
+    class="card"
+    id="watermarkSection"
+>
 
     <h2>📢 Dashboard Watermark</h2>
 
@@ -374,7 +1025,10 @@ summary{
         placeholder="Example: 📢 New services have been added. Contact support if you need help."
     ></textarea>
 
-    <div id="watermarkMessage" class="message">
+    <div
+        id="watermarkMessage"
+        class="message"
+    >
         Watermark preview will appear here.
     </div>
 
@@ -403,7 +1057,10 @@ summary{
      SERVICE CATEGORIES
 ========================= -->
 
-<div class="card">
+<div
+    class="card"
+    id="categorySection"
+>
 
     <h2>📂 Service Categories</h2>
 
@@ -435,7 +1092,10 @@ summary{
         ➕ Add Category
     </button>
 
-    <div id="categoryMessage" class="message"></div>
+    <div
+        id="categoryMessage"
+        class="message"
+    ></div>
 
     <div
         id="categoryList"
@@ -449,7 +1109,10 @@ summary{
      ADD PRODUCT
 ========================= -->
 
-<div class="card">
+<div
+    class="card"
+    id="productSection"
+>
 
     <h2>➕ Add Product / Service</h2>
 
@@ -489,7 +1152,10 @@ summary{
         accept="image/*"
     >
 
-    <div id="imageName" class="small">
+    <div
+        id="imageName"
+        class="small"
+    >
         No image selected
     </div>
 
@@ -559,7 +1225,10 @@ summary{
      ADD INVENTORY
 ========================= -->
 
-<div class="card">
+<div
+    class="card"
+    id="inventorySection"
+>
 
     <h2>📦 Add Inventory</h2>
 
@@ -632,7 +1301,10 @@ summary{
      ORDERS
 ========================= -->
 
-<div class="card">
+<div
+    class="card"
+    id="ordersSection"
+>
 
     <h2>🧾 Orders Management</h2>
 
@@ -652,7 +1324,10 @@ summary{
      USERS
 ========================= -->
 
-<div class="card">
+<div
+    class="card"
+    id="usersSection"
+>
 
     <h2>👥 Users & Wallets</h2>
 
@@ -699,6 +1374,25 @@ let inventory = [];
 let orders = [];
 let users = [];
 let categories = [];
+
+/* =========================
+   DASHBOARD NAVIGATION
+   NEW UI ONLY
+========================= */
+
+function scrollToCMS(id){
+
+    const element =
+        document.getElementById(id);
+
+    if(!element) return;
+
+    element.scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+    });
+
+}
 
 /* =========================
    ICONS
@@ -1349,7 +2043,6 @@ async function checkAdmin(){
 
 /* =========================
    LOAD PRODUCTS
-   OPTIMIZED
 ========================= */
 
 async function loadProducts(){
@@ -2483,11 +3176,6 @@ async function saveInventoryEdit(id){
         return;
     }
 
-    /*
-       Do not trim the actual content being saved.
-       This keeps spaces and line breaks exactly
-       as entered in the editor.
-    */
     const content =
         contentInput.value;
 
@@ -2584,12 +3272,6 @@ async function saveInventoryEdit(id){
             return;
         }
 
-        /*
-           Verify the existing inventory record separately.
-           The update itself intentionally does not use
-           .select(), so it does not depend on Supabase
-           returning the updated row.
-        */
         const {
             data:updatedItem,
             error:verifyError
@@ -3576,7 +4258,6 @@ async function loadUsers(){
 
 /* =========================
    USER DETAILS
-   NORMAL + VIRTUAL
 ========================= */
 
 async function loadUserDetails(){
