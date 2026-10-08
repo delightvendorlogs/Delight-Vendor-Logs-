@@ -1,0 +1,6439 @@
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+<title>Virtual Numbers - Delight Vendor Logs</title>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>  
+  
+*{  
+  box-sizing:border-box;  
+}  
+  
+:root{  
+  --gold:#d4af37;  
+  --gold-light:#f0cf68;  
+  --gold-soft:rgba(212,175,55,.12);  
+  --gold-border:rgba(212,175,55,.32);  
+  --black:#050505;  
+  --black-2:#090909;  
+  --card:#0d0d0d;  
+  --card-2:#111111;  
+  --border:#242424;  
+  --border-soft:#1b1b1b;  
+  --text:#f5f5f5;  
+  --muted:#999;  
+  --muted-2:#707070;  
+  --green:#20b26b;  
+  --red:#ef5350;  
+}  
+  
+html{  
+  background:var(--black);  
+}  
+  
+body{  
+  margin:0;  
+  background:  
+    radial-gradient(  
+      circle at 50% -10%,  
+      rgba(212,175,55,.09),  
+      transparent 38%  
+    ),  
+    var(--black);  
+  color:var(--text);  
+  font-family:Arial,sans-serif;  
+  min-height:100vh;  
+}  
+  
+/* =========================  
+   HEADER  
+========================= */  
+  
+header{  
+  background:  
+    linear-gradient(  
+      180deg,  
+      #0d0d0d 0%,  
+      #070707 100%  
+    );  
+  color:#fff;  
+  padding:15px 16px;  
+  display:flex;  
+  align-items:center;  
+  justify-content:space-between;  
+  gap:10px;  
+  border-bottom:1px solid rgba(212,175,55,.18);  
+  box-shadow:  
+    0 8px 30px rgba(0,0,0,.35);  
+  position:sticky;  
+  top:0;  
+  z-index:800;  
+}  
+  
+header h1{  
+  margin:0;  
+  font-size:20px;  
+  font-weight:800;  
+  letter-spacing:.2px;  
+  color:#fff;  
+}  
+  
+.header-right{  
+  display:flex;  
+  align-items:center;  
+  gap:8px;  
+}  
+  
+.wallet-mini{  
+  background:  
+    linear-gradient(  
+      135deg,  
+      #e7c451,  
+      #c39a22  
+    );  
+  color:#080808;  
+  padding:8px 11px;  
+  border-radius:9px;  
+  font-size:13px;  
+  font-weight:800;  
+  box-shadow:  
+    0 4px 15px rgba(212,175,55,.16);  
+}  
+  
+.menu-button{  
+  background:#141414;  
+  color:var(--gold-light);  
+  border:1px solid var(--gold-border);  
+  border-radius:9px;  
+  padding:8px 11px;  
+  font-size:19px;  
+  cursor:pointer;  
+}  
+  
+/* =========================  
+   MAIN  
+========================= */  
+  
+main{  
+  width:100%;  
+  max-width:700px;  
+  margin:auto;  
+  padding:15px 15px 30px;  
+}  
+  
+/* =========================  
+   PROVIDER SWITCHER  
+========================= */  
+  
+.provider-tabs{  
+  display:grid;  
+  grid-template-columns:1fr 1fr;  
+  gap:8px;  
+  margin-bottom:14px;  
+  padding:5px;  
+  background:#0b0b0b;  
+  border:1px solid #202020;  
+  border-radius:14px;  
+  box-shadow:  
+    inset 0 1px 0 rgba(255,255,255,.02);  
+}  
+  
+.provider-tab{  
+  border:1px solid transparent;  
+  background:transparent;  
+  color:#858585;  
+  padding:12px 9px;  
+  border-radius:10px;  
+  font-weight:800;  
+  cursor:pointer;  
+  text-align:center;  
+  transition:.2s ease;  
+}  
+  
+.provider-tab.active{  
+  background:  
+    linear-gradient(  
+      135deg,  
+      #e4c252,  
+      #c49b27  
+    );  
+  color:#090909;  
+  border-color:#e6c759;  
+  box-shadow:  
+    0 5px 18px rgba(212,175,55,.16);  
+}  
+  
+.provider-tab:not(.active):hover{  
+  background:#151515;  
+  color:#ddd;  
+}  
+  
+/* =========================  
+   WATERMARK  
+========================= */  
+  
+.watermark{  
+  width:100%;  
+  background:  
+    linear-gradient(  
+      135deg,  
+      rgba(212,175,55,.15),  
+      rgba(212,175,55,.04)  
+    );  
+  color:#e8cc72;  
+  border:1px solid var(--gold-border);  
+  border-radius:12px;  
+  padding:12px 14px;  
+  margin-bottom:14px;  
+  font-size:13px;  
+  line-height:1.45;  
+  font-weight:bold;  
+  white-space:pre-wrap;  
+  word-break:break-word;  
+}  
+  
+.hidden{  
+  display:none !important;  
+}  
+  
+/* =========================  
+   CARDS  
+========================= */  
+  
+.card{  
+  background:  
+    linear-gradient(  
+      180deg,  
+      #101010 0%,  
+      #0b0b0b 100%  
+    );  
+  border:1px solid var(--border);  
+  border-radius:16px;  
+  padding:16px;  
+  margin-bottom:13px;  
+  box-shadow:  
+    0 8px 28px rgba(0,0,0,.22);  
+}  
+  
+.card h2{  
+  margin:0 0 13px;  
+  font-size:17px;  
+  font-weight:800;  
+  color:#f4f4f4;  
+  letter-spacing:.1px;  
+}  
+  
+/* =========================  
+   INPUTS  
+========================= */  
+  
+input{  
+  width:100%;  
+  border:1px solid #292929;  
+  border-radius:10px;  
+  padding:13px;  
+  font-size:15px;  
+  outline:none;  
+  background:#080808;  
+  color:#fff;  
+  transition:.2s ease;  
+}  
+  
+input::placeholder{  
+  color:#666;  
+}  
+  
+input:focus{  
+  border-color:var(--gold);  
+  box-shadow:  
+    0 0 0 3px rgba(212,175,55,.08);  
+}  
+  
+.search-wrap{  
+  position:relative;  
+  margin-bottom:9px;  
+}  
+  
+.search-wrap input{  
+  padding-left:39px;  
+}  
+  
+.search-icon{  
+  position:absolute;  
+  left:13px;  
+  top:50%;  
+  transform:translateY(-50%);  
+  color:#777;  
+}  
+  
+/* =========================  
+   CHOICE LIST  
+========================= */  
+  
+.choice-list{  
+  max-height:260px;  
+  overflow:auto;  
+  border:1px solid #242424;  
+  border-radius:11px;  
+  background:#080808;  
+  scrollbar-width:thin;  
+  scrollbar-color:#444 transparent;  
+}  
+  
+.choice{  
+  padding:13px;  
+  border-bottom:1px solid #1d1d1d;  
+  cursor:pointer;  
+  color:#d5d5d5;  
+  transition:.15s ease;  
+}  
+  
+.choice:last-child{  
+  border-bottom:0;  
+}  
+  
+.choice:hover{  
+  background:#151515;  
+  color:#fff;  
+}  
+  
+.choice.selected{  
+  background:  
+    linear-gradient(  
+      90deg,  
+      rgba(212,175,55,.18),  
+      rgba(212,175,55,.07)  
+    );  
+  color:var(--gold-light);  
+  border-left:3px solid var(--gold);  
+  padding-left:10px;  
+}  
+  
+/* =========================  
+   SELECTED BOX  
+========================= */  
+  
+.selected-box{  
+  margin-top:9px;  
+  padding:11px 12px;  
+  background:  
+    rgba(212,175,55,.08);  
+  border:1px solid rgba(212,175,55,.22);  
+  color:#e8cd73;  
+  border-radius:10px;  
+  font-size:14px;  
+  font-weight:bold;  
+}  
+  
+/* =========================  
+   SERVERS  
+========================= */  
+  
+.server-grid{  
+  display:grid;  
+  grid-template-columns:repeat(3,1fr);  
+  gap:9px;  
+}  
+  
+.server{  
+  border:1px solid #282828;  
+  border-radius:12px;  
+  padding:12px;  
+  background:  
+    linear-gradient(  
+      180deg,  
+      #111 0%,  
+      #0b0b0b 100%  
+    );  
+  cursor:pointer;  
+  transition:.18s ease;  
+}  
+  
+.server:hover{  
+  border-color:#555;  
+  transform:translateY(-1px);  
+}  
+  
+.server.selected{  
+  border:1px solid var(--gold);  
+  background:  
+    linear-gradient(  
+      180deg,  
+      rgba(212,175,55,.14),  
+      rgba(212,175,55,.05)  
+    );  
+  box-shadow:  
+    0 6px 20px rgba(212,175,55,.08);  
+}  
+  
+.server-badge{  
+  display:inline-flex;  
+  align-items:center;  
+  gap:4px;  
+  margin-bottom:8px;  
+  padding:4px 7px;  
+  border-radius:999px;  
+  background:#164d35;  
+  color:#66e6a7;  
+  border:1px solid rgba(32,178,107,.22);  
+  font-size:10px;  
+  line-height:1;  
+  font-weight:700;  
+}  
+  
+.server-name{  
+  font-weight:bold;  
+  margin-bottom:8px;  
+  color:#eee;  
+}  
+  
+.server-stock{  
+  font-size:13px;  
+  color:#858585;  
+  margin-bottom:7px;  
+}  
+  
+.server-price{  
+  font-size:18px;  
+  font-weight:bold;  
+  color:var(--gold-light);  
+}  
+  
+/* =========================  
+   PRICE  
+========================= */  
+  
+.price-box{  
+  background:  
+    radial-gradient(  
+      circle at top right,  
+      rgba(212,175,55,.18),  
+      transparent 45%  
+    ),  
+    linear-gradient(  
+      135deg,  
+      #151515,  
+      #090909  
+    );  
+  color:#fff;  
+  border:1px solid var(--gold-border);  
+  border-radius:13px;  
+  padding:16px;  
+  margin-top:13px;  
+}  
+  
+.price-label{  
+  font-size:13px;  
+  color:#999;  
+}  
+  
+.price-value{  
+  font-size:28px;  
+  font-weight:bold;  
+  margin-top:5px;  
+  color:var(--gold-light);  
+}  
+  
+/* =========================  
+   BUY BUTTON  
+========================= */  
+  
+.buy-button{  
+  width:100%;  
+  border:0;  
+  background:  
+    linear-gradient(  
+      135deg,  
+      #e5c354,  
+      #c29a25  
+    );  
+  color:#090909;  
+  padding:15px;  
+  border-radius:10px;  
+  margin-top:12px;  
+  font-size:17px;  
+  font-weight:800;  
+  cursor:pointer;  
+  box-shadow:  
+    0 7px 20px rgba(212,175,55,.14);  
+  transition:.18s ease;  
+}  
+  
+.buy-button:hover:not(:disabled){  
+  transform:translateY(-1px);  
+  box-shadow:  
+    0 10px 25px rgba(212,175,55,.2);  
+}  
+  
+.buy-button:disabled{  
+  opacity:.4;  
+  cursor:not-allowed;  
+  box-shadow:none;  
+}  
+  
+/* =========================  
+   MESSAGES  
+========================= */  
+  
+.message{  
+  margin-top:11px;  
+  min-height:22px;  
+  color:#d9d9d9;  
+  font-weight:bold;  
+  line-height:1.45;  
+}  
+  
+/* =========================  
+   ORDERS  
+========================= */  
+  
+.order{  
+  background:  
+    linear-gradient(  
+      180deg,  
+      #111 0%,  
+      #0b0b0b 100%  
+    );  
+  border:1px solid #252525;  
+  border-radius:13px;  
+  padding:14px;  
+  margin-top:10px;  
+}  
+  
+.order-number{  
+  font-size:20px;  
+  font-weight:bold;  
+  color:#f4f4f4;  
+  letter-spacing:.2px;  
+  word-break:break-word;  
+}  
+  
+.order-meta{  
+  font-size:13px;  
+  color:#858585;  
+  margin-top:5px;  
+  word-break:break-word;  
+}  
+  
+.status{  
+  display:inline-block;  
+  margin-top:8px;  
+  padding:5px 9px;  
+  border-radius:7px;  
+  background:#252525;  
+  color:#bbb;  
+  font-size:12px;  
+  font-weight:bold;  
+}  
+  
+.status.waiting,  
+.status.pending{  
+  background:rgba(212,175,55,.13);  
+  color:#e9ca66;  
+  border:1px solid rgba(212,175,55,.2);  
+}  
+  
+.status.received{  
+  background:rgba(32,178,107,.13);  
+  color:#55d994;  
+  border:1px solid rgba(32,178,107,.2);  
+}  
+  
+.status.cancelled,  
+.status.refunded,  
+.status.failed{  
+  background:rgba(239,83,80,.12);  
+  color:#ff7774;  
+  border:1px solid rgba(239,83,80,.18);  
+}  
+  
+.otp{  
+  margin-top:10px;  
+  background:  
+    linear-gradient(  
+      135deg,  
+      #171717,  
+      #090909  
+    );  
+  color:var(--gold-light);  
+  border:1px solid var(--gold-border);  
+  padding:12px;  
+  border-radius:9px;  
+  font-size:18px;  
+  font-weight:bold;  
+}  
+  
+.order-actions{  
+  display:flex;  
+  gap:8px;  
+  margin-top:10px;  
+}  
+  
+.small-button{  
+  flex:1;  
+  border:0;  
+  border-radius:9px;  
+  padding:11px;  
+  font-weight:bold;  
+  cursor:pointer;  
+}  
+  
+.check{  
+  background:  
+    linear-gradient(  
+      135deg,  
+      #e3c052,  
+      #c19a28  
+    );  
+  color:#090909;  
+}  
+  
+.cancel{  
+  background:#1d1d1d;  
+  color:#ddd;  
+  border:1px solid #303030;  
+}  
+  
+/* =========================  
+   EMPTY / LOADING  
+========================= */  
+  
+.empty{  
+  text-align:center;  
+  padding:18px;  
+  color:#707070;  
+}  
+  
+.loading{  
+  text-align:center;  
+  padding:18px;  
+  color:#858585;  
+}  
+  
+/* =========================  
+   POPUPS  
+========================= */  
+  
+.popup{  
+  position:fixed;  
+  inset:0;  
+  background:rgba(0,0,0,.78);  
+  backdrop-filter:blur(10px);  
+  -webkit-backdrop-filter:blur(10px);  
+  display:flex;  
+  align-items:center;  
+  justify-content:center;  
+  padding:8px;  
+  z-index:9999;  
+}  
+  
+.popup.popup-closed{  
+  display:none !important;  
+  visibility:hidden !important;  
+  opacity:0 !important;  
+  pointer-events:none !important;  
+}  
+  
+.popup-card{  
+  width:100%;  
+  max-width:500px;  
+  max-height:calc(100dvh - 16px);  
+  max-height:calc(100vh - 16px);  
+  background:  
+    linear-gradient(  
+      180deg,  
+      #121212 0%,  
+      #090909 100%  
+    );  
+  border:1px solid rgba(212,175,55,.25);  
+  border-radius:20px;  
+  padding:0;  
+  overflow:hidden;  
+  box-shadow:  
+    0 25px 70px rgba(0,0,0,.65);  
+}  
+  
+.popup-header{  
+  display:flex;  
+  align-items:center;  
+  gap:9px;  
+  padding:11px 13px;  
+  border-bottom:1px solid #252525;  
+}  
+  
+.popup-header-icon{  
+  width:34px;  
+  height:34px;  
+  min-width:34px;  
+  border-radius:10px;  
+  background:rgba(212,175,55,.12);  
+  border:1px solid rgba(212,175,55,.2);  
+  display:flex;  
+  align-items:center;  
+  justify-content:center;  
+  font-size:18px;  
+}  
+  
+.popup-header h2{  
+  margin:0;  
+  flex:1;  
+  font-size:17px;  
+  font-weight:800;  
+  color:#f4f4f4;  
+}  
+  
+.popup-x{  
+  width:31px;  
+  height:31px;  
+  min-width:31px;  
+  border:1px solid #292929;  
+  border-radius:50%;  
+  background:#181818;  
+  color:#aaa;  
+  font-size:19px;  
+  cursor:pointer;  
+}  
+  
+.popup-visual{  
+  padding:9px 13px 3px;  
+  text-align:center;  
+}  
+  
+.popup-sticker{  
+  width:48px;  
+  height:48px;  
+  margin:0 auto;  
+  border-radius:15px;  
+  display:flex;  
+  align-items:center;  
+  justify-content:center;  
+  font-size:25px;  
+  background:  
+    linear-gradient(  
+      135deg,  
+      rgba(212,175,55,.18),  
+      rgba(212,175,55,.05)  
+    );  
+  border:1px solid rgba(212,175,55,.2);  
+}  
+  
+.popup-body{  
+  padding:8px 13px 10px;  
+}  
+  
+.popup-section-title{  
+  display:flex;  
+  align-items:center;  
+  gap:7px;  
+  margin-bottom:7px;  
+  font-size:13px;  
+  font-weight:800;  
+  color:#eee;  
+}  
+  
+.popup-section-title span{  
+  width:24px;  
+  height:24px;  
+  border-radius:7px;  
+  background:rgba(212,175,55,.12);  
+  display:flex;  
+  align-items:center;  
+  justify-content:center;  
+}  
+  
+.popup-item{  
+  margin:0 0 6px;  
+  padding:8px 9px;  
+  background:#111;  
+  border:1px solid #252525;  
+  border-radius:11px;  
+  display:flex;  
+  gap:8px;  
+  align-items:flex-start;  
+}  
+  
+.popup-item-icon{  
+  width:28px;  
+  height:28px;  
+  min-width:28px;  
+  border-radius:8px;  
+  background:#191919;  
+  border:1px solid #292929;  
+  display:flex;  
+  align-items:center;  
+  justify-content:center;  
+}  
+  
+.popup-item-content{  
+  flex:1;  
+  font-size:11.5px;  
+  line-height:1.38;  
+  color:#929292;  
+}  
+  
+.popup-item-content strong{  
+  display:block;  
+  margin-bottom:2px;  
+  color:#eee;  
+  font-size:12px;  
+}  
+  
+.popup-intro{  
+  margin-bottom:7px;  
+  padding:9px 10px;  
+  border-radius:11px;  
+  background:  
+    rgba(212,175,55,.08);  
+  border:1px solid rgba(212,175,55,.18);  
+  color:#bdbdbd;  
+  font-size:11.5px;  
+  line-height:1.4;  
+}  
+  
+.popup-warning{  
+  margin-top:7px;  
+  padding:9px 10px;  
+  border-radius:11px;  
+  background:  
+    rgba(212,175,55,.08);  
+  border:1px solid rgba(212,175,55,.2);  
+  display:flex;  
+  gap:8px;  
+  align-items:flex-start;  
+}  
+  
+.popup-warning-icon{  
+  width:28px;  
+  height:28px;  
+  min-width:28px;  
+  border-radius:8px;  
+  background:rgba(212,175,55,.14);  
+  display:flex;  
+  align-items:center;  
+  justify-content:center;  
+}  
+  
+.popup-warning-content{  
+  font-size:11.5px;  
+  line-height:1.4;  
+  color:#b9b9b9;  
+}  
+  
+.popup-warning-content strong{  
+  display:block;  
+  color:#e6c961;  
+  margin-bottom:2px;  
+}  
+  
+.popup-close{  
+  width:calc(100% - 26px);  
+  margin:0 13px 12px;  
+  border:0;  
+  background:  
+    linear-gradient(  
+      135deg,  
+      #e2c152,  
+      #c19a27  
+    );  
+  color:#090909;  
+  padding:11px;  
+  border-radius:11px;  
+  font-size:13px;  
+  font-weight:800;  
+  cursor:pointer;  
+}  
+  
+/* =========================  
+   MENU  
+========================= */  
+  
+.menu{  
+  position:fixed;  
+  top:65px;  
+  right:12px;  
+  width:240px;  
+  background:  
+    linear-gradient(  
+      180deg,  
+      #121212,  
+      #090909  
+    );  
+  border:1px solid #292929;  
+  border-radius:13px;  
+  box-shadow:  
+    0 12px 35px rgba(0,0,0,.5);  
+  z-index:500;  
+  padding:8px;  
+}  
+  
+.menu-item{  
+  padding:13px;  
+  border-radius:9px;  
+  cursor:pointer;  
+  color:#ddd;  
+  transition:.15s ease;  
+}  
+  
+.menu-item:hover{  
+  background:#191919;  
+  color:var(--gold-light);  
+}  
+  
+.menu-close{  
+  color:#e07070;  
+}  
+  
+.menu-close:hover{  
+  color:#ff8585;  
+}  
+  
+/* =========================  
+   SCROLLBARS  
+========================= */  
+  
+.choice-list::-webkit-scrollbar{  
+  width:6px;  
+}  
+  
+.choice-list::-webkit-scrollbar-track{  
+  background:transparent;  
+}  
+  
+.choice-list::-webkit-scrollbar-thumb{  
+  background:#353535;  
+  border-radius:10px;  
+}  
+  
+.choice-list::-webkit-scrollbar-thumb:hover{  
+  background:#555;  
+}  
+  
+/* =========================
+   GUIDED SELECTION FLOW
+========================= */
+
+.guided-card{
+  padding:0;
+  overflow:hidden;
+}
+
+.guided-header{
+  padding:18px 16px 16px;
+  border-bottom:1px solid var(--border);
+}
+
+.guided-header h2{
+  margin:0;
+  font-size:22px;
+  font-weight:800;
+  color:#f4f4f4;
+}
+
+.guided-subtitle{
+  margin-top:7px;
+  color:#999;
+  font-size:14px;
+  line-height:1.45;
+}
+
+.guided-steps{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:20px;
+}
+
+.guided-step-line{
+  height:3px;
+  border-radius:999px;
+  background:#242424;
+  margin-bottom:10px;
+  transition:.2s ease;
+}
+
+.guided-step-row{
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.guided-step-number{
+  width:34px;
+  height:34px;
+  min-width:34px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#1b1b1b;
+  border:1px solid #292929;
+  color:#888;
+  font-weight:800;
+  transition:.2s ease;
+}
+
+.guided-step-label{
+  color:#888;
+  font-weight:800;
+  font-size:14px;
+}
+
+.guided-step.active .guided-step-line{
+  background:var(--gold);
+}
+
+.guided-step.active .guided-step-number{
+  background:var(--gold);
+  border-color:var(--gold);
+  color:#090909;
+}
+
+.guided-step.active .guided-step-label{
+  color:var(--gold-light);
+}
+
+.guided-step.complete .guided-step-line{
+  background:var(--green);
+}
+
+.guided-step.complete .guided-step-number{
+  background:var(--green);
+  border-color:var(--green);
+  color:#fff;
+}
+
+.guided-step.complete .guided-step-label{
+  color:#55d994;
+}
+
+.guided-body{
+  padding:16px;
+}
+
+.selection-step{
+  width:100%;
+}
+
+.selection-step > h2{
+  margin-top:0;
+}
+
+.step-back{
+  border:1px solid #292929;
+  background:#141414;
+  color:var(--gold-light);
+  padding:10px 14px;
+  border-radius:10px;
+  font-size:14px;
+  font-weight:800;
+  cursor:pointer;
+  margin-bottom:14px;
+}
+
+.step-back:hover{
+  background:#1a1a1a;
+}
+
+@media(max-width:520px){
+  .guided-header h2{
+    font-size:20px;
+  }
+
+  .guided-subtitle{
+    font-size:13px;
+  }
+
+  .guided-steps{
+    gap:6px;
+  }
+
+  .guided-step-row{
+    gap:6px;
+  }
+
+  .guided-step-number{
+    width:31px;
+    height:31px;
+    min-width:31px;
+    font-size:13px;
+  }
+
+  .guided-step-label{
+    font-size:12px;
+  }
+}
+
+/* =========================  
+   MOBILE  
+========================= */  
+  
+@media(max-width:520px){  
+  
+  .server-grid{  
+    grid-template-columns:1fr;  
+  }  
+  
+  header h1{  
+    font-size:17px;  
+  }  
+  
+  main{  
+    padding:13px 12px 25px;  
+  }  
+  
+  .card{  
+    padding:14px;  
+    border-radius:15px;  
+  }  
+  
+  .provider-tab{  
+    font-size:12px;  
+    padding:12px 7px;  
+  }  
+  
+}  
+  
+</style>  </head>  <body>  <header>  <h1>Virtual Numbers</h1>  <div class="header-right">  <div id="walletMini" class="wallet-mini">  
+₦0  
+</div>  <button
+class="menu-button"
+onclick="toggleMenu()"
+
+> 
+
+☰
+</button>
+
+</div>  </header>  <main>  <div class="provider-tabs">  <button
+id="grizzlyProviderTab"
+class="provider-tab active"
+onclick="changeProvider('grizzly')"
+
+> 
+
+All Country Number 1
+</button>
+
+<button
+id="smsbowerProviderTab"
+class="provider-tab"
+onclick="changeProvider('smsbower')"
+
+> 
+
+All Country Number 2
+</button>
+
+</div>  <section class="card guided-card">
+  <div class="guided-header">
+    <h2>Get a Virtual Number</h2>
+    <div class="guided-subtitle">Select a country, service and server to continue.</div>
+    <div class="guided-steps" aria-label="Virtual number selection steps">
+      <div id="stepCountry" class="guided-step active">
+        <div class="guided-step-line"></div>
+        <div class="guided-step-row">
+          <div id="stepCountryNumber" class="guided-step-number">1</div>
+          <div id="stepCountryLabel" class="guided-step-label">Country</div>
+        </div>
+      </div>
+      <div id="stepService" class="guided-step">
+        <div class="guided-step-line"></div>
+        <div class="guided-step-row">
+          <div id="stepServiceNumber" class="guided-step-number">2</div>
+          <div id="stepServiceLabel" class="guided-step-label">Service</div>
+        </div>
+      </div>
+      <div id="stepServer" class="guided-step">
+        <div class="guided-step-line"></div>
+        <div class="guided-step-row">
+          <div id="stepServerNumber" class="guided-step-number">3</div>
+          <div id="stepServerLabel" class="guided-step-label">Server</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="guided-body">
+    <div id="countryStep" class="selection-step">
+      <h2>Country</h2>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input
+          id="countrySearch"
+          type="search"
+          placeholder="Search country..."
+          autocomplete="off"
+          oninput="filterCountries()"
+        >
+      </div>
+      <div id="countryList" class="choice-list">
+        <div class="loading">Loading countries...</div>
+      </div>
+      <div id="selectedCountryBox" class="selected-box hidden"></div>
+    </div>
+
+    <div id="serviceStep" class="selection-step hidden">
+      <button type="button" class="step-back" onclick="goBackToCountry()">← Back</button>
+      <h2>Service</h2>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input
+          id="serviceSearch"
+          type="search"
+          placeholder="Search service..."
+          autocomplete="off"
+          oninput="filterServices()"
+          disabled
+        >
+      </div>
+      <div id="serviceList" class="choice-list">
+        <div class="empty">Select a country first.</div>
+      </div>
+      <div id="selectedServiceBox" class="selected-box hidden"></div>
+    </div>
+
+    <div id="serverStep" class="selection-step hidden">
+      <button type="button" class="step-back" onclick="goBackToService()">← Back</button>
+      <h2>Server</h2>
+      <div id="serverList" class="server-grid"></div>
+      <div id="priceBox" class="price-box hidden">
+        <div class="price-label">Price</div>
+        <div id="selectedPrice" class="price-value">Price unavailable</div>
+      </div>
+      <button
+        id="buyButton"
+        class="buy-button"
+        onclick="buyNumber()"
+        disabled
+      >
+        Buy Number
+      </button>
+      <div id="buyMessage" class="message"></div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================
+     ONE UNIFIED ORDERS SECTION
+========================= -->
+<section class="card">
+  <h2>Orders</h2>
+  <div id="ordersList">
+    <div class="loading">Loading orders...</div>
+  </div>
+</section>
+</main>  <div  
+id="menu"  
+class="menu hidden"  
+>  <div  
+class="menu-item"  
+onclick="location.href='profile.html'"  
+>  
+👤 Profile  
+</div>  <div  
+class="menu-item"  
+onclick="location.href='wallet.html'"  
+>  
+💰 Fund Wallet  
+</div>  <div  
+class="menu-item"  
+onclick="location.href='transactions.html'"  
+>  
+📜 Transactions  
+</div>  <div  
+class="menu-item"  
+onclick="location.href='purchases.html'"  
+>  
+🛒 My Purchases  
+</div>  <div  
+class="menu-item"  
+onclick="location.href='pending.html'"  
+>  
+⏳ Pending Orders  
+</div>  <div  
+class="menu-item"  
+onclick="location.href='settings.html'"  
+>  
+⚙️ Settings  
+</div>  <div class="menu-item">  <a
+href="https://wa.me/2347015908401"
+target="_blank"
+style="color:inherit;text-decoration:none;"
+
+> 
+
+💬 WhatsApp Support
+</a>
+
+</div>  <div  
+class="menu-item menu-close"  
+onclick="toggleMenu()"  
+>  
+✖ Close  
+</div>  </div>  <div  
+id="verificationPopup"  
+class="popup"  
+>  <div class="popup-card">  <div class="popup-header">  <div class="popup-header-icon">  
+📢  
+</div>  <h2>Important Verification</h2>  <button
+type="button"
+class="popup-x"
+onclick="closeVerificationPopup(event)"
+
+> 
+
+×
+</button>
+
+</div>  <div class="popup-visual">  <div class="popup-sticker">  
+🛡️  
+</div>  </div>  <div class="popup-body">  <div class="popup-section-title">  <span>✨</span>
+
+Best Practices for Success
+
+</div>  <div class="popup-item">  <div class="popup-item-icon">  
+🔄  
+</div>  <div class="popup-item-content">  <strong>Fresh Installation</strong>
+
+Uninstall the app and clear its cache before requesting a new number.
+
+</div>  </div>  <div class="popup-item">  <div class="popup-item-icon">  
+📱  
+</div>  <div class="popup-item-content">  <strong>Official Apps Only</strong>
+
+Use the standard official app version. Modified versions often fail verification.
+
+</div>  </div>  <div class="popup-item">  <div class="popup-item-icon">  
+🌐  
+</div>  <div class="popup-item-content">  <strong>Location Match</strong>
+
+Keep your device settings and connection consistent with the selected country while waiting.
+
+</div>  </div>  <div class="popup-item">  <div class="popup-item-icon">  
+📶  
+</div>  <div class="popup-item-content">  <strong>Stay Connected</strong>
+
+Keep the app open and maintain a stable connection.
+
+</div>  </div>  <div class="popup-warning">  <div class="popup-warning-icon">  
+💡  
+</div>  <div class="popup-warning-content">  <strong>Provider Tip</strong>
+
+If a server does not receive a code, please try another server. Each server shows its availability. Cancel when cancellation is available to receive your refund.
+
+</div>  </div>  </div>  <button
+type="button"
+class="popup-close"
+onclick="closeVerificationPopup(event)"
+
+> 
+
+I Understand
+</button>
+
+</div>  </div>  <div  
+id="portalNoticePopup"  
+class="popup popup-closed"  
+style="display:none;"  
+>  <div class="popup-card">  <div class="popup-header">  <div class="popup-header-icon">  
+⚠️  
+</div>  <h2>PORTAL NOTICE</h2>  <button
+type="button"
+class="popup-x"
+onclick="closePortalNotice(event)"
+
+> 
+
+×
+</button>
+
+</div>  <div class="popup-visual">  <div class="popup-sticker">  
+🔐  
+</div>  </div>  <div class="popup-body">  <div class="popup-intro">  If your purchased number does not receive a verification code:
+
+<br><br>
+
+Turn on a VPN and connect to the same country as the number you purchased.
+
+</div>  <div class="popup-item">  <div class="popup-item-icon">  
+🇺🇸  
+</div>  <div class="popup-item-content">  <strong>Example:</strong>
+
+If you purchased a 🇺🇸 USA number, connect your VPN to the United States. You can use either a free or paid VPN.
+
+</div>  </div>  <div class="popup-item">  <div class="popup-item-icon">  
+🔄  
+</div>  <div class="popup-item-content">  <strong>If the code still does not arrive:</strong>
+
+Uninstall and reinstall the app you are trying to register, then try the verification again with the country-matching VPN enabled.
+
+</div>  </div>  <div class="popup-warning">  <div class="popup-warning-icon">  
+📍  
+</div>  <div class="popup-warning-content">  <strong>Please make sure:</strong>
+
+Please make sure your VPN country matches the country of your purchased number.
+
+</div>  </div>  </div>  <button
+type="button"
+class="popup-close"
+onclick="closePortalNotice(event)"
+
+> 
+
+I Understand
+</button>
+
+</div>  </div>  <script>  
+  
+const SUPABASE_URL =  
+  "https://hkfhehbhmucymusaytoe.supabase.co";  
+  
+const SUPABASE_KEY =  
+  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";  
+  
+const supabaseClient =  
+  window.supabase.createClient(  
+    SUPABASE_URL,  
+    SUPABASE_KEY  
+  );  
+  
+const SMSBOWER_FUNCTION_URL =  
+  `${SUPABASE_URL}/functions/v1/numpool-api`;  
+  
+const GRIZZLY_FUNCTION_URL =  
+  `${SUPABASE_URL}/functions/v1/grizzly-api`;  
+  
+let provider = "grizzly";  
+  
+let countries = [];  
+let services = [];  
+let servers = [];  
+  
+let selectedCountry = null;  
+let selectedService = null;  
+let selectedServer = null;  
+  
+let orders = [];  
+  
+let currentOrderId = null;  
+let currentOrderProvider = null;  
+  
+let watermarkText = "";
+
+let currentSelectionStep = "country";
+let pendingOrderScrollKey = "";  
+  
+function functionURL(providerName){  
+  
+  if(providerName === "grizzly"){  
+    return GRIZZLY_FUNCTION_URL;  
+  }  
+  
+  return SMSBOWER_FUNCTION_URL;  
+  
+}  
+  
+async function getAuthToken(){  
+  
+  const {  
+    data,  
+    error  
+  } =  
+    await supabaseClient.auth.getSession();  
+  
+  if(  
+    error ||  
+    !data?.session?.access_token  
+  ){  
+  
+    const {  
+      data: refreshed,  
+      error: refreshError  
+    } =  
+    await supabaseClient.auth.refreshSession();  
+  
+    if(  
+      refreshError ||  
+      !refreshed?.session?.access_token  
+    ){  
+  
+      alert(  
+        "Your session has expired. Please log in again."  
+      );  
+  
+      location.href =  
+        "login.html";  
+  
+      throw new Error(  
+        "Please log in again."  
+      );  
+  
+    }  
+  
+    return String(  
+      refreshed.session.access_token  
+    );  
+  
+  }  
+  
+  return String(  
+    data.session.access_token  
+  );  
+  
+}  
+  
+async function api(  
+  action,  
+  payload = {},  
+  providerName = provider  
+){  
+  
+  const token =  
+    await getAuthToken();  
+  
+  const response =  
+    await fetch(  
+      functionURL(providerName),  
+      {  
+        method:"POST",  
+  
+        headers:{  
+          "Content-Type":  
+            "application/json",  
+  
+          "apikey":  
+            String(SUPABASE_KEY),  
+  
+          "Authorization":  
+            "Bearer " + String(token)  
+        },  
+  
+        body:JSON.stringify({  
+          action,  
+          ...payload  
+        })  
+      }  
+    );  
+  
+  const data =  
+    await response.json()  
+      .catch(() => ({}));  
+  
+  if(  
+    !response.ok ||  
+    data.success === false  
+  ){  
+  
+    throw new Error(  
+      data.error ||  
+      data.message ||  
+      "Something went wrong."  
+    );  
+  
+  }  
+  
+  return data;  
+  
+}  
+  
+async function loadWatermark(){  
+  
+  const watermark =  
+    document.getElementById(  
+      "virtualNumberWatermark"  
+    );  
+  
+  if(!watermark){  
+    return;  
+  }  
+  
+  watermark.classList.add("hidden");  
+  watermark.textContent = "";  
+  watermarkText = "";  
+  
+  try{  
+  
+    const {  
+      data,  
+      error  
+    } =  
+    await supabaseClient  
+      .from("site_settings")  
+      .select("value")  
+      .eq("key","watermark")  
+      .maybeSingle();  
+  
+    if(error){  
+      console.error(  
+        "Watermark error:",  
+        error  
+      );  
+      return;  
+    }  
+  
+    const text =  
+      String(  
+        data?.value || ""  
+      ).trim();  
+  
+    if(text){  
+  
+      watermarkText = text;  
+      watermark.textContent = text;  
+  
+      watermark.classList.remove(  
+        "hidden"  
+      );  
+  
+    }  
+  
+  }catch(error){  
+  
+    console.error(  
+      "Watermark loading error:",  
+      error  
+    );  
+  
+  }  
+  
+}  
+  
+async function changeProvider(  
+  newProvider  
+){  
+  
+  provider =  
+    newProvider === "smsbower"  
+      ? "smsbower"  
+      : "grizzly";  
+  
+  document  
+    .getElementById(  
+      "grizzlyProviderTab"  
+    )  
+    .classList.toggle(  
+      "active",  
+      provider === "grizzly"  
+    );  
+  
+  document  
+    .getElementById(  
+      "smsbowerProviderTab"  
+    )  
+    .classList.toggle(  
+      "active",  
+      provider === "smsbower"  
+    );  
+  
+  selectedCountry = null;  
+  selectedService = null;  
+  selectedServer = null;  
+  
+  countries = [];  
+  services = [];  
+  servers = [];  
+  
+  document  
+    .getElementById(  
+      "countrySearch"  
+    )  
+    .value = "";  
+  
+  document  
+    .getElementById(  
+      "serviceSearch"  
+    )  
+    .value = "";  
+  
+  document  
+    .getElementById(  
+      "serviceSearch"  
+    )  
+    .disabled = true;  
+  
+  document  
+    .getElementById(  
+      "selectedCountryBox"  
+    )  
+    .classList.add("hidden");  
+  
+  document  
+    .getElementById(  
+      "selectedServiceBox"  
+    )  
+    .classList.add("hidden");  
+  
+  showSelectionStep("country");  
+  
+  document  
+    .getElementById(  
+      "serviceList"  
+    )  
+    .innerHTML = `  
+      <div class="empty">  
+        Select a country first.  
+      </div>  
+    `;  
+  
+  await loadWatermark();  
+  await loadCountries();  
+  await loadAllOrders();  
+  
+}  
+  
+function naira(value){  
+  
+  const n =  
+    Number(value);  
+  
+  if(  
+    !Number.isFinite(n) ||  
+    n <= 0  
+  ){  
+  
+    return "Price unavailable";  
+  
+  }  
+  
+  return (  
+    "₦" +  
+    Math.ceil(n)  
+      .toLocaleString()  
+  );  
+  
+}  
+  
+function escapeHTML(value){  
+  
+  return String(value ?? "")  
+    .replace(/&/g,"&amp;")  
+    .replace(/</g,"&lt;")  
+    .replace(/>/g,"&gt;")  
+    .replace(/"/g,"&quot;")  
+    .replace(/'/g,"&#039;");  
+  
+}  
+  
+function toggleMenu(){  
+  
+  document  
+    .getElementById("menu")  
+    .classList.toggle("hidden");  
+  
+}  
+  
+/* ============================================================  
+   POPUP FIX  
+============================================================ */  
+  
+function forceClosePopup(id){  
+  
+  const popup =  
+    document.getElementById(id);  
+  
+  if(!popup){  
+    return;  
+  }  
+  
+  popup.classList.add(  
+    "popup-closed"  
+  );  
+  
+  popup.style.setProperty(  
+    "display",  
+    "none",  
+    "important"  
+  );  
+  
+  popup.style.setProperty(  
+    "visibility",  
+    "hidden",  
+    "important"  
+  );  
+  
+  popup.style.setProperty(  
+    "opacity",  
+    "0",  
+    "important"  
+  );  
+  
+  popup.style.setProperty(  
+    "pointer-events",  
+    "none",  
+    "important"  
+  );  
+  
+}  
+  
+function forceOpenPopup(id){  
+  
+  const popup =  
+    document.getElementById(id);  
+  
+  if(!popup){  
+    return;  
+  }  
+  
+  popup.classList.remove(  
+    "popup-closed"  
+  );  
+  
+  popup.style.removeProperty(  
+    "display"  
+  );  
+  
+  popup.style.removeProperty(  
+    "visibility"  
+  );  
+  
+  popup.style.removeProperty(  
+    "opacity"  
+  );  
+  
+  popup.style.removeProperty(  
+    "pointer-events"  
+  );  
+  
+  popup.style.display =  
+    "flex";  
+  
+}  
+  
+function closeVerificationPopup(event){  
+  
+  if(event){  
+    event.preventDefault();  
+    event.stopPropagation();  
+  }  
+  
+  forceClosePopup(  
+    "verificationPopup"  
+  );  
+  
+}  
+  
+function closePortalNotice(event){  
+  
+  if(event){  
+    event.preventDefault();  
+    event.stopPropagation();  
+  }  
+  
+  forceClosePopup(  
+    "portalNoticePopup"  
+  );  
+  
+}  
+  
+function showPortalNotice(){  
+  
+  forceOpenPopup(  
+    "portalNoticePopup"  
+  );  
+  
+}  
+  
+  
+/* ============================================================  
+   COUNTRY  
+============================================================ */  
+  
+function countryName(country){  
+  
+  if(!country){  
+    return "";  
+  }  
+  
+  const possibleNames = [  
+  
+    country.name,  
+    country.country_name,  
+    country.countryName,  
+    country.country_label,  
+    country.countryLabel,  
+    country.display_name,  
+    country.displayName,  
+    country.label,  
+    country.title,  
+    country.eng,  
+    country.provider_name,  
+    country.providerName,  
+  
+    country.country?.name,  
+    country.country?.country_name,  
+    country.country?.countryName,  
+    country.country?.label,  
+  
+    country.data?.name,  
+    country.data?.country_name,  
+    country.data?.countryName,  
+    country.data?.label  
+  
+  ];  
+  
+  for(const value of possibleNames){  
+  
+    if(  
+      typeof value === "string" &&  
+      value.trim()  
+    ){  
+  
+      return value.trim();  
+  
+    }  
+  
+  }  
+  
+  return "";  
+  
+}  
+  
+function countryKey(country){  
+  
+  return String(  
+    country?.country_key ||  
+    country?.key ||  
+    country?.slug ||  
+    country?.code ||  
+    country?.country_code ||  
+    country?.country ||  
+    country?.name ||  
+    ""  
+  )  
+    .trim()  
+    .toLowerCase();  
+  
+}  
+  
+function countryId(country){  
+  
+  return (  
+    country?.id ??  
+    country?.country_id ??  
+    country?.countryId ??  
+    null  
+  );  
+  
+}  
+  
+function countryMatches(  
+  country,  
+  query  
+){  
+  
+  const q =  
+    String(query || "")  
+      .trim()  
+      .toLowerCase();  
+  
+  const name =  
+    countryName(country)  
+      .toLowerCase();  
+  
+  const key =  
+    countryKey(country);  
+  
+  const aliases =  
+    Array.isArray(  
+      country?.aliases  
+    )  
+      ? country.aliases  
+      : [];  
+  
+  const code =  
+    String(  
+      country?.code ||  
+      country?.iso ||  
+      country?.iso2 ||  
+      country?.country_code ||  
+      ""  
+    )  
+      .toLowerCase();  
+  
+  const haystack = [  
+    name,  
+    key,  
+    country?.eng,  
+    country?.provider_name,  
+    country?.providerName,  
+    country?.code,  
+    country?.iso,  
+    country?.iso2,  
+    country?.country_code,  
+    country?.slug,  
+    ...aliases  
+  ]  
+    .filter(Boolean)  
+    .join(" ")  
+    .toLowerCase();  
+  
+  if(!q){  
+    return true;  
+  }  
+  
+  if(  
+    q === "us" ||  
+    q === "usa" ||  
+    q === "united states" ||  
+    q === "united states of america"  
+  ){  
+  
+    return (  
+      name === "united states" ||  
+      name === "united states of america" ||  
+      name.includes("united states") ||  
+      key === "us" ||  
+      key === "usa" ||  
+      code === "us" ||  
+      haystack.includes("united states") ||  
+      haystack.includes("usa")  
+    );  
+  
+  }  
+  
+  if(  
+    q === "uk" ||  
+    q === "gb" ||  
+    q === "england" ||  
+    q === "great britain" ||  
+    q === "united kingdom"  
+  ){  
+  
+    return (  
+      name === "united kingdom" ||  
+      name.includes("united kingdom") ||  
+      name === "great britain" ||  
+      name === "england" ||  
+      key === "uk" ||  
+      key === "gb" ||  
+      code === "uk" ||  
+      code === "gb" ||  
+      haystack.includes("united kingdom") ||  
+      haystack.includes("great britain") ||  
+      haystack.includes("england")  
+    );  
+  
+  }  
+  
+  return haystack.includes(q);  
+  
+}  
+  
+function filterCountries(){  
+  
+  const input =  
+    document.getElementById(  
+      "countrySearch"  
+    );  
+  
+  renderCountries(input.value);  
+  
+}  
+  
+async function loadCountries(){  
+  
+  const list =  
+    document.getElementById(  
+      "countryList"  
+    );  
+  
+  list.innerHTML = `  
+    <div class="loading">  
+      Loading countries...  
+    </div>  
+  `;  
+  
+  try{  
+  
+    const data =  
+      await api(  
+        "countries",  
+        {},  
+        provider  
+      );  
+  
+    countries =  
+      Array.isArray(data.countries)  
+        ? data.countries  
+        : [];  
+  
+    renderCountries();  
+  
+  }catch(error){  
+  
+    list.innerHTML = `  
+      <div class="empty">  
+        ${escapeHTML(error.message)}  
+      </div>  
+    `;  
+  
+  }  
+  
+}  
+  
+function renderCountries(query = ""){  
+  
+  const list =  
+    document.getElementById(  
+      "countryList"  
+    );  
+  
+  const filtered =  
+    countries.filter(  
+      country =>  
+        countryMatches(  
+          country,  
+          query  
+        )  
+    );  
+  
+  if(filtered.length === 0){  
+  
+    list.innerHTML = `  
+      <div class="empty">  
+        No country found.  
+      </div>  
+    `;  
+  
+    return;  
+  
+  }  
+  
+  list.innerHTML =  
+    filtered  
+      .map(  
+        country => {  
+  
+          const selected =  
+            selectedCountry &&  
+            countryKey(selectedCountry) ===  
+            countryKey(country);  
+  
+          const displayName =  
+            countryName(country);  
+  
+          return `  
+            <div  
+              class="choice ${  
+                selected ? "selected" : ""  
+              }"  
+              data-country-key="${  
+                escapeHTML(  
+                  countryKey(country)  
+                )  
+              }"  
+            >  
+              ${escapeHTML(  
+                displayName || "Country"  
+              )}  
+            </div>  
+          `;  
+  
+        }  
+      )  
+      .join("");  
+  
+  list  
+    .querySelectorAll(  
+      "[data-country-key]"  
+    )  
+    .forEach(  
+      element => {  
+  
+        element.onclick = () => {  
+  
+          const key =  
+            element.dataset.countryKey;  
+  
+          const country =  
+            countries.find(  
+              item =>  
+                countryKey(item) === key  
+            );  
+  
+          if(country){  
+            selectCountry(country);  
+          }  
+  
+        };  
+  
+      }  
+    );  
+  
+}  
+  
+function updateSelectionProgress(step){
+
+  const steps = ["country","service","server"];
+  const currentIndex = steps.indexOf(step);
+
+  steps.forEach((name,index) => {
+
+    const stepElement = document.getElementById(
+      name === "country"
+        ? "stepCountry"
+        : name === "service"
+          ? "stepService"
+          : "stepServer"
+    );
+
+    const numberElement = document.getElementById(
+      name === "country"
+        ? "stepCountryNumber"
+        : name === "service"
+          ? "stepServiceNumber"
+          : "stepServerNumber"
+    );
+
+    if(!stepElement || !numberElement){
+      return;
+    }
+
+    stepElement.classList.remove("active","complete");
+
+    if(index < currentIndex){
+      stepElement.classList.add("complete");
+      numberElement.textContent = "✓";
+    }else if(index === currentIndex){
+      stepElement.classList.add("active");
+      numberElement.textContent = String(index + 1);
+    }else{
+      numberElement.textContent = String(index + 1);
+    }
+
+  });
+
+}
+
+function showSelectionStep(step){
+
+  currentSelectionStep = step;
+
+  const panels = {
+    country: document.getElementById("countryStep"),
+    service: document.getElementById("serviceStep"),
+    server: document.getElementById("serverStep")
+  };
+
+  Object.entries(panels).forEach(([name,panel]) => {
+    if(panel){
+      panel.classList.toggle("hidden", name !== step);
+    }
+  });
+
+  updateSelectionProgress(step);
+
+}
+
+function goBackToCountry(){
+
+  if(!selectedCountry){
+    showSelectionStep("country");
+    return;
+  }
+
+  selectedService = null;
+  selectedServer = null;
+  services = [];
+  servers = [];
+
+  const serviceSearch = document.getElementById("serviceSearch");
+  if(serviceSearch){
+    serviceSearch.value = "";
+    serviceSearch.disabled = true;
+  }
+
+  document.getElementById("selectedServiceBox")?.classList.add("hidden");
+  document.getElementById("priceBox")?.classList.add("hidden");
+  const buyButton = document.getElementById("buyButton");
+  if(buyButton){
+    buyButton.disabled = true;
+  }
+  document.getElementById("buyMessage").textContent = "";
+  document.getElementById("serviceList").innerHTML = `
+    <div class="empty">Select a country first.</div>
+  `;
+  document.getElementById("serverList").innerHTML = "";
+
+  showSelectionStep("country");
+
+}
+
+function goBackToService(){
+
+  if(!selectedCountry){
+    showSelectionStep("country");
+    return;
+  }
+
+  selectedServer = null;
+  servers = [];
+
+  document.getElementById("priceBox")?.classList.add("hidden");
+  const buyButton = document.getElementById("buyButton");
+  if(buyButton){
+    buyButton.disabled = true;
+  }
+  document.getElementById("buyMessage").textContent = "";
+  document.getElementById("serverList").innerHTML = "";
+
+  showSelectionStep("service");
+
+}
+
+async function selectCountry(country){  
+  
+  selectedCountry = country;  
+  
+  selectedService = null;  
+  selectedServer = null;  
+  
+  services = [];  
+  servers = [];  
+  
+  document  
+    .getElementById(  
+      "selectedCountryBox"  
+    )  
+    .classList.remove("hidden");  
+  
+  document  
+    .getElementById(  
+      "selectedCountryBox"  
+    )  
+    .textContent =  
+      `Selected: ${  
+        countryName(country) || "Country"  
+      }`;  
+  
+  document  
+    .getElementById(  
+      "countrySearch"  
+    )  
+    .value = "";  
+  
+  renderCountries();  
+  
+  const serviceSearch =  
+    document.getElementById(  
+      "serviceSearch"  
+    );  
+  
+  serviceSearch.disabled = false;  
+  serviceSearch.value = "";  
+  
+  document  
+    .getElementById(  
+      "serviceList"  
+    )  
+    .innerHTML = `  
+      <div class="loading">  
+        Loading live services...  
+      </div>  
+    `;  
+  
+  showSelectionStep("server");  
+  
+  showSelectionStep("service");
+  await loadServices();
+  
+}  
+  
+  
+/* ============================================================  
+   SERVICE  
+============================================================ */  
+  
+function serviceCode(service){  
+  
+  return String(  
+    service?.service_code ||  
+    service?.serviceCode ||  
+    service?.product_code ||  
+    service?.productCode ||  
+    service?.code ||  
+    service?.service_id ||  
+    service?.serviceId ||  
+    service?.id ||  
+    ""  
+  );  
+  
+}  
+  
+function serviceName(service){  
+  
+  if(!service){  
+    return "";  
+  }  
+  
+  const possibleNames = [  
+  
+    service.service_name,  
+    service.serviceName,  
+    service.service_title,  
+    service.serviceTitle,  
+    service.name,  
+    service.title,  
+    service.label,  
+    service.display_name,  
+    service.displayName,  
+    service.product_name,  
+    service.productName,  
+    service.application_name,  
+    service.applicationName,  
+    service.app_name,  
+    service.appName,  
+  
+    service.service?.name,  
+    service.service?.service_name,  
+    service.service?.serviceName,  
+    service.service?.title,  
+    service.service?.label,  
+  
+    service.product?.name,  
+    service.product?.service_name,  
+    service.product?.serviceName,  
+    service.product?.title,  
+    service.product?.label,  
+  
+    service.data?.name,  
+    service.data?.service_name,  
+    service.data?.serviceName,  
+    service.data?.title,  
+    service.data?.label  
+  
+  ];  
+  
+  for(const value of possibleNames){  
+  
+    if(  
+      typeof value === "string" &&  
+      value.trim()  
+    ){  
+  
+      return value.trim();  
+  
+    }  
+  
+  }  
+  
+  return "";  
+  
+}  
+  
+async function loadServices(){
+
+  try{
+
+    const payload =
+      provider === "smsbower"
+        ? {
+            country_id: countryId(selectedCountry)
+          }
+        : {
+            country: countryKey(selectedCountry),
+            country_id: countryId(selectedCountry),
+            country_name: countryName(selectedCountry)
+          };
+
+    const data = await api("services", payload, provider);
+
+    const rawServices =
+      Array.isArray(data?.services)
+        ? data.services
+        : [];
+
+    /*
+      Some provider responses contain the same logical service
+      more than once. Keep one visible service only.
+      Prefer the entry with the highest live stock while keeping
+      its provider/service code intact.
+    */
+    const serviceMap = new Map();
+
+    for(const service of rawServices){
+
+      const nameKey = String(serviceName(service) || "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g," ");
+
+      const codeKey = String(serviceCode(service) || "")
+        .trim()
+        .toLowerCase();
+
+      const key = nameKey || codeKey;
+
+      if(!key){
+        continue;
+      }
+
+      const existing = serviceMap.get(key);
+
+      if(!existing){
+        serviceMap.set(key, service);
+        continue;
+      }
+
+      const existingStock = Number(
+        existing?.stock ?? existing?.count ?? existing?.available ?? 0
+      );
+      const incomingStock = Number(
+        service?.stock ?? service?.count ?? service?.available ?? 0
+      );
+
+      if(Number.isFinite(incomingStock) && incomingStock > existingStock){
+        serviceMap.set(key, service);
+      }
+
+    }
+
+    services = Array.from(serviceMap.values());
+
+    renderServices();
+
+  }catch(error){
+
+    document.getElementById("serviceList").innerHTML = `
+      <div class="empty">${escapeHTML(error.message)}</div>
+    `;
+
+  }
+
+}
+
+function filterServices(){  
+  
+  renderServices(  
+    document  
+      .getElementById(  
+        "serviceSearch"  
+      )  
+      .value  
+  );  
+  
+}  
+  
+function renderServices(query = ""){  
+  
+  const list =  
+    document.getElementById(  
+      "serviceList"  
+    );  
+  
+  const q =  
+    String(query || "")  
+      .trim()  
+      .toLowerCase();  
+  
+  const filtered =  
+    services.filter(  
+      service => {  
+  
+        if(!q){  
+          return true;  
+        }  
+  
+        return (  
+          serviceName(service)  
+            .toLowerCase()  
+            .includes(q)  
+          ||  
+          serviceCode(service)  
+            .toLowerCase()  
+            .includes(q)  
+        );  
+  
+      }  
+    );  
+  
+  if(filtered.length === 0){  
+  
+    list.innerHTML = `  
+      <div class="empty">  
+        No live service available for this country.  
+      </div>  
+    `;  
+  
+    return;  
+  
+  }  
+  
+  list.innerHTML =  
+    filtered  
+      .map(  
+        service => {  
+  
+          const stock =  
+            Number(  
+              service?.stock ??  
+              service?.count ??  
+              service?.available ??  
+              0  
+            );  
+  
+          const stockText =  
+            Number.isFinite(stock) &&  
+            stock > 0  
+              ? `${stock.toLocaleString()} available`  
+              : "Live availability";  
+  
+          const selected =  
+            selectedService &&  
+            serviceCode(selectedService) ===  
+            serviceCode(service);  
+  
+          return `  
+            <div  
+              class="choice ${  
+                selected ? "selected" : ""  
+              }"  
+              data-service-code="${  
+                escapeHTML(  
+                  serviceCode(service)  
+                )  
+              }"  
+            >  
+  
+              <strong>  
+                ${escapeHTML(  
+                  serviceName(service) || "Service"  
+                )}  
+              </strong>  
+  
+              <div  
+                style="  
+                  font-size:12px;  
+                  margin-top:4px;  
+                  opacity:.75;  
+                "  
+              >  
+                ${escapeHTML(stockText)}  
+              </div>  
+  
+            </div>  
+          `;  
+  
+        }  
+      )  
+      .join("");  
+  
+  list  
+    .querySelectorAll(  
+      "[data-service-code]"  
+    )  
+    .forEach(  
+      element => {  
+  
+        element.onclick = () => {  
+  
+          const code =  
+            element.dataset.serviceCode;  
+  
+          const service =  
+            services.find(  
+              item =>  
+                serviceCode(item) === code  
+            );  
+  
+          if(service){  
+            selectService(service);  
+          }  
+  
+        };  
+  
+      }  
+    );  
+  
+}  
+  
+async function selectService(service){  
+  
+  selectedService = service;  
+  selectedServer = null;  
+  
+  servers = [];  
+  
+  document  
+    .getElementById(  
+      "selectedServiceBox"  
+    )  
+    .classList.remove("hidden");  
+  
+  document  
+    .getElementById(  
+      "selectedServiceBox"  
+    )  
+    .textContent =  
+      `Selected: ${  
+        serviceName(service) || "Service"  
+      }`;  
+  
+  document  
+    .getElementById(  
+      "serviceSearch"  
+    )  
+    .value = "";  
+  
+  renderServices();
+
+  showSelectionStep("server");  
+  
+  document  
+    .getElementById(  
+      "serverList"  
+    )  
+    .innerHTML = `  
+      <div class="loading">  
+        Loading live server prices...  
+      </div>  
+    `;  
+  
+  document  
+    .getElementById(  
+      "priceBox"  
+    )  
+    .classList.add("hidden");  
+  
+  document  
+    .getElementById(  
+      "buyButton"  
+    )  
+    .disabled = true;  
+  
+  document  
+    .getElementById(  
+      "buyMessage"  
+    )  
+    .textContent = "";  
+  
+  await loadServers();
+  
+}  
+  
+  
+/* ============================================================  
+   SERVER  
+============================================================ */  
+  
+function serverId(server){  
+  
+  return String(  
+    server?.server_id ??  
+    server?.operator_id ??  
+    server?.id ??  
+    server?.operator ??  
+    ""  
+  );  
+  
+}  
+  
+function serverLabel(server){  
+  
+  if(!server){  
+    return "Server";  
+  }  
+  
+  const possibleNames = [  
+  
+    server.label,  
+    server.server_name,  
+    server.serverName,  
+    server.operator_name,  
+    server.operatorName,  
+    server.operator_label,  
+    server.operatorLabel,  
+    server.name,  
+    server.title,  
+    server.display_name,  
+    server.displayName,  
+  
+    server.operator?.name,  
+    server.operator?.label,  
+    server.operator?.server_name,  
+  
+    server.data?.name,  
+    server.data?.label,  
+    server.data?.server_name  
+  
+  ];  
+  
+  for(const value of possibleNames){  
+  
+    if(  
+      typeof value === "string" &&  
+      value.trim()  
+    ){  
+  
+      return value.trim();  
+  
+    }  
+  
+  }  
+  
+  return "Server";  
+  
+}  
+  
+function serverStock(server){  
+  
+  return Number(  
+    server?.stock ??  
+    server?.count ??  
+    server?.available ??  
+    0  
+  );  
+  
+}  
+  
+function serverPrice(server){  
+  
+  return Number(  
+    server?.customer_price_ngn ??  
+    server?.selling_price_ngn ??  
+    server?.price_ngn ??  
+    server?.customer_price ??  
+    server?.price ??  
+    0  
+  );  
+  
+}  
+  
+async function loadServers(){  
+  
+  try{  
+  
+    let data;  
+  
+    if(provider === "smsbower"){  
+  
+      data =  
+        await api(  
+          "prices",  
+          {  
+            country_id:  
+              countryId(  
+                selectedCountry  
+              ),  
+  
+            service_code:  
+              serviceCode(  
+                selectedService  
+              )  
+          },  
+          "smsbower"  
+        );  
+  
+    }else{  
+  
+      data =  
+        await api(  
+          "servers",  
+          {  
+            country:  
+              countryKey(  
+                selectedCountry  
+              ),  
+  
+            country_id:  
+              countryId(  
+                selectedCountry  
+              ),  
+  
+            country_name:  
+              countryName(  
+                selectedCountry  
+              ),  
+  
+            service:  
+              serviceCode(  
+                selectedService  
+              ),  
+  
+            service_code:  
+              serviceCode(  
+                selectedService  
+              ),  
+  
+            service_name:  
+              serviceName(  
+                selectedService  
+              ),  
+  
+            product:  
+              serviceCode(  
+                selectedService  
+              )  
+          },  
+          "grizzly"  
+        );  
+  
+    }  
+  
+    servers =  
+      Array.isArray(data.servers)  
+        ? data.servers  
+        : [];  
+  
+    renderServers();  
+  
+  }catch(error){  
+  
+    document  
+      .getElementById(  
+        "serverList"  
+      )  
+      .innerHTML = `  
+        <div class="empty">  
+          Server is not available right now, please try another server.  
+        </div>  
+      `;  
+  
+  }  
+  
+}  
+  
+function renderServers(){  
+  
+  const list =  
+    document.getElementById(  
+      "serverList"  
+    );  
+  
+  const validServers =  
+    servers.filter(  
+      server => {  
+  
+        const stock =  
+          serverStock(server);  
+  
+        const price =  
+          serverPrice(server);  
+  
+        return (  
+          Number.isFinite(stock) &&  
+          stock > 0 &&  
+          Number.isFinite(price) &&  
+          price > 0  
+        );  
+  
+      }  
+    );  
+  
+  if(validServers.length === 0){  
+  
+    list.innerHTML = `  
+      <div class="empty">  
+        Server is not available right now, please try another server.  
+      </div>  
+    `;  
+  
+    document  
+      .getElementById(  
+        "buyButton"  
+      )  
+      .disabled = true;  
+  
+    return;  
+  
+  }  
+  
+  list.innerHTML =  
+    validServers  
+      .map(  
+        (server,index) => {  
+  
+          const selected =  
+            selectedServer &&  
+            serverId(selectedServer) ===  
+            serverId(server);  
+  
+          return `  
+            <div  
+              class="server ${  
+                selected ? "selected" : ""  
+              }"  
+              data-server-index="${index}"  
+            >  
+  
+              <div class="server-name">  
+                ${escapeHTML(  
+                  serverLabel(server)  
+                )}  
+              </div>  
+  
+              <div class="server-stock">  
+                ${Math.floor(  
+                  serverStock(server)  
+                ).toLocaleString()}  
+                available  
+              </div>  
+  
+              <div class="server-price">  
+                ${naira(  
+                  serverPrice(server)  
+                )}  
+              </div>  
+  
+            </div>  
+          `;  
+  
+        }  
+      )  
+      .join("");  
+  
+  list  
+    .querySelectorAll(  
+      "[data-server-index]"  
+    )  
+    .forEach(  
+      element => {  
+  
+        element.onclick = () => {  
+  
+          const index =  
+            Number(  
+              element.dataset.serverIndex  
+            );  
+  
+          selectServer(  
+            validServers[index]  
+          );  
+  
+        };  
+  
+      }  
+    );  
+  
+}  
+  
+function selectServer(server){  
+  
+  const price =  
+    serverPrice(server);  
+  
+  const stock =  
+    serverStock(server);  
+  
+  if(  
+    !Number.isFinite(price) ||  
+    price <= 0 ||  
+    !Number.isFinite(stock) ||  
+    stock <= 0  
+  ){  
+  
+    selectedServer = null;  
+  
+    document  
+      .getElementById(  
+        "buyButton"  
+      )  
+      .disabled = true;  
+  
+    document  
+      .getElementById(  
+        "priceBox"  
+      )  
+      .classList.add("hidden");  
+  
+    return;  
+  
+  }  
+  
+  selectedServer = server;  
+  
+  renderServers();  
+  
+  document  
+    .getElementById(  
+      "priceBox"  
+    )  
+    .classList.remove("hidden");  
+  
+  document  
+    .getElementById(  
+      "selectedPrice"  
+    )  
+    .textContent =  
+      naira(price);  
+  
+  document  
+    .getElementById(  
+      "buyButton"  
+    )  
+    .disabled = false;  
+  
+  document  
+    .getElementById(  
+      "buyMessage"  
+    )  
+    .textContent = "";
+
+  document
+    .getElementById("buyButton")
+    ?.scrollIntoView({ behavior:"smooth", block:"center" });
+  
+}  
+  
+  
+/* ============================================================  
+   IMMEDIATE PURCHASE ORDER  
+============================================================ */  
+  
+function buildImmediatePurchaseOrder(  
+  data,  
+  providerName  
+){  
+  
+  if(  
+    !data ||  
+    typeof data !== "object"  
+  ){  
+  
+    return null;  
+  
+  }  
+  
+  const number =  
+    firstOrderValue(  
+      [  
+        data,  
+        data.data,  
+        data.result,  
+        data.response  
+      ],  
+      [  
+        "phone_number",  
+        "phoneNumber",  
+        "number",  
+        "phone",  
+        "msisdn"  
+      ]  
+    );  
+  
+  const activationId =
+    providerName === "smsbower"
+      ? smsBowerActivationId({
+          ...data,
+          data:data.data,
+          result:data.result,
+          response:data.response
+        })
+      : firstOrderValue(  
+          [  
+            data,  
+            data.data,  
+            data.result,  
+            data.response  
+          ],  
+          [  
+            "activation_id",  
+            "activationId",  
+            "activationID",  
+            "provider_activation_id",  
+            "providerActivationId"  
+          ]  
+        );  
+  
+  if(!number && !activationId){  
+    return null;  
+  }  
+  
+  return {  
+  
+    id:  
+      firstOrderValue(  
+        [  
+          data,  
+          data.data,  
+          data.result,  
+          data.response  
+        ],  
+        [  
+          "order_id",  
+          "orderId",  
+          "id"  
+        ]  
+      ) ||  
+      activationId,  
+  
+    order_id:  
+      firstOrderValue(  
+        [  
+          data,  
+          data.data,  
+          data.result,  
+          data.response  
+        ],  
+        [  
+          "order_id",  
+          "orderId",  
+          "id"  
+        ]  
+      ) ||  
+      activationId,  
+  
+    activation_id:  
+      activationId,  
+  
+    activationId:  
+      activationId,  
+  
+    phone_number:  
+      number,  
+  
+    phoneNumber:  
+      number,  
+  
+    number:  
+      number,  
+  
+    country:  
+      firstOrderValue(  
+        [  
+          data,  
+          data.data,  
+          data.result,  
+          data.response  
+        ],  
+        [  
+          "country",  
+          "country_id",  
+          "country_key"  
+        ]  
+      ) ||  
+      countryKey(  
+        selectedCountry  
+      ),  
+  
+    country_id:  
+      firstOrderValue(  
+        [  
+          data,  
+          data.data,  
+          data.result,  
+          data.response  
+        ],  
+        [  
+          "country_id",  
+          "country"  
+        ]  
+      ) ||  
+      String(  
+        countryId(  
+          selectedCountry  
+        ) ?? ""  
+      ),  
+  
+    country_name:  
+      firstOrderValue(  
+        [  
+          data,  
+          data.data,  
+          data.result,  
+          data.response  
+        ],  
+        [  
+          "country_name",  
+          "countryName"  
+        ]  
+      ) ||  
+      countryName(  
+        selectedCountry  
+      ),  
+  
+    service:  
+      firstOrderValue(  
+        [  
+          data,  
+          data.data,  
+          data.result,  
+          data.response  
+        ],  
+        [  
+          "service",  
+          "service_code",  
+          "product"  
+        ]  
+      ) ||  
+      serviceCode(  
+        selectedService  
+      ),  
+  
+    service_code:  
+      firstOrderValue(  
+        [  
+          data,  
+          data.data,  
+          data.result,  
+          data.response  
+        ],  
+        [  
+          "service_code",  
+          "service"  
+        ]  
+      ) ||  
+      serviceCode(  
+        selectedService  
+      ),  
+  
+    service_name:  
+      firstOrderValue(  
+        [  
+          data,  
+          data.data,  
+          data.result,  
+          data.response  
+        ],  
+        [  
+          "service_name",  
+          "serviceName"  
+        ]  
+      ) ||  
+      serviceName(  
+        selectedService  
+      ),  
+  
+    provider:  
+      providerName,  
+  
+    provider_id:  
+      firstOrderValue(  
+        [  
+          data,  
+          data.data,  
+          data.result,  
+          data.response  
+        ],  
+        [  
+          "provider_id",  
+          "server_id",  
+          "operator_id"  
+        ]  
+      ) ||  
+      serverId(  
+        selectedServer  
+      ),  
+  
+    server_id:  
+      firstOrderValue(  
+        [  
+          data,  
+          data.data,  
+          data.result,  
+          data.response  
+        ],  
+        [  
+          "server_id",  
+          "provider_id",  
+          "operator_id"  
+        ]  
+      ) ||  
+      serverId(  
+        selectedServer  
+      ),  
+  
+    server_name:  
+      firstOrderValue(  
+        [  
+          data,  
+          data.data,  
+          data.result,  
+          data.response  
+        ],  
+        [  
+          "server_name",  
+          "serverName",  
+          "operator"  
+        ]  
+      ) ||  
+      serverLabel(  
+        selectedServer  
+      ),  
+  
+    customer_price_ngn:  
+      Number(  
+        firstOrderValue(  
+          [  
+            data,  
+            data.data,  
+            data.result,  
+            data.response  
+          ],  
+          [  
+            "customer_price_ngn",  
+            "selling_price_ngn",  
+            "price_ngn",  
+            "price"  
+          ]  
+        )  
+      ) ||  
+      serverPrice(  
+        selectedServer  
+      ),  
+  
+    price:  
+      Number(  
+        firstOrderValue(  
+          [  
+            data,  
+            data.data,  
+            data.result,  
+            data.response  
+          ],  
+          [  
+            "customer_price_ngn",  
+            "selling_price_ngn",  
+            "price_ngn",  
+            "price"  
+          ]  
+        )  
+      ) ||  
+      serverPrice(  
+        selectedServer  
+      ),  
+  
+    status:  
+      "waiting",  
+  
+    created_at:  
+      new Date().toISOString()  
+  
+  };  
+  
+}  
+  
+  
+/* ============================================================  
+   BUY  
+============================================================ */  
+  
+async function buyNumber(){  
+  
+  const button =  
+    document.getElementById(  
+      "buyButton"  
+    );  
+  
+  const message =  
+    document.getElementById(  
+      "buyMessage"  
+    );  
+  
+  if(  
+    !selectedCountry ||  
+    !selectedService ||  
+    !selectedServer  
+  ){  
+  
+    message.textContent =  
+      "Select a country, service and server first.";  
+  
+    return;  
+  
+  }  
+  
+  button.disabled = true;  
+  
+  message.textContent =  
+    "Purchasing number...";  
+  
+  try{  
+  
+    let data;  
+  
+    if(provider === "smsbower"){  
+  
+      data =  
+        await api(  
+          "buy",  
+          {  
+            country_id:  
+              countryId(  
+                selectedCountry  
+              ),  
+  
+            country_name:  
+              countryName(  
+                selectedCountry  
+              ),  
+  
+            service_code:  
+              serviceCode(  
+                selectedService  
+              ),  
+  
+            service_name:  
+              serviceName(  
+                selectedService  
+              ),  
+  
+            server_id:  
+              serverId(  
+                selectedServer  
+              )  
+          },  
+          "smsbower"  
+        );  
+  
+    }else{  
+  
+      data =  
+        await api(  
+          "buy",  
+          {  
+            country:  
+              countryKey(  
+                selectedCountry  
+              ),  
+  
+            country_id:  
+              countryId(  
+                selectedCountry  
+              ),  
+  
+            country_name:  
+              countryName(  
+                selectedCountry  
+              ),  
+  
+            service:  
+              serviceCode(  
+                selectedService  
+              ),  
+  
+            service_code:  
+              serviceCode(  
+                selectedService  
+              ),  
+  
+            service_name:  
+              serviceName(  
+                selectedService  
+              ),  
+  
+            product:  
+              serviceCode(  
+                selectedService  
+              ),  
+  
+            operator:  
+              serverId(  
+                selectedServer  
+              ),  
+  
+            server_id:  
+              serverId(  
+                selectedServer  
+              ),  
+  
+            server_name:  
+              serverLabel(  
+                selectedServer  
+              )  
+          },  
+          "grizzly"  
+        );  
+  
+    }  
+  
+    message.textContent =  
+      typeof data.message === "string"  
+        ? data.message  
+        : "Number successfully purchased.";  
+  
+    const immediateOrder =  
+      buildImmediatePurchaseOrder(  
+        data,  
+        provider  
+      );  
+  
+    if(immediateOrder){  
+  
+      currentOrderId =  
+        orderActionId(  
+          immediateOrder  
+        ) || null;  
+  
+      currentOrderProvider =  
+        provider;  
+  
+      const existingIndex =
+        orders.findIndex(
+          existing =>
+            ordersShareGlobalIdentity(
+              existing,
+              immediateOrder
+            ) ||
+            (
+              ordersHaveSamePurchaseFingerprint(
+                existing,
+                immediateOrder
+              ) &&
+              !orderActivationId(existing)
+            )
+        );  
+  
+      if(existingIndex === -1){  
+  
+        orders = [  
+          immediateOrder,  
+          ...orders  
+        ];  
+  
+      }else{  
+  
+        orders[existingIndex] =  
+          mergeOrderRecords(  
+            orders[existingIndex],  
+            immediateOrder  
+          );  
+  
+      }  
+  
+      pendingOrderScrollKey = renderedOrderKey(immediateOrder);
+
+      renderOrderSections();
+      scrollToPendingOrder();
+
+      attachOrderActions();  
+  
+    }  
+  
+    showPortalNotice();  
+  
+    await loadAllOrders();  
+    scrollToPendingOrder();
+    await loadWallet();  
+    await loadServers();  
+  
+  }catch(error){  
+  
+    message.textContent =  
+      error.message;  
+  
+    button.disabled = false;  
+  
+  }  
+  
+}  
+  
+  
+/* ============================================================  
+   ORDER NORMALIZATION  
+============================================================ */  
+  
+function firstOrderValue(  
+  sources,  
+  keys  
+){  
+  
+  for(const source of sources){  
+  
+    if(!source || typeof source !== "object"){  
+      continue;  
+    }  
+  
+    for(const key of keys){  
+  
+      const value =  
+        source?.[key];  
+  
+      if(  
+        value !== null &&  
+        value !== undefined &&  
+        typeof value !== "object" &&  
+        String(value).trim() !== ""  
+      ){  
+  
+        return String(value).trim();  
+  
+      }  
+  
+    }  
+  
+  }  
+  
+  return "";  
+  
+}  
+  
+function collectOrderSources(  
+  order  
+){  
+  
+  const sources = [];  
+  
+  function add(value){  
+  
+    if(  
+      value &&  
+      typeof value === "object" &&  
+      !sources.includes(value)  
+    ){  
+  
+      sources.push(value);  
+  
+    }  
+  
+  }  
+  
+  add(order);  
+  
+  add(order?.data);  
+  add(order?.result);  
+  add(order?.response);  
+  add(order?.provider_response);  
+  add(order?.providerResponse);  
+  add(order?.provider_result);  
+  add(order?.providerResult);  
+  add(order?.grizzly);  
+  add(order?.grizzly_response);  
+  add(order?.grizzlyResponse);  
+  add(order?.activation);  
+  add(order?.number_data);  
+  add(order?.numberData);  
+  
+  const nested = [  
+    order?.data,  
+    order?.result,  
+    order?.response,  
+    order?.provider_response,  
+    order?.providerResponse,  
+    order?.provider_result,  
+    order?.providerResult,  
+    order?.grizzly,  
+    order?.grizzly_response,  
+    order?.grizzlyResponse,  
+    order?.activation,  
+    order?.number_data,  
+    order?.numberData  
+  ];  
+  
+  nested.forEach(  
+    value => {  
+  
+      if(value && typeof value === "object"){  
+  
+        add(value.data);  
+        add(value.result);  
+        add(value.response);  
+        add(value.activation);  
+        add(value.number);  
+        add(value.number_data);  
+        add(value.numberData);  
+  
+      }  
+  
+    }  
+  );  
+  
+  return sources;  
+  
+}  
+  
+function orderNumber(  
+  order  
+){  
+  
+  const sources =  
+    collectOrderSources(order);  
+  
+  return firstOrderValue(  
+    sources,  
+    [  
+      "number",  
+      "phoneNumber",  
+      "phone_number",  
+      "phone",  
+      "phoneNumberFormatted",  
+      "phone_number_formatted",  
+      "activationNumber",  
+      "activation_number",  
+      "mobile",  
+      "mobile_number",  
+      "msisdn"  
+    ]  
+  );  
+  
+}  
+  
+function orderActivationId(  
+  order  
+){  
+  
+  const sources =  
+    collectOrderSources(order);  
+  
+  return firstOrderValue(  
+    sources,  
+    [  
+      "activationId",  
+      "activation_id",  
+      "activationID",  
+      "provider_activation_id",  
+      "providerActivationId"  
+    ]  
+  );  
+  
+}  
+  
+function orderOtp(  
+  order  
+){  
+  
+  const sources =  
+    collectOrderSources(order);  
+  
+  const directCode =  
+    firstOrderValue(  
+      sources,  
+      [  
+        "otp_code",  
+        "otpCode",  
+        "code",  
+        "sms_code",  
+        "smsCode"  
+      ]  
+    );  
+  
+  if(directCode){  
+    return directCode;  
+  }  
+  
+  for(const source of sources){  
+  
+    const sms =  
+      source?.sms;  
+  
+    if(  
+      sms &&  
+      typeof sms === "object"  
+    ){  
+  
+      const code =  
+        firstOrderValue(  
+          [sms],  
+          [  
+            "code",  
+            "otp_code",  
+            "otpCode",  
+            "sms_code",  
+            "smsCode"  
+          ]  
+        );  
+  
+      if(code){  
+        return code;  
+      }  
+  
+    }  
+  
+  }  
+  
+  return "";  
+  
+}  
+  
+function orderSmsText(  
+  order  
+){  
+  
+  const sources =  
+    collectOrderSources(order);  
+  
+  const directText =  
+    firstOrderValue(  
+      sources,  
+      [  
+        "sms_text",  
+        "smsText",  
+        "text",  
+        "message"  
+      ]  
+    );  
+  
+  if(directText){  
+    return directText;  
+  }  
+  
+  for(const source of sources){  
+  
+    const sms =  
+      source?.sms;  
+  
+    if(  
+      sms &&  
+      typeof sms === "object"  
+    ){  
+  
+      const text =  
+        firstOrderValue(  
+          [sms],  
+          [  
+            "text",  
+            "message"  
+          ]  
+        );  
+  
+      if(text){  
+        return text;  
+      }  
+  
+    }  
+  
+  }  
+  
+  return "";  
+  
+}  
+  
+function orderStatus(  
+  order  
+){  
+  
+  const sources =  
+    collectOrderSources(order);  
+  
+  const direct =  
+    firstOrderValue(  
+      sources,  
+      [  
+        "status",  
+        "state",  
+        "activation_status",  
+        "activationStatus"  
+      ]  
+    );  
+  
+  if(direct){  
+  
+    const clean =  
+      direct.toLowerCase();  
+  
+    if(  
+      orderOtp(order) &&  
+      (  
+        clean === "waiting" ||  
+        clean === "pending"  
+      )  
+    ){  
+  
+      return "received";  
+  
+    }  
+  
+    return clean;  
+  
+  }  
+  
+  if(orderOtp(order)){  
+    return "received";  
+  }  
+  
+  return "waiting";  
+  
+}  
+  
+function normalizeOrder(  
+  order,  
+  providerName  
+){  
+  
+  const normalized = {  
+    ...(  
+      order &&  
+      typeof order === "object"  
+        ? order  
+        : {}  
+    )  
+  };  
+  
+  normalized.provider =  
+    providerName ||  
+    order?.provider ||  
+    "";  
+  
+  normalized.number =  
+    orderNumber(order) ||  
+    "";  
+  
+  normalized.activation_id =  
+    (
+      providerName === "smsbower"
+        ? smsBowerActivationId(order)
+        : orderActivationId(order)
+    ) ||  
+    "";  
+  
+  normalized.activationId =  
+    normalized.activation_id;  
+  
+  normalized.otp_code =  
+    orderOtp(order) ||  
+    "";  
+  
+  normalized.sms_code =  
+    normalized.otp_code;  
+  
+  normalized.code =  
+    normalized.otp_code;  
+  
+  normalized.sms_text =  
+    orderSmsText(order) ||  
+    "";  
+  
+  normalized.status =  
+    orderStatus(normalized);  
+  
+  if(normalized.otp_code){  
+  
+    normalized.status =  
+      "received";  
+  
+  }  
+  
+  return normalized;  
+  
+}  
+  
+function statusLabel(status){  
+  
+  const map = {  
+    waiting:"Pending",  
+    pending:"Pending",  
+    received:"Received",  
+    finished:"Completed",  
+    completed:"Completed",  
+    cancelled:"Cancelled",  
+    refunded:"Refunded",  
+    failed:"Failed"  
+  };  
+  
+  const cleanStatus =  
+    typeof status === "string"  
+      ? status.toLowerCase()  
+      : "";  
+  
+  return (  
+    map[cleanStatus] ||  
+    (  
+      cleanStatus  
+        ? cleanStatus  
+        : "Pending"  
+    )  
+  );  
+  
+}  
+  
+function orderProvider(order){  
+  
+  const value =  
+    String(  
+      order?.provider ||  
+      order?.server ||  
+      ""  
+    ).toLowerCase();  
+  
+  if(  
+    value === "grizzly" ||  
+    value === "grizzly_sms"  
+  ){  
+  
+    return "grizzly";  
+  
+  }  
+  
+  if(value === "fivesim"){  
+    return "grizzly";  
+  }  
+  
+  return "smsbower";  
+  
+}  
+  
+  
+/* ============================================================  
+   GRIZZLY-ONLY ORDER IDENTITY FIX  
+============================================================ */  
+  
+function grizzlyCanonicalNumber(  
+  order  
+){  
+  
+  const number =  
+    orderNumber(order);  
+  
+  if(!number){  
+    return "";  
+  }  
+  
+  return String(number)  
+    .replace(/[^\d]/g,"")  
+    .replace(/^00+/,"");  
+  
+}  
+  
+function grizzlyCanonicalActivation(  
+  order  
+){  
+  
+  const activation =  
+    orderActivationId(order);  
+  
+  if(!activation){  
+    return "";  
+  }  
+  
+  return String(activation)  
+    .trim()  
+    .replace(/\s+/g,"");  
+  
+}  
+  
+function orderPurchaseFingerprint(
+  order
+){
+
+  const number =
+    String(
+      orderNumber(order) || ""
+    )
+      .replace(/[^\d]/g,"")
+      .replace(/^00+/,"");
+
+  const service =
+    String(
+      order?.service_code ||
+      order?.service ||
+      order?.product ||
+      ""
+    )
+      .trim()
+      .toLowerCase();
+
+  const country =
+    String(
+      order?.country_id ||
+      order?.country ||
+      order?.country_key ||
+      ""
+    )
+      .trim()
+      .toLowerCase();
+
+  const server =
+    String(
+      order?.server_id ||
+      order?.provider_id ||
+      order?.operator ||
+      order?.operator_id ||
+      ""
+    )
+      .trim()
+      .toLowerCase();
+
+  if(!number){
+    return "";
+  }
+
+  return [
+    number,
+    service,
+    country,
+    server
+  ]
+    .map(value =>
+      String(value)
+        .replace(/[^a-z0-9]+/g,"_")
+        .replace(/^_+|_+$/g,"")
+    )
+    .join("|");
+}
+
+function ordersHaveSamePurchaseFingerprint(
+  first,
+  second
+){
+
+  const firstFingerprint =
+    orderPurchaseFingerprint(first);
+
+  const secondFingerprint =
+    orderPurchaseFingerprint(second);
+
+  if(
+    !firstFingerprint ||
+    !secondFingerprint
+  ){
+    return false;
+  }
+
+  if(
+    firstFingerprint ===
+    secondFingerprint
+  ){
+    return true;
+  }
+
+  /*
+    Some stored records do not retain server/provider
+    information.  In that case use number + service +
+    country as the safe fallback.
+  */
+  const reducedFingerprint = order => {
+
+    const number =
+      String(
+        orderNumber(order) || ""
+      )
+        .replace(/[^\d]/g,"")
+        .replace(/^00+/,"");
+
+    const service =
+      String(
+        order?.service_code ||
+        order?.service ||
+        order?.product ||
+        ""
+      )
+        .trim()
+        .toLowerCase();
+
+    const country =
+      String(
+        order?.country_id ||
+        order?.country ||
+        order?.country_key ||
+        ""
+      )
+        .trim()
+        .toLowerCase();
+
+    if(!number){
+      return "";
+    }
+
+    return [
+      number,
+      service,
+      country
+    ].join("|");
+  };
+
+  const firstReduced =
+    reducedFingerprint(first);
+
+  const secondReduced =
+    reducedFingerprint(second);
+
+  return (
+    !!firstReduced &&
+    !!secondReduced &&
+    firstReduced === secondReduced
+  );
+}
+
+function smsBowerActivationId(
+  order
+){
+
+  if(!order || typeof order !== "object"){
+    return "";
+  }
+
+  const sources =
+    collectOrderSources(order);
+
+  const explicit =
+    firstOrderValue(
+      sources,
+      [
+        "activation_id",
+        "activationId",
+        "activationID",
+        "provider_activation_id",
+        "providerActivationId",
+        "activation_order_id",
+        "activationOrderId",
+        "provider_order_id",
+        "providerOrderId"
+      ]
+    );
+
+  if(explicit){
+    return String(explicit).trim();
+  }
+
+  /*
+    Some SMSBower records expose the provider activation
+    as `order_id` / `orderId`.  Only accept numeric values
+    from those fields so a Supabase UUID cannot be used.
+  */
+  const providerOrderId =
+    firstOrderValue(
+      sources,
+      [
+        "order_id",
+        "orderId"
+      ]
+    );
+
+  if(
+    providerOrderId &&
+    /^\d+$/.test(
+      String(providerOrderId).trim()
+    )
+  ){
+    return String(
+      providerOrderId
+    ).trim();
+  }
+
+  /*
+    SMSBower-compatible activation responses commonly
+    expose the activation identifier as `id`.  Only use
+    a numeric id here so a Supabase UUID/database id is
+    never mistaken for the provider activation.
+  */
+  for(const source of sources){
+
+    const candidate =
+      source?.id;
+
+    if(
+      candidate !== null &&
+      candidate !== undefined &&
+      String(candidate).trim() !== ""
+    ){
+
+      const value =
+        String(candidate).trim();
+
+      if(/^\d+$/.test(value)){
+        return value;
+      }
+
+    }
+
+  }
+
+  return "";
+}
+
+function grizzlyOrdersRepresentSameOrder(
+  first,
+  second
+){
+
+  if(!first || !second){
+    return false;
+  }
+
+  if(
+    orderProvider(first) !== "grizzly" ||
+    orderProvider(second) !== "grizzly"
+  ){
+    return false;
+  }
+
+  const firstActivation =
+    grizzlyCanonicalActivation(first);
+
+  const secondActivation =
+    grizzlyCanonicalActivation(second);
+
+  /*
+    An activation ID is the strongest identity.
+
+    If BOTH records have an activation ID, they are the
+    same order only when those IDs are exactly the same.
+    Different activations must never be merged just because
+    they happen to have the same phone number.
+  */
+  if(firstActivation && secondActivation){
+    return (
+      firstActivation ===
+      secondActivation
+    );
+  }
+
+  /*
+    If only one record has an activation ID, it can still
+    be the same purchase as a provider/database record that
+    temporarily has no activation ID.  Use the complete
+    purchase fingerprint as the fallback bridge.
+  */
+  return ordersHaveSamePurchaseFingerprint(
+    first,
+    second
+  );
+}function grizzlyOrderUniqueKey(
+  order
+){
+
+  const activation =
+    grizzlyCanonicalActivation(order);
+
+  if(activation){
+
+    return (
+      "grizzly:activation:" +
+      activation
+    );
+
+  }
+
+  const fingerprint =
+    orderPurchaseFingerprint(order);
+
+  if(fingerprint){
+
+    return (
+      "grizzly:fingerprint:" +
+      fingerprint
+    );
+
+  }
+
+  return (
+    "grizzly:unknown:" +
+    JSON.stringify(order || {})
+  );
+
+}function orderDatabaseIdentity(order){
+
+  const sources = collectOrderSources(order);
+
+  const explicitKeys = [
+    "database_id",
+    "databaseId",
+    "db_id",
+    "dbId",
+    "purchase_id",
+    "purchaseId",
+    "record_id",
+    "recordId",
+    "supabase_order_id",
+    "supabaseOrderId"
+  ];
+
+  const value = firstOrderValue(sources, explicitKeys);
+
+  if(value){
+    return String(value).trim();
+  }
+
+  /*
+    Provider order endpoints can expose the same Supabase
+    virtual-number purchase in different shapes.  In that
+    case the real database row ID is available as `id` and
+    the provider activation is available separately as
+    `numpool_order_id`.  Treat the row ID as the shared
+    database identity only when the record also contains
+    numpool_order_id, so a provider-only activation ID is
+    never mistaken for a database ID.
+  */
+  const hasNumpoolOrderId =
+    firstOrderValue(
+      sources,
+      [
+        "numpool_order_id",
+        "numpoolOrderId"
+      ]
+    );
+
+  if(hasNumpoolOrderId){
+
+    const rowId = firstOrderValue(
+      sources,
+      ["id"]
+    );
+
+    if(rowId){
+      return String(rowId).trim();
+    }
+
+  }
+
+  return "";
+}
+
+function orderProviderIndependentKey(order){
+
+  const databaseId = orderDatabaseIdentity(order);
+
+  if(databaseId){
+    return "db:" + databaseId;
+  }
+
+  const activation =
+    String(
+      order?.activation_id ||
+      order?.activationId ||
+      orderActivationId(order) ||
+      ""
+    ).trim();
+
+  const phone = String(orderNumber(order) || "")
+    .replace(/[^\d]/g,"")
+    .replace(/^00+/,"");
+
+  const service = String(
+    order?.service_code || order?.service || order?.product || ""
+  ).trim().toLowerCase();
+
+  const country = String(
+    order?.country_id || order?.country || order?.country_key || ""
+  ).trim().toLowerCase();
+
+  const price = Number(
+    order?.customer_price_ngn ?? order?.price ?? 0
+  );
+
+  if(activation){
+    return "activation:" + activation;
+  }
+
+  if(phone && service && country){
+    return [
+      "purchase",
+      phone,
+      service,
+      country,
+      Number.isFinite(price) ? String(price) : ""
+    ].join("|");
+  }
+
+  return "";
+}
+
+function ordersShareGlobalIdentity(first, second){
+
+  if(!first || !second){
+    return false;
+  }
+
+  const firstDb = orderDatabaseIdentity(first);
+  const secondDb = orderDatabaseIdentity(second);
+
+  if(firstDb && secondDb){
+    return firstDb === secondDb;
+  }
+
+  const firstActivation = String(
+    first?.activation_id || first?.activationId || orderActivationId(first) || ""
+  ).trim();
+  const secondActivation = String(
+    second?.activation_id || second?.activationId || orderActivationId(second) || ""
+  ).trim();
+
+  if(firstActivation && secondActivation){
+    return firstActivation === secondActivation;
+  }
+
+  /*
+    Bridge the immediate-purchase record (which may not yet have
+    an activation ID) to the provider record. Do not merge two
+    independent provider activations merely because the phone is
+    the same.
+  */
+  if(!!firstActivation !== !!secondActivation){
+    return ordersHaveSamePurchaseFingerprint(first, second);
+  }
+
+  return false;
+}
+
+function dedupeOrdersGlobally(sourceOrders){
+
+  const unique = [];
+
+  for(const rawOrder of sourceOrders){
+
+    const normalized = normalizeOrder(
+      rawOrder,
+      rawOrder?.provider || orderProvider(rawOrder)
+    );
+
+    let existingIndex = unique.findIndex(existing =>
+      ordersShareGlobalIdentity(existing, normalized)
+    );
+
+    /*
+      Same exact purchase fingerprint can also occur when the two
+      provider endpoints return the same database order but expose
+      different provider-specific activation fields.
+    */
+    if(existingIndex === -1){
+      existingIndex = unique.findIndex(existing =>
+        ordersHaveSamePurchaseFingerprint(existing, normalized) &&
+        (
+          !orderActivationId(existing) ||
+          !orderActivationId(normalized)
+        )
+      );
+    }
+
+    if(existingIndex === -1){
+      unique.push(normalized);
+    }else{
+      unique[existingIndex] = mergeOrderRecords(
+        unique[existingIndex],
+        normalized
+      );
+    }
+
+  }
+
+  return unique;
+}
+
+function orderUniqueKey(
+  order
+){
+
+  const providerName =
+    orderProvider(order);
+
+  if(providerName === "grizzly"){
+
+    return grizzlyOrderUniqueKey(
+      order
+    );
+
+  }
+
+  const activationId =
+    smsBowerActivationId(order);
+
+  if(activationId){
+
+    return (
+      providerName +
+      ":activation:" +
+      String(activationId)
+    );
+
+  }
+
+  const fingerprint =
+    orderPurchaseFingerprint(order);
+
+  if(fingerprint){
+
+    return (
+      providerName +
+      ":fingerprint:" +
+      fingerprint
+    );
+
+  }
+
+  return (
+    providerName +
+    ":unknown:" +
+    JSON.stringify(order || {})
+  );
+
+}function ordersRepresentSameOrder(
+  first,
+  second
+){
+
+  if(!first || !second){
+    return false;
+  }
+
+  const firstProvider =
+    orderProvider(first);
+
+  const secondProvider =
+    orderProvider(second);
+
+  if(firstProvider !== secondProvider){
+    return false;
+  }
+
+  if(firstProvider === "grizzly"){
+
+    return grizzlyOrdersRepresentSameOrder(
+      first,
+      second
+    );
+
+  }
+
+  const firstActivation =
+    smsBowerActivationId(first);
+
+  const secondActivation =
+    smsBowerActivationId(second);
+
+  /*
+    For SMSBower, activation ID is also the strongest
+    identity.  Different activation IDs are different
+    purchases even when the number is identical.
+  */
+  if(firstActivation && secondActivation){
+    return (
+      firstActivation ===
+      secondActivation
+    );
+  }
+
+  /*
+    One record may be the database/immediate-purchase
+    version while the provider record has the activation ID.
+    Bridge those records with the purchase fingerprint.
+  */
+  return ordersHaveSamePurchaseFingerprint(
+    first,
+    second
+  );
+
+}/* ============================================================  
+   ORDER MERGING FIX  
+============================================================ */  
+  
+function mergeOrderRecords(  
+  existing,  
+  incoming  
+){  
+  
+  const oldOrder =  
+    normalizeOrder(  
+      existing,  
+      orderProvider(existing)  
+    );  
+  
+  const newOrder =  
+    normalizeOrder(  
+      incoming,  
+      orderProvider(incoming)  
+    );  
+  
+  const oldOtp =  
+    orderOtp(oldOrder);  
+  
+  const newOtp =  
+    orderOtp(newOrder);  
+  
+  const oldText =  
+    orderSmsText(oldOrder);  
+  
+  const newText =  
+    orderSmsText(newOrder);  
+  
+  const oldStatus =  
+    String(  
+      orderStatus(oldOrder) || ""  
+    ).toLowerCase();  
+  
+  const newStatus =  
+    String(  
+      orderStatus(newOrder) || ""  
+    ).toLowerCase();  
+  
+  const oldHasFinal =  
+    !!oldOtp ||  
+    [  
+      "received",  
+      "completed",  
+      "finished",  
+      "cancelled",  
+      "refunded",  
+      "failed"  
+    ].includes(oldStatus);  
+  
+  const newHasFinal =  
+    !!newOtp ||  
+    [  
+      "received",  
+      "completed",  
+      "finished",  
+      "cancelled",  
+      "refunded",  
+      "failed"  
+    ].includes(newStatus);  
+  
+  const merged = {  
+    ...oldOrder,  
+    ...newOrder  
+  };  
+  
+  merged.id =  
+    oldOrder.id ??  
+    newOrder.id ??  
+    oldOrder.order_id ??  
+    newOrder.order_id ??  
+    "";  
+  
+  merged.order_id =  
+    oldOrder.order_id ??  
+    newOrder.order_id ??  
+    oldOrder.id ??  
+    newOrder.id ??  
+    "";  
+  
+  merged.activation_id =  
+    orderActivationId(oldOrder) ||  
+    orderActivationId(newOrder) ||  
+    "";  
+  
+  merged.activationId =  
+    merged.activation_id;  
+  
+  merged.number =  
+    orderNumber(oldOrder) ||  
+    orderNumber(newOrder) ||  
+    "";  
+  
+  merged.phone_number =  
+    oldOrder.phone_number ||  
+    newOrder.phone_number ||  
+    merged.number;  
+  
+  merged.phoneNumber =  
+    oldOrder.phoneNumber ||  
+    newOrder.phoneNumber ||  
+    merged.number;  
+  
+  merged.otp_code =  
+    oldOtp ||  
+    newOtp ||  
+    "";  
+  
+  merged.sms_code =  
+    merged.otp_code;  
+  
+  merged.code =  
+    merged.otp_code;  
+  
+  merged.sms_text =  
+    oldText ||  
+    newText ||  
+    "";  
+  
+  if(oldHasFinal && !newHasFinal){  
+  
+    merged.status =  
+      oldOtp  
+        ? "received"  
+        : oldStatus;  
+  
+  }else if(newHasFinal){  
+  
+    merged.status =  
+      newOtp  
+        ? "received"  
+        : newStatus;  
+  
+  }else{  
+  
+    merged.status =  
+      newStatus ||  
+      oldStatus ||  
+      "waiting";  
+  
+  }  
+  
+  if(merged.otp_code){  
+  
+    merged.status =  
+      "received";  
+  
+  }  
+  
+  merged.created_at =  
+    oldOrder.created_at ||  
+    newOrder.created_at ||  
+    oldOrder.purchased_at ||  
+    newOrder.purchased_at ||  
+    new Date().toISOString();  
+  
+  merged.country =  
+    oldOrder.country ||  
+    newOrder.country ||  
+    "";  
+  
+  merged.country_id =  
+    oldOrder.country_id ||  
+    newOrder.country_id ||  
+    "";  
+  
+  merged.country_name =  
+    oldOrder.country_name ||  
+    newOrder.country_name ||  
+    "";  
+  
+  merged.service =  
+    oldOrder.service ||  
+    newOrder.service ||  
+    "";  
+  
+  merged.service_code =  
+    oldOrder.service_code ||  
+    newOrder.service_code ||  
+    "";  
+  
+  merged.service_name =  
+    oldOrder.service_name ||  
+    newOrder.service_name ||  
+    "";  
+  
+  merged.provider =  
+    orderProvider(oldOrder);  
+  
+  merged.customer_price_ngn =  
+    Number(  
+      oldOrder.customer_price_ngn ||  
+      newOrder.customer_price_ngn ||  
+      oldOrder.price ||  
+      newOrder.price ||  
+      0  
+    );  
+  
+  merged.price =  
+    Number(  
+      oldOrder.price ||  
+      newOrder.price ||  
+      oldOrder.customer_price_ngn ||  
+      newOrder.customer_price_ngn ||  
+      0  
+    );  
+  
+  return normalizeOrder(  
+    merged,  
+    orderProvider(merged)  
+  );  
+  
+}  
+  
+function mergeProviderStatusIntoOrder(  
+  order,  
+  data  
+){  
+  
+  if(!order){  
+    return order;  
+  }  
+  
+  const providerName =  
+    orderProvider(order);  
+  
+  const result =  
+    data &&  
+    typeof data === "object"  
+      ? data  
+      : {};  
+  
+  const resultSources = [  
+    result,  
+    result.data,  
+    result.result,  
+    result.response,  
+    result.provider_response,  
+    result.providerResponse,  
+    result.grizzly,  
+    result.grizzly_response,  
+    result.grizzlyResponse  
+  ].filter(  
+    value =>  
+      value &&  
+      typeof value === "object"  
+  );  
+  
+  let otp = "";  
+  let smsText = "";  
+  let returnedStatus = "";  
+  
+  for(const source of resultSources){  
+  
+    const directOtp =  
+      firstOrderValue(  
+        [source],  
+        [  
+          "otp_code",  
+          "otpCode",  
+          "sms_code",  
+          "smsCode",  
+          "code"  
+        ]  
+      );  
+  
+    if(directOtp && !otp){  
+      otp = directOtp;  
+    }  
+  
+    const directText =  
+      firstOrderValue(  
+        [source],  
+        [  
+          "sms_text",  
+          "smsText",  
+          "text",  
+          "message"  
+        ]  
+      );  
+  
+    if(directText && !smsText){  
+      smsText = directText;  
+    }  
+  
+    const directStatus =  
+      firstOrderValue(  
+        [source],  
+        [  
+          "status",  
+          "state",  
+          "activation_status",  
+          "activationStatus"  
+        ]  
+      );  
+  
+    if(directStatus && !returnedStatus){  
+  
+      returnedStatus =  
+        directStatus.toLowerCase();  
+  
+    }  
+  
+    const sms =  
+      source?.sms;  
+  
+    if(  
+      sms &&  
+      typeof sms === "object"  
+    ){  
+  
+      const smsCode =  
+        firstOrderValue(  
+          [sms],  
+          [  
+            "code",  
+            "otp_code",  
+            "otpCode",  
+            "sms_code",  
+            "smsCode"  
+          ]  
+        );  
+  
+      if(smsCode && !otp){  
+        otp = smsCode;  
+      }  
+  
+      const smsMessage =  
+        firstOrderValue(  
+          [sms],  
+          [  
+            "text",  
+            "message"  
+          ]  
+        );  
+  
+      if(  
+        smsMessage &&  
+        !smsText  
+      ){  
+  
+        smsText =  
+          smsMessage;  
+  
+      }  
+  
+    }  
+  
+  }  
+  
+  const activationId =
+    providerName === "smsbower"
+      ? smsBowerActivationId({
+          ...result,
+          data:result.data,
+          result:result.result,
+          response:result.response,
+          provider_response:result.provider_response,
+          providerResponse:result.providerResponse
+        })
+      : firstOrderValue(  
+          resultSources,  
+          [  
+            "activation_id",  
+            "activationId",  
+            "activationID",  
+            "provider_activation_id",  
+            "providerActivationId"  
+          ]  
+        );  
+  
+  const number =  
+    firstOrderValue(  
+      resultSources,  
+      [  
+        "phone_number",  
+        "phoneNumber",  
+        "number",  
+        "phone",  
+        "msisdn"  
+      ]  
+    );  
+  
+  const update = {  
+    ...order  
+  };  
+  
+  if(activationId){  
+  
+    update.activation_id =  
+      activationId;  
+  
+    update.activationId =  
+      activationId;  
+  
+  }  
+  
+  if(number){  
+  
+    update.number =  
+      number;  
+  
+    update.phone_number =  
+      number;  
+  
+    update.phoneNumber =  
+      number;  
+  
+  }  
+  
+  if(otp){  
+  
+    update.otp_code =  
+      otp;  
+  
+    update.sms_code =  
+      otp;  
+  
+    update.code =  
+      otp;  
+  
+    update.status =  
+      "received";  
+  
+  }else if(smsText){  
+  
+    update.sms_text =  
+      smsText;  
+  
+  }  
+  
+  if(  
+    returnedStatus &&  
+    !otp  
+  ){  
+  
+    update.status =  
+      returnedStatus;  
+  
+  }  
+  
+  if(  
+    orderOtp(update)  
+  ){  
+  
+    update.status =  
+      "received";  
+  
+  }  
+  
+  update.provider =  
+    providerName;  
+  
+  return normalizeOrder(  
+    update,  
+    providerName  
+  );  
+  
+}  
+  
+  
+/* ============================================================  
+   ORDER ACTION ID  
+============================================================ */  
+  
+function orderActionId(
+  order
+){
+
+  const providerName =
+    orderProvider(order);
+
+  if(providerName === "smsbower"){
+
+    const smsActivation =
+      smsBowerActivationId(order);
+
+    if(smsActivation){
+      return smsActivation;
+    }
+
+  }
+
+  const activationId =
+    order?.activation_id ||
+    order?.activationId ||
+    orderActivationId(order);
+
+  if(activationId){
+
+    return String(
+      activationId
+    );
+
+  }
+
+  /*
+    A Grizzly order MUST use its real provider activation ID.
+    Never fall back to the local/Supabase numeric row ID.
+  */
+  if(providerName === "grizzly"){
+    return "";
+  }
+
+  const databaseId =
+    order?.id ??
+    order?.order_id ??
+    order?.orderId ??
+    null;
+
+  if(
+    databaseId !== null &&
+    databaseId !== undefined &&
+    String(databaseId).trim() !== ""
+  ){
+    return String(databaseId);
+  }
+
+  return "";
+
+}/* ============================================================  
+   ORDER RENDERING  
+============================================================ */  
+  
+function renderOrder(  
+  order,  
+  showActions = true  
+){  
+  
+  const normalized =  
+    normalizeOrder(  
+      order,  
+      orderProvider(order)  
+    );  
+  
+  const status =  
+    String(  
+      normalized.status || ""  
+    ).toLowerCase();  
+  
+  const number =  
+    normalized.number ||  
+    "Number unavailable";  
+  
+  const activationId =  
+    normalized.activation_id ||  
+    "";  
+  
+  const otp =  
+    normalized.otp_code ||  
+    "";  
+  
+  const smsText =  
+    normalized.sms_text ||  
+    "";  
+  
+  let otpHTML = "";  
+  
+  if(otp){  
+  
+    otpHTML = `  
+      <div class="otp">  
+        OTP: ${escapeHTML(otp)}  
+      </div>  
+    `;  
+  
+  }else if(smsText){  
+  
+    otpHTML = `  
+      <div class="otp">  
+        SMS: ${escapeHTML(smsText)}  
+      </div>  
+    `;  
+  
+  }  
+  
+  let activationHTML = "";  
+  
+  if(activationId){  
+  
+    activationHTML = `  
+      <div class="order-meta">  
+        Activation ID:  
+        ${escapeHTML(activationId)}  
+      </div>  
+    `;  
+  
+  }  
+  
+  let actionsHTML = "";  
+  
+  const actionId =  
+    orderActionId(normalized);  
+  
+  /*  
+    IMPORTANT:  
+    Received/completed/cancelled/refunded/failed orders  
+    NEVER receive a Cancel button.  
+  
+    Only waiting/pending orders without OTP can be  
+    cancelled or checked.  
+  */  
+  const canCancel =  
+    (  
+      status === "waiting" ||  
+      status === "pending"  
+    ) &&  
+    !otp;  
+  
+  if(  
+    showActions &&  
+    canCancel &&  
+    actionId  
+  ){  
+  
+    actionsHTML = `  
+      <div class="order-actions">  
+  
+        <button  
+          type="button"  
+          class="small-button check"  
+          data-action="check"  
+          data-order-id="${escapeHTML(actionId)}"  
+          data-activation-id="${escapeHTML(  
+            activationId  
+          )}"  
+          data-provider="${escapeHTML(  
+            orderProvider(normalized)  
+          )}"  
+        >  
+          Check Code / Get Code  
+        </button>  
+  
+        <button  
+          type="button"  
+          class="small-button cancel"  
+          data-action="cancel"  
+          data-order-id="${escapeHTML(actionId)}"  
+          data-activation-id="${escapeHTML(  
+            activationId  
+          )}"  
+          data-provider="${escapeHTML(  
+            orderProvider(normalized)  
+          )}"  
+        >  
+          Cancel  
+        </button>  
+  
+      </div>  
+    `;  
+  
+  }  
+  
+  const renderedOrderKey =  
+    orderProvider(normalized) === "grizzly"  
+      ? grizzlyOrderUniqueKey(normalized)  
+      : orderUniqueKey(normalized);  
+  
+  return `  
+    <div  
+      class="order"  
+      data-order-key="${escapeHTML(  
+        renderedOrderKey  
+      )}"  
+    >  
+  
+      <div class="order-number">  
+        ${escapeHTML(number)}  
+      </div>  
+  
+      ${activationHTML}  
+  
+      <div class="order-meta">  
+        ${escapeHTML(  
+          normalized.service_name ||  
+          normalized.service_code ||  
+          ""  
+        )}  
+        ·  
+        ${escapeHTML(  
+          normalized.country_name ||  
+          normalized.country_key ||  
+          ""  
+        )}  
+      </div>  
+  
+      <div class="order-meta">  
+        ${naira(  
+          normalized.customer_price_ngn  
+        )}  
+      </div>  
+  
+      <span  
+        class="status ${escapeHTML(status)}"  
+      >  
+        ${escapeHTML(  
+          statusLabel(status)  
+        )}  
+      </span>  
+  
+      ${otpHTML}  
+  
+      ${actionsHTML}  
+  
+    </div>  
+  `;  
+  
+}  
+  
+  
+/* ============================================================  
+   ONE UNIFIED ORDER RENDERING  
+============================================================ */  
+  
+function renderOrderSections(){
+
+  const ordersList = document.getElementById("ordersList");
+
+  if(!ordersList){
+    return;
+  }
+
+  const uniqueOrders = dedupeOrdersGlobally(
+    Array.isArray(orders) ? orders : []
+  );
+
+  uniqueOrders.sort((a,b) =>
+    new Date(b.created_at || b.purchased_at || b.updated_at || 0) -
+    new Date(a.created_at || a.purchased_at || a.updated_at || 0)
+  );
+
+  orders = uniqueOrders;
+
+  if(orders.length === 0){
+
+    ordersList.innerHTML = `
+      <div class="empty">No orders yet.</div>
+    `;
+
+    currentOrderId = null;
+    currentOrderProvider = null;
+    return;
+  }
+
+  const newestOrder = orders[0];
+  currentOrderId = orderActionId(newestOrder) || null;
+  currentOrderProvider = orderProvider(newestOrder);
+
+  ordersList.innerHTML = orders
+    .map(order => renderOrder(order, true))
+    .join("");
+
+  attachOrderActions();
+
+}
+
+function attachOrderActions(){  
+  
+  document  
+    .querySelectorAll(  
+      '[data-action="check"]'  
+    )  
+    .forEach(  
+      button => {  
+  
+        button.onclick = () => {  
+  
+          checkOrder(  
+            button.dataset.orderId,  
+            button.dataset.provider,  
+            button.closest(".order")  
+              ?.dataset.orderKey || "",  
+            button.dataset.activationId || ""  
+          );  
+  
+        };  
+  
+      }  
+    );  
+  
+  document  
+    .querySelectorAll(  
+      '[data-action="cancel"]'  
+    )  
+    .forEach(  
+      button => {  
+  
+        button.onclick = () => {  
+  
+          cancelOrder(  
+            button.dataset.orderId,  
+            button.dataset.provider,  
+            button.dataset.activationId || "",  
+            button.closest(".order")  
+              ?.dataset.orderKey || ""  
+          );  
+  
+        };  
+  
+      }  
+    );  
+  
+}  
+  
+  
+/* ============================================================  
+   LOAD ALL ORDERS  
+============================================================ */  
+  
+function renderedOrderKey(order){
+
+  const normalized = normalizeOrder(
+    order,
+    orderProvider(order)
+  );
+
+  return orderProvider(normalized) === "grizzly"
+    ? grizzlyOrderUniqueKey(normalized)
+    : orderUniqueKey(normalized);
+
+}
+
+function scrollToPendingOrder(){
+
+  if(!pendingOrderScrollKey){
+    return;
+  }
+
+  const target = Array.from(
+    document.querySelectorAll(".order[data-order-key]")
+  ).find(
+    element => element.dataset.orderKey === pendingOrderScrollKey
+  );
+
+  if(target){
+    target.scrollIntoView({
+      behavior:"smooth",
+      block:"start"
+    });
+
+    pendingOrderScrollKey = "";
+  }
+
+}
+
+async function loadAllOrders(){
+
+  const ordersList = document.getElementById("ordersList");
+
+  try{
+
+    const response = await api("orders", {}, provider);
+
+    const providerOrders =
+      Array.isArray(response?.orders)
+        ? response.orders.map(order =>
+            normalizeOrder(order, provider)
+          )
+        : [];
+
+    orders = providerOrders;
+
+    orders.sort((a,b) =>
+      new Date(b.created_at || b.purchased_at || b.updated_at || 0) -
+      new Date(a.created_at || a.purchased_at || a.updated_at || 0)
+    );
+
+    renderOrderSections();
+    scrollToPendingOrder();
+
+  }catch(error){
+
+    if(Array.isArray(orders) && orders.length > 0){
+      renderOrderSections();
+      scrollToPendingOrder();
+    }else if(ordersList){
+      ordersList.innerHTML = `
+        <div class="empty">${escapeHTML(error.message)}</div>
+      `;
+    }
+
+  }
+
+}
+
+async function checkProviderStatus(
+  order,
+  providerName,
+  orderId = ""
+){
+
+  if(providerName === "grizzly"){
+
+    const activationId =
+      order?.activation_id ||
+      order?.activationId ||
+      orderActivationId(order) ||
+      "";
+
+    return await api(
+      "status",
+      {
+        order_id:
+          activationId ||
+          null,
+
+        activation_id:
+          activationId ||
+          null
+      },
+      "grizzly"
+    );
+
+  }
+
+  const smsActivationId =
+    smsBowerActivationId(order);
+
+  return await api(
+    "check",
+    {
+      /*
+        SMSBower check/get-code MUST use the provider
+        activation ID.  Never substitute the Supabase
+        database UUID for it.
+      */
+      order_id:
+        smsActivationId ||
+        null,
+
+      activation_id:
+        smsActivationId ||
+        null
+    },
+    "smsbower"
+  );
+
+}/* ============================================================  
+   CHECK ONE ORDER  
+============================================================ */  
+  
+async function checkOrder(  
+  orderId,  
+  providerName,  
+  orderKey = "",  
+  activationId = ""  
+){  
+  
+  const targetIndex =  
+    orders.findIndex(  
+      order => {  
+  
+        if(  
+          providerName === "grizzly"  
+        ){  
+  
+          return (  
+            (  
+              orderKey &&  
+              grizzlyOrderUniqueKey(order) ===  
+              orderKey  
+            ) ||  
+            (  
+              activationId &&  
+              String(  
+                grizzlyCanonicalActivation(order)  
+              ) ===  
+              String(activationId).trim()  
+            ) ||  
+            (  
+              !orderKey &&  
+              !activationId &&  
+              String(  
+                orderActionId(order)  
+              ) ===  
+              String(orderId) &&  
+              orderProvider(order) ===  
+              "grizzly"  
+            )  
+          );  
+  
+        }  
+  
+        return (  
+          (  
+            orderKey &&  
+            orderUniqueKey(order) ===  
+            orderKey  
+          ) ||  
+          (  
+            activationId &&  
+            String(  
+              smsBowerActivationId(order)  
+            ) ===  
+            String(activationId) &&  
+            orderProvider(order) ===  
+            providerName  
+          ) ||  
+          (  
+            !orderKey &&  
+            !activationId &&  
+            String(  
+              orderActionId(order)  
+            ) ===  
+            String(orderId) &&  
+            orderProvider(order) ===  
+            providerName  
+          )  
+        );  
+  
+      }  
+    );  
+  
+  if(targetIndex === -1){  
+  
+    alert(  
+      "Order could not be found."  
+    );  
+  
+    return;  
+  
+  }  
+  
+  const target =  
+    orders[targetIndex];  
+  
+  let container = null;  
+  
+  try{  
+  
+    container =  
+      document.querySelector(  
+        `[data-order-key="${CSS.escape(  
+          providerName === "grizzly"  
+            ? grizzlyOrderUniqueKey(target)  
+            : orderUniqueKey(target)  
+        )}"]`  
+      );  
+  
+  }catch{  
+  
+    container = null;  
+  
+  }  
+  
+  let oldHTML = "";  
+  
+  if(container){  
+  
+    oldHTML =  
+      container.innerHTML;  
+  
+    container.innerHTML = `  
+      <div class="loading">  
+        Checking for SMS code...  
+      </div>  
+    `;  
+  
+  }  
+  
+  try{  
+  
+    const data =  
+      await checkProviderStatus(  
+        target,  
+        providerName,  
+        orderId  
+      );  
+  
+    console.log(  
+      "Provider status:",  
+      data  
+    );  
+  
+    orders[targetIndex] =  
+      mergeProviderStatusIntoOrder(  
+        target,  
+        data  
+      );  
+  
+    renderOrderSections();  
+  
+  }catch(error){  
+  
+    if(container){  
+  
+      container.innerHTML =  
+        oldHTML;  
+  
+    }  
+  
+    alert(  
+      "Unable to check code: " +  
+      error.message  
+    );  
+  
+    attachOrderActions();  
+  
+  }  
+  
+}  
+  
+  
+/* ============================================================  
+   SMSBOWER CANCELLATION FIX  
+============================================================ */  
+  
+function smsBowerCancellationActivationId(
+  order,
+  fallbackId = ""
+){
+
+  const activation =
+    smsBowerActivationId(order);
+
+  if(activation){
+    return String(activation).trim();
+  }
+
+  const fallback =
+    String(
+      fallbackId || ""
+    ).trim();
+
+  /*
+    A fallback is accepted only when it looks like a
+    numeric SMSBower activation ID.  This prevents a
+    Supabase UUID from being sent to the provider.
+  */
+  if(/^\d+$/.test(fallback)){
+    return fallback;
+  }
+
+  return "";
+}/* ============================================================  
+   CANCEL ONE EXACT ORDER  
+============================================================ */  
+  
+async function cancelOrder(  
+  orderId,  
+  providerName,  
+  activationId = "",  
+  orderKey = ""  
+){  
+  
+  /*  
+    FIND THE EXACT ORDER FIRST.  
+  
+    We do this BEFORE showing the confirmation popup  
+    so a received order cannot accidentally be cancelled.  
+  */  
+  const targetIndex =  
+    orders.findIndex(  
+      order => {  
+  
+        if(providerName === "grizzly"){  
+  
+          /*  
+            If an activation ID was supplied, it is  
+            the strongest identity and MUST match exactly.  
+          */  
+          if(activationId){  
+  
+            return (  
+              orderProvider(order) ===  
+              "grizzly" &&  
+              String(  
+                grizzlyCanonicalActivation(order)  
+              ) ===  
+              String(activationId).trim()  
+            );  
+  
+          }  
+  
+          if(orderKey){  
+  
+            return (  
+              orderProvider(order) ===  
+              "grizzly" &&  
+              grizzlyOrderUniqueKey(order) ===  
+              orderKey  
+            );  
+  
+          }  
+  
+          return (  
+            String(  
+              orderActionId(order)  
+            ) ===  
+            String(orderId) &&  
+            orderProvider(order) ===  
+            "grizzly"  
+          );  
+  
+        }  
+  
+        /*  
+          SMSBower:  
+          activation ID is preferred when available.  
+        */  
+        if(activationId){  
+  
+          return (  
+            orderProvider(order) ===  
+            providerName &&  
+            String(  
+              smsBowerActivationId(order)  
+            ) ===  
+            String(activationId).trim()  
+          );  
+  
+        }  
+  
+        if(orderKey){  
+  
+          return (  
+            orderProvider(order) ===  
+            providerName &&  
+            orderUniqueKey(order) ===  
+            orderKey  
+          );  
+  
+        }  
+  
+        return (  
+          String(  
+            orderActionId(order)  
+          ) ===  
+          String(orderId) &&  
+          orderProvider(order) ===  
+          providerName  
+        );  
+  
+      }  
+    );  
+  
+  if(targetIndex === -1){  
+  
+    alert(  
+      "Order could not be found."  
+    );  
+  
+    return;  
+  
+  }  
+  
+  const target =  
+    normalizeOrder(  
+      orders[targetIndex],  
+      providerName  
+    );  
+  
+  /*  
+    CRITICAL SAFETY CHECK:  
+  
+    If the order has already received an OTP,  
+    cancellation is completely blocked.  
+  
+    This also protects against a stale Cancel button  
+    or a status update arriving immediately before  
+    the user presses Cancel.  
+  */  
+  const targetStatus =  
+    String(  
+      orderStatus(target) || ""  
+    ).toLowerCase();  
+  
+  const targetOtp =  
+    orderOtp(target);  
+  
+  if(  
+    targetOtp ||  
+    targetStatus === "received" ||  
+    targetStatus === "completed" ||  
+    targetStatus === "finished"  
+  ){  
+  
+    renderOrderSections();  
+  
+    alert(  
+      "This order has already received its code and cannot be cancelled."  
+    );  
+  
+    return;  
+  
+  }  
+  
+  /*  
+    Only waiting/pending orders can reach cancellation.  
+  */  
+  if(  
+    targetStatus !== "waiting" &&  
+    targetStatus !== "pending"  
+  ){  
+  
+    renderOrderSections();  
+  
+    alert(  
+      "This order cannot be cancelled."  
+    );  
+  
+    return;  
+  
+  }  
+  
+  /*  
+    Confirm only after the exact order has been  
+    identified and verified as cancellable.  
+  */  
+  if(  
+    !confirm(  
+      "Cancel this number? Your refund will only be issued after the provider successfully cancels the number."  
+    )  
+  ){  
+  
+    return;  
+  
+  }  
+  
+  let container = null;  
+  
+  try{  
+  
+    container =  
+      document.querySelector(  
+        `[data-order-key="${CSS.escape(  
+          providerName === "grizzly"  
+            ? grizzlyOrderUniqueKey(target)  
+            : orderUniqueKey(target)  
+        )}"]`  
+      );  
+  
+  }catch{  
+  
+    container = null;  
+  
+  }  
+  
+  const ordersList =  
+    document.getElementById(  
+      "ordersList"  
+    );  
+  
+  if(container){  
+  
+    container.innerHTML = `  
+      <div class="loading">  
+        Cancelling number...  
+      </div>  
+    `;  
+  
+  }else if(ordersList){  
+  
+    ordersList.innerHTML = `  
+      <div class="loading">  
+        Cancelling number...  
+      </div>  
+    `;  
+  
+  }  
+  
+  try{  
+  
+    /*  
+      Re-read the target from the array before sending  
+      cancellation so we do not accidentally send a  
+      different order's activation ID.  
+    */  
+    const exactTarget =  
+      orders[targetIndex];  
+  
+    /*  
+      Check once more immediately before API call.  
+      This prevents cancellation if the OTP arrived  
+      while the confirmation dialog was open.  
+    */  
+    const latestStatus =  
+      String(  
+        orderStatus(exactTarget) || ""  
+      ).toLowerCase();  
+  
+    const latestOtp =  
+      orderOtp(exactTarget);  
+  
+    if(  
+      latestOtp ||  
+      latestStatus === "received" ||  
+      latestStatus === "completed" ||  
+      latestStatus === "finished"  
+    ){  
+  
+      renderOrderSections();  
+  
+      alert(  
+        "This order has already received its code and cannot be cancelled."  
+      );  
+  
+      return;  
+  
+    }  
+  
+    let cancellationActivationId =  
+      activationId ||  
+      exactTarget?.activation_id ||  
+      "";  
+  
+    if(  
+      providerName === "smsbower"  
+    ){  
+  
+      cancellationActivationId =  
+        smsBowerCancellationActivationId(  
+          exactTarget,  
+          cancellationActivationId  
+        );  
+  
+    }else{  
+  
+      cancellationActivationId =  
+        cancellationActivationId ||  
+        orderActivationId(exactTarget) ||  
+        null;  
+  
+    }  
+  
+    if(
+      providerName === "smsbower" &&
+      !cancellationActivationId
+    ){
+
+      renderOrderSections();
+
+      alert(
+        "Unable to cancel: SMSBower activation ID is not available for this order."
+      );
+
+      return;
+    }
+
+    /*
+      Exact order ID + exact activation ID are sent.
+      No other order can be substituted.
+    */
+    const data =  
+      await api(  
+        "cancel",  
+        {  
+          order_id:
+            providerName === "grizzly"
+              ? cancellationActivationId
+              : orderId,
+
+          activation_id:
+            cancellationActivationId ||
+            null  
+        },  
+        providerName  
+      );  
+  
+    /*  
+      Only mark the exact target as cancelled after  
+      the provider confirms successful cancellation.  
+    */  
+    orders[targetIndex] =  
+      normalizeOrder(  
+        {  
+          ...orders[targetIndex],  
+          status:"cancelled"  
+        },  
+        providerName  
+      );  
+  
+    alert(  
+      typeof data.message === "string"  
+        ? data.message  
+        : "Number cancelled."  
+    );  
+  
+    renderOrderSections();  
+  
+    await loadAllOrders();  
+    await loadWallet();  
+  
+  }catch(error){  
+  
+    alert(  
+      "Cancellation failed: " +  
+      error.message  
+    );  
+  
+    renderOrderSections();  
+  
+  }  
+  
+}  
+  
+async function loadWallet(){  
+  
+  try{  
+  
+    const data =  
+      await api(  
+        "wallet",  
+        {},  
+        "smsbower"  
+      );  
+  
+    const balance =  
+      Number(  
+        data?.wallet?.balance  
+      );  
+  
+    document  
+      .getElementById(  
+        "walletMini"  
+      )  
+      .textContent =  
+        "₦" +  
+        Math.max(  
+          0,  
+          Math.ceil(  
+            Number.isFinite(balance)  
+              ? balance  
+              : 0  
+          )  
+        ).toLocaleString();  
+  
+  }catch{  
+  
+    document  
+      .getElementById(  
+        "walletMini"  
+      )  
+      .textContent =  
+        "₦0";  
+  
+  }  
+  
+}  
+  
+  
+/* ============================================================  
+   AUTOMATIC PENDING STATUS REFRESH  
+============================================================ */  
+  
+async function refreshPendingOrderStatuses(){  
+  
+  const pendingOrders =  
+    orders.filter(  
+      order => {  
+  
+        const status =  
+          String(  
+            orderStatus(order) || ""  
+          ).toLowerCase();  
+  
+        const otp =  
+          orderOtp(order);  
+  
+        return (  
+          (  
+            status === "waiting" ||  
+            status === "pending"  
+          ) &&  
+          !otp  
+        );  
+  
+      }  
+    );  
+  
+  if(pendingOrders.length === 0){  
+    return;  
+  }  
+  
+  let changed = false;  
+  
+  for(const order of pendingOrders){  
+  
+    try{  
+  
+      const providerName =  
+        orderProvider(order);  
+  
+      const orderId =  
+        orderActionId(order);  
+  
+      const data =  
+        await checkProviderStatus(  
+          order,  
+          providerName,  
+          orderId  
+        );  
+  
+      const index =  
+        orders.findIndex(  
+          existing => {  
+  
+            if(providerName === "grizzly"){  
+  
+              return (  
+                orderProvider(existing) ===  
+                "grizzly" &&  
+                grizzlyOrdersRepresentSameOrder(  
+                  existing,  
+                  order  
+                )  
+              );  
+  
+            }  
+  
+            return ordersRepresentSameOrder(  
+              existing,  
+              order  
+            );  
+  
+          }  
+        );  
+  
+      if(index === -1){  
+        continue;  
+      }  
+  
+      const beforeOtp =  
+        orderOtp(  
+          orders[index]  
+        );  
+  
+      const beforeStatus =  
+        String(  
+          orderStatus(  
+            orders[index]  
+          ) || ""  
+        ).toLowerCase();  
+  
+      orders[index] =  
+        mergeProviderStatusIntoOrder(  
+          orders[index],  
+          data  
+        );  
+  
+      const afterOtp =  
+        orderOtp(  
+          orders[index]  
+        );  
+  
+      const afterStatus =  
+        String(  
+          orderStatus(  
+            orders[index]  
+          ) || ""  
+        ).toLowerCase();  
+  
+      if(  
+        beforeOtp !== afterOtp ||  
+        beforeStatus !== afterStatus ||  
+        afterOtp ||  
+        afterStatus === "received" ||  
+        afterStatus === "completed" ||  
+        afterStatus === "cancelled"  
+      ){  
+  
+        changed = true;  
+  
+      }  
+  
+    }catch(error){  
+  
+      console.warn(  
+        "Order status check failed:",  
+        error  
+      );  
+  
+    }  
+  
+  }  
+  
+  if(changed){  
+  
+    renderOrderSections();  
+  
+  }  
+  
+}  
+  
+  
+/* ============================================================  
+   INIT  
+============================================================ */  
+  
+async function init(){  
+  
+  provider = "grizzly";  
+  
+  document  
+    .getElementById(  
+      "grizzlyProviderTab"  
+    )  
+    .classList.add("active");  
+  
+  document  
+    .getElementById(  
+      "smsbowerProviderTab"  
+    )  
+    .classList.remove("active");  
+  
+  forceOpenPopup(  
+    "verificationPopup"  
+  );  
+  
+  await loadWatermark();  
+  await loadCountries();  
+  await loadWallet();  
+  await loadAllOrders();  
+  
+  await refreshPendingOrderStatuses();  
+  
+}  
+  
+setInterval(  
+  async () => {  
+  
+    try{  
+  
+      await refreshPendingOrderStatuses();  
+  
+    }catch(error){  
+  
+      console.warn(  
+        "Automatic order status refresh failed:",  
+        error  
+      );  
+  
+    }  
+  
+  },  
+  15000  
+);  
+  
+init();  
+  
+</script>  </body>  
+</html>
