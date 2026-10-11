@@ -416,6 +416,32 @@
         }
 
 
+        /*
+         * HIDE PROVIDER NAMES FROM THE
+         * CUSTOMER'S TRANSACTION DISPLAY.
+         *
+         * This changes display text only.
+         * It does not update or delete
+         * anything in the database.
+         */
+
+        const originalType =
+          String(
+            transaction.type || "Transaction"
+          );
+
+        const originalDescription =
+          String(
+            transaction.description || ""
+          );
+
+        const displayType =
+          cleanProviderName(originalType);
+
+        const displayDescription =
+          cleanProviderName(originalDescription);
+
+
         const item =
           document.createElement(
             "div"
@@ -431,8 +457,7 @@
 
             <div class="transaction-type">
               ${escapeHTML(
-                transaction.type ||
-                "Transaction"
+                displayType || "Transaction"
               )}
             </div>
 
@@ -459,8 +484,7 @@
 
           <div class="description">
             ${escapeHTML(
-              transaction.description ||
-              ""
+              displayDescription
             )}
           </div>
 
@@ -478,6 +502,56 @@
 
       }
     );
+
+  }
+
+
+  function cleanProviderName(value) {
+
+    return String(value || "")
+
+      /*
+       * Remove Grizzly provider references
+       * without changing the actual order,
+       * refund, or transaction.
+       */
+
+      .replace(
+        /\bgrizzly\s*sms\b/gi,
+        ""
+      )
+
+      .replace(
+        /\bgrizzlysms\b/gi,
+        ""
+      )
+
+      .replace(
+        /\bgrizzly\b/gi,
+        ""
+      )
+
+      /*
+       * Clean up leftover separators and
+       * extra spaces after removing names.
+       */
+
+      .replace(
+        /\s*[-–—|:]\s*(?=$)/g,
+        ""
+      )
+
+      .replace(
+        /^\s*[-–—|:]\s*/,
+        ""
+      )
+
+      .replace(
+        /\s{2,}/g,
+        " "
+      )
+
+      .trim();
 
   }
 
