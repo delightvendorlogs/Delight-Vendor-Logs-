@@ -1,0 +1,6179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Delight Vendor Logs</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+html,
+body{
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:#f4f0e6;
+    color:#171717;
+}
+
+button,
+input{
+    font-family:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+header{
+
+    padding:
+        20px
+        18px
+        14px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:12px;
+}
+
+.brand{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:13px;
+}
+
+.logo{
+
+    width:52px;
+    height:52px;
+
+    border-radius:16px;
+
+    background:#111;
+
+    color:#d4af37;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:25px;
+
+    font-weight:900;
+
+    border:
+        1px solid
+        #d4af37;
+
+    box-shadow:
+        0 5px 14px
+        #00000020;
+}
+
+.brand h1{
+
+    margin:0;
+
+    font-size:20px;
+
+    color:#171717;
+}
+
+.brand p{
+
+    margin:
+        5px
+        0
+        0;
+
+    color:#77705f;
+
+    font-size:14px;
+}
+
+.menu-btn{
+
+    width:50px;
+    height:50px;
+
+    border:
+        1px solid
+        #d4af37;
+
+    background:#111;
+
+    border-radius:16px;
+
+    font-size:24px;
+
+    color:#d4af37;
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+main{
+
+    max-width:850px;
+
+    margin:auto;
+
+    padding:
+        4px
+        18px
+        100px;
+}
+
+
+/* =========================================================
+   WATERMARK
+========================================================= */
+
+.watermark{
+
+    display:none;
+
+    background:#fffdf7;
+
+    border-left:
+        4px solid
+        #d4af37;
+
+    border-radius:13px;
+
+    padding:14px;
+
+    margin:
+        4px
+        0
+        18px;
+
+    color:#686052;
+
+    font-size:14px;
+
+    line-height:1.55;
+}
+
+
+/* =========================================================
+   WALLET
+========================================================= */
+
+.wallet{
+
+    position:relative;
+
+    overflow:hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            #090909,
+            #171717 58%,
+            #0c0c0c
+        );
+
+    border-radius:23px;
+
+    padding:
+        22px
+        22px
+        21px;
+
+    color:#fff;
+
+    border:
+        1px solid
+        #d4af37;
+
+    box-shadow:
+        0 12px 30px
+        #00000022;
+
+    margin-bottom:20px;
+}
+
+.wallet:before{
+
+    content:"";
+
+    position:absolute;
+
+    width:360px;
+    height:360px;
+
+    border:
+        1px solid
+        #d4af3730;
+
+    border-radius:50%;
+
+    right:-180px;
+    top:-180px;
+}
+
+.wallet:after{
+
+    content:"";
+
+    position:absolute;
+
+    width:330px;
+    height:330px;
+
+    border:
+        1px solid
+        #d4af3720;
+
+    border-radius:50%;
+
+    left:-190px;
+    bottom:-200px;
+}
+
+.wallet > *{
+
+    position:relative;
+
+    z-index:2;
+}
+
+.wallet-top{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+}
+
+.wallet-label{
+
+    margin:0;
+
+    color:#c7bfae;
+
+    font-size:13px;
+
+    font-weight:bold;
+
+    letter-spacing:.7px;
+}
+
+.status{
+
+    background:#d4af3715;
+
+    border:
+        1px solid
+        #d4af3745;
+
+    color:#d4af37;
+
+    padding:
+        8px
+        12px;
+
+    border-radius:25px;
+
+    font-size:12px;
+
+    font-weight:bold;
+}
+
+.status i{
+
+    display:inline-block;
+
+    width:7px;
+    height:7px;
+
+    background:#d4af37;
+
+    border-radius:50%;
+
+    margin-right:6px;
+}
+
+.balance-row{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin:
+        13px
+        0
+        20px;
+}
+
+#walletBalance{
+
+    display:block !important;
+
+    width:auto !important;
+
+    height:auto !important;
+
+    min-height:0 !important;
+
+    margin:0 !important;
+
+    padding:0 !important;
+
+    background:transparent !important;
+
+    border:0 !important;
+
+    border-radius:0 !important;
+
+    color:#d4af37 !important;
+
+    font-size:32px !important;
+
+    font-weight:900 !important;
+
+    line-height:1.15 !important;
+
+    box-shadow:none !important;
+}
+
+.eye{
+
+    width:42px;
+    height:42px;
+
+    border-radius:50%;
+
+    border:
+        1px solid
+        #d4af3745;
+
+    background:#d4af3712;
+
+    color:#d4af37;
+
+    font-size:19px;
+}
+
+.wallet-actions{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr
+        1fr;
+
+    gap:11px;
+}
+
+.wallet-action{
+
+    height:51px;
+
+    border-radius:14px;
+
+    font-size:15px;
+
+    font-weight:bold;
+}
+
+.fund{
+
+    border:
+        1px solid
+        #d4af37;
+
+    background:#d4af37;
+
+    color:#111;
+}
+
+.history{
+
+    border:
+        1px solid
+        #d4af3755;
+
+    background:#ffffff0d;
+
+    color:#d4af37;
+}
+
+
+/* =========================================================
+   GET ALL COUNTRY NUMBERS BANNER
+========================================================= */
+
+.country-number-banner{
+
+    width:100%;
+
+    min-height:105px;
+
+    margin:
+        0
+        0
+        22px;
+
+    padding:
+        18px
+        19px;
+
+    border:
+        1px solid
+        #d4af37;
+
+    border-radius:21px;
+
+    background:
+        linear-gradient(
+            120deg,
+            #111111,
+            #1b1b1b
+        );
+
+    color:#fff;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:15px;
+
+    text-align:left;
+
+    box-shadow:
+        0 7px 20px
+        #00000018;
+
+    transition:
+        transform .15s ease,
+        box-shadow .15s ease;
+}
+
+.country-number-banner:active{
+
+    transform:scale(.985);
+}
+
+.country-number-content{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    min-width:0;
+}
+
+.country-number-icon{
+
+    width:52px;
+    height:52px;
+
+    flex:0 0 52px;
+
+    border-radius:16px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:#d4af3718;
+
+    border:
+        1px solid
+        #d4af3760;
+
+    color:#d4af37;
+
+    font-size:25px;
+}
+
+.country-number-content h3{
+
+    margin:0;
+
+    color:#fff;
+
+    font-size:16px;
+
+    font-weight:900;
+}
+
+.country-number-content p{
+
+    margin:
+        6px
+        0
+        0;
+
+    color:#b9b2a4;
+
+    font-size:12px;
+
+    line-height:1.35;
+}
+
+.country-number-action{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:9px;
+
+    flex:0 0 auto;
+
+    color:#d4af37;
+
+    font-size:13px;
+
+    font-weight:900;
+
+    white-space:nowrap;
+}
+
+.country-arrow{
+
+    font-size:22px;
+
+    line-height:1;
+}
+
+
+/* =========================================================
+   SECTION HEAD
+========================================================= */
+
+.section-head{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    margin:
+        0
+        0
+        12px;
+}
+
+.section-head h2{
+
+    margin:0;
+
+    color:#28251f;
+
+    font-size:15px;
+
+    letter-spacing:.8px;
+
+    text-transform:uppercase;
+}
+
+.section-head h2:after{
+
+    content:"";
+
+    display:inline-block;
+
+    width:45px;
+    height:2px;
+
+    background:#d4af37;
+
+    vertical-align:middle;
+
+    margin-left:10px;
+}
+
+.view{
+
+    border:0;
+
+    background:none;
+
+    color:#9b7920;
+
+    font-size:14px;
+
+    font-weight:bold;
+}
+
+
+/* =========================================================
+   CATEGORIES
+========================================================= */
+
+.categories{
+
+    background:#fffdf7;
+
+    border:
+        1px solid
+        #d8c99e;
+
+    border-radius:21px;
+
+    overflow:hidden;
+
+    box-shadow:
+        0 3px 12px
+        #00000008;
+
+    margin-bottom:25px;
+}
+
+.grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+}
+
+.cat{
+
+    min-height:102px;
+
+    border:0;
+
+    border-right:
+        1px solid
+        #e9dfc4;
+
+    border-bottom:
+        1px solid
+        #e9dfc4;
+
+    background:#fffdf7;
+
+    color:#2e2a22;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:7px;
+
+    padding:
+        10px
+        5px;
+}
+
+.cat:nth-child(4n){
+
+    border-right:0;
+}
+
+.cat:last-child{
+
+    border-bottom:0;
+}
+
+.cat:active{
+
+    transform:scale(.98);
+}
+
+.cat-icon{
+
+    width:43px;
+    height:43px;
+
+    border-radius:13px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:22px;
+
+    background:#171717;
+
+    border:
+        1px solid
+        #d4af37;
+
+    color:#d4af37;
+
+    box-shadow:
+        0 3px 8px
+        #00000010;
+}
+
+.cat:nth-child(2) .cat-icon,
+.cat:nth-child(3) .cat-icon,
+.cat:nth-child(4) .cat-icon,
+.cat:nth-child(5) .cat-icon,
+.cat:nth-child(6) .cat-icon,
+.cat:nth-child(7) .cat-icon,
+.cat:nth-child(8) .cat-icon,
+.cat:nth-child(9) .cat-icon,
+.cat:nth-child(10) .cat-icon{
+
+    background:#171717;
+
+    border-color:#d4af37;
+}
+
+.cat-name{
+
+    text-align:center;
+
+    font-size:11.5px;
+
+    line-height:1.25;
+
+    font-weight:bold;
+
+    color:#29251e;
+}
+
+
+/* =========================================================
+   SPECIAL SERVICE CARDS
+========================================================= */
+
+.special-services{
+
+    display:grid;
+
+    grid-template-columns:1fr;
+
+    gap:14px;
+
+    margin:
+        0
+        0
+        25px;
+}
+
+.special-card{
+
+    width:100%;
+
+    min-height:125px;
+
+    padding:
+        17px
+        17px;
+
+    border:
+        1px solid
+        #d4af37;
+
+    border-radius:21px;
+
+    background:
+        linear-gradient(
+            125deg,
+            #111111,
+            #1b1b1b 65%,
+            #101010
+        );
+
+    color:#fff;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:14px;
+
+    text-align:left;
+
+    box-shadow:
+        0 7px 20px
+        #00000018;
+
+    transition:
+        transform .15s ease,
+        box-shadow .15s ease;
+}
+
+.special-card:active{
+
+    transform:scale(.985);
+}
+
+.special-card-left{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    min-width:0;
+}
+
+.special-card-icon{
+
+    width:55px;
+    height:55px;
+
+    flex:0 0 55px;
+
+    border-radius:17px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:#d4af3718;
+
+    border:
+        1px solid
+        #d4af3765;
+
+    color:#d4af37;
+
+    font-size:27px;
+}
+
+.special-card-content{
+
+    min-width:0;
+}
+
+.special-card-content h3{
+
+    margin:0;
+
+    color:#fff;
+
+    font-size:16px;
+
+    font-weight:900;
+
+    line-height:1.25;
+}
+
+.special-card-content p{
+
+    margin:
+        6px
+        0
+        0;
+
+    color:#c0b8a8;
+
+    font-size:12px;
+
+    line-height:1.45;
+}
+
+.special-card-tags{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:5px;
+
+    margin-top:8px;
+}
+
+.special-card-tag{
+
+    display:inline-block;
+
+    padding:
+        4px
+        7px;
+
+    border-radius:7px;
+
+    background:#d4af3712;
+
+    border:
+        1px solid
+        #d4af3735;
+
+    color:#d4af37;
+
+    font-size:9.5px;
+
+    font-weight:700;
+}
+
+.special-card-action{
+
+    flex:0 0 auto;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:5px;
+
+    color:#d4af37;
+
+    font-size:12px;
+
+    font-weight:900;
+
+    white-space:nowrap;
+}
+
+.special-card-arrow{
+
+    font-size:20px;
+
+    line-height:1;
+}
+
+
+/* =========================================================
+   SPECIAL SERVICE INTERNAL PAGES
+========================================================= */
+
+#specialView{
+
+    display:none;
+}
+
+#specialView.active{
+
+    display:block;
+}
+
+.special-page-top{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin:
+        0
+        0
+        18px;
+}
+
+.special-back{
+
+    width:45px;
+    height:45px;
+
+    flex:0 0 45px;
+
+    border:
+        1px solid
+        #d4af37;
+
+    background:#171717;
+
+    color:#d4af37;
+
+    border-radius:14px;
+
+    font-size:21px;
+}
+
+.special-page-heading{
+
+    min-width:0;
+}
+
+.special-page-heading h2{
+
+    margin:0;
+
+    color:#171717;
+
+    font-size:21px;
+
+    line-height:1.2;
+}
+
+.special-page-heading p{
+
+    margin:
+        5px
+        0
+        0;
+
+    color:#857d6d;
+
+    font-size:13px;
+
+    line-height:1.4;
+}
+
+.special-hero{
+
+    position:relative;
+
+    overflow:hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            #090909,
+            #191919 60%,
+            #0d0d0d
+        );
+
+    border:
+        1px solid
+        #d4af37;
+
+    border-radius:23px;
+
+    padding:24px 20px;
+
+    color:#fff;
+
+    margin-bottom:17px;
+
+    box-shadow:
+        0 10px 25px
+        #0000001c;
+}
+
+.special-hero:before{
+
+    content:"";
+
+    position:absolute;
+
+    width:230px;
+    height:230px;
+
+    border:
+        1px solid
+        #d4af3730;
+
+    border-radius:50%;
+
+    right:-120px;
+    top:-120px;
+}
+
+.special-hero > *{
+
+    position:relative;
+
+    z-index:2;
+}
+
+.special-hero-icon{
+
+    width:58px;
+    height:58px;
+
+    border-radius:18px;
+
+    background:#d4af3718;
+
+    border:
+        1px solid
+        #d4af3765;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:30px;
+
+    margin-bottom:15px;
+}
+
+.special-hero h1{
+
+    margin:0;
+
+    color:#fff;
+
+    font-size:24px;
+
+    line-height:1.2;
+}
+
+.special-hero p{
+
+    margin:
+        9px
+        0
+        0;
+
+    color:#c5bdae;
+
+    font-size:14px;
+
+    line-height:1.6;
+}
+
+.special-gold{
+
+    color:#d4af37;
+}
+
+.special-section{
+
+    margin-bottom:20px;
+}
+
+.special-section-title{
+
+    margin:
+        0
+        0
+        11px;
+
+    color:#28251f;
+
+    font-size:15px;
+
+    text-transform:uppercase;
+
+    letter-spacing:.8px;
+}
+
+.special-info-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:11px;
+}
+
+.special-info-card{
+
+    background:#fffdf7;
+
+    border:
+        1px solid
+        #d8c99e;
+
+    border-radius:17px;
+
+    padding:16px;
+
+    box-shadow:
+        0 3px 12px
+        #00000008;
+}
+
+.special-info-icon{
+
+    font-size:24px;
+
+    margin-bottom:9px;
+}
+
+.special-info-card h3{
+
+    margin:0 0 5px;
+
+    font-size:14px;
+
+    color:#24211c;
+}
+
+.special-info-card p{
+
+    margin:0;
+
+    color:#766f61;
+
+    font-size:12px;
+
+    line-height:1.5;
+}
+
+.special-service-list{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:11px;
+}
+
+.special-service-item{
+
+    background:#fffdf7;
+
+    border:
+        1px solid
+        #d8c99e;
+
+    border-radius:17px;
+
+    padding:16px;
+
+    box-shadow:
+        0 3px 12px
+        #00000008;
+}
+
+.special-service-item .item-icon{
+
+    width:43px;
+    height:43px;
+
+    border-radius:13px;
+
+    background:#171717;
+
+    border:
+        1px solid
+        #d4af37;
+
+    color:#d4af37;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:21px;
+
+    margin-bottom:10px;
+}
+
+.special-service-item h3{
+
+    margin:
+        0
+        0
+        5px;
+
+    font-size:14px;
+
+    color:#24211c;
+}
+
+.special-service-item p{
+
+    margin:0;
+
+    color:#766f61;
+
+    font-size:11.5px;
+
+    line-height:1.5;
+}
+
+.delivery-note{
+
+    background:
+        linear-gradient(
+            135deg,
+            #171717,
+            #222
+        );
+
+    border:
+        1px solid
+        #d4af37;
+
+    border-radius:18px;
+
+    padding:17px;
+
+    color:#fff;
+
+    margin-top:12px;
+}
+
+.delivery-note strong{
+
+    color:#d4af37;
+
+    font-size:14px;
+}
+
+.delivery-note p{
+
+    margin:
+        7px
+        0
+        0;
+
+    color:#c8c0b1;
+
+    font-size:12px;
+
+    line-height:1.55;
+}
+
+.whatsapp-service-button{
+
+    width:100%;
+
+    min-height:53px;
+
+    border:
+        1px solid
+        #25d366;
+
+    border-radius:15px;
+
+    background:#25d366;
+
+    color:#fff;
+
+    font-size:15px;
+
+    font-weight:900;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:9px;
+
+    text-decoration:none;
+
+    box-shadow:
+        0 7px 18px
+        #25d36622;
+
+    margin-top:15px;
+}
+
+.whatsapp-service-button svg{
+
+    width:23px;
+    height:23px;
+
+    fill:currentColor;
+}
+
+
+/* =========================================================
+   CREATIVE SERVICE SAMPLE BOXES
+========================================================= */
+
+.sample-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:11px;
+}
+
+.sample-box{
+
+    min-height:135px;
+
+    border:
+        1px dashed
+        #c8b77e;
+
+    border-radius:17px;
+
+    background:#fffdf7;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-align:center;
+
+    padding:15px;
+
+}
+
+.sample-box-icon{
+
+    font-size:31px;
+
+    margin-bottom:9px;
+}
+
+.sample-box strong{
+
+    color:#28251f;
+
+    font-size:13px;
+}
+
+.sample-box small{
+
+    margin-top:5px;
+
+    color:#8a8272;
+
+    font-size:10px;
+
+    line-height:1.4;
+}
+
+.how-work{
+
+    background:#fffdf7;
+
+    border:
+        1px solid
+        #d8c99e;
+
+    border-radius:19px;
+
+    padding:17px;
+
+    box-shadow:
+        0 3px 12px
+        #00000008;
+}
+
+.work-step{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:11px;
+
+    padding:
+        10px
+        0;
+
+    border-bottom:
+        1px solid
+        #eee6d2;
+}
+
+.work-step:last-child{
+
+    border-bottom:0;
+
+    padding-bottom:0;
+}
+
+.work-number{
+
+    width:29px;
+    height:29px;
+
+    flex:0 0 29px;
+
+    border-radius:50%;
+
+    background:#171717;
+
+    color:#d4af37;
+
+    border:
+        1px solid
+        #d4af37;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:12px;
+
+    font-weight:900;
+}
+
+.work-step strong{
+
+    display:block;
+
+    color:#28251f;
+
+    font-size:13px;
+
+    margin-bottom:3px;
+}
+
+.work-step p{
+
+    margin:0;
+
+    color:#7c7567;
+
+    font-size:11.5px;
+
+    line-height:1.45;
+}
+
+
+/* =========================================================
+   TRANSACTIONS
+========================================================= */
+
+.transactions{
+
+    margin-bottom:25px;
+}
+
+.tx-card{
+
+    background:#fffdf7;
+
+    border:
+        1px solid
+        #d8c99e;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    box-shadow:
+        0 3px 12px
+        #00000008;
+}
+
+.tx-loading,
+.tx-empty{
+
+    min-height:180px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-align:center;
+
+    padding:30px;
+
+    color:#756e60;
+}
+
+.tx-list{
+
+    width:100%;
+}
+
+.tx{
+
+    padding:
+        15px
+        16px;
+
+    border-bottom:
+        1px solid
+        #eee6d2;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:12px;
+}
+
+.tx:last-child{
+
+    border-bottom:0;
+}
+
+.tx-left{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    min-width:0;
+}
+
+.tx-icon{
+
+    width:41px;
+    height:41px;
+
+    flex:0 0 41px;
+
+    border-radius:12px;
+
+    background:#171717;
+
+    border:
+        1px solid
+        #d4af37;
+
+    color:#d4af37;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:18px;
+}
+
+.tx-info{
+
+    min-width:0;
+}
+
+.tx-info strong{
+
+    display:block;
+
+    font-size:14px;
+
+    margin-bottom:5px;
+
+    color:#27231c;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+}
+
+.tx-date{
+
+    font-size:12px;
+
+    color:#938b7a;
+}
+
+.tx-right{
+
+    text-align:right;
+
+    flex:0 0 auto;
+}
+
+.tx-amount{
+
+    font-size:14px;
+
+    font-weight:800;
+}
+
+.credit{
+
+    color:#9b7920;
+}
+
+.debit{
+
+    color:#25221d;
+}
+
+.tx-status{
+
+    font-size:11px;
+
+    color:#938b7a;
+
+    margin-top:4px;
+}
+
+
+/* =========================================================
+   SERVICES
+========================================================= */
+
+#servicesView{
+
+    display:none;
+}
+
+#servicesView.active{
+
+    display:block;
+}
+
+.services-top{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin-bottom:18px;
+}
+
+.back{
+
+    width:45px;
+    height:45px;
+
+    border:
+        1px solid
+        #d8c99e;
+
+    background:#171717;
+
+    color:#d4af37;
+
+    border-radius:14px;
+
+    font-size:20px;
+}
+
+.services-title h2{
+
+    margin:0;
+
+    font-size:21px;
+
+    color:#171717;
+}
+
+.services-title p{
+
+    margin:
+        4px
+        0
+        0;
+
+    color:#857d6d;
+
+    font-size:13px;
+}
+
+.search{
+
+    width:100%;
+
+    height:52px;
+
+    border:
+        1px solid
+        #d8c99e;
+
+    border-radius:15px;
+
+    background:#fffdf7;
+
+    color:#171717;
+
+    padding:
+        0
+        16px;
+
+    font-size:15px;
+
+    outline:none;
+
+    margin-bottom:17px;
+}
+
+.search:focus{
+
+    border-color:#d4af37;
+
+    box-shadow:
+        0 0 0 3px
+        #d4af3715;
+}
+
+.products{
+
+    display:grid;
+
+    grid-template-columns:1fr;
+
+    gap:15px;
+}
+
+.product{
+
+    background:#fffdf7;
+
+    border:
+        1px solid
+        #d8c99e;
+
+    border-radius:20px;
+
+    padding:15px;
+
+    box-shadow:
+        0 3px 12px
+        #00000008;
+
+    overflow:hidden;
+}
+
+.product img{
+
+    width:100%;
+
+    height:190px;
+
+    border-radius:14px;
+
+    object-fit:cover;
+
+    background:#eee8d8;
+}
+
+.product h3{
+
+    margin:
+        14px
+        0
+        8px;
+
+    font-size:18px;
+
+    color:#171717;
+}
+
+.badge{
+
+    display:inline-block;
+
+    background:#171717;
+
+    color:#d4af37;
+
+    padding:
+        6px
+        9px;
+
+    border-radius:8px;
+
+    font-size:11px;
+
+    font-weight:bold;
+}
+
+.desc{
+
+    color:#6f685a;
+
+    font-size:14px;
+
+    line-height:1.5;
+
+    white-space:pre-wrap;
+}
+
+.price{
+
+    font-size:20px;
+
+    font-weight:900;
+
+    color:#9b7920;
+
+    margin:
+        13px
+        0
+        7px;
+}
+
+.stock{
+
+    margin:
+        0
+        0
+        9px;
+
+    color:#666054;
+
+    font-size:13px;
+}
+
+.buy{
+
+    width:100%;
+
+    height:48px;
+
+    border:
+        1px solid
+        #d4af37;
+
+    border-radius:12px;
+
+    background:#171717;
+
+    color:#d4af37;
+
+    font-size:15px;
+
+    font-weight:bold;
+}
+
+.buy:disabled{
+
+    background:#999;
+
+    border-color:#999;
+
+    color:#fff;
+
+    cursor:not-allowed;
+}
+
+.msg{
+
+    background:#fffdf7;
+
+    border:
+        1px solid
+        #d8c99e;
+
+    border-radius:18px;
+
+    padding:
+        35px
+        20px;
+
+    text-align:center;
+
+    color:#747064;
+}
+
+
+/* =========================================================
+   CONTACT ICONS
+========================================================= */
+
+.contact-icons{
+
+    position:fixed;
+
+    right:18px;
+
+    bottom:19px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+    z-index:90;
+}
+
+.contact-icons a{
+
+    width:57px;
+    height:57px;
+
+    border-radius:50%;
+
+    color:#fff;
+
+    text-decoration:none;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    box-shadow:
+        0 4px 15px
+        #00000025;
+
+    transition:
+        transform .15s ease;
+}
+
+.contact-icons a:active{
+
+    transform:scale(.92);
+}
+
+.contact-icons svg{
+
+    width:29px;
+    height:29px;
+
+    fill:currentColor;
+}
+
+.telegram{
+
+    background:#229ED9;
+}
+
+.whatsapp{
+
+    background:#25D366;
+}
+
+
+/* =========================================================
+   CONTACT SUPPORT MODAL
+========================================================= */
+
+.contact-modal{
+
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    background:#00000055;
+
+    z-index:300;
+
+    align-items:flex-end;
+
+    justify-content:center;
+
+    padding:18px;
+}
+
+.contact-modal.open{
+
+    display:flex;
+}
+
+.contact-box{
+
+    width:100%;
+
+    max-width:430px;
+
+    background:#fffdf7;
+
+    border:
+        1px solid
+        #d4af37;
+
+    border-radius:24px;
+
+    padding:20px;
+
+    box-shadow:
+        0 15px 40px
+        #00000030;
+}
+
+.contact-box-head{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    margin-bottom:14px;
+}
+
+.contact-box-head h3{
+
+    margin:0;
+
+    font-size:20px;
+
+    color:#171717;
+}
+
+.contact-box-head button{
+
+    width:40px;
+    height:40px;
+
+    border:
+        1px solid
+        #d8c99e;
+
+    background:#171717;
+
+    color:#d4af37;
+
+    border-radius:12px;
+
+    font-size:18px;
+}
+
+.contact-option{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    padding:15px;
+
+    margin-top:10px;
+
+    border-radius:16px;
+
+    text-decoration:none;
+
+    color:#171717;
+
+    border:
+        1px solid
+        #e6ddc7;
+
+}
+
+.contact-option-icon{
+
+    width:48px;
+    height:48px;
+
+    flex:0 0 48px;
+
+    border-radius:14px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#fff;
+}
+
+.contact-option-icon svg{
+
+    width:26px;
+    height:26px;
+
+    fill:currentColor;
+}
+
+.telegram-option .contact-option-icon{
+
+    background:#229ED9;
+}
+
+.whatsapp-option .contact-option-icon{
+
+    background:#25D366;
+}
+
+.contact-option strong{
+
+    display:block;
+
+    font-size:14px;
+
+    margin-bottom:4px;
+}
+
+.contact-option small{
+
+    color:#85806f;
+
+    font-size:12px;
+}
+
+
+/* =========================================================
+   MENU
+========================================================= */
+
+.overlay{
+
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    background:#00000045;
+
+    z-index:199;
+}
+
+.overlay.open{
+
+    display:block;
+}
+
+#menu{
+
+    position:fixed;
+
+    right:0;
+
+    top:0;
+
+    width:300px;
+
+    max-width:88%;
+
+    height:100vh;
+
+    background:#fffdf7;
+
+    z-index:200;
+
+    padding:23px;
+
+    box-shadow:
+        -5px 0 20px
+        #00000020;
+
+    border-left:
+        1px solid
+        #d4af37;
+
+    transform:
+        translateX(100%);
+
+    transition:.2s;
+
+    overflow-y:auto;
+}
+
+#menu.open{
+
+    transform:
+        translateX(0);
+}
+
+.menu-head{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    margin-bottom:15px;
+}
+
+.menu-head h3{
+
+    margin:0;
+
+    font-size:20px;
+
+    color:#171717;
+}
+
+.menu-close-btn{
+
+    width:40px;
+    height:40px;
+
+    border:
+        1px solid
+        #d4af37;
+
+    background:#171717;
+
+    color:#d4af37;
+
+    border-radius:12px;
+}
+
+.menu-item{
+
+    padding:
+        16px
+        5px;
+
+    border-bottom:
+        1px solid
+        #eee7d7;
+
+    font-weight:bold;
+
+    color:#333027;
+}
+
+.menu-item a{
+
+    color:inherit;
+
+    text-decoration:none;
+
+    display:block;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:600px){
+
+    header{
+
+        padding:
+            17px
+            15px
+            13px;
+    }
+
+    main{
+
+        padding-left:15px;
+        padding-right:15px;
+    }
+
+    .logo{
+
+        width:48px;
+        height:48px;
+    }
+
+    .brand h1{
+
+        font-size:18px;
+    }
+
+    .wallet{
+
+        padding:
+            21px
+            18px
+            19px;
+
+        border-radius:22px;
+    }
+
+    #walletBalance{
+
+        font-size:30px !important;
+    }
+
+    .country-number-banner{
+
+        min-height:96px;
+
+        padding:
+            15px
+            14px;
+
+        border-radius:19px;
+    }
+
+    .country-number-icon{
+
+        width:47px;
+        height:47px;
+
+        flex-basis:47px;
+
+        font-size:22px;
+
+        border-radius:14px;
+    }
+
+    .country-number-content h3{
+
+        font-size:14px;
+    }
+
+    .country-number-content p{
+
+        font-size:11px;
+    }
+
+    .country-number-action{
+
+        font-size:12px;
+
+        gap:5px;
+    }
+
+    .country-arrow{
+
+        font-size:20px;
+    }
+
+    .cat{
+
+        min-height:96px;
+    }
+
+    .cat-icon{
+
+        width:40px;
+        height:40px;
+
+        font-size:20px;
+
+        border-radius:12px;
+    }
+
+    .cat-name{
+
+        font-size:10.5px;
+    }
+
+    .special-card{
+
+        min-height:119px;
+
+        padding:
+            15px
+            13px;
+
+        border-radius:19px;
+
+        gap:9px;
+    }
+
+    .special-card-left{
+
+        gap:10px;
+    }
+
+    .special-card-icon{
+
+        width:48px;
+        height:48px;
+
+        flex-basis:48px;
+
+        border-radius:14px;
+
+        font-size:23px;
+    }
+
+    .special-card-content h3{
+
+        font-size:14px;
+    }
+
+    .special-card-content p{
+
+        font-size:11px;
+
+        line-height:1.4;
+    }
+
+    .special-card-tag{
+
+        font-size:8.5px;
+
+        padding:
+            3px
+            6px;
+    }
+
+    .special-card-action{
+
+        font-size:10px;
+
+        gap:3px;
+    }
+
+    .special-card-arrow{
+
+        font-size:18px;
+    }
+
+    .special-page-heading h2{
+
+        font-size:18px;
+    }
+
+    .special-hero{
+
+        padding:
+            21px
+            17px;
+
+        border-radius:21px;
+    }
+
+    .special-hero h1{
+
+        font-size:21px;
+    }
+
+    .special-hero p{
+
+        font-size:13px;
+    }
+
+    .special-info-grid,
+    .special-service-list,
+    .sample-grid{
+
+        grid-template-columns:1fr 1fr;
+    }
+
+    .special-info-card,
+    .special-service-item{
+
+        padding:13px;
+    }
+
+    .special-info-card h3,
+    .special-service-item h3{
+
+        font-size:12.5px;
+    }
+
+    .special-info-card p,
+    .special-service-item p{
+
+        font-size:10.5px;
+    }
+
+    .tx{
+
+        padding:
+            15px
+            13px;
+    }
+
+    .tx-icon{
+
+        width:39px;
+        height:39px;
+
+        flex-basis:39px;
+    }
+}
+
+@media(max-width:380px){
+
+    .wallet-actions{
+
+        grid-template-columns:1fr;
+    }
+
+    .country-number-banner{
+
+        padding:
+            14px
+            12px;
+    }
+
+    .country-number-content{
+
+        gap:9px;
+    }
+
+    .country-number-icon{
+
+        width:42px;
+        height:42px;
+
+        flex-basis:42px;
+
+        font-size:20px;
+    }
+
+    .country-number-content h3{
+
+        font-size:13px;
+    }
+
+    .country-number-content p{
+
+        font-size:10px;
+    }
+
+    .cat-name{
+
+        font-size:9.5px;
+    }
+
+    .cat-icon{
+
+        width:38px;
+        height:38px;
+
+        font-size:19px;
+    }
+
+    .special-card{
+
+        padding:
+            13px
+            11px;
+    }
+
+    .special-card-icon{
+
+        width:43px;
+        height:43px;
+
+        flex-basis:43px;
+
+        font-size:21px;
+    }
+
+    .special-card-content h3{
+
+        font-size:12.5px;
+    }
+
+    .special-card-content p{
+
+        font-size:10px;
+    }
+
+    .special-card-action{
+
+        font-size:9px;
+    }
+
+    .special-info-grid,
+    .special-service-list,
+    .sample-grid{
+
+        grid-template-columns:1fr;
+    }
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="brand">
+
+        <div class="logo">
+            D
+        </div>
+
+        <div>
+
+            <h1 id="greeting">
+                Good Evening, Delight 👋
+            </h1>
+
+            <p>
+                Your Delight Vendor Logs Dashboard
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <button
+        class="menu-btn"
+        type="button"
+        onclick="openMenu()"
+    >
+        ☰
+    </button>
+
+</header>
+
+
+<main>
+
+
+    <div
+        id="watermark"
+        class="watermark"
+    ></div>
+
+
+    <!-- HOME -->
+
+    <div id="homeView">
+
+
+        <!-- WALLET -->
+
+        <section class="wallet">
+
+            <div class="wallet-top">
+
+                <p class="wallet-label">
+                    AVAILABLE BALANCE
+                </p>
+
+                <div class="status">
+                    <i></i>Active
+                </div>
+
+            </div>
+
+
+            <div class="balance-row">
+
+                <p id="walletBalance">
+                    Loading...
+                </p>
+
+                <button
+                    class="eye"
+                    type="button"
+                    onclick="toggleBalance()"
+                >
+                    👁
+                </button>
+
+            </div>
+
+
+            <div class="wallet-actions">
+
+                <button
+                    class="wallet-action fund"
+                    type="button"
+                    onclick="location.href='wallet.html'"
+                >
+                    ＋ Fund Wallet
+                </button>
+
+
+                <button
+                    class="wallet-action history"
+                    type="button"
+                    onclick="location.href='transactions.html'"
+                >
+                    ↶ History
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- GET ALL COUNTRY NUMBERS -->
+
+        <button
+            class="country-number-banner"
+            type="button"
+            onclick="location.href='virtualnumber.html'"
+        >
+
+            <div class="country-number-content">
+
+                <div class="country-number-icon">
+                    📞
+                </div>
+
+                <div>
+
+                    <h3>
+                        Get All Country Numbers
+                    </h3>
+
+                    <p>
+                        Get a virtual number from your preferred country.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="country-number-action">
+
+                <span>
+                    Get Number
+                </span>
+
+                <span class="country-arrow">
+                    →
+                </span>
+
+            </div>
+
+        </button>
+
+
+        <!-- CATEGORIES -->
+
+        <section>
+
+            <div class="section-head">
+
+                <h2>
+                    Categories
+                </h2>
+
+            </div>
+
+
+            <div class="categories">
+
+                <div
+                    id="categoryGrid"
+                    class="grid"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             SPECIAL SERVICE CARDS
+        ====================================================== -->
+
+        <section class="special-services">
+
+
+            <!-- GIFTING + ESIM -->
+
+            <button
+                class="special-card"
+                type="button"
+                onclick="openSpecialView('gifting')"
+            >
+
+                <div class="special-card-left">
+
+                    <div class="special-card-icon">
+                        🎁
+                    </div>
+
+
+                    <div class="special-card-content">
+
+                        <h3>
+                            Send Gifts Worldwide + eSIM
+                        </h3>
+
+                        <p>
+                            Send flowers, cakes, chocolates,
+                            fruit baskets and more to loved ones
+                            anywhere in the world.
+                        </p>
+
+
+                        <div class="special-card-tags">
+
+                            <span class="special-card-tag">
+                                🌍 Worldwide
+                            </span>
+
+                            <span class="special-card-tag">
+                                🇺🇸 USA
+                            </span>
+
+                            <span class="special-card-tag">
+                                🇨🇦 Canada
+                            </span>
+
+                            <span class="special-card-tag">
+                                📡 eSIM
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="special-card-action">
+
+                    <span>
+                        Explore
+                    </span>
+
+                    <span class="special-card-arrow">
+                        →
+                    </span>
+
+                </div>
+
+            </button>
+
+
+            <!-- PASSPORT / ID / LICENSE + PICTURE TO VIDEO -->
+
+            <button
+                class="special-card"
+                type="button"
+                onclick="openSpecialView('creative')"
+            >
+
+                <div class="special-card-left">
+
+                    <div class="special-card-icon">
+                        🪪
+                    </div>
+
+
+                    <div class="special-card-content">
+
+                        <h3>
+                            Passport, ID, License + Picture-to-Video
+                        </h3>
+
+                        <p>
+                            Create Passport, ID, License and more,
+                            plus Picture-to-Video services.
+                        </p>
+
+
+                        <div class="special-card-tags">
+
+                            <span class="special-card-tag">
+                                🪪 Passport
+                            </span>
+
+                            <span class="special-card-tag">
+                                ID
+                            </span>
+
+                            <span class="special-card-tag">
+                                License
+                            </span>
+
+                            <span class="special-card-tag">
+                                🎬 Picture-to-Video
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="special-card-action">
+
+                    <span>
+                        Explore
+                    </span>
+
+                    <span class="special-card-arrow">
+                        →
+                    </span>
+
+                </div>
+
+            </button>
+
+
+        </section>
+
+
+        <!-- RECENT TRANSACTIONS -->
+
+        <section class="transactions">
+
+            <div class="section-head">
+
+                <h2>
+                    Recent Transactions
+                </h2>
+
+                <button
+                    class="view"
+                    type="button"
+                    onclick="location.href='transactions.html'"
+                >
+                    See more ›
+                </button>
+
+            </div>
+
+
+            <div class="tx-card">
+
+                <div
+                    id="txLoading"
+                    class="tx-loading"
+                >
+                    Loading transactions...
+                </div>
+
+
+                <div
+                    id="txList"
+                    class="tx-list"
+                    style="display:none"
+                ></div>
+
+
+                <div
+                    id="txEmpty"
+                    class="tx-empty"
+                    style="display:none"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         NORMAL CATEGORY SERVICES VIEW
+    ====================================================== -->
+
+    <div id="servicesView">
+
+
+        <div class="services-top">
+
+            <button
+                class="back"
+                type="button"
+                onclick="backHome()"
+            >
+                ←
+            </button>
+
+
+            <div class="services-title">
+
+                <h2
+                    id="categoryTitle"
+                ></h2>
+
+                <p
+                    id="categoryDescription"
+                ></p>
+
+            </div>
+
+        </div>
+
+
+        <input
+            id="serviceSearch"
+            class="search"
+            type="search"
+            placeholder="🔍 Search service..."
+            oninput="renderServices()"
+        >
+
+
+        <div
+            id="products"
+            class="products"
+        ></div>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         SPECIAL SERVICES VIEW
+         This stays inside the same index.html.
+    ====================================================== -->
+
+    <div id="specialView">
+
+
+        <!-- =================================================
+             GIFTING + ESIM PAGE
+        ================================================== -->
+
+        <div
+            id="giftingView"
+            style="display:none"
+        >
+
+
+            <div class="special-page-top">
+
+                <button
+                    class="special-back"
+                    type="button"
+                    onclick="backFromSpecial()"
+                >
+                    ←
+                </button>
+
+
+                <div class="special-page-heading">
+
+                    <h2>
+                        Gifting & eSIM
+                    </h2>
+
+                    <p>
+                        Send gifts worldwide and get eSIM services.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <section class="special-hero">
+
+                <div class="special-hero-icon">
+                    🎁
+                </div>
+
+
+                <h1>
+                    Send Gifts <span class="special-gold">Worldwide</span>
+                    & Get eSIM
+                </h1>
+
+
+                <p>
+                    Surprise someone special with flowers, cakes,
+                    chocolates, fruit baskets and other gifts.
+                    You can also ask us about available eSIM services
+                    for supported destinations.
+                </p>
+
+            </section>
+
+
+            <section class="special-section">
+
+                <h3 class="special-section-title">
+                    Delivery Information
+                </h3>
+
+
+                <div class="special-info-grid">
+
+
+                    <div class="special-info-card">
+
+                        <div class="special-info-icon">
+                            🌍
+                        </div>
+
+                        <h3>
+                            Worldwide Delivery
+                        </h3>
+
+                        <p>
+                            Gift delivery is available for many
+                            destinations around the world.
+                        </p>
+
+                    </div>
+
+
+                    <div class="special-info-card">
+
+                        <div class="special-info-icon">
+                            🚚
+                        </div>
+
+                        <h3>
+                            7–14 Days Worldwide
+                        </h3>
+
+                        <p>
+                            Typical worldwide delivery can take
+                            around 7–14 days depending on the destination
+                            and selected gift.
+                        </p>
+
+                    </div>
+
+
+                    <div class="special-info-card">
+
+                        <div class="special-info-icon">
+                            🇺🇸
+                        </div>
+
+                        <h3>
+                            USA & Canada
+                        </h3>
+
+                        <p>
+                            Selected gifts may have faster
+                            1–2 day delivery depending on location
+                            and availability.
+                        </p>
+
+                    </div>
+
+
+                    <div class="special-info-card">
+
+                        <div class="special-info-icon">
+                            ⚡
+                        </div>
+
+                        <h3>
+                            Same-Day Options
+                        </h3>
+
+                        <p>
+                            Same-day options may be available for
+                            selected locations and gift types.
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+            <section class="special-section">
+
+                <h3 class="special-section-title">
+                    Gift Options
+                </h3>
+
+
+                <div class="special-service-list">
+
+
+                    <div class="special-service-item">
+
+                        <div class="item-icon">
+                            🌹
+                        </div>
+
+                        <h3>
+                            Fresh Flowers
+                        </h3>
+
+                        <p>
+                            Beautiful flower arrangements for birthdays,
+                            celebrations and special moments.
+                        </p>
+
+                    </div>
+
+
+                    <div class="special-service-item">
+
+                        <div class="item-icon">
+                            🎂
+                        </div>
+
+                        <h3>
+                            Birthday Cakes
+                        </h3>
+
+                        <p>
+                            Send birthday cakes and celebration cakes
+                            to someone special.
+                        </p>
+
+                    </div>
+
+
+                    <div class="special-service-item">
+
+                        <div class="item-icon">
+                            🍫
+                        </div>
+
+                        <h3>
+                            Chocolate Boxes
+                        </h3>
+
+                        <p>
+                            Chocolate gifts for birthdays,
+                            celebrations and romantic surprises.
+                        </p>
+
+                    </div>
+
+
+                    <div class="special-service-item">
+
+                        <div class="item-icon">
+                            🍎
+                        </div>
+
+                        <h3>
+                            Fruit Baskets
+                        </h3>
+
+                        <p>
+                            Fresh fruit baskets and gift combinations
+                            for different occasions.
+                        </p>
+
+                    </div>
+
+
+                    <div class="special-service-item">
+
+                        <div class="item-icon">
+                            🍷
+                        </div>
+
+                        <h3>
+                            Gift Sets
+                        </h3>
+
+                        <p>
+                            Ask about available celebration and
+                            premium gift sets for your destination.
+                        </p>
+
+                    </div>
+
+
+                    <div class="special-service-item">
+
+                        <div class="item-icon">
+                            🍕
+                        </div>
+
+                        <h3>
+                            Pizza & Coke
+                        </h3>
+
+                        <p>
+                            Available for selected USA locations
+                            where supported.
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="delivery-note">
+
+                    <strong>
+                        🎁 Looking for something specific?
+                    </strong>
+
+                    <p>
+                        If you do not see the gift you want,
+                        contact us on WhatsApp and tell us the
+                        destination, occasion and gift you have in mind.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <section class="special-section">
+
+                <h3 class="special-section-title">
+                    eSIM Services
+                </h3>
+
+
+                <div class="special-info-grid">
+
+
+                    <div class="special-info-card">
+
+                        <div class="special-info-icon">
+                            📡
+                        </div>
+
+                        <h3>
+                            Travel eSIM
+                        </h3>
+
+                        <p>
+                            Ask us about available eSIM options
+                            for supported countries and destinations.
+                        </p>
+
+                    </div>
+
+
+                    <div class="special-info-card">
+
+                        <div class="special-info-icon">
+                            🌐
+                        </div>
+
+                        <h3>
+                            Stay Connected
+                        </h3>
+
+                        <p>
+                            An eSIM can help you stay connected while
+                            travelling without depending only on a
+                            physical SIM card.
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+                <a
+                    class="whatsapp-service-button"
+                    href="https://wa.me/2347015908401"
+                    target="_blank"
+                    rel="noopener"
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+
+                        <path d="M12 2a9.8 9.8 0 0 0-8.5 14.7L2 22l5.5-1.4A9.8 9.8 0 1 0 12 2Zm0 17.8c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.3.9.9-3.2-.2-.3A7.9 7.9 0 1 1 12 19.8Zm4.3-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6.1-.2.2-.6.8-.7 1-.1.2-.3.2-.5.1-1.3-.6-2.3-1.2-3.2-2.4-.2-.3-.4-.6-.6-.9-.1-.2 0-.3.1-.4.1-.1.2-.3.3-.4.1-.2.1-.2.2-.4.1-.2 0-.3 0-.4-.1-.1-.6-1.4-.8-1.9-1-.5-.4-.4-.4-.6-.4h-.5c-.2 0-.4.1-.5.3-.2.2-.8.8-.8 2 0 1.2.8 2.3 3.9 3.5 2.3 1 2.3.7 2.7.7.4 0 1.4-.6 1.6-1.2.2-.6.2-1.1.1-1.2-.1-.1-.3-.2-.5-.3Z"/>
+
+                    </svg>
+
+                    Chat Us on WhatsApp
+
+                </a>
+
+            </section>
+
+
+        </div>
+
+
+        <!-- =================================================
+             PASSPORT / ID / LICENSE / PICTURE-TO-VIDEO PAGE
+        ================================================== -->
+
+        <div
+            id="creativeView"
+            style="display:none"
+        >
+
+
+            <div class="special-page-top">
+
+                <button
+                    class="special-back"
+                    type="button"
+                    onclick="backFromSpecial()"
+                >
+                    ←
+                </button>
+
+
+                <div class="special-page-heading">
+
+                    <h2>
+                        Creative Services
+                    </h2>
+
+                    <p>
+                        Passport, ID, License & Picture-to-Video.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <section class="special-hero">
+
+                <div class="special-hero-icon">
+                    🪪
+                </div>
+
+
+                <h1>
+                    Documents, IDs & <span class="special-gold">Picture-to-Video</span>
+                </h1>
+
+
+                <p>
+                    Need help with a passport-style service,
+                    ID or license-related creative work?
+                    We also provide picture-to-video services.
+                    Contact us on WhatsApp for available options
+                    and requirements.
+                </p>
+
+            </section>
+
+
+            <section class="special-section">
+
+                <h3 class="special-section-title">
+                    Available Services
+                </h3>
+
+
+                <div class="special-service-list">
+
+
+                    <div class="special-service-item">
+
+                        <div class="item-icon">
+                            🛂
+                        </div>
+
+                        <h3>
+                            Passport Services
+                        </h3>
+
+                        <p>
+                            Ask about available passport-style
+                            document creation and creative services.
+                        </p>
+
+                    </div>
+
+
+                    <div class="special-service-item">
+
+                        <div class="item-icon">
+                            🪪
+                        </div>
+
+                        <h3>
+                            ID Services
+                        </h3>
+
+                        <p>
+                            Ask about available ID-related
+                            design and document services.
+                        </p>
+
+                    </div>
+
+
+                    <div class="special-service-item">
+
+                        <div class="item-icon">
+                            🚘
+                        </div>
+
+                        <h3>
+                            License Services
+                        </h3>
+
+                        <p>
+                            Ask us about available license-related
+                            creative and document services.
+                        </p>
+
+                    </div>
+
+
+                    <div class="special-service-item">
+
+                        <div class="item-icon">
+                            🎬
+                        </div>
+
+                        <h3>
+                            Picture-to-Video
+                        </h3>
+
+                        <p>
+                            Turn your pictures into engaging videos
+                            and creative visual content.
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+            <section class="special-section">
+
+                <h3 class="special-section-title">
+                    Service Examples
+                </h3>
+
+
+                <div class="sample-grid">
+
+
+                    <div class="sample-box">
+
+                        <div class="sample-box-icon">
+                            🛂
+                        </div>
+
+                        <strong>
+                            Passport Sample
+                        </strong>
+
+                        <small>
+                            Sample preview can be added here.
+                        </small>
+
+                    </div>
+
+
+                    <div class="sample-box">
+
+                        <div class="sample-box-icon">
+                            🪪
+                        </div>
+
+                        <strong>
+                            ID Sample
+                        </strong>
+
+                        <small>
+                            Sample preview can be added here.
+                        </small>
+
+                    </div>
+
+
+                    <div class="sample-box">
+
+                        <div class="sample-box-icon">
+                            🚘
+                        </div>
+
+                        <strong>
+                            License Sample
+                        </strong>
+
+                        <small>
+                            Sample preview can be added here.
+                        </small>
+
+                    </div>
+
+
+                    <div class="sample-box">
+
+                        <div class="sample-box-icon">
+                            🎬
+                        </div>
+
+                        <strong>
+                            Picture-to-Video Demo
+                        </strong>
+
+                        <small>
+                            Your actual video demo can be added here later.
+                        </small>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+            <section class="special-section">
+
+                <h3 class="special-section-title">
+                    How It Works
+                </h3>
+
+
+                <div class="how-work">
+
+
+                    <div class="work-step">
+
+                        <div class="work-number">
+                            1
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Contact Us
+                            </strong>
+
+                            <p>
+                                Tell us which service you need and
+                                what you want to create.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="work-step">
+
+                        <div class="work-number">
+                            2
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Send Your Requirements
+                            </strong>
+
+                            <p>
+                                We will tell you the information,
+                                pictures or details required for the
+                                selected service.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="work-step">
+
+                        <div class="work-number">
+                            3
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Confirm the Service
+                            </strong>
+
+                            <p>
+                                We will explain the available option
+                                and the next steps before proceeding.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="work-step">
+
+                        <div class="work-number">
+                            4
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Receive Your Result
+                            </strong>
+
+                            <p>
+                                Once completed, the finished creative
+                                service will be delivered through the
+                                agreed channel.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <a
+                    class="whatsapp-service-button"
+                    href="https://wa.me/2347015908401"
+                    target="_blank"
+                    rel="noopener"
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+
+                        <path d="M12 2a9.8 9.8 0 0 0-8.5 14.7L2 22l5.5-1.4A9.8 9.8 0 1 0 12 2Zm0 17.8c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.3.9.9-3.2-.2-.3A7.9 7.9 0 1 1 12 19.8Zm4.3-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6.1-.2.2-.6.8-.7 1-.1.2-.3.2-.5.1-1.3-.6-2.3-1.2-3.2-2.4-.2-.3-.4-.6-.6-.9-.1-.2 0-.3.1-.4.1-.1.2-.3.3-.4.1-.2.1-.2.2-.4.1-.2 0-.3 0-.4-.1-.1-.6-1.4-.8-1.9-1-.5-.4-.4-.4-.6-.4h-.5c-.2 0-.4.1-.5.3-.2.2-.8.8-.8 2 0 1.2.8 2.3 3.9 3.5 2.3 1 2.3.7 2.7.7.4 0 1.4-.6 1.6-1.2.2-.6.2-1.1.1-1.2-.1-.1-.3-.2-.5-.3Z"/>
+
+                    </svg>
+
+                    Chat Us on WhatsApp
+
+                </a>
+
+            </section>
+
+
+        </div>
+
+
+    </div>
+
+
+</main>
+
+
+<!-- CONTACT ICONS -->
+
+<div class="contact-icons">
+
+    <a
+        class="telegram"
+        href="https://t.me/DelightVendorLogsSupportBot"
+        target="_blank"
+        rel="noopener"
+        aria-label="Contact us on Telegram"
+    >
+
+        <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+        >
+            <path d="M21.8 3.3 18.7 20c-.2 1.2-.9 1.5-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.3-8.4c.4-.4-.1-.6-.6-.2L6.1 13.7l-4.9-1.5c-1.1-.3-1.1-1.1.2-1.6L20.5 3c.9-.3 1.7.2 1.3.3Z"/>
+        </svg>
+
+    </a>
+
+
+    <a
+        class="whatsapp"
+        href="https://wa.me/2347015908401"
+        target="_blank"
+        rel="noopener"
+        aria-label="Contact us on WhatsApp"
+    >
+
+        <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+        >
+            <path d="M12 2a9.8 9.8 0 0 0-8.5 14.7L2 22l5.5-1.4A9.8 9.8 0 1 0 12 2Zm0 17.8c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.3.9.9-3.2-.2-.3A7.9 7.9 0 1 1 12 19.8Zm4.3-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6.1-.2.2-.6.8-.7 1-.1.2-.3.2-.5.1-1.3-.6-2.3-1.2-3.2-2.4-.2-.3-.4-.6-.6-.9-.1-.2 0-.3.1-.4.1-.1.2-.3.3-.4.1-.2.1-.2.2-.4.1-.2 0-.3 0-.4-.1-.1-.6-1.4-.8-1.9-1-.5-.4-.4-.4-.6-.4h-.5c-.2 0-.4.1-.5.3-.2.2-.8.8-.8 2 0 1.2.8 2.3 3.9 3.5 2.3 1 2.3.7 2.7.7.4 0 1.4-.6 1.6-1.2.2-.6.2-1.1.1-1.2-.1-.1-.3-.2-.5-.3Z"/>
+        </svg>
+
+    </a>
+
+</div>
+
+
+<!-- CONTACT SUPPORT MODAL -->
+
+<div
+    id="contactSupportModal"
+    class="contact-modal"
+    onclick="closeContactSupport(event)"
+>
+
+    <div
+        class="contact-box"
+        onclick="event.stopPropagation()"
+    >
+
+        <div class="contact-box-head">
+
+            <h3>
+                Contact Support
+            </h3>
+
+            <button
+                type="button"
+                onclick="closeContactSupport()"
+            >
+                ✕
+            </button>
+
+        </div>
+
+
+        <a
+            class="contact-option telegram-option"
+            href="https://t.me/DelightVendorLogsSupportBot"
+            target="_blank"
+            rel="noopener"
+        >
+
+            <span class="contact-option-icon">
+
+                <svg viewBox="0 0 24 24">
+
+                    <path d="M21.8 3.3 18.7 20c-.2 1.2-.9 1.5-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.3-8.4c.4-.4-.1-.6-.6-.2L6.1 13.7l-4.9-1.5c-1.1-.3-1.1-1.1.2-1.6L20.5 3c.9-.3 1.7.2 1.3.3Z"/>
+
+                </svg>
+
+            </span>
+
+
+            <span>
+
+                <strong>
+                    Contact Us on Telegram
+                </strong>
+
+                <small>
+                    @DelightVendorLogsSupportBot
+                </small>
+
+            </span>
+
+        </a>
+
+
+        <a
+            class="contact-option whatsapp-option"
+            href="https://wa.me/2347015908401"
+            target="_blank"
+            rel="noopener"
+        >
+
+            <span class="contact-option-icon">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+
+                    <path d="M12 2a9.8 9.8 0 0 0-8.5 14.7L2 22l5.5-1.4A9.8 9.8 0 1 0 12 2Zm0 17.8c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.3.9.9-3.2-.2-.3A7.9 7.9 0 1 1 12 19.8Zm4.3-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6.1-.2.2-.6.8-.7 1-.1.2-.3.2-.5.1-1.3-.6-2.3-1.2-3.2-2.4-.2-.3-.4-.6-.6-.9-.1-.2 0-.3.1-.4.1-.1.2-.3.3-.4.1-.2.1-.2.2-.4.1-.2 0-.3 0-.4-.1-.1-.6-1.4-.8-1.9-1-.5-.4-.4-.4-.6-.4h-.5c-.2 0-.4.1-.5.3-.2.2-.8.8-.8 2 0 1.2 0 2.3 3.9 3.5 2.3 1 2.3.7 2.7.7.4 0 1.4-.6 1.6-1.2.2-.6.2-1.1.1-1.2-.1-.1-.3-.2-.5-.3Z"/>
+
+                </svg>
+
+            </span>
+
+
+            <span>
+
+                <strong>
+                    Contact Us on WhatsApp
+                </strong>
+
+                <small>
+                    WhatsApp Support
+                </small>
+
+            </span>
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- MENU -->
+
+<div
+    id="overlay"
+    class="overlay"
+    onclick="closeMenu()"
+></div>
+
+
+<div id="menu">
+
+
+    <div class="menu-head">
+
+        <h3>
+            Menu
+        </h3>
+
+        <button
+            class="menu-close-btn"
+            type="button"
+            onclick="closeMenu()"
+        >
+            ✕
+        </button>
+
+    </div>
+
+
+    <div
+        class="menu-item"
+        onclick="location.href='profile.html'"
+    >
+        👤 Profile
+    </div>
+
+
+    <div
+        class="menu-item"
+        onclick="location.href='wallet.html'"
+    >
+        💰 Fund Wallet
+    </div>
+
+
+    <div
+        class="menu-item"
+        onclick="location.href='transactions.html'"
+    >
+        📜 Transactions
+    </div>
+
+
+    <div
+        class="menu-item"
+        onclick="location.href='purchases.html'"
+    >
+        🛒 My Purchases
+    </div>
+
+
+    <div
+        class="menu-item"
+        onclick="location.href='pending.html'"
+    >
+        ⏳ Pending Orders
+    </div>
+
+
+    <div
+        class="menu-item"
+        onclick="location.href='settings.html'"
+    >
+        ⚙️ Settings
+    </div>
+
+
+    <div
+        class="menu-item"
+        onclick="openContactSupport()"
+    >
+        📞 Contact Support
+    </div>
+
+
+    <div
+        class="menu-item"
+        style="color:#b00020"
+        onclick="closeMenu()"
+    >
+        ✖ Close
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+    "https://hkfhehbhmucymusaytoe.supabase.co";
+
+
+const SUPABASE_KEY =
+    "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY,
+        {
+            auth:{
+                persistSession:true,
+                autoRefreshToken:true,
+                detectSessionInUrl:true
+            }
+        }
+    );
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let allServices = [];
+
+let categories = [];
+
+let selectedCategory = "Home";
+
+let realBalance = 0;
+
+let balanceHidden = false;
+
+let productsLoading = true;
+
+let productsLoaded = false;
+
+const PRODUCTS_CACHE_KEY =
+    "delight_vendor_products_cache_v2";
+
+
+/* =========================================================
+   CATEGORY ICONS
+========================================================= */
+
+const existingIcons = {
+
+    "Home":
+        "⌂",
+
+    "All Social Logs":
+        "📱",
+
+    "Working Pictures":
+        "🖼️",
+
+    "Formats":
+        "📄",
+
+    "Working Links":
+        "🔗",
+
+    "Voice Cloner/Fake Video Call":
+        "🎙️",
+
+    "Voice Cloner / Fake Video Call":
+        "🎙️",
+
+    "All Countries Number":
+        "📞",
+
+    "Streaming & More":
+        "📺",
+
+    "ESIMS":
+        "📡",
+
+    "VPN":
+        "🔐",
+
+    "Gmail":
+        "📧"
+
+};
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+
+/* =========================================================
+   MENU
+========================================================= */
+
+function openMenu(){
+
+    document
+        .getElementById("menu")
+        .classList.add("open");
+
+    document
+        .getElementById("overlay")
+        .classList.add("open");
+}
+
+
+function closeMenu(){
+
+    document
+        .getElementById("menu")
+        .classList.remove("open");
+
+    document
+        .getElementById("overlay")
+        .classList.remove("open");
+}
+
+
+/* =========================================================
+   CONTACT SUPPORT
+========================================================= */
+
+function openContactSupport(){
+
+    closeMenu();
+
+    document
+        .getElementById("contactSupportModal")
+        .classList.add("open");
+}
+
+
+function closeContactSupport(event){
+
+    if(
+        event &&
+        event.target !==
+        document.getElementById(
+            "contactSupportModal"
+        )
+    ){
+
+        return;
+    }
+
+    document
+        .getElementById("contactSupportModal")
+        .classList.remove("open");
+}
+
+
+/* =========================================================
+   SPECIAL SERVICE VIEWS
+========================================================= */
+
+function openSpecialView(type){
+
+    const home =
+        document.getElementById(
+            "homeView"
+        );
+
+    const services =
+        document.getElementById(
+            "servicesView"
+        );
+
+    const special =
+        document.getElementById(
+            "specialView"
+        );
+
+    const gifting =
+        document.getElementById(
+            "giftingView"
+        );
+
+    const creative =
+        document.getElementById(
+            "creativeView"
+        );
+
+
+    home.style.display =
+        "none";
+
+    services.classList.remove(
+        "active"
+    );
+
+    special.classList.add(
+        "active"
+    );
+
+    gifting.style.display =
+        "none";
+
+    creative.style.display =
+        "none";
+
+
+    if(type === "gifting"){
+
+        gifting.style.display =
+            "block";
+
+    }else if(type === "creative"){
+
+        creative.style.display =
+            "block";
+
+    }
+
+
+    closeMenu();
+
+    window.scrollTo({
+        top:0,
+        behavior:"auto"
+    });
+}
+
+
+function backFromSpecial(){
+
+    document
+        .getElementById(
+            "specialView"
+        )
+        .classList.remove(
+            "active"
+        );
+
+
+    document
+        .getElementById(
+            "giftingView"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "creativeView"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "servicesView"
+        )
+        .classList.remove(
+            "active"
+        );
+
+
+    document
+        .getElementById(
+            "homeView"
+        )
+        .style.display =
+            "block";
+
+
+    selectedCategory =
+        "Home";
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"auto"
+    });
+}
+
+
+/* =========================================================
+   GET USER
+========================================================= */
+
+async function getUserFast(){
+
+    const sessionResult =
+        await supabaseClient
+            .auth
+            .getSession();
+
+
+    const sessionUser =
+        sessionResult
+            ?.data
+            ?.session
+            ?.user;
+
+
+    if(sessionUser){
+
+        return sessionUser;
+    }
+
+
+    const userResult =
+        await supabaseClient
+            .auth
+            .getUser();
+
+
+    return userResult
+        ?.data
+        ?.user || null;
+}
+
+
+/* =========================================================
+   GREETING
+========================================================= */
+
+async function updateGreeting(){
+
+    const hour =
+        new Date().getHours();
+
+
+    let greeting =
+        "Good Evening";
+
+
+    if(hour < 12){
+
+        greeting =
+            "Good Morning";
+
+    }else if(hour < 17){
+
+        greeting =
+            "Good Afternoon";
+    }
+
+
+    let user = null;
+
+
+    try{
+
+        user =
+            await getUserFast();
+
+    }catch(error){
+
+        console.error(
+            "Greeting user error:",
+            error
+        );
+    }
+
+
+    const metadata =
+        user?.user_metadata || {};
+
+
+    let profileName =
+        String(
+            metadata.name || ""
+        ).trim();
+
+
+    if(!profileName){
+
+        const firstName =
+            String(
+                metadata.first_name || ""
+            ).trim();
+
+
+        const lastName =
+            String(
+                metadata.last_name || ""
+            ).trim();
+
+
+        profileName =
+            (
+                firstName +
+                " " +
+                lastName
+            ).trim();
+    }
+
+
+    if(!profileName){
+
+        profileName =
+            String(
+                metadata.first_name || ""
+            ).trim();
+    }
+
+
+    if(!profileName){
+
+        profileName =
+            String(
+                metadata.last_name || ""
+            ).trim();
+    }
+
+
+    if(
+        !profileName &&
+        user?.email
+    ){
+
+        profileName =
+            String(
+                user.email
+            )
+            .split("@")[0]
+            .trim();
+    }
+
+
+    if(!profileName){
+
+        profileName =
+            "Delight";
+    }
+
+
+    document
+        .getElementById("greeting")
+        .textContent =
+            greeting +
+            ", " +
+            profileName +
+            " 👋";
+}
+
+
+/* =========================================================
+   BALANCE
+========================================================= */
+
+function showBalance(){
+
+    const element =
+        document.getElementById(
+            "walletBalance"
+        );
+
+
+    if(balanceHidden){
+
+        element.textContent =
+            "₦••••••";
+
+        return;
+    }
+
+
+    element.textContent =
+        "₦" +
+        Number(
+            realBalance || 0
+        )
+        .toLocaleString(
+            "en-NG",
+            {
+                minimumFractionDigits:2,
+                maximumFractionDigits:2
+            }
+        );
+}
+
+
+function toggleBalance(){
+
+    balanceHidden =
+        !balanceHidden;
+
+
+    document
+        .querySelector(".eye")
+        .textContent =
+            balanceHidden
+            ? "🙈"
+            : "👁";
+
+
+    showBalance();
+}
+
+
+/* =========================================================
+   WALLET
+========================================================= */
+
+async function loadWallet(){
+
+    const user =
+        await getUserFast();
+
+
+    if(!user){
+
+        location.href =
+            "login.html";
+
+        return;
+    }
+
+
+    try{
+
+        const result =
+            await supabaseClient
+                .rpc(
+                    "ensure_my_wallet"
+                );
+
+
+        if(result.error){
+
+            console.error(
+                "Wallet error:",
+                result.error
+            );
+
+
+            document
+                .getElementById(
+                    "walletBalance"
+                )
+                .textContent =
+                    "₦0.00";
+
+            return;
+        }
+
+
+        let wallet =
+            result.data;
+
+
+        if(Array.isArray(wallet)){
+
+            wallet =
+                wallet[0];
+        }
+
+
+        realBalance =
+            Number(
+                wallet?.balance ?? 0
+            );
+
+
+        showBalance();
+
+
+    }catch(error){
+
+        console.error(
+            "Wallet error:",
+            error
+        );
+
+
+        document
+            .getElementById(
+                "walletBalance"
+            )
+            .textContent =
+                "₦0.00";
+    }
+}
+
+
+/* =========================================================
+   WATERMARK
+========================================================= */
+
+async function loadWatermark(){
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("site_settings")
+                .select("value")
+                .eq(
+                    "key",
+                    "watermark"
+                )
+                .maybeSingle();
+
+
+        if(error){
+
+            console.error(
+                "Watermark error:",
+                error
+            );
+
+            return;
+        }
+
+
+        const text =
+            String(
+                data?.value || ""
+            ).trim();
+
+
+        const box =
+            document.getElementById(
+                "watermark"
+            );
+
+
+        box.textContent =
+            text;
+
+
+        box.style.display =
+            text
+            ? "block"
+            : "none";
+
+
+    }catch(error){
+
+        console.error(
+            "Watermark error:",
+            error
+        );
+    }
+}
+
+
+/* =========================================================
+   CATEGORY KEY
+========================================================= */
+
+function categoryKey(value){
+
+    return String(value ?? "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g," ")
+        .replace(/&/g,"and")
+        .replace(/[^a-z0-9 ]/g,"")
+        .replace(/\s+/g,"");
+}
+
+
+/* =========================================================
+   CATEGORY MATCHING
+========================================================= */
+
+function categoryMatches(
+    productCategory,
+    wantedCategory
+){
+
+    const product =
+        categoryKey(
+            productCategory
+        );
+
+
+    const wanted =
+        categoryKey(
+            wantedCategory
+        );
+
+
+    if(product === wanted){
+
+        return true;
+    }
+
+
+    const aliases = {
+
+        "esims":[
+            "esim",
+            "esims"
+        ],
+
+        "streamingandmore":[
+            "streamingandmore",
+            "streamingmore",
+            "streamersandmore"
+        ],
+
+        "voiceclonerfakevideocall":[
+            "voiceclonerfakevideocall",
+            "voicecloner",
+            "fakevideocall"
+        ],
+
+        "allsociallogs":[
+            "allsociallogs",
+            "sociallogs"
+        ],
+
+        "allcountriesnumber":[
+            "allcountriesnumber",
+            "allcountrynumber",
+            "countriesnumber"
+        ],
+
+        "workingpictures":[
+            "workingpictures",
+            "workingpicture"
+        ],
+
+        "workinglinks":[
+            "workinglinks",
+            "workinglink"
+        ]
+
+    };
+
+
+    return (
+        aliases[wanted] || []
+    ).includes(product);
+}
+
+
+/* =========================================================
+   LOAD CATEGORIES
+========================================================= */
+
+async function loadCategories(){
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("service_categories")
+            .select(
+                "id,name,slug,icon,display_order,is_active"
+            )
+            .eq(
+                "is_active",
+                true
+            )
+            .order(
+                "display_order",
+                {
+                    ascending:true
+                }
+            );
+
+
+    if(error){
+
+        console.error(
+            "Category error:",
+            error
+        );
+
+        categories = [];
+
+        renderCategories();
+
+        return;
+    }
+
+
+    categories =
+        data || [];
+
+
+    renderCategories();
+}
+
+
+/* =========================================================
+   RENDER CATEGORIES
+========================================================= */
+
+function renderCategories(){
+
+    const grid =
+        document.getElementById(
+            "categoryGrid"
+        );
+
+
+    if(!grid){
+
+        return;
+    }
+
+
+    grid.innerHTML = "";
+
+
+    categories.forEach(
+        (
+            category,
+            index
+        ) => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.type =
+                "button";
+
+
+            button.className =
+                "cat";
+
+
+            button.onclick =
+                () =>
+                    selectCategory(
+                        category.name
+                    );
+
+
+            const icon =
+                existingIcons[
+                    category.name
+                ] ||
+                category.icon ||
+                "📁";
+
+
+            const iconBox =
+                document.createElement(
+                    "div"
+                );
+
+
+            iconBox.className =
+                "cat-icon";
+
+
+            iconBox.textContent =
+                icon;
+
+
+            const nameBox =
+                document.createElement(
+                    "div"
+                );
+
+
+            nameBox.className =
+                "cat-name";
+
+
+            nameBox.textContent =
+                category.name;
+
+
+            button.appendChild(
+                iconBox
+            );
+
+
+            button.appendChild(
+                nameBox
+            );
+
+
+            grid.appendChild(
+                button
+            );
+        }
+    );
+}
+
+
+/* =========================================================
+   READ PRODUCT CACHE
+========================================================= */
+
+function loadProductsFromCache(){
+
+    try{
+
+        const saved =
+            localStorage.getItem(
+                PRODUCTS_CACHE_KEY
+            );
+
+
+        if(!saved){
+
+            return false;
+        }
+
+
+        const parsed =
+            JSON.parse(saved);
+
+
+        if(
+            !Array.isArray(parsed) ||
+            !parsed.length
+        ){
+
+            return false;
+        }
+
+
+        allServices =
+            parsed.filter(
+                product =>
+                    product &&
+                    product.is_active !== false
+            );
+
+
+        productsLoaded = true;
+
+        productsLoading = false;
+
+
+        if(
+            selectedCategory !== "Home"
+        ){
+
+            renderServices();
+        }
+
+
+        return true;
+
+
+    }catch(error){
+
+        console.error(
+            "Product cache error:",
+            error
+        );
+
+        return false;
+    }
+}
+
+
+/* =========================================================
+   SAVE PRODUCT CACHE
+========================================================= */
+
+function saveProductsToCache(
+    products
+){
+
+    try{
+
+        localStorage.setItem(
+            PRODUCTS_CACHE_KEY,
+            JSON.stringify(
+                products
+            )
+        );
+
+    }catch(error){
+
+        console.error(
+            "Product cache save error:",
+            error
+        );
+    }
+}
+
+
+/* =========================================================
+   LOAD PRODUCTS
+========================================================= */
+
+async function loadProducts(){
+
+    const hasCache =
+        loadProductsFromCache();
+
+
+    productsLoading = true;
+
+
+    if(
+        hasCache &&
+        selectedCategory !== "Home"
+    ){
+
+        renderServices();
+    }
+
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("Product")
+                .select(
+                    "id,name,price,category,description,image_url,stock,status,track_stock"
+                )
+                .eq(
+                    "is_active",
+                    true
+                )
+                .order(
+                    "id",
+                    {
+                        ascending:false
+                    }
+                );
+
+
+        if(error){
+
+            console.error(
+                "Product error:",
+                error
+            );
+
+
+            if(hasCache){
+
+                productsLoaded = true;
+
+                productsLoading = false;
+
+
+                if(
+                    selectedCategory !== "Home"
+                ){
+
+                    renderServices();
+                }
+
+                return;
+            }
+
+
+            allServices = [];
+
+            productsLoaded = true;
+
+            productsLoading = false;
+
+
+            if(
+                selectedCategory !== "Home"
+            ){
+
+                renderServices();
+            }
+
+            return;
+        }
+
+
+        allServices =
+            data || [];
+
+
+        saveProductsToCache(
+            allServices
+        );
+
+
+        productsLoaded = true;
+
+        productsLoading = false;
+
+
+        if(
+            selectedCategory !== "Home"
+        ){
+
+            renderServices();
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Product error:",
+            error
+        );
+
+
+        productsLoading = false;
+
+        productsLoaded = true;
+
+
+        if(!hasCache){
+
+            allServices = [];
+        }
+
+
+        if(
+            selectedCategory !== "Home"
+        ){
+
+            renderServices();
+        }
+    }
+}
+
+
+/* =========================================================
+   SELECT CATEGORY
+========================================================= */
+
+function selectCategory(
+    category
+){
+
+    if(
+        category === "Gmail"
+    ){
+
+        location.href =
+            "gmail.html";
+
+        return;
+    }
+
+
+    if(
+        category ===
+        "All Countries Number"
+    ){
+
+        location.href =
+            "virtualnumber.html";
+
+        return;
+    }
+
+
+    if(
+        category ===
+        "Boosting"
+    ){
+
+        location.href =
+            "boosting.html";
+
+        return;
+    }
+
+
+    selectedCategory =
+        category;
+
+
+    document
+        .getElementById(
+            "homeView"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "specialView"
+        )
+        .classList.remove(
+            "active"
+        );
+
+
+    document
+        .getElementById(
+            "servicesView"
+        )
+        .classList.add(
+            "active"
+        );
+
+
+    document
+        .getElementById(
+            "categoryTitle"
+        )
+        .textContent =
+            category;
+
+
+    document
+        .getElementById(
+            "categoryDescription"
+        )
+        .textContent =
+            "Services available under " +
+            category +
+            ".";
+
+
+    document
+        .getElementById(
+            "serviceSearch"
+        )
+        .value = "";
+
+
+    renderServices();
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"auto"
+    });
+}
+
+
+/* =========================================================
+   BACK HOME
+========================================================= */
+
+function backHome(){
+
+    selectedCategory =
+        "Home";
+
+
+    document
+        .getElementById(
+            "servicesView"
+        )
+        .classList.remove(
+            "active"
+        );
+
+
+    document
+        .getElementById(
+            "specialView"
+        )
+        .classList.remove(
+            "active"
+        );
+
+
+    document
+        .getElementById(
+            "giftingView"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "creativeView"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "homeView"
+        )
+        .style.display =
+            "block";
+
+
+    document
+        .getElementById(
+            "serviceSearch"
+        )
+        .value = "";
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"auto"
+    });
+}
+
+
+/* =========================================================
+   RENDER SERVICES
+========================================================= */
+
+function renderServices(){
+
+    const box =
+        document.getElementById(
+            "products"
+        );
+
+
+    if(
+        selectedCategory ===
+        "Home"
+    ){
+
+        box.innerHTML = "";
+
+        return;
+    }
+
+
+    const search =
+        document
+            .getElementById(
+                "serviceSearch"
+            )
+            .value
+            .trim()
+            .toLowerCase();
+
+
+    let list =
+        allServices.filter(
+            product =>
+
+                product &&
+                product.is_active !== false &&
+
+                categoryMatches(
+                    product.category,
+                    selectedCategory
+                )
+        );
+
+
+    if(search){
+
+        list =
+            list.filter(
+                product =>
+
+                    String(
+                        product.name || ""
+                    )
+                    .toLowerCase()
+                    .includes(search)
+
+                    ||
+
+                    String(
+                        product.description ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(search)
+            );
+    }
+
+
+    if(
+        !allServices.length &&
+        productsLoading
+    ){
+
+        box.innerHTML =
+
+            '<div class="msg">' +
+
+                '<div style="font-size:40px">' +
+                    '⏳' +
+                '</div>' +
+
+                '<br>' +
+
+                '<strong>' +
+                    'Loading services...' +
+                '</strong>' +
+
+                '<p>' +
+                    'Please wait while we load the available services.' +
+                '</p>' +
+
+            '</div>';
+
+        return;
+    }
+
+
+    if(!list.length){
+
+        if(productsLoading){
+
+            box.innerHTML =
+
+                '<div class="msg">' +
+
+                    '<div style="font-size:40px">' +
+                        '⏳' +
+                    '</div>' +
+
+                    '<br>' +
+
+                    '<strong>' +
+                        'Loading services...' +
+                    '</strong>' +
+
+                    '<p>' +
+                        'Please wait while we load the available services.' +
+                    '</p>' +
+
+                '</div>';
+
+            return;
+        }
+
+
+        box.innerHTML =
+
+            '<div class="msg">' +
+
+                '<div style="font-size:40px">' +
+                    '🔍' +
+                '</div>' +
+
+                '<br>' +
+
+                '<strong>' +
+                    'No services found' +
+                '</strong>' +
+
+                '<p>' +
+                    'There are currently no services in this category.' +
+                '</p>' +
+
+            '</div>';
+
+        return;
+    }
+
+
+    box.innerHTML = "";
+
+
+    list.forEach(
+        product => {
+
+            const stock =
+                Number(
+                    product.stock || 0
+                );
+
+
+            const track =
+                product.track_stock !== false;
+
+
+            const status =
+                String(
+                    product.status ||
+                    "Available"
+                )
+                .trim()
+                .toLowerCase();
+
+
+            const soldOut =
+                track
+                ?
+                (
+                    stock <= 0 ||
+
+                    status === "sold" ||
+
+                    status === "sold out" ||
+
+                    status === "unavailable"
+                )
+                :
+                status === "unavailable";
+
+
+            let imageHTML =
+                "";
+
+
+            if(
+                product.image_url &&
+                String(
+                    product.image_url
+                ).trim()
+            ){
+
+                imageHTML =
+
+                    '<img ' +
+
+                        'src="' +
+                        escapeHTML(
+                            product.image_url
+                        ) +
+                        '" ' +
+
+                        'alt="" ' +
+
+                        'onerror="' +
+                            "this.style.display='none'" +
+                        '"' +
+
+                    '>';
+            }
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "product";
+
+
+            card.innerHTML =
+
+                imageHTML +
+
+                '<h3>' +
+
+                    escapeHTML(
+                        product.name ||
+                        "Unnamed Service"
+                    ) +
+
+                '</h3>' +
+
+                '<span class="badge">' +
+
+                    escapeHTML(
+                        product.category ||
+                        "Service"
+                    ) +
+
+                '</span>' +
+
+                '<p class="desc">' +
+
+                    escapeHTML(
+                        product.description ||
+                        ""
+                    ) +
+
+                '</p>' +
+
+                '<p class="price">' +
+
+                    '₦' +
+
+                    Number(
+                        product.price || 0
+                    ).toLocaleString(
+                        "en-NG",
+                        {
+                            minimumFractionDigits:0,
+                            maximumFractionDigits:2
+                        }
+                    ) +
+
+                '</p>' +
+
+                '<p class="stock">' +
+
+                    (
+                        soldOut
+                        ?
+                        "❌ Sold Out / Unavailable"
+                        :
+                        "✅ Available"
+                    ) +
+
+                '</p>' +
+
+                '<button ' +
+
+                    'class="buy" ' +
+
+                    (
+                        soldOut
+                        ? "disabled"
+                        : ""
+                    ) +
+
+                    ' onclick="buyProduct(' +
+
+                        Number(
+                            product.id
+                        ) +
+
+                    ')"' +
+
+                '>' +
+
+                    (
+                        soldOut
+                        ? "Sold Out"
+                        : "Buy Now"
+                    ) +
+
+                '</button>';
+
+
+            box.appendChild(
+                card
+            );
+
+        }
+    );
+}
+
+
+/* =========================================================
+   BUY PRODUCT
+========================================================= */
+
+function buyProduct(id){
+
+    location.href =
+        "products.html?id=" +
+        encodeURIComponent(id);
+}
+
+
+/* =========================================================
+   TRANSACTION ICON
+========================================================= */
+
+function txIcon(type){
+
+    const t =
+        String(
+            type || ""
+        )
+        .toLowerCase();
+
+
+    if(
+        t.includes("fund") ||
+        t.includes("deposit") ||
+        t.includes("credit")
+    ){
+
+        return "＋";
+    }
+
+
+    if(
+        t.includes("refund")
+    ){
+
+        return "↩️";
+    }
+
+
+    if(
+        t.includes("purchase") ||
+        t.includes("buy") ||
+        t.includes("order")
+    ){
+
+        return "🛒";
+    }
+
+
+    return "🧾";
+}
+
+
+/* =========================================================
+   TRANSACTION DATE
+========================================================= */
+
+function txDate(value){
+
+    const date =
+        new Date(value);
+
+
+    if(
+        isNaN(
+            date.getTime()
+        )
+    ){
+
+        return "";
+    }
+
+
+    return date.toLocaleString(
+        "en-NG",
+        {
+            day:"numeric",
+            month:"short",
+            year:"numeric",
+            hour:"numeric",
+            minute:"2-digit"
+        }
+    );
+}
+
+
+/* =========================================================
+   TRANSACTION EMPTY
+========================================================= */
+
+function showTxEmpty(message){
+
+    document
+        .getElementById(
+            "txLoading"
+        )
+        .style.display =
+            "none";
+
+
+    const empty =
+        document.getElementById(
+            "txEmpty"
+        );
+
+
+    empty.style.display =
+        "flex";
+
+
+    empty.innerHTML =
+
+        '<div>' +
+
+            '<div style="font-size:38px">' +
+                '🧾' +
+            '</div>' +
+
+            '<strong>' +
+                escapeHTML(message) +
+            '</strong>' +
+
+        '</div>';
+}
+
+
+/* =========================================================
+   LOAD TRANSACTIONS
+========================================================= */
+
+async function loadTransactions(){
+
+    const loading =
+        document.getElementById(
+            "txLoading"
+        );
+
+
+    const list =
+        document.getElementById(
+            "txList"
+        );
+
+
+    const empty =
+        document.getElementById(
+            "txEmpty"
+        );
+
+
+    loading.style.display =
+        "flex";
+
+
+    list.style.display =
+        "none";
+
+
+    empty.style.display =
+        "none";
+
+
+    const user =
+        await getUserFast();
+
+
+    if(!user){
+
+        showTxEmpty(
+            "Login session not found."
+        );
+
+        return;
+    }
+
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("transactions")
+                .select(
+                    "id,user_id,type,amount,status,description,created_at"
+                )
+                .eq(
+                    "user_id",
+                    user.id
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending:false
+                    }
+                )
+                .limit(7);
+
+
+        if(error){
+
+            console.error(
+                "TRANSACTIONS ERROR:",
+                error
+            );
+
+
+            showTxEmpty(
+                "Unable to load transactions right now."
+            );
+
+            return;
+        }
+
+
+        if(
+            !data ||
+            !data.length
+        ){
+
+            showTxEmpty(
+                "No transactions yet."
+            );
+
+            return;
+        }
+
+
+        list.innerHTML = "";
+
+
+        data.forEach(
+            transaction => {
+
+                const amount =
+                    Number(
+                        transaction.amount || 0
+                    );
+
+
+                const type =
+                    String(
+                        transaction.type || ""
+                    )
+                    .toLowerCase();
+
+
+                const isCredit =
+
+                    type.includes("fund") ||
+
+                    type.includes("deposit") ||
+
+                    type.includes("credit") ||
+
+                    type.includes("refund");
+
+
+                const row =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                row.className =
+                    "tx";
+
+
+                row.innerHTML =
+
+                    '<div class="tx-left">' +
+
+                        '<div class="tx-icon">' +
+
+                            txIcon(
+                                transaction.type
+                            ) +
+
+                        '</div>' +
+
+                        '<div class="tx-info">' +
+
+                            '<strong>' +
+
+                                escapeHTML(
+                                    transaction.description ||
+                                    transaction.type ||
+                                    "Transaction"
+                                ) +
+
+                            '</strong>' +
+
+                            '<div class="tx-date">' +
+
+                                escapeHTML(
+                                    txDate(
+                                        transaction.created_at
+                                    )
+                                ) +
+
+                            '</div>' +
+
+                        '</div>' +
+
+                    '</div>' +
+
+                    '<div class="tx-right">' +
+
+                        '<div class="tx-amount ' +
+
+                            (
+                                isCredit
+                                ? "credit"
+                                : "debit"
+                            ) +
+
+                        '">' +
+
+                            (
+                                isCredit
+                                ? "+"
+                                : "-"
+                            ) +
+
+                            '₦' +
+
+                            Math.abs(
+                                amount
+                            )
+                            .toLocaleString(
+                                "en-NG",
+                                {
+                                    minimumFractionDigits:2,
+                                    maximumFractionDigits:2
+                                }
+                            ) +
+
+                        '</div>' +
+
+                        '<div class="tx-status">' +
+
+                            escapeHTML(
+                                transaction.status ||
+                                "completed"
+                            ) +
+
+                        '</div>' +
+
+                    '</div>';
+
+
+                list.appendChild(
+                    row
+                );
+
+            }
+        );
+
+
+        loading.style.display =
+            "none";
+
+
+        list.style.display =
+            "block";
+
+
+    }catch(error){
+
+        console.error(
+            "TRANSACTIONS ERROR:",
+            error
+        );
+
+
+        showTxEmpty(
+            "Unable to load transactions right now."
+        );
+    }
+}
+
+
+/* =========================================================
+   START DASHBOARD
+========================================================= */
+
+async function startDashboard(){
+
+    updateGreeting();
+
+    loadCategories();
+
+    loadProducts();
+
+    loadWallet();
+
+    loadWatermark();
+
+    loadTransactions();
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+startDashboard();
+
+setInterval(() => {
+    loadCategories();
+}, 5000);
+
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+        loadCategories();
+    }
+});
+
+</script>
+
+</body>
+
+</html>
