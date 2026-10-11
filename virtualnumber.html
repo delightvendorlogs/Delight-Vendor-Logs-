@@ -869,6 +869,28 @@ input:focus{
 .cancel-confirm-no{background:#222;color:#ddd;border:1px solid #333!important;}
 .cancel-confirm-yes{background:linear-gradient(135deg,#e3c052,#c19a28);color:#090909;}
 
+/* =========================
+   CUSTOM CANCELLATION RESULT
+========================= */
+.cancel-result-overlay{
+  position:fixed;inset:0;z-index:12001;display:none;align-items:center;justify-content:center;
+  padding:18px;background:rgba(0,0,0,.78);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
+}
+.cancel-result-overlay.open{display:flex;}
+.cancel-result-card{
+  width:100%;max-width:390px;padding:22px;border:1px solid var(--gold-border);border-radius:17px;
+  background:linear-gradient(180deg,#151515,#090909);box-shadow:0 20px 60px rgba(0,0,0,.55);
+}
+.cancel-result-icon{
+  width:48px;height:48px;display:flex;align-items:center;justify-content:center;margin:0 auto 13px;
+  border-radius:14px;background:rgba(212,175,55,.12);border:1px solid var(--gold-border);font-size:24px;
+}
+.cancel-result-card h2{margin:0 0 9px;text-align:center;font-size:19px;color:#f5f5f5;}
+.cancel-result-card p{margin:0;color:#aaa;text-align:center;font-size:14px;line-height:1.55;overflow-wrap:anywhere;}
+.cancel-result-actions{display:flex;gap:9px;margin-top:20px;}
+.cancel-result-actions button{width:100%;border:0;border-radius:10px;padding:12px;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#e3c052,#c19a28);color:#090909;}
+
+
 .menu{  
   position:fixed;  
   top:65px;  
@@ -1405,7 +1427,18 @@ onclick="closePortalNotice(event)"
 I Understand
 </button>
 
-</div>  </div>  <div id="cancelConfirmModal" class="cancel-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="cancelConfirmTitle">
+</div>  </div>
+<div id="cancelResultModal" class="cancel-result-overlay" role="dialog" aria-modal="true" aria-labelledby="cancelResultTitle">
+  <div class="cancel-result-card">
+    <div class="cancel-result-icon">✓</div>
+    <h2 id="cancelResultTitle">Number cancelled</h2>
+    <p id="cancelResultMessage">The number was successfully cancelled.</p>
+    <div class="cancel-result-actions">
+      <button type="button" onclick="closeCancelResult()">Okay</button>
+    </div>
+  </div>
+</div>
+  <div id="cancelConfirmModal" class="cancel-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="cancelConfirmTitle">
   <div class="cancel-confirm-card">
     <div class="cancel-confirm-icon">↩️</div>
     <h2 id="cancelConfirmTitle">Cancel this number?</h2>
@@ -5896,6 +5929,21 @@ function smsBowerCancellationActivationId(
    CANCEL ONE EXACT ORDER  
 ============================================================ */  
   
+function showCancelResult(message){
+  const modal = document.getElementById("cancelResultModal");
+  const messageElement = document.getElementById("cancelResultMessage");
+  if(!modal || !messageElement){
+    return;
+  }
+  messageElement.textContent = String(message || "Number cancelled successfully.");
+  modal.classList.add("open");
+}
+
+function closeCancelResult(){
+  const modal = document.getElementById("cancelResultModal");
+  if(modal) modal.classList.remove("open");
+}
+
 let cancelConfirmationResolver = null;
 
 function resolveCancelConfirmation(confirmed){
@@ -6246,11 +6294,11 @@ async function cancelOrder(
         providerName  
       );  
   
-    alert(  
-      typeof data.message === "string"  
-        ? data.message  
-        : "Number cancelled."  
-    );  
+    showCancelResult(
+      typeof data.message === "string" && data.message.trim()
+        ? data.message
+        : "Number cancelled successfully."
+    );
   
     renderOrderSections();  
   
