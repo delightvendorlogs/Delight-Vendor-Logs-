@@ -261,6 +261,238 @@
   }
 
 
+  /*
+   * REMOVE PROVIDER NAMES FROM CUSTOMER-FACING
+   * TRANSACTION TITLES AND DESCRIPTIONS.
+   *
+   * This only changes displayed text.
+   * It does not update the database.
+   */
+
+  function cleanProviderName(value) {
+
+    let text = String(value || "");
+
+    // Remove known provider names, regardless
+    // of capitalization or spacing.
+
+    text = text.replace(
+      /\bgrizzly\s*sms\b/gi,
+      ""
+    );
+
+    text = text.replace(
+      /\bgrizzlysms\b/gi,
+      ""
+    );
+
+    text = text.replace(
+      /\bgrizzly\b/gi,
+      ""
+    );
+
+    text = text.replace(
+      /\bsmsbower\b/gi,
+      ""
+    );
+
+    text = text.replace(
+      /\b5sim\b/gi,
+      ""
+    );
+
+    // Remove provider names in trailing
+    // parentheses, including truncated names
+    // such as "(Grizzl...".
+
+    text = text.replace(
+      /\s*\([^)]*(?:grizz|smsbower|5sim)[^)]*\)?/gi,
+      ""
+    );
+
+    // Remove leftover empty parentheses.
+
+    text = text.replace(
+      /\(\s*\)/g,
+      ""
+    );
+
+    // Clean separators and spaces left behind.
+
+    text = text.replace(
+      /\s*[-–—|:]\s*(?=$)/g,
+      ""
+    );
+
+    text = text.replace(
+      /^\s*[-–—|:]\s*/,
+      ""
+    );
+
+    text = text.replace(
+      /\s{2,}/g,
+      " "
+    );
+
+    return text.trim();
+  }
+
+
+  /*
+   * IDENTIFY REFUNDS FOR CANCELLED ORDERS.
+   *
+   * If a completed refund says it is for a
+   * cancelled order, remember its amount.
+   *
+   * A matching virtual-number debit will be
+   * displayed as CANCELLED instead of PENDING.
+   *
+   * This does not change any database record.
+   */
+
+  function getCancelledRefundAmounts(transactions) {
+
+    const amounts = new Map();
+
+    transactions.forEach(transaction => {
+
+      const type = String(
+        transaction.type || ""
+      ).toLowerCase();
+
+      const description = String(
+        transaction.description || ""
+      ).toLowerCase();
+
+      const status = String(
+        transaction.status || ""
+      ).toLowerCase().trim();
+
+      const amount = Number(
+        transaction.amount || 0
+      );
+
+      const isRefund =
+        type.includes("refund") ||
+        description.includes("refund");
+
+      const isCancelledRefund =
+        description.includes("cancelled") ||
+        description.includes("canceled") ||
+        type.includes("cancelled") ||
+        type.includes("canceled");
+
+      const isCompleted =
+        status === "completed" ||
+        status === "success" ||
+        status === "successful";
+
+      if (
+        isRefund &&
+        isCancelledRefund &&
+        isCompleted &&
+        amount > 0
+      ) {
+
+        const key = amount.toFixed(2);
+
+        amounts.set(
+          key,
+          (amounts.get(key) || 0) + 1
+        );
+
+      }
+
+    });
+
+    return amounts;
+  }
+
+
+  /*
+   * MATCH CANCELLED REFUNDS TO THEIR ORIGINAL
+   * VIRTUAL-NUMBER DEBITS.
+   *
+   * This matching rule is for display only.
+   * Matching amounts alone cannot prove that
+   * two transactions belong to the same order.
+   */
+
+  function getDisplayStatus(
+    transaction,
+    cancelledRefundAmounts
+  ) {
+
+    const originalStatus = String(
+      transaction.status || "completed"
+    ).trim();
+
+    const normalizedStatus =
+      originalStatus.toLowerCase();
+
+    const type = String(
+      transaction.type || ""
+    ).toLowerCase();
+
+    const description = String(
+      transaction.description || ""
+    ).toLowerCase();
+
+    const amount = Number(
+      transaction.amount || 0
+    );
+
+    const isCancelled =
+      normalizedStatus === "cancelled" ||
+      normalizedStatus === "canceled" ||
+      type.includes("cancelled") ||
+      type.includes("canceled") ||
+      description.includes("cancelled") ||
+      description.includes("canceled");
+
+    // Never replace an explicitly cancelled status.
+
+    if (isCancelled) {
+      return "cancelled";
+    }
+
+    const isPending =
+      normalizedStatus === "pending" ||
+      normalizedStatus === "processing";
+
+    const isVirtualNumber =
+      type.includes("virtual number") ||
+      description.includes("virtual number");
+
+    const refundKey =
+      Math.abs(amount).toFixed(2);
+
+    const matchingRefunds =
+      cancelledRefundAmounts.get(refundKey) || 0;
+
+    if (
+      isPending &&
+      isVirtualNumber &&
+      amount < 0 &&
+      matchingRefunds > 0
+    ) {
+
+      // Consume one matching refund so that
+      // unrelated purchases are not all marked
+      // cancelled when amounts are identical.
+
+      cancelledRefundAmounts.set(
+        refundKey,
+        matchingRefunds - 1
+      );
+
+      return "cancelled";
+    }
+
+    return originalStatus || "completed";
+  }
+
+
   async function loadTransactions() {
 
     const container =
@@ -333,6 +565,13 @@
     container.innerHTML = "";
 
 
+    // Determine which pending virtual-number
+    // debits have matching cancellation refunds.
+
+    const cancelledRefundAmounts =
+      getCancelledRefundAmounts(data);
+
+
     data.forEach(
       transaction => {
 
@@ -374,9 +613,6 @@
          *
          * Everything else is treated as
          * money leaving the wallet.
-         *
-         * This also fixes OLD transactions
-         * whose old type names were different.
          */
 
         const isCredit =
@@ -417,29 +653,32 @@
 
 
         /*
-         * HIDE PROVIDER NAMES FROM THE
-         * CUSTOMER'S TRANSACTION DISPLAY.
-         *
-         * This changes display text only.
-         * It does not update or delete
-         * anything in the database.
+         * CLEAN THE DISPLAY TEXT.
+         * KEEP ORIGINAL DATABASE VALUES UNCHANGED.
          */
 
-        const originalType =
-          String(
+        const displayType =
+          cleanProviderName(
             transaction.type || "Transaction"
           );
 
-        const originalDescription =
-          String(
+        const displayDescription =
+          cleanProviderName(
             transaction.description || ""
           );
 
-        const displayType =
-          cleanProviderName(originalType);
 
-        const displayDescription =
-          cleanProviderName(originalDescription);
+        /*
+         * SHOW CANCELLED WHEN THE ORDER IS
+         * EXPLICITLY CANCELLED OR A MATCHING
+         * CANCELLED-ORDER REFUND EXISTS.
+         */
+
+        const displayStatus =
+          getDisplayStatus(
+            transaction,
+            cancelledRefundAmounts
+          );
 
 
         const item =
@@ -476,8 +715,7 @@
 
           <div class="status">
             ${escapeHTML(
-              transaction.status ||
-              "completed"
+              displayStatus
             )}
           </div>
 
@@ -502,56 +740,6 @@
 
       }
     );
-
-  }
-
-
-  function cleanProviderName(value) {
-
-    return String(value || "")
-
-      /*
-       * Remove Grizzly provider references
-       * without changing the actual order,
-       * refund, or transaction.
-       */
-
-      .replace(
-        /\bgrizzly\s*sms\b/gi,
-        ""
-      )
-
-      .replace(
-        /\bgrizzlysms\b/gi,
-        ""
-      )
-
-      .replace(
-        /\bgrizzly\b/gi,
-        ""
-      )
-
-      /*
-       * Clean up leftover separators and
-       * extra spaces after removing names.
-       */
-
-      .replace(
-        /\s*[-–—|:]\s*(?=$)/g,
-        ""
-      )
-
-      .replace(
-        /^\s*[-–—|:]\s*/,
-        ""
-      )
-
-      .replace(
-        /\s{2,}/g,
-        " "
-      )
-
-      .trim();
 
   }
 
