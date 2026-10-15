@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#050505">
+  <meta name="description" content="Learn about Delight Vendor Logs, your digital marketplace for digital services, resources and more.">
+  <title>About Us — Delight Vendor Logs</title>
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <style>
+    :root {
+      --bg: #050505;
+      --surface: #111;
+      --gold: #d4af37;
+      --light: #f1d77a;
+      --muted: #b8b8b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.8;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .header {
+      padding: 18px 5%;
+      border-bottom: 1px solid rgba(212,175,55,.25);
+      background: #080808;
+    }
+
+    .brand {
+      color: var(--light);
+      font-size: 19px;
+      font-weight: 900;
+    }
+
+    .brand span {
+      display: block;
+      color: #fff;
+      font-size: 11px;
+      letter-spacing: 2px;
+    }
+
+    .container {
+      width: min(850px, 90%);
+      margin: 0 auto;
+      padding: 55px 0 70px;
+    }
+
+    .eyebrow {
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 12px 0 18px;
+      font-size: clamp(32px, 6vw, 48px);
+      line-height: 1.2;
+    }
+
+    h1 span {
+      color: var(--gold);
+    }
+
+    .intro {
+      margin-bottom: 30px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .panel {
+      margin-top: 18px;
+      padding: 23px;
+      border: 1px solid rgba(212,175,55,.24);
+      border-radius: 14px;
+      background: var(--surface);
+    }
+
+    h2 {
+      margin-bottom: 9px;
+      color: var(--light);
+      font-size: 20px;
+    }
+
+    p {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 18px;
+      border: 1px solid var(--gold);
+      border-radius: 9px;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .primary {
+      background: var(--gold);
+      color: #050505;
+    }
+
+    footer {
+      padding: 22px 5%;
+      border-top: 1px solid rgba(212,175,55,.2);
+      color: #888;
+      text-align: center;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <a class="brand" href="index.html">
+      Delight
+      <span>VENDOR LOGS</span>
+    </a>
+  </header>
+
+  <main class="container">
+    <div class="eyebrow">Who We Are</div>
+    <h1>About <span>Delight Vendor Logs</span></h1>
+
+    <p class="intro">
+      Welcome to Delight Vendor Logs — your digital marketplace.
+      Our goal is to provide a convenient place where users can explore
+      digital services, resources, numbers and other available offerings.
+    </p>
+
+    <section class="panel">
+      <h2>Our Purpose</h2>
+      <p>
+        Delight Vendor Logs brings different categories of digital services
+        together on one platform. We aim to make it easier for users to
+        discover available offerings, access their accounts and manage
+        their activity through the platform.
+      </p>
+    </section>
+
+    <section class="panel">
+      <h2>What You Can Find</h2>
+      <p>
+        Depending on availability, our marketplace may include digital
+        resources, country-number services, VPN-related services, eSIM
+        offerings, email-related services and other listed categories.
+        Available services and stock may change over time.
+      </p>
+    </section>
+
+    <section class="panel">
+      <h2>Our Commitment</h2>
+      <p>
+        We aim to provide clear service information and a convenient user
+        experience. If you have a question about an order or using the
+        platform, please contact our support team through the Contact
+        Support options on our website.
+      </p>
+    </section>
+
+    <section class="panel">
+      <h2>Need Help?</h2>
+      <p>
+        For questions about your account, wallet, orders or available
+        services, visit our website and use the Contact Support option.
+      </p>
+    </section>
+
+    <div class="actions">
+      <a class="btn primary" href="register.html">Create Account</a>
+      <a class="btn" href="index.html">Back to Home</a>
+      <a class="btn" href="faq.html">Read FAQs</a>
+    </div>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Delight Vendor Logs. All rights reserved.
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
