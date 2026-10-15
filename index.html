@@ -1,1631 +1,1077 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>Delight Vendor Logs — Your Digital Marketplace</title>
-
-<meta
-    name="description"
-    content="Why go far when you can get all in our site? Explore digital services, resources, numbers and more with Delight Vendor Logs — your digital marketplace."
->
-
-<!-- =========================
-     WEBSITE BRANDING & SEO
-     ========================= -->
-
-<link
-    rel="canonical"
-    href="https://delightvendorlog.com/"
->
-
-<meta name="robots" content="index, follow">
-
-<meta name="theme-color" content="#050505">
-
-<!-- BROWSER FAVICON -->
-<link
-    rel="icon"
-    type="image/png"
-    href="/assets/favicon.png"
->
-
-<!-- APPLE DEVICE ICON -->
-<link
-    rel="apple-touch-icon"
-    href="/assets/favicon.png"
->
-
-<!-- =========================
-     WHATSAPP / TELEGRAM / SOCIAL
-     LINK PREVIEW
-     ========================= -->
-
-<meta
-    property="og:type"
-    content="website"
->
-
-<meta
-    property="og:site_name"
-    content="Delight Vendor Logs"
->
-
-<meta
-    property="og:title"
-    content="Delight Vendor Logs — Your Digital Marketplace"
->
-
-<meta
-    property="og:description"
-    content="Why go far when you can get all in our site? Explore digital services, resources, numbers and more with Delight Vendor Logs."
->
-
-<meta
-    property="og:url"
-    content="https://delightvendorlog.com/"
->
-
-<meta
-    property="og:locale"
-    content="en_NG"
->
-
-<meta
-    property="og:image"
-    content="https://delightvendorlog.com/assets/share-banner.png"
->
-
-<meta
-    property="og:image:secure_url"
-    content="https://delightvendorlog.com/assets/share-banner.png"
->
-
-<meta
-    property="og:image:type"
-    content="image/png"
->
-
-<meta
-    property="og:image:alt"
-    content="Delight Vendor Logs — gold logo and lettering on a black background"
->
-
-<!-- X / TWITTER LINK PREVIEW -->
-
-<meta
-    name="twitter:card"
-    content="summary_large_image"
->
-
-<meta
-    name="twitter:title"
-    content="Delight Vendor Logs — Your Digital Marketplace"
->
-
-<meta
-    name="twitter:description"
-    content="Explore digital services, resources, numbers and more with Delight Vendor Logs."
->
-
-<meta
-    name="twitter:url"
-    content="https://delightvendorlog.com/"
->
-
-<meta
-    name="twitter:image"
-    content="https://delightvendorlog.com/assets/share-banner.png"
->
-
-<meta
-    name="twitter:image:alt"
-    content="Delight Vendor Logs gold logo on a black background"
->
-
-<style>
-
-/* =========================
-   RESET
-========================= */
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-html{
-    scroll-behavior:smooth;
-}
-
-body{
-    font-family:
-        Inter,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Arial,
-        sans-serif;
-
-    background:#050505;
-    color:#fff;
-
-    overflow-x:hidden;
-}
-
-/* =========================
-   VARIABLES
-========================= */
-
-:root{
-    --black:#050505;
-    --black2:#0a0a0a;
-    --card:#0d0d0d;
-    --card2:#111111;
-
-    --gold:#d4af37;
-    --gold-light:#f1d77a;
-    --gold-dark:#9c7b16;
-
-    --white:#ffffff;
-    --muted:#a8a8a8;
-    --border:rgba(212,175,55,.22);
-}
-
-/* =========================
-   BACKGROUND EFFECT
-========================= */
-
-body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-
-    pointer-events:none;
-
-    background:
-        radial-gradient(
-            circle at 15% 10%,
-            rgba(212,175,55,.09),
-            transparent 28%
-        ),
-        radial-gradient(
-            circle at 85% 20%,
-            rgba(212,175,55,.07),
-            transparent 30%
-        ),
-        radial-gradient(
-            circle at 50% 80%,
-            rgba(212,175,55,.045),
-            transparent 35%
-        );
-
-    z-index:-2;
-}
-
-body::after{
-    content:"";
-    position:fixed;
-    inset:0;
-
-    pointer-events:none;
-
-    opacity:.035;
-
-    background-image:
-        linear-gradient(
-            rgba(255,255,255,.8) 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            90deg,
-            rgba(255,255,255,.8) 1px,
-            transparent 1px
-        );
-
-    background-size:55px 55px;
-
-    z-index:-1;
-}
-
-/* =========================
-   HEADER
-========================= */
-
-header{
-    width:100%;
-    position:relative;
-    z-index:20;
-}
-
-.navbar{
-    width:min(1180px,92%);
-    margin:auto;
-
-    min-height:82px;
-
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-
-    border-bottom:1px solid rgba(212,175,55,.13);
-}
-
-/* LOGO */
-
-.logo{
-    display:flex;
-    align-items:center;
-    gap:11px;
-
-    text-decoration:none;
-    color:#fff;
-}
-
-.logo-mark{
-    width:40px;
-    height:40px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    border:1px solid var(--gold);
-
-    border-radius:11px;
-
-    color:var(--gold);
-
-    font-size:20px;
-    font-weight:900;
-
-    box-shadow:
-        0 0 20px rgba(212,175,55,.12),
-        inset 0 0 15px rgba(212,175,55,.05);
-}
-
-.logo-text{
-    font-size:18px;
-    font-weight:850;
-    letter-spacing:-.4px;
-}
-
-.logo-text span{
-    color:var(--gold);
-}
-
-/* NAV BUTTONS */
-
-.nav-actions{
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-
-.btn{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-
-    min-height:44px;
-
-    padding:0 19px;
-
-    border-radius:10px;
-
-    font-size:14px;
-    font-weight:750;
-
-    text-decoration:none;
-
-    transition:
-        .25s ease;
-
-    cursor:pointer;
-}
-
-.btn-login{
-    color:#fff;
-
-    border:1px solid rgba(212,175,55,.55);
-
-    background:rgba(212,175,55,.03);
-}
-
-.btn-login:hover{
-    background:rgba(212,175,55,.10);
-    border-color:var(--gold);
-
-    transform:translateY(-1px);
-}
-
-.btn-gold{
-    color:#080808;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--gold-light),
-            var(--gold)
-        );
-
-    border:1px solid var(--gold);
-
-    box-shadow:
-        0 8px 28px rgba(212,175,55,.14);
-}
-
-.btn-gold:hover{
-    transform:translateY(-2px);
-
-    box-shadow:
-        0 12px 34px rgba(212,175,55,.22);
-}
-
-/* =========================
-   HERO
-========================= */
-
-.hero{
-    width:min(1180px,92%);
-    margin:auto;
-
-    min-height:650px;
-
-    display:flex;
-    align-items:center;
-
-    padding:90px 0 80px;
-
-    position:relative;
-}
-
-.hero-content{
-    width:100%;
-    max-width:850px;
-}
-
-.eyebrow{
-    display:inline-flex;
-    align-items:center;
-    gap:9px;
-
-    padding:8px 13px;
-
-    border:1px solid rgba(212,175,55,.25);
-
-    background:rgba(212,175,55,.055);
-
-    border-radius:999px;
-
-    color:var(--gold-light);
-
-    font-size:11px;
-    font-weight:800;
-
-    letter-spacing:1.2px;
-    text-transform:uppercase;
-
-    margin-bottom:27px;
-}
-
-.eyebrow-dot{
-    width:7px;
-    height:7px;
-
-    border-radius:50%;
-
-    background:var(--gold);
-
-    box-shadow:
-        0 0 10px var(--gold);
-}
-
-.hero h1{
-    font-size:
-        clamp(46px,7vw,86px);
-
-    line-height:.98;
-
-    letter-spacing:-4px;
-
-    font-weight:900;
-
-    max-width:850px;
-}
-
-.hero h1 .gold{
-    color:var(--gold);
-}
-
-.hero-description{
-    max-width:650px;
-
-    margin-top:28px;
-
-    color:#a9a9a9;
-
-    font-size:18px;
-    line-height:1.75;
-}
-
-.hero-actions{
-    display:flex;
-    flex-wrap:wrap;
-
-    gap:12px;
-
-    margin-top:34px;
-}
-
-.hero-actions .btn{
-    min-height:51px;
-    padding:0 23px;
-}
-
-/* SMALL TRUST TEXT */
-
-.hero-note{
-    display:flex;
-    align-items:center;
-    gap:9px;
-
-    margin-top:24px;
-
-    color:#777;
-
-    font-size:12px;
-}
-
-.hero-note span{
-    color:var(--gold);
-    font-size:15px;
-}
-
-/* =========================
-   NUMBER BANNER
-========================= */
-
-.number-section{
-    width:min(1180px,92%);
-    margin:0 auto 90px;
-}
-
-.number-card{
-    position:relative;
-
-    overflow:hidden;
-
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-
-    gap:30px;
-
-    padding:34px 36px;
-
-    background:
-        linear-gradient(
-            115deg,
-            #0f0f0f,
-            #080808
-        );
-
-    border:1px solid rgba(212,175,55,.35);
-
-    border-radius:22px;
-
-    box-shadow:
-        0 20px 70px rgba(0,0,0,.35);
-}
-
-.number-card::before{
-    content:"";
-
-    position:absolute;
-
-    width:300px;
-    height:300px;
-
-    right:-100px;
-    top:-150px;
-
-    border-radius:50%;
-
-    background:rgba(212,175,55,.10);
-
-    filter:blur(35px);
-}
-
-.number-content{
-    position:relative;
-    z-index:1;
-}
-
-.number-label{
-    color:var(--gold);
-
-    font-size:11px;
-    font-weight:850;
-
-    text-transform:uppercase;
-    letter-spacing:1.4px;
-
-    margin-bottom:9px;
-}
-
-.number-card h2{
-    font-size:clamp(24px,4vw,36px);
-
-    letter-spacing:-1.2px;
-
-    margin-bottom:8px;
-}
-
-.number-card p{
-    color:#929292;
-
-    line-height:1.6;
-
-    max-width:650px;
-}
-
-.number-btn{
-    position:relative;
-    z-index:1;
-
-    flex-shrink:0;
-
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-
-    min-height:48px;
-
-    padding:0 20px;
-
-    border-radius:11px;
-
-    color:#080808;
-
-    background:var(--gold);
-
-    text-decoration:none;
-
-    font-size:14px;
-    font-weight:850;
-
-    transition:.25s ease;
-}
-
-.number-btn:hover{
-    transform:translateY(-2px);
-
-    background:var(--gold-light);
-
-    box-shadow:
-        0 10px 30px rgba(212,175,55,.18);
-}
-
-/* =========================
-   CATEGORY SECTION
-========================= */
-
-.categories-section{
-    width:min(1180px,92%);
-    margin:0 auto 100px;
-}
-
-.section-heading{
-    max-width:680px;
-
-    margin-bottom:32px;
-}
-
-.section-heading .small{
-    color:var(--gold);
-
-    font-size:11px;
-    font-weight:850;
-
-    letter-spacing:1.5px;
-    text-transform:uppercase;
-
-    margin-bottom:10px;
-}
-
-.section-heading h2{
-    font-size:
-        clamp(31px,5vw,49px);
-
-    letter-spacing:-2px;
-
-    line-height:1.05;
-}
-
-.section-heading p{
-    color:#888;
-
-    margin-top:14px;
-
-    line-height:1.7;
-
-    font-size:15px;
-}
-
-/* CATEGORY GRID */
-
-.category-grid{
-    display:grid;
-
-    grid-template-columns:
-        repeat(4,1fr);
-
-    gap:13px;
-}
-
-/*
-   These cards are intentionally NOT links.
-   They are showcase-only on the public landing page.
-*/
-
-.category-card{
-    min-height:145px;
-
-    padding:22px;
-
-    border:1px solid rgba(255,255,255,.07);
-
-    border-radius:17px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #101010,
-            #090909
-        );
-
-    transition:
-        border-color .25s ease,
-        transform .25s ease,
-        box-shadow .25s ease;
-}
-
-.category-card:hover{
-    transform:translateY(-3px);
-
-    border-color:rgba(212,175,55,.28);
-
-    box-shadow:
-        0 15px 40px rgba(0,0,0,.25);
-}
-
-.category-icon{
-    width:43px;
-    height:43px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    border-radius:12px;
-
-    background:rgba(212,175,55,.08);
-
-    border:1px solid rgba(212,175,55,.18);
-
-    color:var(--gold);
-
-    font-size:18px;
-
-    margin-bottom:22px;
-}
-
-.category-card h3{
-    font-size:15px;
-    font-weight:800;
-
-    margin-bottom:6px;
-}
-
-.category-card p{
-    color:#707070;
-
-    font-size:12px;
-
-    line-height:1.5;
-}
-
-/* =========================
-   FEATURE STRIP
-========================= */
-
-.feature-section{
-    width:min(1180px,92%);
-    margin:0 auto 100px;
-}
-
-.feature-box{
-    padding:50px 42px;
-
-    border-radius:25px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #0f0f0f,
-            #070707
-        );
-
-    border:1px solid rgba(212,175,55,.15);
-
-    text-align:center;
-}
-
-.feature-box h2{
-    font-size:
-        clamp(29px,5vw,47px);
-
-    letter-spacing:-1.8px;
-
-    line-height:1.05;
-}
-
-.feature-box h2 span{
-    color:var(--gold);
-}
-
-.feature-box > p{
-    max-width:620px;
-
-    margin:17px auto 38px;
-
-    color:#888;
-
-    line-height:1.7;
-}
-
-.features{
-    display:grid;
-
-    grid-template-columns:
-        repeat(3,1fr);
-
-    gap:14px;
-
-    text-align:left;
-}
-
-.feature{
-    padding:22px;
-
-    border-radius:16px;
-
-    background:#0a0a0a;
-
-    border:1px solid rgba(255,255,255,.06);
-}
-
-.feature-number{
-    color:var(--gold);
-
-    font-size:12px;
-    font-weight:900;
-
-    margin-bottom:18px;
-}
-
-.feature h3{
-    font-size:15px;
-
-    margin-bottom:8px;
-}
-
-.feature p{
-    color:#727272;
-
-    font-size:12px;
-
-    line-height:1.6;
-}
-
-/* =========================
-   FINAL CTA
-========================= */
-
-.cta-section{
-    width:min(1000px,92%);
-
-    margin:0 auto;
-
-    padding:70px 0 100px;
-
-    text-align:center;
-}
-
-.cta-section .small{
-    color:var(--gold);
-
-    font-size:11px;
-    font-weight:850;
-
-    letter-spacing:1.5px;
-
-    text-transform:uppercase;
-
-    margin-bottom:15px;
-}
-
-.cta-section h2{
-    font-size:
-        clamp(37px,6vw,64px);
-
-    letter-spacing:-2.8px;
-
-    line-height:1;
-}
-
-.cta-section p{
-    max-width:570px;
-
-    margin:20px auto 30px;
-
-    color:#888;
-
-    line-height:1.7;
-}
-
-.cta-actions{
-    display:flex;
-
-    justify-content:center;
-
-    gap:12px;
-
-    flex-wrap:wrap;
-}
-
-/* =========================
-   FOOTER
-========================= */
-
-footer{
-    width:min(1180px,92%);
-
-    margin:auto;
-
-    padding:25px 0 35px;
-
-    border-top:1px solid rgba(255,255,255,.07);
-
-    display:flex;
-
-    justify-content:space-between;
-    align-items:center;
-
-    gap:20px;
-
-    color:#555;
-
-    font-size:12px;
-}
-
-.footer-brand{
-    color:#777;
-}
-
-.footer-brand strong{
-    color:#b9b9b9;
-}
-
-/* =========================
-   MOBILE
-========================= */
-
-@media(max-width:850px){
-
-    .navbar{
-        min-height:72px;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Delight Vendor Logs — Your Digital Marketplace</title>
+  <meta name="description" content="Why go far when you can get all in our site? Explore digital services, resources, numbers and more with Delight Vendor Logs — your digital marketplace.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#050505">
+  <link rel="canonical" href="https://delightvendorlog.com/">
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="apple-touch-icon" href="/assets/favicon.png">
+
+  <meta property="og:site_name" content="Delight Vendor Logs">
+  <meta property="og:title" content="Delight Vendor Logs — Your Digital Marketplace">
+  <meta property="og:description" content="Why go far when you can get all in our site? Explore digital services, resources, numbers and more with Delight Vendor Logs.">
+  <meta property="og:url" content="https://delightvendorlog.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_NG">
+  <meta property="og:image" content="https://delightvendorlog.com/assets/share-banner.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Delight Vendor Logs — Your Digital Marketplace">
+  <meta name="twitter:description" content="Digital services, resources, numbers and more — all in one platform.">
+  <meta name="twitter:image" content="https://delightvendorlog.com/assets/share-banner.png">
+
+  <style>
+    :root {
+      --bg: #050505;
+      --surface: #101010;
+      --surface-2: #171717;
+      --gold: #d4af37;
+      --gold-light: #f1d77a;
+      --gold-dark: #9c7b16;
+      --white: #ffffff;
+      --muted: #b8b8b8;
+      --border: rgba(212, 175, 55, .25);
+      --radius: 18px;
     }
 
-    .logo-text{
-        font-size:15px;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    .logo-mark{
-        width:37px;
-        height:37px;
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
     }
 
-    .nav-actions{
-        gap:7px;
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
     }
 
-    .nav-actions .btn{
-        min-height:40px;
-        padding:0 13px;
-
-        font-size:12px;
+    body.popup-open {
+      overflow: hidden;
     }
 
-    .hero{
-        min-height:auto;
-
-        padding:
-            75px 0
-            65px;
+    a {
+      color: inherit;
+      text-decoration: none;
     }
 
-    .hero h1{
-        letter-spacing:-2.7px;
+    button {
+      font: inherit;
     }
 
-    .hero-description{
-        font-size:16px;
+    .container {
+      width: min(1120px, 92%);
+      margin: 0 auto;
     }
 
-    .number-card{
-        align-items:flex-start;
-
-        flex-direction:column;
-
-        padding:28px;
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(5, 5, 5, .95);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(14px);
     }
 
-    .number-btn{
-        width:100%;
+    .nav {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
     }
 
-    .category-grid{
-        grid-template-columns:
-            repeat(2,1fr);
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex-shrink: 1;
     }
 
-    .features{
-        grid-template-columns:1fr;
+    .logo-mark {
+      width: 43px;
+      height: 43px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      border-radius: 12px;
+      color: #050505;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold-dark));
+      font-size: 27px;
+      font-weight: 900;
+      box-shadow: 0 0 22px rgba(212, 175, 55, .13);
     }
 
-    footer{
-        flex-direction:column;
-        align-items:flex-start;
+    .logo-text {
+      color: var(--gold-light);
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -.4px;
+      white-space: nowrap;
     }
 
-}
-
-@media(max-width:520px){
-
-    .navbar{
-        width:92%;
+    .logo-text span {
+      display: block;
+      color: var(--white);
+      font-size: 12px;
+      letter-spacing: 1.4px;
+      margin-top: 4px;
     }
 
-    .logo-text{
-        display:none;
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex-shrink: 0;
     }
 
-    .hero{
-        padding-top:55px;
+    .btn {
+      min-height: 43px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 18px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 14px;
+      transition: transform .2s ease, background .2s ease, border-color .2s ease;
     }
 
-    .eyebrow{
-        font-size:9px;
+    .btn:hover {
+      transform: translateY(-2px);
     }
 
-    .hero h1{
-        font-size:46px;
-        letter-spacing:-2.3px;
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      color: #080808;
+      box-shadow: 0 7px 24px rgba(212, 175, 55, .12);
     }
 
-    .hero-description{
-        font-size:15px;
-        line-height:1.65;
+    .btn-outline {
+      background: transparent;
+      border-color: var(--gold);
+      color: var(--gold-light);
     }
 
-    .hero-actions{
-        width:100%;
+    .btn-outline:hover {
+      background: rgba(212, 175, 55, .1);
     }
 
-    .hero-actions .btn{
-        width:100%;
+    .hero {
+      position: relative;
+      padding: 100px 0 88px;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 75% 20%, rgba(212, 175, 55, .12), transparent 40%),
+        radial-gradient(ellipse at 10% 80%, rgba(156, 123, 22, .08), transparent 35%);
     }
 
-    .category-grid{
-        grid-template-columns:1fr 1fr;
-
-        gap:9px;
+    .hero::before {
+      content: "";
+      position: absolute;
+      width: 330px;
+      height: 330px;
+      border: 1px solid rgba(212, 175, 55, .12);
+      border-radius: 50%;
+      right: -130px;
+      top: 35px;
+      pointer-events: none;
     }
 
-    .category-card{
-        min-height:135px;
-
-        padding:16px;
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 780px;
     }
 
-    .category-icon{
-        width:38px;
-        height:38px;
-
-        margin-bottom:17px;
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(212, 175, 55, .06);
+      color: var(--gold-light);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
     }
 
-    .category-card h3{
-        font-size:13px;
+    .eyebrow-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 12px var(--gold);
     }
 
-    .category-card p{
-        font-size:10px;
+    h1 {
+      margin: 25px 0 20px;
+      max-width: 760px;
+      font-size: clamp(38px, 7vw, 72px);
+      line-height: 1.08;
+      letter-spacing: -2.5px;
+      font-weight: 900;
     }
 
-    .feature-box{
-        padding:35px 18px;
+    h1 span {
+      color: var(--gold);
     }
 
-    .cta-section{
-        padding-bottom:70px;
+    .hero-description {
+      max-width: 650px;
+      color: var(--muted);
+      font-size: clamp(15px, 2vw, 18px);
+      line-height: 1.85;
     }
 
-}
+    .hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
 
-/* =========================
-   ACCESSIBILITY
-========================= */
+    .hero-note {
+      margin-top: 22px;
+      color: #888;
+      font-size: 12px;
+    }
 
-a:focus-visible{
-    outline:2px solid var(--gold);
+    .section {
+      padding: 76px 0;
+    }
 
-    outline-offset:4px;
-}
+    .section-heading {
+      max-width: 700px;
+      margin: 0 auto 38px;
+      text-align: center;
+    }
 
-</style>
+    .section-kicker {
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
 
+    h2 {
+      margin: 10px 0 13px;
+      font-size: clamp(27px, 4vw, 42px);
+      line-height: 1.2;
+      letter-spacing: -.8px;
+    }
+
+    .section-heading p {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .number-banner {
+      position: relative;
+      padding: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      overflow: hidden;
+      border: 1px solid rgba(212, 175, 55, .38);
+      border-radius: var(--radius);
+      background:
+        radial-gradient(ellipse at 90% 50%, rgba(212, 175, 55, .15), transparent 45%),
+        linear-gradient(135deg, #15130c, #0b0b0b);
+    }
+
+    .number-banner h2 {
+      font-size: clamp(24px, 4vw, 34px);
+      margin-top: 0;
+    }
+
+    .number-banner p {
+      max-width: 580px;
+      color: var(--muted);
+    }
+
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .category-card {
+      position: relative;
+      min-height: 155px;
+      padding: 21px 16px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: linear-gradient(145deg, #151515, #0b0b0b);
+      transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+    }
+
+    .category-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--gold);
+      box-shadow: 0 12px 28px rgba(212, 175, 55, .08);
+    }
+
+    .category-icon {
+      width: 43px;
+      height: 43px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 18px;
+      border-radius: 12px;
+      background: rgba(212, 175, 55, .1);
+      border: 1px solid rgba(212, 175, 55, .2);
+      font-size: 22px;
+    }
+
+    .category-card h3 {
+      font-size: 14px;
+      line-height: 1.4;
+      color: #f5f5f5;
+    }
+
+    .category-card p {
+      margin-top: 7px;
+      color: #999;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .features {
+      background: linear-gradient(180deg, #050505, #0b0b0b, #050505);
+      border-top: 1px solid rgba(212, 175, 55, .1);
+      border-bottom: 1px solid rgba(212, 175, 55, .1);
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .feature-card {
+      padding: 27px 23px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .feature-card .category-icon {
+      margin-bottom: 17px;
+    }
+
+    .feature-card h3 {
+      margin-bottom: 9px;
+      font-size: 18px;
+    }
+
+    .feature-card p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .final-cta {
+      padding: 76px 0;
+      text-align: center;
+    }
+
+    .cta-panel {
+      padding: 45px 25px;
+      border: 1px solid rgba(212, 175, 55, .3);
+      border-radius: 22px;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, .12), transparent 65%),
+        #0d0d0d;
+    }
+
+    .cta-panel p {
+      max-width: 580px;
+      margin: 0 auto;
+      color: var(--muted);
+    }
+
+    .cta-panel .hero-buttons {
+      justify-content: center;
+    }
+
+    .site-footer {
+      padding: 36px 0 22px;
+      border-top: 1px solid var(--border);
+      background: #080808;
+    }
+
+    .footer-main {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 28px;
+      padding-bottom: 26px;
+    }
+
+    .footer-brand {
+      max-width: 340px;
+    }
+
+    .footer-brand strong {
+      display: block;
+      color: var(--gold-light);
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .footer-brand p {
+      margin-top: 8px;
+      color: #999;
+      font-size: 13px;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      align-items: center;
+      justify-content: flex-end;
+      max-width: 560px;
+    }
+
+    .footer-links a,
+    .footer-links button {
+      color: #bdbdbd;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      font-size: 13px;
+      transition: color .2s ease;
+    }
+
+    .footer-links a:hover,
+    .footer-links button:hover {
+      color: var(--gold-light);
+    }
+
+    .footer-bottom {
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, .08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      flex-wrap: wrap;
+      color: #777;
+      font-size: 12px;
+    }
+
+    .watermark {
+      color: #666;
+    }
+
+    /* Contact support popup */
+    .popup-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, .78);
+      backdrop-filter: blur(7px);
+    }
+
+    .popup-overlay.active {
+      display: flex;
+    }
+
+    .support-popup {
+      position: relative;
+      width: min(440px, 100%);
+      padding: 30px 23px 24px;
+      border: 1px solid rgba(212, 175, 55, .45);
+      border-radius: 20px;
+      background: linear-gradient(145deg, #171717, #090909);
+      box-shadow: 0 25px 90px rgba(0, 0, 0, .65);
+      animation: popupIn .2s ease-out;
+    }
+
+    @keyframes popupIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .popup-close {
+      position: absolute;
+      top: 12px;
+      right: 13px;
+      width: 35px;
+      height: 35px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 50%;
+      background: #222;
+      color: white;
+      cursor: pointer;
+      font-size: 21px;
+    }
+
+    .popup-close:hover {
+      border-color: var(--gold);
+      color: var(--gold-light);
+    }
+
+    .popup-symbol {
+      width: 54px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 16px;
+      border-radius: 16px;
+      background: rgba(212, 175, 55, .12);
+      border: 1px solid var(--border);
+      font-size: 27px;
+    }
+
+    .support-popup h2 {
+      padding-right: 22px;
+      margin: 0 0 9px;
+      font-size: 25px;
+    }
+
+    .support-popup > p {
+      margin-bottom: 21px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .support-option {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 13px;
+      margin-top: 10px;
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .025);
+      transition: border-color .2s ease, background .2s ease;
+    }
+
+    .support-option:hover {
+      border-color: var(--gold);
+      background: rgba(212, 175, 55, .06);
+    }
+
+    .support-option-icon {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      background: rgba(212, 175, 55, .1);
+      font-size: 21px;
+    }
+
+    .support-option strong {
+      display: block;
+      color: white;
+      font-size: 14px;
+    }
+
+    .support-option small {
+      display: block;
+      margin-top: 3px;
+      color: #aaa;
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .popup-later {
+      width: 100%;
+      margin-top: 18px;
+      padding: 10px;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: #aaa;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .popup-later:hover {
+      color: var(--gold-light);
+    }
+
+    @media (max-width: 900px) {
+      .categories {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .feature-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
+      .nav {
+        min-height: 68px;
+        gap: 8px;
+      }
+
+      .brand {
+        gap: 7px;
+      }
+
+      .logo-mark {
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
+        font-size: 22px;
+      }
+
+      .logo-text {
+        font-size: clamp(10px, 3vw, 14px);
+        letter-spacing: -.5px;
+      }
+
+      .logo-text span {
+        font-size: 9px;
+        letter-spacing: .8px;
+        margin-top: 3px;
+      }
+
+      .nav-actions {
+        gap: 6px;
+      }
+
+      .nav-actions .btn {
+        min-height: 37px;
+        padding: 8px 10px;
+        font-size: 12px;
+        border-radius: 8px;
+      }
+
+      .hero {
+        padding: 74px 0 65px;
+      }
+
+      h1 {
+        letter-spacing: -1.5px;
+      }
+
+      .section {
+        padding: 58px 0;
+      }
+
+      .number-banner {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 25px 20px;
+      }
+
+      .categories {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 11px;
+      }
+
+      .category-card {
+        min-height: 145px;
+        padding: 16px 13px;
+      }
+
+      .category-icon {
+        width: 39px;
+        height: 39px;
+        margin-bottom: 13px;
+      }
+
+      .category-card h3 {
+        font-size: 13px;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-main {
+        flex-direction: column;
+      }
+
+      .footer-links {
+        justify-content: flex-start;
+        gap: 12px 16px;
+      }
+
+      .footer-bottom {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .logo-text {
+        font-size: 10px;
+      }
+
+      .logo-text span {
+        font-size: 8px;
+      }
+
+      .nav-actions .btn {
+        padding: 8px;
+        font-size: 11px;
+      }
+
+      .logo-mark {
+        width: 31px;
+        height: 31px;
+        font-size: 20px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
 </head>
 
 <body>
-
-<!-- =========================
-     HEADER
-========================= -->
-
-<header>
-
-    <nav class="navbar">
-
-        <a href="index.html" class="logo">
-
-            <div class="logo-mark">
-                D
-            </div>
-
-            <div class="logo-text">
-                Delight <span>Vendor Logs</span>
-            </div>
-
-        </a>
-
-        <div class="nav-actions">
-
-            <!-- LOGIN -->
-            <a
-                href="login.html"
-                class="btn btn-login"
-            >
-                Login
-            </a>
-
-            <!-- CREATE ACCOUNT -->
-            <a
-                href="register.html"
-                class="btn btn-gold"
-            >
-                Create Account
-            </a>
-
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="/" aria-label="Delight Vendor Logs homepage">
+        <div class="logo-mark" aria-hidden="true">D</div>
+        <div class="logo-text">
+          Delight
+          <span>VENDOR LOGS</span>
         </div>
+      </a>
 
-    </nav>
+      <nav class="nav-actions" aria-label="Account navigation">
+        <a class="btn btn-outline" href="login.html">Login</a>
+        <a class="btn btn-gold" href="register.html">Create Account</a>
+      </nav>
+    </div>
+  </header>
 
-</header>
-
-
-<!-- =========================
-     HERO
-========================= -->
-
-<main>
-
-<section class="hero">
-
-    <div class="hero-content">
-
-        <div class="eyebrow">
-
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <div class="eyebrow">
             <span class="eyebrow-dot"></span>
+            Your digital marketplace
+          </div>
 
-            One platform • Multiple digital services
+          <h1>Everything you need.<br><span>One platform.</span></h1>
 
+          <p class="hero-description">
+            Why go far when you can get all in our site? Explore digital services,
+            resources, numbers and more with Delight Vendor Logs — your digital marketplace.
+          </p>
+
+          <div class="hero-buttons">
+            <a class="btn btn-gold" href="register.html">Get Started <span aria-hidden="true">→</span></a>
+            <a class="btn btn-outline" href="#categories">Explore Services</a>
+          </div>
+
+          <p class="hero-note">All is for educational purposes.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="number-banner">
+          <div>
+            <div class="section-kicker">Explore more possibilities</div>
+            <h2>Get All Country Numbers</h2>
+            <p>
+              Explore available country-number services and other digital resources
+              from your Delight Vendor Logs dashboard.
+            </p>
+          </div>
+          <a class="btn btn-gold" href="register.html">Get Started <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="categories">
+      <div class="container">
+        <div class="section-heading">
+          <div class="section-kicker">Our marketplace</div>
+          <h2>Explore Our Categories</h2>
+          <p>
+            Discover a range of digital services and resources gathered in one place.
+            Create an account to explore the available services.
+          </p>
         </div>
 
+        <div class="categories">
+          <article class="category-card">
+            <div class="category-icon" aria-hidden="true">🌐</div>
+            <h3>All Social Logs</h3>
+            <p>Explore social-related digital resources.</p>
+          </article>
 
-        <h1>
+          <article class="category-card">
+            <div class="category-icon" aria-hidden="true">🖼️</div>
+            <h3>Working Pictures</h3>
+            <p>Browse available picture resources.</p>
+          </article>
 
-            Everything you need.
+          <article class="category-card">
+            <div class="category-icon" aria-hidden="true">📁</div>
+            <h3>Formats</h3>
+            <p>Explore available digital formats.</p>
+          </article>
 
-            <span class="gold">
-                One platform.
-            </span>
+          <article class="category-card">
+            <div class="category-icon" aria-hidden="true">🔗</div>
+            <h3>Working Links</h3>
+            <p>Find available links and resources.</p>
+          </article>
 
-        </h1>
+          <article class="category-card">
+            <div class="category-icon" aria-hidden="true">✉️</div>
+            <h3>Gmail</h3>
+            <p>Explore available email-related services.</p>
+          </article>
 
+          <article class="category-card">
+            <div class="category-icon" aria-hidden="true">📱</div>
+            <h3>All Countries Number</h3>
+            <p>Explore numbers from supported countries.</p>
+          </article>
 
-        <p class="hero-description">
+          <article class="category-card">
+            <div class="category-icon" aria-hidden="true">🎬</div>
+            <h3>Streaming &amp; More</h3>
+            <p>Discover available streaming-related resources.</p>
+          </article>
 
-            Access digital services, working resources,
-            numbers and more from one simple platform —
-            built to keep everything you need in one place.
+          <article class="category-card">
+            <div class="category-icon" aria-hidden="true">🌍</div>
+            <h3>ESIMS</h3>
+            <p>Explore available eSIM-related services.</p>
+          </article>
 
-        </p>
+          <article class="category-card">
+            <div class="category-icon" aria-hidden="true">🛡️</div>
+            <h3>VPN</h3>
+            <p>Browse available VPN-related services.</p>
+          </article>
 
+          <article class="category-card">
+            <div class="category-icon" aria-hidden="true">🎙️</div>
+            <h3>Voice Cloner / Fake Video Call</h3>
+            <p>Explore the available voice and video tools.</p>
+          </article>
+        </div>
+      </div>
+    </section>
 
-        <div class="hero-actions">
-
-            <!-- CREATE ACCOUNT -->
-            <a
-                href="register.html"
-                class="btn btn-gold"
-            >
-                Create Account
-            </a>
-
-            <!-- LOGIN -->
-            <a
-                href="login.html"
-                class="btn btn-login"
-            >
-                Login
-            </a>
-
+    <section class="section features" id="features">
+      <div class="container">
+        <div class="section-heading">
+          <div class="section-kicker">Why Delight?</div>
+          <h2>Your Marketplace, Made Simple</h2>
+          <p>
+            A convenient place to explore digital services and manage your activity.
+          </p>
         </div>
 
+        <div class="feature-grid">
+          <article class="feature-card">
+            <div class="category-icon" aria-hidden="true">✨</div>
+            <h3>Multiple Categories</h3>
+            <p>
+              Explore different digital-service categories from one marketplace.
+            </p>
+          </article>
 
-        <div class="hero-note">
+          <article class="feature-card">
+            <div class="category-icon" aria-hidden="true">👤</div>
+            <h3>Your Own Account</h3>
+            <p>
+              Create an account to access the dashboard and manage your activity.
+            </p>
+          </article>
 
-            <span>✦</span>
+          <article class="feature-card">
+            <div class="category-icon" aria-hidden="true">💬</div>
+            <h3>Support Available</h3>
+            <p>
+              Contact our support channels when you need assistance with the platform.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
 
-            One account. One dashboard. Everything organized.
+    <section class="final-cta">
+      <div class="container">
+        <div class="cta-panel">
+          <div class="section-kicker">Join the marketplace</div>
+          <h2>Ready to Get Started?</h2>
+          <p>
+            Create your Delight Vendor Logs account and explore the services available
+            on the platform.
+          </p>
+          <div class="hero-buttons">
+            <a class="btn btn-gold" href="register.html">Create Your Account <span aria-hidden="true">→</span></a>
+            <a class="btn btn-outline" href="login.html">Login to Dashboard</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <strong>Delight Vendor Logs</strong>
+          <p>Your digital marketplace. Why go far when you can get all in our site?</p>
         </div>
 
+        <nav class="footer-links" aria-label="Footer navigation">
+          <a href="about.html">About Us</a>
+          <a href="terms.html">Terms &amp; Conditions</a>
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="refund-policy.html">Refund Policy</a>
+          <a href="faq.html">FAQ</a>
+          <button type="button" id="openSupport">Contact Support</button>
+        </nav>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© <span id="copyrightYear"></span> Delight Vendor Logs. All rights reserved.</p>
+        <p class="watermark">All is for educational purposes.</p>
+      </div>
     </div>
-
-</section>
-
-
-<!-- =========================
-     GET ALL COUNTRY NUMBERS
-     PUBLIC LANDING PAGE
-========================= -->
-
-<section class="number-section">
-
-    <div class="number-card">
-
-        <div class="number-content">
-
-            <div class="number-label">
-                Digital Numbers
-            </div>
-
-            <h2>
-                Get All Country Numbers
-            </h2>
-
-            <p>
-                Access numbers from different countries
-                through your Delight Vendor Logs account.
-                Create an account to get started.
-            </p>
-
-        </div>
-
-
-        <!-- IMPORTANT:
-             This goes to REGISTER, NOT virtualnumber.html
-        -->
-
-        <a
-            href="register.html"
-            class="number-btn"
-        >
-            Create Account
-        </a>
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     CATEGORIES
-========================= -->
-
-<section class="categories-section">
-
-    <div class="section-heading">
-
-        <div class="small">
-            What's inside
-        </div>
-
-        <h2>
-            Everything in one place.
-        </h2>
-
-        <p>
-            Explore the range of digital services and
-            resources available across the Delight Vendor
-            Logs platform.
-        </p>
-
-    </div>
-
-
-    <div class="category-grid">
-
-
-        <!--
-            IMPORTANT:
-            These are showcase cards only.
-            They intentionally have NO href.
-        -->
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ◈
-            </div>
-
-            <h3>
-                All Social Logs
-            </h3>
-
-            <p>
-                Digital social resources in one place.
-            </p>
-
-        </div>
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ◆
-            </div>
-
-            <h3>
-                Working Pictures
-            </h3>
-
-            <p>
-                Ready-to-use working resources.
-            </p>
-
-        </div>
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ◇
-            </div>
-
-            <h3>
-                Formats
-            </h3>
-
-            <p>
-                Useful digital formats and resources.
-            </p>
-
-        </div>
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ↗
-            </div>
-
-            <h3>
-                Working Links
-            </h3>
-
-            <p>
-                Access available working resources.
-            </p>
-
-        </div>
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ◉
-            </div>
-
-            <h3>
-                Gmail
-            </h3>
-
-            <p>
-                Gmail-related digital services.
-            </p>
-
-        </div>
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ◎
-            </div>
-
-            <h3>
-                All Countries Numbers
-            </h3>
-
-            <p>
-                Numbers from different countries.
-            </p>
-
-        </div>
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ▣
-            </div>
-
-            <h3>
-                Streaming & More
-            </h3>
-
-            <p>
-                Streaming services and more digital options.
-            </p>
-
-        </div>
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ◌
-            </div>
-
-            <h3>
-                ESIMS
-            </h3>
-
-            <p>
-                Digital connectivity services.
-            </p>
-
-        </div>
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ⌁
-            </div>
-
-            <h3>
-                VPN
-            </h3>
-
-            <p>
-                Digital privacy and connectivity options.
-            </p>
-
-        </div>
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ✦
-            </div>
-
-            <h3>
-                Voice Cloner / Fake Video Call
-            </h3>
-
-            <p>
-                Digital voice and video-related services.
-            </p>
-
-        </div>
-
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     FEATURES
-========================= -->
-
-<section class="feature-section">
-
-    <div class="feature-box">
-
-        <h2>
-            One account.
-            <span>One platform.</span>
-        </h2>
-
-        <p>
-            Delight Vendor Logs brings different digital
-            services and resources together so you can
-            manage what you need from one place.
-        </p>
-
-
-        <div class="features">
-
-
-            <div class="feature">
-
-                <div class="feature-number">
-                    01
-                </div>
-
-                <h3>
-                    Simple Access
-                </h3>
-
-                <p>
-                    Create your account and access the
-                    platform through your personal dashboard.
-                </p>
-
-            </div>
-
-
-            <div class="feature">
-
-                <div class="feature-number">
-                    02
-                </div>
-
-                <h3>
-                    Everything Organized
-                </h3>
-
-                <p>
-                    Different services and resources are
-                    arranged into clear categories.
-                </p>
-
-            </div>
-
-
-            <div class="feature">
-
-                <div class="feature-number">
-                    03
-                </div>
-
-                <h3>
-                    One Dashboard
-                </h3>
-
-                <p>
-                    Keep your account, balance and available
-                    services together in one place.
-                </p>
-
-            </div>
-
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     FINAL CTA
-========================= -->
-
-<section class="cta-section">
-
-    <div class="small">
-        Get started
-    </div>
-
-    <h2>
-        Your digital world,
-        <span style="color:var(--gold);">
-            all in one place.
+  </footer>
+
+  <div
+    class="popup-overlay"
+    id="supportPopup"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="supportTitle"
+    aria-hidden="true"
+  >
+    <div class="support-popup">
+      <button class="popup-close" type="button" id="closeSupport" aria-label="Close support popup">×</button>
+
+      <div class="popup-symbol" aria-hidden="true">💬</div>
+      <h2 id="supportTitle">Contact Support</h2>
+      <p>Need help with Delight Vendor Logs? Choose one of our support channels below.</p>
+
+      <a class="support-option" href="https://wa.me/+2347015908401" target="_blank" rel="noopener noreferrer">
+        <span class="support-option-icon" aria-hidden="true">📱</span>
+        <span>
+          <strong>WhatsApp Support</strong>
+          <small>Chat with our support team</small>
         </span>
-    </h2>
+      </a>
 
-    <p>
-        Create your Delight Vendor Logs account and
-        get access to the platform.
-    </p>
+      <a class="support-option" href="https://t.me/DelightVendorLogsSupportBot" target="_blank" rel="noopener noreferrer">
+        <span class="support-option-icon" aria-hidden="true">✈️</span>
+        <span>
+          <strong>Telegram Support Bot</strong>
+          <small>Get assistance through Telegram</small>
+        </span>
+      </a>
 
+      <a class="support-option" href="mailto:delightvendorlogs@gmail.com">
+        <span class="support-option-icon" aria-hidden="true">✉️</span>
+        <span>
+          <strong>Email Support</strong>
+          <small>delightvendorlogs@gmail.com</small>
+        </span>
+      </a>
 
-    <div class="cta-actions">
-
-        <!-- CREATE ACCOUNT -->
-        <a
-            href="register.html"
-            class="btn btn-gold"
-        >
-            Create Account
-        </a>
-
-
-        <!-- LOGIN -->
-        <a
-            href="login.html"
-            class="btn btn-login"
-        >
-            Login
-        </a>
-
+      <button class="popup-later" type="button" id="laterSupport">Maybe later</button>
     </div>
+  </div>
 
-</section>
+  <script>
+    // Automatically update the copyright year.
+    document.getElementById("copyrightYear").textContent = new Date().getFullYear();
 
-</main>
+    // Contact Support popup controls.
+    const supportPopup = document.getElementById("supportPopup");
+    const openSupport = document.getElementById("openSupport");
+    const closeSupport = document.getElementById("closeSupport");
+    const laterSupport = document.getElementById("laterSupport");
 
+    let previousFocusedElement = null;
 
-<!-- =========================
-     FOOTER
-========================= -->
+    function showSupportPopup() {
+      previousFocusedElement = document.activeElement;
+      supportPopup.classList.add("active");
+      supportPopup.setAttribute("aria-hidden", "false");
+      document.body.classList.add("popup-open");
+      closeSupport.focus();
+    }
 
-<footer>
+    function hideSupportPopup() {
+      supportPopup.classList.remove("active");
+      supportPopup.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("popup-open");
 
-    <div class="footer-brand">
+      if (previousFocusedElement && typeof previousFocusedElement.focus === "function") {
+        previousFocusedElement.focus();
+      }
+    }
 
-        © <span id="year"></span>
+    openSupport.addEventListener("click", showSupportPopup);
+    closeSupport.addEventListener("click", hideSupportPopup);
+    laterSupport.addEventListener("click", hideSupportPopup);
 
-        <strong>
-            Delight Vendor Logs
-        </strong>
+    supportPopup.addEventListener("click", function (event) {
+      if (event.target === supportPopup) {
+        hideSupportPopup();
+      }
+    });
 
-    </div>
-
-    <div>
-        Your digital marketplace
-    </div>
-
-</footer>
-
-
-<script>
-
-/* Current year */
-
-document.getElementById("year").textContent =
-    new Date().getFullYear();
-
-</script>
-
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && supportPopup.classList.contains("active")) {
+        hideSupportPopup();
+      }
+    });
+  </script>
 </body>
 </html>
