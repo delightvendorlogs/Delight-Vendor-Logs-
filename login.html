@@ -1,340 +1,447 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050505">
 
 <title>Login - Delight Vendor Logs</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-html,
-body{
-    width:100%;
-    min-height:100%;
+html, body {
+    width: 100%;
+    min-height: 100%;
 }
 
-body{
-    font-family:Arial, Helvetica, sans-serif;
-    background:#050505;
-    color:#ffffff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    min-height:100vh;
-    padding:25px 15px;
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #050505;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 12px;
 }
 
 /* MAIN CONTAINER */
 
-.login-wrapper{
-    width:100%;
-    max-width:430px;
+.login-wrapper {
+    width: 100%;
+    max-width: 380px;
+    margin: auto;
 }
 
 /* LOGO */
 
-.logo{
-    text-align:center;
-    margin-bottom:30px;
-    line-height:1;
+.logo {
+    text-align: center;
+    margin-bottom: 16px;
+    line-height: 1;
 }
 
-.logo .delight{
-    display:block;
-    color:#ffffff;
-    font-size:34px;
-    font-weight:900;
-    letter-spacing:-1.5px;
+.logo .delight {
+    display: block;
+    color: #fff;
+    font-size: 29px;
+    font-weight: 900;
+    letter-spacing: -1px;
 }
 
-.logo .vendor{
-    display:block;
-    color:#d4af37;
-    font-size:17px;
-    font-weight:800;
-    letter-spacing:4px;
-    margin-top:7px;
+.logo .vendor {
+    display: block;
+    color: #d4af37;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    margin-top: 5px;
 }
 
 /* CARD */
 
-.login-card{
-    width:100%;
-    background:#0d0d0d;
-    border:1px solid #252525;
-    border-radius:20px;
-    padding:32px 25px 28px;
+.login-card {
+    width: 100%;
+    background: #0d0d0d;
+    border: 1px solid #252525;
+    border-radius: 15px;
+    padding: 20px 18px 17px;
     box-shadow:
-        0 20px 60px rgba(0,0,0,0.55),
-        0 0 35px rgba(212,175,55,0.05);
+        0 15px 40px rgba(0,0,0,.45),
+        0 0 25px rgba(212,175,55,.04);
 }
 
 /* HEADER */
 
-.login-header{
-    text-align:center;
-    margin-bottom:28px;
+.login-header {
+    text-align: center;
+    margin-bottom: 17px;
 }
 
-.login-header h1{
-    font-size:28px;
-    font-weight:800;
-    color:#ffffff;
-    margin-bottom:9px;
+.login-header h1 {
+    font-size: 23px;
+    line-height: 1.25;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 5px;
 }
 
-.login-header p{
-    color:#999999;
-    font-size:14px;
-    line-height:1.5;
+.login-header p {
+    color: #999;
+    font-size: 12px;
+    line-height: 1.45;
 }
 
 /* FORM */
 
-.form-group{
-    margin-bottom:19px;
+.form-group {
+    margin-bottom: 12px;
 }
 
-.form-group label{
-    display:block;
-    color:#dddddd;
-    font-size:13px;
-    font-weight:700;
-    margin-bottom:8px;
+.form-group label {
+    display: block;
+    color: #ddd;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 5px;
 }
 
-.input-wrapper{
-    position:relative;
+.input-wrapper {
+    position: relative;
 }
 
-.form-group input{
-    width:100%;
-    height:52px;
-    border:1px solid #292929;
-    border-radius:11px;
-    background:#151515;
-    color:#ffffff;
-    outline:none;
-    padding:0 15px;
-    font-size:15px;
-    transition:0.2s ease;
+.form-group input {
+    display: block;
+    width: 100%;
+    height: 43px;
+    border: 1px solid #292929;
+    border-radius: 9px;
+    background: #151515;
+    color: #fff;
+    outline: none;
+    padding: 0 12px;
+    font-family: inherit;
+    font-size: 13px;
+    transition: .2s ease;
 }
 
-.form-group input:focus{
-    border-color:#d4af37;
-    box-shadow:0 0 0 3px rgba(212,175,55,0.08);
+.form-group input:focus {
+    border-color: #d4af37;
+    box-shadow: 0 0 0 2px rgba(212,175,55,.08);
 }
 
-.form-group input::placeholder{
-    color:#666666;
+.form-group input::placeholder {
+    color: #666;
 }
 
 /* PASSWORD */
 
-.password-input{
-    padding-right:52px !important;
+.password-input {
+    padding-right: 42px !important;
 }
 
-.toggle-password{
-    position:absolute;
-    right:0;
-    top:0;
-    width:50px;
-    height:52px;
-    border:0;
-    background:transparent;
-    color:#888888;
-    cursor:pointer;
-    font-size:17px;
+.toggle-password {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 40px;
+    height: 43px;
+    border: 0;
+    background: transparent;
+    color: #888;
+    cursor: pointer;
+    font-size: 15px;
 }
 
-.toggle-password:hover{
-    color:#d4af37;
+.toggle-password:hover {
+    color: #d4af37;
 }
 
 /* FORGOT PASSWORD */
 
-.forgot-row{
-    display:flex;
-    justify-content:flex-end;
-    margin-top:-7px;
-    margin-bottom:22px;
+.forgot-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -3px;
+    margin-bottom: 14px;
 }
 
-.forgot-row a{
-    color:#d4af37;
-    text-decoration:none;
-    font-size:13px;
-    font-weight:700;
+.forgot-row a {
+    color: #d4af37;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 700;
 }
 
-.forgot-row a:hover{
-    text-decoration:underline;
+.forgot-row a:hover {
+    text-decoration: underline;
 }
 
 /* LOGIN BUTTON */
 
-.login-btn{
-    width:100%;
-    height:53px;
-    border:none;
-    border-radius:11px;
-    background:linear-gradient(135deg,#d4af37,#f0cf68);
-    color:#080808;
-    font-size:15px;
-    font-weight:900;
-    cursor:pointer;
-    transition:0.2s ease;
+.login-btn {
+    width: 100%;
+    height: 43px;
+    border: none;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #d4af37, #f0cf68);
+    color: #080808;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: .2s ease;
 }
 
-.login-btn:hover{
-    transform:translateY(-1px);
-    box-shadow:0 8px 25px rgba(212,175,55,0.18);
+.login-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(212,175,55,.15);
 }
 
-.login-btn:active{
-    transform:translateY(0);
+.login-btn:active {
+    transform: translateY(0);
 }
 
-.login-btn:disabled{
-    opacity:0.6;
-    cursor:not-allowed;
-    transform:none;
+.login-btn:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+    transform: none;
 }
 
 /* MESSAGE */
 
-.message{
-    display:none;
-    margin-top:16px;
-    padding:12px 13px;
-    border-radius:9px;
-    font-size:13px;
-    line-height:1.45;
-    text-align:center;
+.message {
+    display: none;
+    margin-top: 10px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.4;
+    text-align: center;
+    overflow-wrap: anywhere;
 }
 
-.message.error{
-    display:block;
-    background:rgba(255,70,70,0.08);
-    border:1px solid rgba(255,70,70,0.22);
-    color:#ff8b8b;
+.message.error {
+    display: block;
+    background: rgba(255,70,70,.08);
+    border: 1px solid rgba(255,70,70,.22);
+    color: #ff8b8b;
 }
 
-.message.success{
-    display:block;
-    background:rgba(212,175,55,0.08);
-    border:1px solid rgba(212,175,55,0.22);
-    color:#e8c95f;
+.message.success {
+    display: block;
+    background: rgba(212,175,55,.08);
+    border: 1px solid rgba(212,175,55,.22);
+    color: #e8c95f;
 }
 
-/* DIVIDER */
+/* TERMS & POLICIES */
 
-.divider{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin:25px 0;
-    color:#666666;
-    font-size:12px;
+.policy-menu {
+    position: relative;
+    margin-top: 13px;
+    text-align: center;
 }
 
-.divider::before,
-.divider::after{
-    content:"";
-    height:1px;
-    flex:1;
-    background:#252525;
+.policy-menu summary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 8px 12px;
+    border: 1px solid rgba(212,175,55,.25);
+    border-radius: 8px;
+    background: rgba(212,175,55,.045);
+    color: #f1d77a;
+    font-size: 12px;
+    font-weight: 750;
+    cursor: pointer;
+    list-style: none;
+    transition: .2s;
+}
+
+.policy-menu summary::-webkit-details-marker {
+    display: none;
+}
+
+.policy-menu summary::after {
+    content: "▾";
+    font-size: 12px;
+    transition: transform .2s;
+}
+
+.policy-menu[open] summary::after {
+    transform: rotate(180deg);
+}
+
+.policy-menu summary:hover {
+    background: rgba(212,175,55,.10);
+    border-color: #d4af37;
+}
+
+.policy-links {
+    width: 100%;
+    max-width: 290px;
+    margin: 8px auto 0;
+    padding: 5px;
+    border: 1px solid rgba(212,175,55,.22);
+    border-radius: 10px;
+    background: #101010;
+    box-shadow: 0 12px 30px rgba(0,0,0,.4);
+    text-align: left;
+}
+
+.policy-links a {
+    display: block;
+    padding: 9px 10px;
+    border-radius: 7px;
+    color: #ddd;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    transition: .2s;
+}
+
+.policy-links a:hover {
+    background: rgba(212,175,55,.10);
+    color: #f1d77a;
 }
 
 /* REGISTER */
 
-.register-text{
-    text-align:center;
-    color:#888888;
-    font-size:14px;
+.register-text {
+    text-align: center;
+    color: #888;
+    font-size: 12px;
+    line-height: 1.5;
+    margin-top: 12px;
 }
 
-.register-text a{
-    color:#d4af37;
-    text-decoration:none;
-    font-weight:800;
+.register-text a {
+    color: #d4af37;
+    text-decoration: none;
+    font-weight: 800;
+    margin-left: 3px;
 }
 
-.register-text a:hover{
-    text-decoration:underline;
+.register-text a:hover {
+    text-decoration: underline;
 }
 
 /* BACK HOME */
 
-.back-home{
-    text-align:center;
-    margin-top:23px;
+.back-home {
+    text-align: center;
+    margin-top: 12px;
 }
 
-.back-home a{
-    color:#777777;
-    text-decoration:none;
-    font-size:13px;
-    transition:0.2s ease;
+.back-home a {
+    color: #777;
+    text-decoration: none;
+    font-size: 11px;
+    transition: .2s ease;
 }
 
-.back-home a:hover{
-    color:#d4af37;
+.back-home a:hover {
+    color: #d4af37;
 }
 
 /* FOOTER */
 
-.footer{
-    text-align:center;
-    margin-top:25px;
-    color:#555555;
-    font-size:11px;
+.footer {
+    text-align: center;
+    margin-top: 12px;
+    color: #555;
+    font-size: 10px;
 }
 
-/* MOBILE */
+/* SHORT SCREENS */
 
-@media(max-width:480px){
-
-    body{
-        padding:18px 13px;
+@media(max-height: 700px) {
+    body {
+        align-items: flex-start;
+        padding-top: 10px;
+        padding-bottom: 10px;
     }
 
-    .login-card{
-        padding:28px 20px 25px;
-        border-radius:17px;
+    .logo {
+        margin-bottom: 10px;
     }
 
-    .logo{
-        margin-bottom:25px;
+    .logo .delight {
+        font-size: 25px;
     }
 
-    .logo .delight{
-        font-size:31px;
+    .logo .vendor {
+        font-size: 11px;
+        margin-top: 4px;
     }
 
-    .login-header h1{
-        font-size:25px;
+    .login-card {
+        padding: 15px 16px 13px;
     }
 
+    .login-header {
+        margin-bottom: 12px;
+    }
+
+    .login-header h1 {
+        font-size: 21px;
+    }
+
+    .form-group {
+        margin-bottom: 9px;
+    }
+
+    .form-group input,
+    .toggle-password {
+        height: 39px;
+    }
+
+    .forgot-row {
+        margin-bottom: 10px;
+    }
+
+    .login-btn {
+        height: 40px;
+    }
+
+    .policy-menu {
+        margin-top: 9px;
+    }
+
+    .register-text {
+        margin-top: 9px;
+    }
+
+    .back-home,
+    .footer {
+        margin-top: 9px;
+    }
 }
 
+/* VERY SMALL PHONES */
+
+@media(max-width: 340px) {
+    .login-card {
+        padding-left: 13px;
+        padding-right: 13px;
+    }
+
+    .login-header h1 {
+        font-size: 20px;
+    }
+}
 </style>
-
 </head>
 
 <body>
@@ -348,29 +455,21 @@ body{
         <span class="vendor">VENDOR LOGS</span>
     </div>
 
-
     <!-- LOGIN CARD -->
 
     <div class="login-card">
 
         <div class="login-header">
             <h1>Welcome back 👋</h1>
-
-            <p>
-                Sign in to your Delight Vendor Logs account
-            </p>
+            <p>Sign in to your Delight Vendor Logs account</p>
         </div>
-
 
         <form id="loginForm" onsubmit="loginUser(event)">
 
             <!-- EMAIL -->
 
             <div class="form-group">
-
-                <label for="email">
-                    Email Address
-                </label>
+                <label for="email">Email Address</label>
 
                 <input
                     type="email"
@@ -379,17 +478,12 @@ body{
                     autocomplete="email"
                     required
                 >
-
             </div>
-
 
             <!-- PASSWORD -->
 
             <div class="form-group">
-
-                <label for="password">
-                    Password
-                </label>
+                <label for="password">Password</label>
 
                 <div class="input-wrapper">
 
@@ -408,25 +502,16 @@ body{
                         id="togglePassword"
                         onclick="togglePasswordVisibility()"
                         aria-label="Show password"
-                    >
-                        👁
-                    </button>
+                    >👁</button>
 
                 </div>
-
             </div>
-
 
             <!-- FORGOT PASSWORD -->
 
             <div class="forgot-row">
-
-                <a href="forgot-password.html">
-                    Forgot Password?
-                </a>
-
+                <a href="forgot-password.html">Forgot Password?</a>
             </div>
-
 
             <!-- LOGIN -->
 
@@ -438,66 +523,57 @@ body{
                 Continue
             </button>
 
-
             <!-- MESSAGE -->
 
             <div
                 id="message"
                 class="message"
+                role="status"
+                aria-live="polite"
             ></div>
 
         </form>
 
+        <!-- TERMS & POLICIES -->
 
-        <!-- DIVIDER -->
+        <details class="policy-menu" id="policyMenu">
+            <summary>Terms &amp; Policies</summary>
 
-        <div class="divider">
-            or
-        </div>
-
+            <div class="policy-links">
+                <a href="about.html">About Us</a>
+                <a href="terms.html">Terms &amp; Conditions</a>
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="refund-policy.html">Refund Policy</a>
+                <a href="faq.html">Frequently Asked Questions (FAQ)</a>
+            </div>
+        </details>
 
         <!-- REGISTER -->
 
         <div class="register-text">
-
             Don't have an account?
-
-            <a href="register.html">
-                Create Account
-            </a>
-
+            <a href="register.html">Create Account</a>
         </div>
 
     </div>
 
-
     <!-- BACK HOME -->
 
     <div class="back-home">
-
-        <a href="index.html">
-            ← Back to Home
-        </a>
-
+        <a href="index.html">← Back to Home</a>
     </div>
-
 
     <!-- FOOTER -->
 
     <div class="footer">
-
         © 2026 Delight Vendor Logs. All rights reserved.
-
     </div>
 
 </div>
 
-
 <script>
 
-/* ================================
-   SUPABASE CONFIGURATION
-================================ */
+/* SUPABASE CONFIGURATION */
 
 const SUPABASE_URL =
     "https://hkfhehbhmucymusaytoe.supabase.co";
@@ -511,219 +587,121 @@ const supabaseClient =
         SUPABASE_KEY
     );
 
+/* MESSAGE */
 
-/* ================================
-   MESSAGE
-================================ */
-
-function showMessage(message, type){
-
+function showMessage(message, type) {
     const messageBox =
         document.getElementById("message");
 
     messageBox.textContent = message;
-
-    messageBox.className =
-        "message " + type;
-
+    messageBox.className = "message " + type;
 }
 
+/* PASSWORD TOGGLE */
 
-/* ================================
-   PASSWORD TOGGLE
-================================ */
-
-function togglePasswordVisibility(){
-
+function togglePasswordVisibility() {
     const password =
         document.getElementById("password");
 
     const toggle =
         document.getElementById("togglePassword");
 
-
-    if(!password || !toggle){
+    if (!password || !toggle) {
         return;
     }
 
-
-    if(password.type === "password"){
-
+    if (password.type === "password") {
         password.type = "text";
-
         toggle.textContent = "🙈";
-
-        toggle.setAttribute(
-            "aria-label",
-            "Hide password"
-        );
-
-    }else{
-
+        toggle.setAttribute("aria-label", "Hide password");
+    } else {
         password.type = "password";
-
         toggle.textContent = "👁";
-
-        toggle.setAttribute(
-            "aria-label",
-            "Show password"
-        );
-
+        toggle.setAttribute("aria-label", "Show password");
     }
-
 }
 
+/* LOGIN */
 
-/* ================================
-   LOGIN
-================================ */
-
-async function loginUser(event){
-
+async function loginUser(event) {
     event.preventDefault();
 
     const email =
-        document.getElementById("email")
-        .value
-        .trim();
+        document.getElementById("email").value.trim();
 
     const password =
-        document.getElementById("password")
-        .value;
+        document.getElementById("password").value;
 
     const loginButton =
         document.getElementById("loginButton");
 
+    document.getElementById("message").className = "message";
 
-    /* Clear previous message */
-
-    document.getElementById("message").className =
-        "message";
-
-
-    /* Validate */
-
-    if(!email){
-
-        showMessage(
-            "Please enter your email address.",
-            "error"
-        );
-
+    if (!email) {
+        showMessage("Please enter your email address.", "error");
         return;
-
     }
 
-
-    if(!password){
-
-        showMessage(
-            "Please enter your password.",
-            "error"
-        );
-
+    if (!password) {
+        showMessage("Please enter your password.", "error");
         return;
-
     }
-
-
-    /* Disable button */
 
     loginButton.disabled = true;
-
     loginButton.textContent = "Signing In...";
 
+    try {
+        const { data, error } =
+            await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
 
-    try{
-
-        const {
-            data,
-            error
-        } = await supabaseClient.auth.signInWithPassword({
-
-            email: email,
-
-            password: password
-
-        });
-
-
-        if(error){
-
+        if (error) {
             console.error("Login error:", error);
 
             let errorMessage =
                 error.message ||
                 "Unable to sign in. Please try again.";
 
-
-            /*
-             * Make common Supabase errors
-             * easier for customers to understand.
-             */
-
-            if(
+            if (
                 error.message &&
                 error.message.toLowerCase()
                     .includes("invalid login credentials")
-            ){
-
+            ) {
                 errorMessage =
                     "Incorrect email or password. Please check your details and try again.";
-
             }
 
-
-            showMessage(
-                errorMessage,
-                "error"
-            );
+            showMessage(errorMessage, "error");
 
             loginButton.disabled = false;
-
             loginButton.textContent = "Continue";
-
             return;
-
         }
 
-
-        /* Successful login */
-
-        if(data && data.session){
-
+        if (data && data.session) {
             showMessage(
                 "Login successful. Redirecting...",
                 "success"
             );
 
-
-            setTimeout(function(){
-
-                window.location.href =
-                    "dashboard.html";
-
+            setTimeout(function() {
+                window.location.href = "dashboard.html";
             }, 500);
 
-        }else{
-
+        } else {
             showMessage(
                 "Login completed, but no active session was found. Please try again.",
                 "error"
             );
 
             loginButton.disabled = false;
-
             loginButton.textContent = "Continue";
-
         }
 
-    }catch(error){
-
-        console.error(
-            "Unexpected login error:",
-            error
-        );
+    } catch (error) {
+        console.error("Unexpected login error:", error);
 
         showMessage(
             "Something went wrong. Please check your internet connection and try again.",
@@ -731,33 +709,41 @@ async function loginUser(event){
         );
 
         loginButton.disabled = false;
-
         loginButton.textContent = "Continue";
-
     }
-
 }
 
+/* ENTER KEY: MOVE FROM EMAIL TO PASSWORD */
 
-/* ================================
-   ENTER KEY / FORM
-================================ */
-
-document
-    .getElementById("email")
-    .addEventListener("keydown", function(event){
-
-        if(event.key === "Enter"){
-
+document.getElementById("email")
+    .addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
             event.preventDefault();
-
-            document
-                .getElementById("password")
-                .focus();
-
+            document.getElementById("password").focus();
         }
-
     });
+
+/* CLOSE POLICY MENU WHEN CLICKING OUTSIDE */
+
+document.addEventListener("click", function(event) {
+    const menu = document.getElementById("policyMenu");
+
+    if (menu && !menu.contains(event.target)) {
+        menu.open = false;
+    }
+});
+
+/* CLOSE POLICY MENU WITH ESCAPE */
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") {
+        const menu = document.getElementById("policyMenu");
+
+        if (menu) {
+            menu.open = false;
+        }
+    }
+});
 
 </script>
 
