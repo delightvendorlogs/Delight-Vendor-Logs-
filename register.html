@@ -1,686 +1,566 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050505">
 
 <title>Create Account - Delight Vendor Logs</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
-*{
-  box-sizing:border-box;
+* {
+  box-sizing: border-box;
 }
 
-html,
-body{
-  margin:0;
-  padding:0;
+html, body {
+  margin: 0;
+  padding: 0;
 }
 
-:root{
-  --black:#050505;
-  --black2:#0a0a0a;
-  --card:#0d0d0d;
-  --gold:#d4af37;
-  --gold-light:#f1d77a;
-  --gold-dark:#9c7b16;
-  --white:#ffffff;
-  --muted:#969696;
-  --border:rgba(212,175,55,.20);
+:root {
+  --black: #050505;
+  --black2: #0a0a0a;
+  --card: #0d0d0d;
+  --gold: #d4af37;
+  --gold-light: #f1d77a;
+  --gold-dark: #9c7b16;
+  --white: #ffffff;
+  --muted: #969696;
+  --border: rgba(212,175,55,.20);
 }
 
-body{
-
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
-
-  background:#050505;
-
-  color:#fff;
-
-  min-height:100vh;
-
-  overflow-x:hidden;
-
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--black);
+  color: #fff;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-
-/* BACKGROUND */
-
-body::before{
-
-  content:"";
-
-  position:fixed;
-
-  inset:0;
-
-  pointer-events:none;
-
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
   background:
-
-    radial-gradient(
-      circle at 15% 10%,
-      rgba(212,175,55,.10),
-      transparent 28%
-    ),
-
-    radial-gradient(
-      circle at 85% 20%,
-      rgba(212,175,55,.07),
-      transparent 30%
-    ),
-
-    radial-gradient(
-      circle at 50% 85%,
-      rgba(212,175,55,.045),
-      transparent 35%
-    );
-
-  z-index:-2;
-
+    radial-gradient(circle at 15% 10%, rgba(212,175,55,.10), transparent 28%),
+    radial-gradient(circle at 85% 20%, rgba(212,175,55,.07), transparent 30%),
+    radial-gradient(circle at 50% 85%, rgba(212,175,55,.045), transparent 35%);
+  z-index: -2;
 }
 
-
-body::after{
-
-  content:"";
-
-  position:fixed;
-
-  inset:0;
-
-  pointer-events:none;
-
-  opacity:.035;
-
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: .035;
   background-image:
-
-    linear-gradient(
-      rgba(255,255,255,.8) 1px,
-      transparent 1px
-    ),
-
-    linear-gradient(
-      90deg,
-      rgba(255,255,255,.8) 1px,
-      transparent 1px
-    );
-
-  background-size:55px 55px;
-
-  z-index:-1;
-
+    linear-gradient(rgba(255,255,255,.8) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.8) 1px, transparent 1px);
+  background-size: 55px 55px;
+  z-index: -1;
 }
-
 
 /* MAIN */
 
-.page{
-
-  width:100%;
-
-  max-width:720px;
-
-  margin:0 auto;
-
-  padding:55px 34px 50px;
-
+.page {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 55px 34px 50px;
 }
-
 
 /* TOP BRAND */
 
-.brand{
-
-  display:flex;
-
-  align-items:center;
-
-  gap:11px;
-
-  margin-bottom:42px;
-
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 42px;
 }
 
-.brand-mark{
-
-  width:42px;
-
-  height:42px;
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:center;
-
-  border:1px solid var(--gold);
-
-  border-radius:12px;
-
-  color:var(--gold);
-
-  font-size:20px;
-
-  font-weight:900;
-
-  box-shadow:
-    0 0 20px rgba(212,175,55,.12);
-
+.brand-mark {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--gold);
+  border-radius: 12px;
+  color: var(--gold);
+  font-size: 20px;
+  font-weight: 900;
+  box-shadow: 0 0 20px rgba(212,175,55,.12);
 }
 
-.brand-name{
-
-  color:#fff;
-
-  font-size:18px;
-
-  font-weight:850;
-
+.brand-name {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 850;
 }
 
-.brand-name span{
-
-  color:var(--gold);
-
+.brand-name span {
+  color: var(--gold);
 }
-
 
 /* HEADER */
 
-.heading{
-
-  margin-bottom:48px;
-
+.heading {
+  margin-bottom: 35px;
 }
 
-.heading h1{
-
-  margin:0;
-
-  font-size:40px;
-
-  line-height:1.15;
-
-  font-weight:800;
-
-  letter-spacing:-1.2px;
-
-  color:#fff;
-
+.heading h1 {
+  margin: 0;
+  font-size: 40px;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -1.2px;
+  color: #fff;
 }
 
-.heading p{
-
-  margin:14px 0 0;
-
-  font-size:19px;
-
-  line-height:1.5;
-
-  color:#888;
-
+.heading p {
+  margin: 14px 0 0;
+  font-size: 19px;
+  line-height: 1.5;
+  color: #888;
 }
 
+/* GOOGLE SIGN UP */
+
+.google-btn {
+  width: 100%;
+  min-height: 66px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  border: 1px solid rgba(255,255,255,.20);
+  border-radius: 16px;
+  background: #fff;
+  color: #171717;
+  font-size: 17px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.google-btn:hover {
+  background: #f1f1f1;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.22);
+}
+
+.google-btn:disabled {
+  opacity: .65;
+  cursor: wait;
+  transform: none;
+}
+
+.google-icon {
+  width: 23px;
+  height: 23px;
+  flex-shrink: 0;
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 28px 0 32px;
+  color: #777;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.separator::before,
+.separator::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: rgba(212,175,55,.20);
+}
 
 /* SECTION */
 
-.section{
-
-  margin-bottom:40px;
-
+.section {
+  margin-bottom: 40px;
 }
 
-.section-title{
-
-  display:flex;
-
-  align-items:center;
-
-  gap:14px;
-
-  margin-bottom:26px;
-
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 26px;
 }
 
-.section-title span{
-
-  font-size:15px;
-
-  font-weight:800;
-
-  color:#777;
-
-  letter-spacing:1.5px;
-
-  white-space:nowrap;
-
+.section-title span {
+  font-size: 15px;
+  font-weight: 800;
+  color: #777;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
 }
 
-.section-title::after{
-
-  content:"";
-
-  height:1px;
-
-  background:rgba(212,175,55,.18);
-
-  flex:1;
-
+.section-title::after {
+  content: "";
+  height: 1px;
+  background: rgba(212,175,55,.18);
+  flex: 1;
 }
-
 
 /* FIELD */
 
-.field{
-
-  margin-bottom:27px;
-
+.field {
+  margin-bottom: 27px;
 }
 
-.field label{
-
-  display:block;
-
-  margin-bottom:12px;
-
-  font-size:18px;
-
-  font-weight:700;
-
-  color:#eee;
-
+.field label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #eee;
 }
 
-.input-wrap{
-
-  position:relative;
-
+.input-wrap {
+  position: relative;
 }
 
-.input-icon{
-
-  position:absolute;
-
-  left:21px;
-
-  top:50%;
-
-  transform:translateY(-50%);
-
-  color:var(--gold);
-
-  font-size:19px;
-
-  pointer-events:none;
-
+.input-icon {
+  position: absolute;
+  left: 21px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gold);
+  font-size: 19px;
+  pointer-events: none;
 }
 
-.input-wrap input{
-
-  width:100%;
-
-  height:78px;
-
-  border:1px solid rgba(212,175,55,.18);
-
-  background:#0d0d0d;
-
-  border-radius:18px;
-
-  outline:none;
-
-  padding:0 20px 0 63px;
-
-  font-size:19px;
-
-  color:#fff;
-
-  transition:.2s;
-
-  box-shadow:
-    inset 0 0 20px rgba(0,0,0,.20);
-
+.input-wrap input {
+  width: 100%;
+  height: 78px;
+  border: 1px solid rgba(212,175,55,.18);
+  background: #0d0d0d;
+  border-radius: 18px;
+  outline: none;
+  padding: 0 20px 0 63px;
+  font-size: 19px;
+  color: #fff;
+  transition: .2s;
+  box-shadow: inset 0 0 20px rgba(0,0,0,.20);
 }
 
-.input-wrap input::placeholder{
-
-  color:#686868;
-
+.input-wrap input::placeholder {
+  color: #686868;
 }
 
-.input-wrap input:focus{
-
-  border-color:var(--gold);
-
-  background:#101010;
-
-  box-shadow:
-    0 0 0 4px rgba(212,175,55,.08);
-
+.input-wrap input:focus {
+  border-color: var(--gold);
+  background: #101010;
+  box-shadow: 0 0 0 4px rgba(212,175,55,.08);
 }
-
 
 /* PASSWORD */
 
-.password-toggle{
-
-  position:absolute;
-
-  right:19px;
-
-  top:50%;
-
-  transform:translateY(-50%);
-
-  border:0;
-
-  background:none;
-
-  color:#888;
-
-  font-size:20px;
-
-  padding:8px;
-
-  cursor:pointer;
-
+.password-toggle {
+  position: absolute;
+  right: 19px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: none;
+  color: #888;
+  font-size: 20px;
+  padding: 8px;
+  cursor: pointer;
 }
 
-.password-toggle:hover{
-
-  color:var(--gold);
-
+.password-toggle:hover {
+  color: var(--gold);
 }
 
-.password-input{
-
-  padding-right:58px !important;
-
+.password-input {
+  padding-right: 58px !important;
 }
 
+/* CREATE ACCOUNT */
 
-/* BUTTON */
-
-.create-btn{
-
-  width:100%;
-
-  height:76px;
-
-  border:1px solid var(--gold);
-
-  border-radius:18px;
-
-  background:
-
-    linear-gradient(
-      135deg,
-      var(--gold-light),
-      var(--gold)
-    );
-
-  color:#080808;
-
-  font-size:21px;
-
-  font-weight:800;
-
-  cursor:pointer;
-
-  box-shadow:
-    0 8px 25px rgba(212,175,55,.13);
-
-  transition:.2s;
-
+.create-btn {
+  width: 100%;
+  min-height: 76px;
+  border: 1px solid var(--gold);
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  color: #080808;
+  font-size: 21px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(212,175,55,.13);
+  transition: .2s;
 }
 
-.create-btn:hover{
-
-  transform:translateY(-2px);
-
-  box-shadow:
-    0 12px 32px rgba(212,175,55,.20);
-
+.create-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(212,175,55,.20);
 }
 
-.create-btn:active{
-
-  transform:scale(.99);
-
+.create-btn:active {
+  transform: scale(.99);
 }
 
-.create-btn:disabled{
-
-  opacity:.65;
-
-  cursor:not-allowed;
-
-  transform:none;
-
+.create-btn:disabled {
+  opacity: .65;
+  cursor: not-allowed;
+  transform: none;
 }
-
 
 /* MESSAGE */
 
-#message{
-
-  margin:20px 0 0;
-
-  text-align:center;
-
-  font-size:16px;
-
-  line-height:1.5;
-
-  color:#999;
-
+#message {
+  margin: 20px 0 0;
+  text-align: center;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #999;
+  overflow-wrap: anywhere;
 }
 
+#message.error {
+  color: #ff7777;
+}
+
+#message.success {
+  color: var(--gold-light);
+}
+
+/* TERMS & POLICIES DROPDOWN */
+
+.policy-menu {
+  position: relative;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.policy-menu summary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 12px 17px;
+  border: 1px solid rgba(212,175,55,.25);
+  border-radius: 12px;
+  background: rgba(212,175,55,.045);
+  color: var(--gold-light);
+  font-size: 15px;
+  font-weight: 750;
+  cursor: pointer;
+  list-style: none;
+  transition: .2s;
+}
+
+.policy-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.policy-menu summary::after {
+  content: "▾";
+  font-size: 15px;
+  transition: transform .2s;
+}
+
+.policy-menu[open] summary::after {
+  transform: rotate(180deg);
+}
+
+.policy-menu summary:hover {
+  background: rgba(212,175,55,.10);
+  border-color: var(--gold);
+}
+
+.policy-links {
+  width: 100%;
+  max-width: 320px;
+  margin: 12px auto 0;
+  padding: 8px;
+  border: 1px solid rgba(212,175,55,.22);
+  border-radius: 14px;
+  background: #101010;
+  box-shadow: 0 12px 35px rgba(0,0,0,.4);
+  text-align: left;
+}
+
+.policy-links a {
+  display: block;
+  padding: 13px 14px;
+  border-radius: 9px;
+  color: #ddd;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  transition: .2s;
+}
+
+.policy-links a:hover {
+  background: rgba(212,175,55,.10);
+  color: var(--gold-light);
+}
 
 /* LOGIN LINK */
 
-.account-link{
-
-  text-align:center;
-
-  margin-top:34px;
-
-  font-size:18px;
-
-  color:#777;
-
+.account-link {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 18px;
+  line-height: 1.7;
+  color: #777;
 }
 
-.account-link a{
-
-  color:var(--gold-light);
-
-  text-decoration:none;
-
-  font-weight:800;
-
-  transition:.2s;
-
+.account-link a {
+  color: var(--gold-light);
+  text-decoration: none;
+  font-weight: 800;
+  transition: .2s;
 }
 
-.account-link a:hover{
-
-  color:#fff;
-
+.account-link a:hover {
+  color: #fff;
 }
-
 
 /* MOBILE */
 
-@media(max-width:600px){
-
-  .page{
-
-    padding:
-      35px
-      25px
-      45px;
-
+@media(max-width:600px) {
+  .page {
+    padding: 35px 25px 45px;
   }
 
-  .brand{
-
-    margin-bottom:36px;
-
+  .brand {
+    margin-bottom: 36px;
   }
 
-  .heading{
-
-    margin-bottom:43px;
-
+  .heading {
+    margin-bottom: 30px;
   }
 
-  .heading h1{
-
-    font-size:34px;
-
+  .heading h1 {
+    font-size: 34px;
   }
 
-  .heading p{
-
-    font-size:18px;
-
+  .heading p {
+    font-size: 18px;
   }
 
-  .section-title span{
-
-    font-size:13px;
-
+  .section-title span {
+    font-size: 13px;
   }
 
-  .field label{
-
-    font-size:17px;
-
+  .field label {
+    font-size: 17px;
   }
 
-  .input-wrap input{
-
-    height:72px;
-
-    font-size:18px;
-
+  .input-wrap input {
+    height: 72px;
+    font-size: 18px;
   }
 
-  .create-btn{
-
-    height:72px;
-
+  .create-btn {
+    min-height: 72px;
   }
 
+  .google-btn {
+    min-height: 62px;
+    font-size: 16px;
+  }
 }
 
-
-@media(max-width:400px){
-
-  .page{
-
-    padding-left:20px;
-
-    padding-right:20px;
-
+@media(max-width:400px) {
+  .page {
+    padding-left: 20px;
+    padding-right: 20px;
   }
 
-  .brand-name{
-
-    font-size:16px;
-
+  .brand-name {
+    font-size: 16px;
   }
 
-  .heading h1{
-
-    font-size:31px;
-
+  .heading h1 {
+    font-size: 31px;
   }
-
 }
-
 </style>
-
 </head>
-
 
 <body>
 
-
 <div class="page">
-
 
   <!-- BRAND -->
 
   <div class="brand">
-
-    <div class="brand-mark">
-      D
-    </div>
+    <div class="brand-mark">D</div>
 
     <div class="brand-name">
       Delight <span>Vendor Logs</span>
     </div>
-
   </div>
-
 
   <!-- HEADER -->
 
   <div class="heading">
-
-    <h1>
-      Create your account 🚀
-    </h1>
+    <h1>Create your account 🚀</h1>
 
     <p>
       Fill in your details below to get started for free
     </p>
-
   </div>
 
+  <!-- GOOGLE SIGN UP -->
+
+  <button
+    id="googleButton"
+    class="google-btn"
+    type="button"
+    onclick="signUpWithGoogle()"
+  >
+    <svg
+      class="google-icon"
+      viewBox="0 0 48 48"
+      aria-hidden="true"
+    >
+      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" transform="translate(0 4)"/>
+      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.74 7.18l7.65 5.94c4.47-4.13 7.13-10.2 7.13-17.59z" transform="translate(0 -1)"/>
+      <path fill="#FBBC05" d="M10.53 28.59a14.4 14.4 0 0 1 0-9.18l-7.98-6.19a23.98 23.98 0 0 0 0 21.56l7.98-6.19z" transform="translate(0 1)"/>
+      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.9-5.81l-7.65-5.94c-2.13 1.43-4.85 2.28-8.25 2.28-6.26 0-11.57-4.22-13.46-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" transform="translate(0 -3)"/>
+    </svg>
+
+    <span>Continue with Google</span>
+  </button>
+
+  <div class="separator">
+    OR SIGN UP WITH EMAIL
+  </div>
 
   <!-- PERSONAL INFO -->
 
   <section class="section">
 
-
     <div class="section-title">
-
-      <span>
-        PERSONAL INFO
-      </span>
-
+      <span>PERSONAL INFO</span>
     </div>
-
 
     <!-- FIRST NAME -->
 
     <div class="field">
-
-      <label for="firstName">
-        First Name
-      </label>
+      <label for="firstName">First Name</label>
 
       <div class="input-wrap">
-
-        <span class="input-icon">
-          🪪
-        </span>
+        <span class="input-icon">🪪</span>
 
         <input
           id="firstName"
@@ -689,25 +569,16 @@ body::after{
           autocomplete="given-name"
           required
         >
-
       </div>
-
     </div>
-
 
     <!-- LAST NAME -->
 
     <div class="field">
-
-      <label for="lastName">
-        Last Name
-      </label>
+      <label for="lastName">Last Name</label>
 
       <div class="input-wrap">
-
-        <span class="input-icon">
-          🪪
-        </span>
+        <span class="input-icon">🪪</span>
 
         <input
           id="lastName"
@@ -716,25 +587,16 @@ body::after{
           autocomplete="family-name"
           required
         >
-
       </div>
-
     </div>
-
 
     <!-- EMAIL -->
 
     <div class="field">
-
-      <label for="email">
-        Email Address
-      </label>
+      <label for="email">Email Address</label>
 
       <div class="input-wrap">
-
-        <span class="input-icon">
-          ✉
-        </span>
+        <span class="input-icon">✉</span>
 
         <input
           id="email"
@@ -743,42 +605,26 @@ body::after{
           autocomplete="email"
           required
         >
-
       </div>
-
     </div>
 
-
   </section>
-
 
   <!-- ACCOUNT SECURITY -->
 
   <section class="section">
 
-
     <div class="section-title">
-
-      <span>
-        ACCOUNT SECURITY
-      </span>
-
+      <span>ACCOUNT SECURITY</span>
     </div>
-
 
     <!-- PASSWORD -->
 
     <div class="field">
-
-      <label for="password">
-        Password
-      </label>
+      <label for="password">Password</label>
 
       <div class="input-wrap">
-
-        <span class="input-icon">
-          🔒
-        </span>
+        <span class="input-icon">🔒</span>
 
         <input
           id="password"
@@ -797,14 +643,10 @@ body::after{
         >
           👁
         </button>
-
       </div>
-
     </div>
 
-
   </section>
-
 
   <!-- CREATE ACCOUNT -->
 
@@ -817,38 +659,41 @@ body::after{
     Create Account
   </button>
 
+  <p id="message" role="status" aria-live="polite"></p>
 
-  <p id="message"></p>
+  <!-- TERMS & POLICIES DROPDOWN -->
 
+  <details class="policy-menu" id="policyMenu">
+    <summary>Terms &amp; Policies</summary>
+
+    <div class="policy-links">
+      <a href="about.html">About Us</a>
+      <a href="terms.html">Terms &amp; Conditions</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="refund-policy.html">Refund Policy</a>
+      <a href="faq.html">Frequently Asked Questions (FAQ)</a>
+    </div>
+  </details>
 
   <!-- LOGIN -->
 
   <div class="account-link">
-
     Already have an account?
 
-    <a href="login.html">
-      Sign In
-    </a>
-
+    <a href="login.html">Sign In</a>
   </div>
-
 
 </div>
 
-
 <script>
-
 
 /* SUPABASE */
 
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
 
-
 const SUPABASE_KEY =
   "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
-
 
 const supabaseClient =
   window.supabase.createClient(
@@ -856,219 +701,233 @@ const supabaseClient =
     SUPABASE_KEY
   );
 
+/* SHARED MESSAGE */
+
+function showMessage(text, type = "") {
+  const message = document.getElementById("message");
+
+  message.textContent = text;
+  message.className = type;
+}
+
+/* GOOGLE SIGN UP */
+
+async function signUpWithGoogle() {
+  const button = document.getElementById("googleButton");
+  const createButton = document.getElementById("createButton");
+
+  showMessage("");
+
+  button.disabled = true;
+  createButton.disabled = true;
+
+  button.querySelector("span").textContent =
+    "Connecting to Google...";
+
+  try {
+    const redirectUrl =
+      new URL("dashboard.html", window.location.href).href;
+
+    const { error } =
+      await supabaseClient.auth.signInWithOAuth({
+        provider: "google",
+
+        options: {
+          redirectTo: redirectUrl,
+
+          queryParams: {
+            access_type: "offline",
+            prompt: "select_account"
+          }
+        }
+      });
+
+    if (error) {
+      console.error("Google sign-up error:", error);
+
+      showMessage(
+        "Google sign-up could not start: " + error.message,
+        "error"
+      );
+
+      button.disabled = false;
+      createButton.disabled = false;
+
+      button.querySelector("span").textContent =
+        "Continue with Google";
+    }
+
+  } catch (error) {
+    console.error("Google sign-up error:", error);
+
+    showMessage(
+      "Unable to connect to Google right now. Please try again.",
+      "error"
+    );
+
+    button.disabled = false;
+    createButton.disabled = false;
+
+    button.querySelector("span").textContent =
+      "Continue with Google";
+  }
+}
 
 /* PASSWORD TOGGLE */
 
-function togglePassword(){
-
+function togglePassword() {
   const password =
-    document.getElementById(
-      "password"
-    );
+    document.getElementById("password");
 
   const button =
-    document.querySelector(
-      ".password-toggle"
-    );
+    document.querySelector(".password-toggle");
 
-
-  if(
-    password.type === "password"
-  ){
-
+  if (password.type === "password") {
     password.type = "text";
-
     button.textContent = "🙈";
-
-  }else{
-
+    button.setAttribute("aria-label", "Hide password");
+  } else {
     password.type = "password";
-
     button.textContent = "👁";
-
+    button.setAttribute("aria-label", "Show password");
   }
-
 }
-
 
 /* CREATE ACCOUNT */
 
-async function createAccount(){
-
+async function createAccount() {
   const firstName =
-    document
-      .getElementById("firstName")
-      .value
-      .trim();
-
+    document.getElementById("firstName").value.trim();
 
   const lastName =
-    document
-      .getElementById("lastName")
-      .value
-      .trim();
-
+    document.getElementById("lastName").value.trim();
 
   const email =
-    document
-      .getElementById("email")
-      .value
-      .trim();
-
+    document.getElementById("email").value.trim();
 
   const password =
-    document
-      .getElementById("password")
-      .value;
-
-
-  const message =
-    document
-      .getElementById("message");
-
+    document.getElementById("password").value;
 
   const button =
-    document
-      .getElementById("createButton");
+    document.getElementById("createButton");
 
+  const googleButton =
+    document.getElementById("googleButton");
 
-  message.textContent = "";
+  showMessage("");
 
-
-  if(
-    !firstName ||
-    !lastName ||
-    !email ||
-    !password
-  ){
-
-    message.textContent =
-      "Please fill in all fields.";
-
+  if (!firstName || !lastName || !email || !password) {
+    showMessage("Please fill in all fields.", "error");
     return;
-
   }
 
+  if (password.length < 6) {
+    showMessage(
+      "Your password must contain at least 6 characters.",
+      "error"
+    );
+    return;
+  }
 
   button.disabled = true;
+  googleButton.disabled = true;
 
-  button.textContent =
-    "Creating Account...";
+  button.textContent = "Creating Account...";
 
+  showMessage("Creating your account...");
 
-  message.textContent =
-    "Creating your account...";
+  try {
+    const fullName = firstName + " " + lastName;
 
-
-  try{
-
-    const fullName =
-      firstName +
-      " " +
-      lastName;
-
-
-    const {
-      data,
-      error
-    } =
+    const { data, error } =
       await supabaseClient.auth.signUp({
+        email: email,
+        password: password,
 
-        email:email,
-
-        password:password,
-
-        options:{
-
-          data:{
-
-            name:fullName,
-
-            first_name:firstName,
-
-            last_name:lastName
-
+        options: {
+          data: {
+            name: fullName,
+            first_name: firstName,
+            last_name: lastName
           }
-
         }
-
       });
 
-
-    if(error){
-
+    if (error) {
       console.error(error);
 
-      message.textContent =
-        error.message;
+      showMessage(error.message, "error");
 
       button.disabled = false;
-
-      button.textContent =
-        "Create Account";
+      googleButton.disabled = false;
+      button.textContent = "Create Account";
 
       return;
-
     }
-
 
     /*
-      Confirm Email is OFF in Supabase,
-      so a session should normally exist.
+      If email confirmation is disabled in Supabase,
+      a session should normally exist.
     */
 
-    if(
-      data &&
-      data.session
-    ){
+    if (data && data.session) {
+      showMessage(
+        "Account created successfully! Redirecting...",
+        "success"
+      );
 
-      message.textContent =
-        "Account created successfully!";
+      setTimeout(function() {
+        window.location.href = "dashboard.html";
+      }, 700);
 
+    } else {
+      showMessage(
+        "Account created successfully. Please log in to continue.",
+        "success"
+      );
 
-      setTimeout(function(){
-
-        window.location.href =
-          "dashboard.html";
-
-      },500);
-
-
-    }else{
-
-      message.textContent =
-        "Account created successfully. Please log in.";
-
-
-      setTimeout(function(){
-
-        window.location.href =
-          "login.html";
-
-      },1000);
-
+      setTimeout(function() {
+        window.location.href = "login.html";
+      }, 1200);
     }
 
-
-  }catch(error){
-
+  } catch (error) {
     console.error(error);
 
-    message.textContent =
-      "Something went wrong. Please try again.";
+    showMessage(
+      "Something went wrong. Please try again.",
+      "error"
+    );
 
     button.disabled = false;
-
-    button.textContent =
-      "Create Account";
-
+    googleButton.disabled = false;
+    button.textContent = "Create Account";
   }
-
 }
+
+/* CLOSE POLICY MENU WHEN CLICKING OUTSIDE */
+
+document.addEventListener("click", function(event) {
+  const menu = document.getElementById("policyMenu");
+
+  if (menu && !menu.contains(event.target)) {
+    menu.open = false;
+  }
+});
+
+/* CLOSE POLICY MENU WITH ESCAPE */
+
+document.addEventListener("keydown", function(event) {
+  if (event.key === "Escape") {
+    const menu = document.getElementById("policyMenu");
+
+    if (menu) {
+      menu.open = false;
+    }
+  }
+});
 
 </script>
 
-
 </body>
-
 </html>
