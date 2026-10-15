@@ -111,7 +111,7 @@ body::after {
 /* HEADER */
 
 .heading {
-  margin-bottom: 35px;
+  margin-bottom: 48px;
 }
 
 .heading h1 {
@@ -128,63 +128,6 @@ body::after {
   font-size: 19px;
   line-height: 1.5;
   color: #888;
-}
-
-/* GOOGLE SIGN UP */
-
-.google-btn {
-  width: 100%;
-  min-height: 66px;
-  padding: 14px 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 13px;
-  border: 1px solid rgba(255,255,255,.20);
-  border-radius: 16px;
-  background: #fff;
-  color: #171717;
-  font-size: 17px;
-  font-weight: 750;
-  cursor: pointer;
-  transition: .2s;
-}
-
-.google-btn:hover {
-  background: #f1f1f1;
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(0,0,0,.22);
-}
-
-.google-btn:disabled {
-  opacity: .65;
-  cursor: wait;
-  transform: none;
-}
-
-.google-icon {
-  width: 23px;
-  height: 23px;
-  flex-shrink: 0;
-}
-
-.separator {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin: 28px 0 32px;
-  color: #777;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-}
-
-.separator::before,
-.separator::after {
-  content: "";
-  height: 1px;
-  flex: 1;
-  background: rgba(212,175,55,.20);
 }
 
 /* SECTION */
@@ -290,11 +233,11 @@ body::after {
   padding-right: 58px !important;
 }
 
-/* CREATE ACCOUNT */
+/* BUTTON */
 
 .create-btn {
   width: 100%;
-  min-height: 76px;
+  height: 76px;
   border: 1px solid var(--gold);
   border-radius: 18px;
   background: linear-gradient(135deg, var(--gold-light), var(--gold));
@@ -416,9 +359,8 @@ body::after {
 
 .account-link {
   text-align: center;
-  margin-top: 30px;
+  margin-top: 34px;
   font-size: 18px;
-  line-height: 1.7;
   color: #777;
 }
 
@@ -445,7 +387,7 @@ body::after {
   }
 
   .heading {
-    margin-bottom: 30px;
+    margin-bottom: 43px;
   }
 
   .heading h1 {
@@ -470,12 +412,7 @@ body::after {
   }
 
   .create-btn {
-    min-height: 72px;
-  }
-
-  .google-btn {
-    min-height: 62px;
-    font-size: 16px;
+    height: 72px;
   }
 }
 
@@ -518,32 +455,6 @@ body::after {
     <p>
       Fill in your details below to get started for free
     </p>
-  </div>
-
-  <!-- GOOGLE SIGN UP -->
-
-  <button
-    id="googleButton"
-    class="google-btn"
-    type="button"
-    onclick="signUpWithGoogle()"
-  >
-    <svg
-      class="google-icon"
-      viewBox="0 0 48 48"
-      aria-hidden="true"
-    >
-      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" transform="translate(0 4)"/>
-      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.74 7.18l7.65 5.94c4.47-4.13 7.13-10.2 7.13-17.59z" transform="translate(0 -1)"/>
-      <path fill="#FBBC05" d="M10.53 28.59a14.4 14.4 0 0 1 0-9.18l-7.98-6.19a23.98 23.98 0 0 0 0 21.56l7.98-6.19z" transform="translate(0 1)"/>
-      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.9-5.81l-7.65-5.94c-2.13 1.43-4.85 2.28-8.25 2.28-6.26 0-11.57-4.22-13.46-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" transform="translate(0 -3)"/>
-    </svg>
-
-    <span>Continue with Google</span>
-  </button>
-
-  <div class="separator">
-    OR SIGN UP WITH EMAIL
   </div>
 
   <!-- PERSONAL INFO -->
@@ -701,78 +612,6 @@ const supabaseClient =
     SUPABASE_KEY
   );
 
-/* SHARED MESSAGE */
-
-function showMessage(text, type = "") {
-  const message = document.getElementById("message");
-
-  message.textContent = text;
-  message.className = type;
-}
-
-/* GOOGLE SIGN UP */
-
-async function signUpWithGoogle() {
-  const button = document.getElementById("googleButton");
-  const createButton = document.getElementById("createButton");
-
-  showMessage("");
-
-  button.disabled = true;
-  createButton.disabled = true;
-
-  button.querySelector("span").textContent =
-    "Connecting to Google...";
-
-  try {
-    const redirectUrl =
-      new URL("dashboard.html", window.location.href).href;
-
-    const { error } =
-      await supabaseClient.auth.signInWithOAuth({
-        provider: "google",
-
-        options: {
-          redirectTo: redirectUrl,
-
-          queryParams: {
-            access_type: "offline",
-            prompt: "select_account"
-          }
-        }
-      });
-
-    if (error) {
-      console.error("Google sign-up error:", error);
-
-      showMessage(
-        "Google sign-up could not start: " + error.message,
-        "error"
-      );
-
-      button.disabled = false;
-      createButton.disabled = false;
-
-      button.querySelector("span").textContent =
-        "Continue with Google";
-    }
-
-  } catch (error) {
-    console.error("Google sign-up error:", error);
-
-    showMessage(
-      "Unable to connect to Google right now. Please try again.",
-      "error"
-    );
-
-    button.disabled = false;
-    createButton.disabled = false;
-
-    button.querySelector("span").textContent =
-      "Continue with Google";
-  }
-}
-
 /* PASSWORD TOGGLE */
 
 function togglePassword() {
@@ -793,6 +632,16 @@ function togglePassword() {
   }
 }
 
+/* SHARED MESSAGE */
+
+function showMessage(text, type = "") {
+  const message =
+    document.getElementById("message");
+
+  message.textContent = text;
+  message.className = type;
+}
+
 /* CREATE ACCOUNT */
 
 async function createAccount() {
@@ -808,13 +657,14 @@ async function createAccount() {
   const password =
     document.getElementById("password").value;
 
+  const message =
+    document.getElementById("message");
+
   const button =
     document.getElementById("createButton");
 
-  const googleButton =
-    document.getElementById("googleButton");
-
-  showMessage("");
+  message.textContent = "";
+  message.className = "";
 
   if (!firstName || !lastName || !email || !password) {
     showMessage("Please fill in all fields.", "error");
@@ -830,14 +680,13 @@ async function createAccount() {
   }
 
   button.disabled = true;
-  googleButton.disabled = true;
-
   button.textContent = "Creating Account...";
 
   showMessage("Creating your account...");
 
   try {
-    const fullName = firstName + " " + lastName;
+    const fullName =
+      firstName + " " + lastName;
 
     const { data, error } =
       await supabaseClient.auth.signUp({
@@ -859,36 +708,35 @@ async function createAccount() {
       showMessage(error.message, "error");
 
       button.disabled = false;
-      googleButton.disabled = false;
       button.textContent = "Create Account";
 
       return;
     }
 
     /*
-      If email confirmation is disabled in Supabase,
-      a session should normally exist.
+      Confirm Email is OFF in Supabase,
+      so a session should normally exist.
     */
 
     if (data && data.session) {
       showMessage(
-        "Account created successfully! Redirecting...",
+        "Account created successfully!",
         "success"
       );
 
       setTimeout(function() {
         window.location.href = "dashboard.html";
-      }, 700);
+      }, 500);
 
     } else {
       showMessage(
-        "Account created successfully. Please log in to continue.",
+        "Account created successfully. Please log in.",
         "success"
       );
 
       setTimeout(function() {
         window.location.href = "login.html";
-      }, 1200);
+      }, 1000);
     }
 
   } catch (error) {
@@ -900,7 +748,6 @@ async function createAccount() {
     );
 
     button.disabled = false;
-    googleButton.disabled = false;
     button.textContent = "Create Account";
   }
 }
@@ -908,7 +755,8 @@ async function createAccount() {
 /* CLOSE POLICY MENU WHEN CLICKING OUTSIDE */
 
 document.addEventListener("click", function(event) {
-  const menu = document.getElementById("policyMenu");
+  const menu =
+    document.getElementById("policyMenu");
 
   if (menu && !menu.contains(event.target)) {
     menu.open = false;
@@ -919,7 +767,8 @@ document.addEventListener("click", function(event) {
 
 document.addEventListener("keydown", function(event) {
   if (event.key === "Escape") {
-    const menu = document.getElementById("policyMenu");
+    const menu =
+      document.getElementById("policyMenu");
 
     if (menu) {
       menu.open = false;
