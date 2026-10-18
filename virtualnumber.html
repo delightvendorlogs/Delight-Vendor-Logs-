@@ -43,7 +43,7 @@ p{line-height:1.5}
 .btn-black{color:white;background:#111}
 .full{width:100%}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.country-button,.service-button,.option-button{display:block;width:100%;text-align:left;background:var(--panel2);color:var(--text);border:1px solid #303030;border-radius:11px;padding:13px}
+.country-button,.service-button,.option-button{display:block;width:100%;text-align:left;background:var(--panel2);color:var(--text);border:1px solid #303030;border-radius:11px;padding:12px}
 .country-button:hover,.service-button:hover,.option-button:hover{border-color:var(--gold)}
 .country-name{font-weight:800}
 .country-meta,.service-button small,.option-button small{display:block;margin-top:5px;color:var(--muted);font-size:12px}
@@ -55,7 +55,7 @@ p{line-height:1.5}
 .message.error{background:#351818;color:#ffb6b6}
 .message.success{background:#102b1d;color:#9df0bf}
 .message.info{background:#152237;color:#b5d4ff}
-.loading,.empty{padding:22px 10px;text-align:center;color:var(--muted);font-size:13px}
+.loading,.empty{padding:18px 10px;text-align:center;color:var(--muted);font-size:13px}
 .row{display:flex;align-items:center;gap:10px}
 .between{justify-content:space-between}
 .row>*{min-width:0}
@@ -96,6 +96,30 @@ p{line-height:1.5}
 .order-footnote{font-size:12px;color:var(--muted);line-height:1.5;margin:14px 0 0}
 .order-service{font-size:13px;color:#d5d5d5;margin-top:10px}
 hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
+
+/* Compact searchable dropdowns */
+.search-picker{position:relative;width:100%;margin-top:10px}
+.search-picker .field{display:block;width:100%}
+.picker-menu{
+ display:none;position:absolute;top:calc(100% + 5px);left:0;right:0;
+ z-index:1000;background:#141414;border:1px solid var(--border);
+ border-radius:12px;padding:5px;max-height:220px;overflow-y:auto;
+ overscroll-behavior:contain;box-shadow:0 12px 30px #000b
+}
+.picker-menu.open{display:block}
+.picker-menu .country-button,.picker-menu .service-button{
+ margin:0 0 4px;padding:11px;border-radius:8px;background:#1b1b1b
+}
+.picker-menu .country-button:last-child,.picker-menu .service-button:last-child{margin-bottom:0}
+.picker-menu .country-meta{display:none}
+.picker-menu .service-button small{display:none}
+.picker-placeholder{font-size:12px;color:var(--muted);padding:12px;text-align:center}
+.picker-label{font-size:12px;color:var(--muted);margin:14px 0 7px}
+.selected-value{display:block;margin-top:8px;font-size:12px;color:var(--gold-light)}
+#usaServices,#countryResults,#allServices{display:none!important}
+#allServicesWrap{display:block!important}
+#selectedCountryTitle{font-size:15px}
+.orders-panel{margin-top:18px}
 
 /* Verification must reappear on every page load/refresh. */
 .verification-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:7px}
@@ -142,7 +166,7 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
 </header>
 
 <h1>Virtual Numbers</h1>
-<p class="muted small">Choose a provider, search for a country and service, then manage your number below.</p>
+<p class="muted small">Choose a number service, search for a country or service, then manage your numbers below.</p>
 <div id="globalMessage" class="message"></div>
 
 <div class="tabs">
@@ -153,10 +177,13 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
 <section id="usaSection" class="section">
  <div class="panel">
   <h2>🇺🇸 United States</h2>
-  <p class="muted small">Search for a service, then choose an available option.</p>
-  <input id="usaServiceSearch" class="field" placeholder="Search USA services…" oninput="filterServices('usa')" autocomplete="off">
+  <p class="muted small">Search and select the service you need.</p>
+  <div class="search-picker" id="usaPicker">
+   <input id="usaServiceSearch" class="field" placeholder="Select a service or search…" autocomplete="off" onfocus="openPicker('usaServiceMenu')" onclick="openPicker('usaServiceMenu')" oninput="filterServices('usa')">
+   <div id="usaServiceMenu" class="picker-menu"></div>
+  </div>
+  <div id="usaSelected" class="selected-value" style="display:none"></div>
   <div id="usaMessage" class="message"></div>
-  <div id="usaServices" class="grid" style="margin-top:12px"><div class="empty">Select USA Numbers to load services.</div></div>
  </div>
 </section>
 
@@ -164,17 +191,22 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
  <div class="panel">
   <h2>🌍 All Country Numbers</h2>
   <div id="allMessage" class="message"></div>
-  <input id="countrySearch" class="field" placeholder="Search country…" autocomplete="off" oninput="filterCountries()">
-  <select id="countrySelect" class="field" style="margin-top:10px" onchange="selectCountryByValue(this.value)">
-   <option value="">Or choose a country from this list…</option>
-  </select>
-  <div id="countryResults" class="grid" style="margin-top:12px"><div class="empty">Select All Country Numbers to load countries.</div></div>
-  <hr>
-  <div id="allServicesWrap" style="display:none">
-   <h2 id="selectedCountryTitle">Select a service</h2>
-   <input id="allServiceSearch" class="field" placeholder="Search services…" oninput="filterServices('all')" autocomplete="off">
-   <div id="allServices" class="grid" style="margin-top:12px"></div>
+
+  <div class="picker-label">COUNTRY</div>
+  <div class="search-picker" id="countryPicker">
+   <input id="countrySearch" class="field" placeholder="Select a country or search…" autocomplete="off" onfocus="openPicker('countryMenu')" onclick="openPicker('countryMenu')" oninput="filterCountries()">
+   <div id="countryMenu" class="picker-menu"></div>
   </div>
+  <div id="countrySelected" class="selected-value" style="display:none"></div>
+
+  <hr>
+
+  <div class="picker-label">SERVICE</div>
+  <div class="search-picker" id="allServicePicker">
+   <input id="allServiceSearch" class="field" placeholder="Select a country first…" autocomplete="off" disabled onfocus="handleAllServiceFocus()" onclick="handleAllServiceFocus()" oninput="filterServices('all')">
+   <div id="allServiceMenu" class="picker-menu"></div>
+  </div>
+  <div id="allSelected" class="selected-value" style="display:none"></div>
  </div>
 </section>
 
@@ -199,7 +231,7 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
  </div>
 </section>
 
-<section class="panel">
+<section class="panel orders-panel">
  <div class="row between">
   <h2>My Number Orders</h2>
   <button class="btn btn-dark" onclick="refreshOrders()">Refresh</button>
@@ -225,7 +257,7 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
     <div class="practice-card"><div class="practice-icon">✅</div><div><h3>Official Apps Only</h3><p>Use the standard official app version. Modified versions often fail verification.</p></div></div>
     <div class="practice-card"><div class="practice-icon">🌍</div><div><h3>Location Match</h3><p>Keep your device settings and connection consistent with the selected country while waiting.</p></div></div>
     <div class="practice-card"><div class="practice-icon">📶</div><div><h3>Stay Connected</h3><p>Keep the app open and maintain a stable connection while waiting for your code.</p></div></div>
-    <div class="practice-card"><div class="practice-icon">💡</div><div><h3>Provider Tip</h3><p>If a server does not receive a code, try another available server. Cancel only when cancellation is available; a refund depends on provider confirmation and backend processing.</p></div></div>
+    <div class="practice-card"><div class="practice-icon">💡</div><div><h3>Helpful Tip</h3><p>If a number cannot receive a code, try another available option. Cancel only when cancellation is available; a refund depends on confirmation and backend processing.</p></div></div>
    </div>
   </div>
   <div class="verification-footer"><button onclick="dismissVerification()">I Understand</button></div>
@@ -273,13 +305,55 @@ function setActiveTab(tab){
  $("usaTab").classList.toggle("active",tab==="usa");
  $("allTab").classList.toggle("active",tab==="all");
 }
+
+/* Keep internal error details out of the customer-facing interface. */
 function formatError(error,fallback){
- const m=String(error?.message||"");
- if(/insufficient funds|insufficient balance/i.test(m))return m;
- return fallback||m||"The request could not be completed. Please try again.";
+ const raw=String(error?.message||"");
+ const m=raw.toLowerCase();
+
+ if(/insufficient funds|insufficient balance|not enough funds|low balance|balance too low/.test(m)){
+  if(/customer|wallet|your balance|user balance|add ₦|user wallet/.test(m)){
+   const amount=raw.match(/₦\s?[\d,.]+/);
+   return "Insufficient funds. Please add "+(amount?amount[0]:"the required amount")+".";
+  }
+  return "Insufficient funds. Please contact support.";
+ }
+
+ if(/provider.*(balance|fund)|(?:balance|fund).*(provider|account)|account balance too low|not enough credit|out of credit|credit exhausted|funds exhausted/.test(m)){
+  return "Insufficient funds. Please contact support.";
+ }
+
+ if(/jwt|unauthori[sz]ed|session expired|invalid token/.test(m)){
+  return "Your session has expired. Please sign in again.";
+ }
+
+ if(/country.*(required|select)|select.*country/.test(m)){
+  return "Please select a country first.";
+ }
+
+ if(/service.*(required|select)|select.*service/.test(m)){
+  return "Please select a service first.";
+ }
+
+ if(/network|fetch failed|failed to fetch|timed? ?out|timeout/.test(m)){
+  return "The request could not be completed right now. Please try again.";
+ }
+
+ const safeFallback=fallback||"The request could not be completed. Please try again.";
+ if(!raw)return safeFallback;
+
+ /* Do not expose internal backend/provider names, IDs, or raw error payloads. */
+ if(/provider|virtualsms|textverified|numpool|api key|api_key|internal server|stack trace|exception|sql|postgres|supabase/.test(m)){
+  return safeFallback;
+ }
+
+ /* Avoid exposing opaque backend error messages verbatim. */
+ if(raw.length>140||/[{}[\]]/.test(raw))return safeFallback;
+ return raw;
 }
+
 async function invoke(provider,action,extra={}){
- if(!FUNCTIONS[provider])throw new Error("Unknown provider.");
+ if(!FUNCTIONS[provider])throw new Error("Unknown service.");
  const {data,error}=await sb.auth.getSession();
  if(error)throw error;
  const active=data?.session;
@@ -295,8 +369,10 @@ async function invoke(provider,action,extra={}){
  });
  let body={};
  try{body=await response.json();}catch{}
- if(!response.ok||body?.error||body?.success===false)
-  throw new Error(body?.error||body?.message||("Request failed (HTTP "+response.status+")."));
+ if(!response.ok||body?.error||body?.success===false){
+  const message=body?.error||body?.message||"Request failed.";
+  throw new Error(typeof message==="string"?message:"Request failed.");
+ }
  return body;
 }
 function getList(payload){
@@ -314,7 +390,7 @@ function getList(payload){
 function getName(x){
  if(typeof x==="string")return x;
  if(!x||typeof x!=="object")return "Unknown";
- return String(x.name??x.service_name??x.serviceName??x.title??x.country_name??x.countryName??x.label??x.description??"Unknown");
+ return String(x.name??x.service_name??x.serviceName??x.title??x.country_name??x.countryName??x.label??"Unknown");
 }
 function getCountryCode(c){
  return String(c?.code??c?.iso2??c?.iso??c?.country_code??c?.countryCode??c?.short_code??c?.shortCode??"").trim();
@@ -339,10 +415,19 @@ function normalizeCountries(payload){
 }
 function normalizeServices(payload){
  return getList(payload).map((x,i)=>typeof x==="string"
-  ?{name:x,service_code:x,_original:x,_index:i}
+  ?{name:cleanServiceName(x),service_code:x,_original:x,_index:i}
   :x&&typeof x==="object"
-   ?{...x,name:getName(x),service_code:x.service_code??x.serviceCode??x.code??x.id??x.service??x.key??x.name,_original:x,_index:i}:null)
+   ?{...x,name:cleanServiceName(getName(x)),service_code:x.service_code??x.serviceCode??x.code??x.id??x.service??x.key??x.name,_original:x,_index:i}:null)
   .filter(x=>x&&x.name&&x.name!=="Unknown");
+}
+
+/* Remove duplicated display names while preserving the original service code. */
+function cleanServiceName(value){
+ let name=String(value??"").trim();
+ name=name.replace(/\s+/g," ");
+ name=name.replace(/^(.+?)\s*[-–—|]\s*\1$/i,"$1");
+ name=name.replace(/^(.+?)\s+\1$/i,"$1");
+ return name?name.charAt(0).toLocaleUpperCase()+name.slice(1):"Unknown";
 }
 function serviceCode(s){
  return String(s?.service_code??s?.serviceCode??s?.code??s?.id??s?.service??s?.key??s?.name??"");
@@ -360,6 +445,24 @@ function optionLabel(o){
 }
 function getOptionPayload(o){return o&&typeof o==="object"?o:{server:o};}
 
+function openPicker(id){
+ const menu=$(id);
+ if(!menu)return;
+ closePickers(id);
+ menu.classList.add("open");
+}
+function closePickers(exceptId){
+ ["usaServiceMenu","countryMenu","allServiceMenu"].forEach(id=>{
+  if(id!==exceptId)$(id)?.classList.remove("open");
+ });
+}
+document.addEventListener("click",e=>{
+ if(!e.target.closest(".search-picker"))closePickers();
+});
+document.addEventListener("keydown",e=>{
+ if(e.key==="Escape")closePickers();
+});
+
 async function refreshWallet(){
  if(!currentUser)return;
  try{
@@ -372,7 +475,7 @@ async function refreshWallet(){
  }catch(e){
   console.error("Wallet refresh failed:",e);
   $("walletBalance").textContent="Unavailable";
-  showGlobal("Wallet balance could not be loaded. Check the wallet table permissions and wallet row.","error");
+  showGlobal("Wallet balance could not be loaded. Please refresh the page or contact support.","error");
  }
 }
 async function init(){
@@ -403,7 +506,6 @@ async function init(){
  }
 }
 
-/* No sessionStorage/localStorage dismissal flag: refresh always reopens it. */
 function showVerification(){
  $("verificationOverlay").classList.add("show");
  document.body.style.overflow="hidden";
@@ -424,9 +526,11 @@ async function openUSA(){
  selectedCountry={id:187,country_id:187,name:"United States",code:"US"};
  selectedService=null;selectedOption=null;
  setActiveTab("usa");setSection("usaSection");
- $("allServicesWrap").style.display="none";
  $("usaServiceSearch").value="";
- $("usaServices").innerHTML='<div class="loading">Loading USA services…</div>';
+ $("usaServiceSearch").placeholder="Select a service or search…";
+ $("usaServiceMenu").innerHTML='<div class="picker-placeholder">Loading services…</div>';
+ $("usaSelected").style.display="none";
+ openPicker("usaServiceMenu");
  showMessage("usaMessage","");
  await loadServices();
 }
@@ -434,70 +538,116 @@ async function openAll(){
  flow="all";chosenProvider="virtualsms";
  selectedCountry=null;selectedService=null;selectedOption=null;
  setActiveTab("all");setSection("allSection");
- $("allServicesWrap").style.display="none";
  $("countrySearch").value="";
- $("countrySelect").value="";
+ $("countrySearch").placeholder="Select a country or search…";
+ $("countrySelected").style.display="none";
+ $("countryMenu").innerHTML='<div class="picker-placeholder">Loading countries…</div>';
  $("allServiceSearch").value="";
- $("countryResults").innerHTML='<div class="loading">Loading countries…</div>';
+ $("allServiceSearch").disabled=true;
+ $("allServiceSearch").placeholder="Select a country first…";
+ $("allServiceMenu").innerHTML='<div class="picker-placeholder">Select a country first.</div>';
+ $("allSelected").style.display="none";
+ openPicker("countryMenu");
  showMessage("allMessage","");
  await loadCountries();
 }
+
 async function loadCountries(){
  if(countryLoading)return;
  countryLoading=true;
- $("countryResults").innerHTML='<div class="loading">Loading countries…</div>';
  try{
   const response=await invoke("virtualsms","countries",{});
   countryList=normalizeCountries(response);
   if(!countryList.length){
-   $("countryResults").innerHTML='<div class="empty">The provider returned no countries.</div><button class="btn btn-dark full" onclick="retryCountries()">Retry</button>';
-   showMessage("allMessage","The country list is empty. Check the VirtualSMS Edge Function response.","error");
+   $("countryMenu").innerHTML='<div class="picker-placeholder">No countries are available.</div><button class="btn btn-dark full" onclick="retryCountries()">Retry</button>';
+   showMessage("allMessage","Countries could not be loaded. Please retry.","error");
    return;
   }
-  $("countrySelect").innerHTML='<option value="">Choose a country…</option>'+
-   countryList.map((c,i)=>`<option value="${i}">${escapeHTML(c.name)}${c.code?" ("+escapeHTML(c.code)+")":""}</option>`).join("");
   filterCountries();
  }catch(e){
   console.error("Country loading failed:",e);
-  $("countryResults").innerHTML='<div class="empty">Could not load countries right now.</div><button class="btn btn-dark full" onclick="retryCountries()">Retry</button>';
+  $("countryMenu").innerHTML='<div class="picker-placeholder">Could not load countries.</div><button class="btn btn-dark full" onclick="retryCountries()">Retry</button>';
   showMessage("allMessage",formatError(e,"Could not load countries. Please retry."),"error");
  }finally{countryLoading=false;}
 }
 async function retryCountries(){countryLoading=false;await loadCountries();}
+
+function countryMatches(c,q){
+ const name=String(c.name||"").toLowerCase();
+ const code=String(c.code||"").toLowerCase();
+ if(!q)return true;
+ if(name.includes(q)||code.includes(q))return true;
+ const aliases={
+  "us":["usa","united states","united states of america","america"],
+  "usa":["us","united states","united states of america","america"],
+  "united states":["usa","us","america"],
+  "uk":["united kingdom","britain","great britain","england"],
+  "united kingdom":["uk","britain","great britain","england"],
+  "england":["uk","united kingdom","britain","great britain"]
+ };
+ for(const [key,values] of Object.entries(aliases)){
+  if(q===key||values.some(v=>q===v)){
+   if(name.includes(key)||values.some(v=>name.includes(v))||values.includes(code)||code===key)return true;
+  }
+ }
+ if(q==="us"||q==="usa")return name.includes("united states")||code==="us";
+ if(q==="uk")return name.includes("united kingdom")||name.includes("britain")||name==="england"||code==="gb";
+ if(q==="england")return name.includes("united kingdom")||name==="england"||name.includes("britain")||code==="gb";
+ return false;
+}
 function filterCountries(){
  const q=$("countrySearch").value.trim().toLowerCase();
- renderCountries(countryList.filter(c=>String(c.name).toLowerCase().includes(q)||String(c.code).toLowerCase().includes(q)));
+ renderCountries(countryList.filter(c=>countryMatches(c,q)));
 }
 function renderCountries(list){
- if(!list.length){$("countryResults").innerHTML='<div class="empty">No matching countries found.</div>';return;}
- $("countryResults").innerHTML=list.map(c=>{
+ const menu=$("countryMenu");
+ if(!list.length){menu.innerHTML='<div class="picker-placeholder">No matching countries found.</div>';return;}
+ menu.innerHTML=list.map(c=>{
   const i=countryList.indexOf(c);
-  return `<button class="country-button" onclick="selectCountry(${i})"><div class="country-name">${escapeHTML(c.name)}</div><div class="country-meta">${escapeHTML(c.code||"Country")}</div></button>`;
+  return `<button type="button" class="country-button" onclick="selectCountry(${i})"><div class="country-name">${escapeHTML(c.name)}</div></button>`;
  }).join("");
 }
-function selectCountryByValue(value){
+async function selectCountryByValue(value){
  if(value==="")return;
- selectCountry(Number(value));
+ await selectCountry(Number(value));
 }
 async function selectCountry(index){
  if(index<0||index>=countryList.length)return;
  selectedCountry=countryList[index];
  if(!selectedCountry.code&&selectedCountry.id==null){
-  showMessage("allMessage","This country has no usable provider identifier. Check the provider response.","error");return;
+  showMessage("allMessage","This country is not available right now. Please choose another country.","error");return;
  }
- $("countrySelect").value=String(index);
- $("selectedCountryTitle").textContent=selectedCountry.name+" — Select a service";
- $("allServicesWrap").style.display="block";
+ selectedService=null;selectedOption=null;
+ $("countrySearch").value=selectedCountry.name;
+ $("countrySelected").textContent="Selected: "+selectedCountry.name;
+ $("countrySelected").style.display="block";
+ closePickers();
+ $("allServiceSearch").disabled=false;
  $("allServiceSearch").value="";
- $("allServices").innerHTML='<div class="loading">Loading services…</div>';
+ $("allServiceSearch").placeholder="Select a service or search…";
+ $("allServiceMenu").innerHTML='<div class="picker-placeholder">Loading services…</div>';
+ $("allSelected").style.display="none";
+ showMessage("allMessage","");
+ openPicker("allServiceMenu");
  await loadServices();
 }
 
+function handleAllServiceFocus(){
+ if(!selectedCountry){
+  closePickers();
+  showMessage("allMessage","Please select a country first.","info");
+  $("countrySearch").focus();
+  openPicker("countryMenu");
+  return;
+ }
+ openPicker("allServiceMenu");
+}
+
 async function loadServices(){
- if(!chosenProvider){showGlobal("Please choose a provider first.");return;}
+ if(!chosenProvider)return;
  const provider=chosenProvider,generation=++servicesGeneration;
- const container=provider==="textverified"?$("usaServices"):$("allServices");
- container.innerHTML='<div class="loading">Loading services…</div>';
+ const menu=provider==="textverified"?$("usaServiceMenu"):$("allServiceMenu");
+ menu.innerHTML='<div class="picker-placeholder">Loading services…</div>';
  try{
   const payload=provider==="textverified"
    ?{numberType:"mobile",reservationType:"verification"}
@@ -506,15 +656,22 @@ async function loadServices(){
   if(provider!==chosenProvider||generation!==servicesGeneration)return;
   visibleServices=normalizeServices(response);
   if(!visibleServices.length){
-   container.innerHTML='<div class="empty">No services were returned.</div><button class="btn btn-dark full" onclick="loadServices()">Retry</button>';
-   showMessage(provider==="textverified"?"usaMessage":"allMessage","The provider returned an empty service list.","error");return;
+   menu.innerHTML='<div class="picker-placeholder">No services are available.</div><button class="btn btn-dark full" onclick="loadServices()">Retry</button>';
+   showMessage(provider==="textverified"?"usaMessage":"allMessage","No services were returned. Please retry later.","error");return;
   }
+  /* Remove duplicate display entries without changing the service code of the first entry. */
+  const seen=new Set();
+  visibleServices=visibleServices.filter(s=>{
+   const key=s.name.toLocaleLowerCase();
+   if(seen.has(key))return false;
+   seen.add(key);return true;
+  });
   showMessage(provider==="textverified"?"usaMessage":"allMessage","");
   filterServices(provider==="textverified"?"usa":"all");
  }catch(e){
   console.error("Service loading failed:",e);
   if(generation!==servicesGeneration)return;
-  container.innerHTML='<div class="empty">Services could not be loaded right now.</div><button class="btn btn-dark full" onclick="loadServices()">Retry</button>';
+  menu.innerHTML='<div class="picker-placeholder">Services could not be loaded.</div><button class="btn btn-dark full" onclick="loadServices()">Retry</button>';
   showMessage(provider==="textverified"?"usaMessage":"allMessage",formatError(e,"Unable to load services. Please retry."),"error");
  }
 }
@@ -530,19 +687,28 @@ function filterServices(which){
  renderServices(which);
 }
 function renderServices(which){
- const container=which==="usa"?$("usaServices"):$("allServices");
+ const menu=which==="usa"?$("usaServiceMenu"):$("allServiceMenu");
  if(!filteredServices.length){
-  container.innerHTML='<div class="empty">No matching services found.</div>';return;
+  menu.innerHTML='<div class="picker-placeholder">No matching services found.</div>';return;
  }
- container.innerHTML=filteredServices.map(s=>{
+ menu.innerHTML=filteredServices.map(s=>{
   const i=visibleServices.indexOf(s);
-  return `<button class="service-button" onclick="selectService(${i})"><strong>${escapeHTML(s.name)}</strong><small>${escapeHTML(s.description||s.capability||"View available options")}</small></button>`;
+  return `<button type="button" class="service-button" onclick="selectService(${i})"><strong>${escapeHTML(s.name)}</strong></button>`;
  }).join("");
 }
-
 async function selectService(index){
  if(index<0||index>=visibleServices.length)return;
  selectedService=visibleServices[index];selectedOption=null;
+ closePickers();
+ if(chosenProvider==="textverified"){
+  $("usaServiceSearch").value=selectedService.name;
+  $("usaSelected").textContent="Selected: "+selectedService.name;
+  $("usaSelected").style.display="block";
+ }else{
+  $("allServiceSearch").value=selectedService.name;
+  $("allSelected").textContent="Selected: "+selectedService.name;
+  $("allSelected").style.display="block";
+ }
  $("optionsTitle").textContent=selectedService.name;
  $("optionsSubtitle").textContent=(selectedCountry?selectedCountry.name+" · ":"United States · ")+"Choose an available option.";
  $("optionsList").innerHTML='<div class="loading">Loading prices and availability…</div>';
@@ -557,7 +723,7 @@ async function selectService(index){
   optionsCache=getList(response);
   if(!optionsCache.length&&(response?.price!==undefined||response?.data?.price!==undefined||response?.price_ngn!==undefined))optionsCache=[response];
   if(!optionsCache.length){
-   $("optionsList").innerHTML='<div class="empty">No purchasable options were returned.</div><button class="btn btn-dark full" onclick="selectService('+index+')">Retry</button>';return;
+   $("optionsList").innerHTML='<div class="empty">No purchasable options are available.</div><button class="btn btn-dark full" onclick="selectService('+index+')">Retry</button>';return;
   }
   renderOptions(optionsCache);
  }catch(e){
@@ -578,9 +744,8 @@ function chooseOption(index){
  const price=servicePrice(selectedOption);
  if(price===null||price<0){showMessage("optionsMessage","This option has no valid price. Choose another option.","error");return;}
  $("purchaseSummary").innerHTML=
-  `<div><strong>Provider:</strong> ${escapeHTML(chosenProvider==="textverified"?"USA Numbers":"All Country Numbers")}</div>
+  `<div><strong>Service:</strong> ${escapeHTML(selectedService?.name||"Selected service")}</div>
    <div style="margin-top:6px"><strong>Country:</strong> ${escapeHTML(selectedCountry?.name||"United States")}</div>
-   <div style="margin-top:6px"><strong>Service:</strong> ${escapeHTML(selectedService?.name||"Selected service")}</div>
    <div style="margin-top:6px"><strong>Option:</strong> ${escapeHTML(optionLabel(selectedOption))}</div>
    <div style="margin-top:8px"><strong>Price:</strong> ${escapeHTML(money(price))}</div>
    <div style="margin-top:6px"><strong>Wallet balance:</strong> ${escapeHTML(money(walletBalance))}</div>`;
@@ -635,7 +800,7 @@ async function loadOrders(){
  }catch(e){
   console.error("Order history loading failed:",e);
   $("ordersList").innerHTML='<div class="empty">Unable to load your order history. <button class="btn btn-dark" onclick="loadOrders()">Retry</button></div>';
-  showMessage("ordersMessage","Order history could not be refreshed. Check table permissions and try again.","error");
+  showMessage("ordersMessage","Order history could not be refreshed. Please try again.","error");
  }
 }
 function normalizeStatus(o){
@@ -690,10 +855,6 @@ function countdownText(seconds){
  const s=Math.max(0,seconds|0),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),r=s%60;
  return h>0?[h,m,r].map(n=>String(n).padStart(2,"0")).join(":"):[m,r].map(n=>String(n).padStart(2,"0")).join(":");
 }
-function providerName(o){
- const p=String(o.provider_key||o.provider||"").toLowerCase();
- return p==="textverified"?"USA · TextVerified":p==="virtualsms"?"All Country Numbers · VirtualSMS":"Virtual Number";
-}
 function renderOrders(){
  if(!allOrders.length){
   $("ordersList").innerHTML='<div class="empty">You have no virtual number orders yet.</div>';return;
@@ -713,14 +874,12 @@ function renderOrders(){
   const failed=status==="failed";
   const refunded=isRefunded(o,status);
   const left=durationSeconds(o);
-  const badgeClass=status;
   let headline=pending?"Purchase Successful!":received?"Verification Successful":cancelled?"Order Cancelled":failed?"Order Failed":"Refunded";
   let subtitle=pending?"Your number is ready":received?"SMS received for this number":cancelled?"This number order has ended":failed?"This number order failed":"Your refund has been recorded";
-  let icon=pending||received?"✓":"×";
   let html=`<article class="order-card" data-order-id="${escapeHTML(o.id)}">
    <div class="order-heading">
     <div><h3>${escapeHTML(headline)}</h3><p class="order-subtitle">${escapeHTML(subtitle)}</p></div>
-    <span class="badge ${badgeClass}">${escapeHTML(statusLabel(status))}</span>
+    <span class="badge ${status}">${escapeHTML(statusLabel(status))}</span>
    </div>
    <div class="order-service">${escapeHTML(service)} · ${escapeHTML(country)}</div>
    <div class="number-box">
@@ -757,8 +916,7 @@ function renderOrders(){
    html+=`<div class="detail-row"><span>Purchase price</span><strong>${escapeHTML(money(price))}</strong></div>`;
   }
   html+=`<div class="order-line"><strong>Order date:</strong> ${escapeHTML(orderDate(o))}</div>`;
-  if(o.provider_order_id)html+=`<div class="order-line"><strong>Provider reference:</strong> ${escapeHTML(o.provider_order_id)}</div>`;
-  if(!pending)html+=`<div class="order-actions"><button class="btn btn-black" onclick="checkOrder(${id})">Refresh Status</button></div>`;
+  html+=`<div class="order-actions"><button class="btn btn-black" onclick="checkOrder(${id})">${pending?"Refresh Status":"Refresh Status"}</button></div>`;
   html+=`</article>`;
   return html;
  }).join("");
@@ -820,7 +978,7 @@ async function cancelOrder(id){
  const o=allOrders.find(x=>Number(x.id)===Number(id));
  if(!o){showMessage("ordersMessage","Order not found. Refresh the list and try again.","error");return;}
  if(normalizeStatus(o)!=="waiting"){showMessage("ordersMessage","Only pending orders can be cancelled.","error");return;}
- if(!confirm("Cancel this virtual number? A refund is only shown after provider confirmation and successful backend processing."))return;
+ if(!confirm("Cancel this virtual number? A refund is only shown after confirmation and successful processing."))return;
  showMessage("ordersMessage","Requesting cancellation…","info");
  try{
   await invoke(orderProvider(o),"cancel",{
@@ -829,7 +987,7 @@ async function cancelOrder(id){
    id:o.id,order_id:o.id
   });
   await Promise.allSettled([loadOrders(),refreshWallet()]);
-  showMessage("ordersMessage","Cancellation request submitted. Check the order for provider confirmation and refund status.","success");
+  showMessage("ordersMessage","Cancellation request submitted. Check the order for confirmation and refund status.","success");
  }catch(e){
   console.error("Cancellation failed:",e);
   showMessage("ordersMessage",formatError(e,"Cancellation could not be confirmed. Check the order status before retrying."),"error");
