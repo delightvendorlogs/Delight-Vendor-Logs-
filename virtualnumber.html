@@ -1,6566 +1,861 @@
-<!DOCTYPE html>  <html lang="en">  
-<head>  
-<meta charset="UTF-8">  
-<meta name="viewport" content="width=device-width, initial-scale=1.0">  
-<title>Virtual Numbers - Delight Vendor Logs</title>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>  
-  
-*{  
-  box-sizing:border-box;  
-}  
-  
-:root{  
-  --gold:#d4af37;  
-  --gold-light:#f0cf68;  
-  --gold-soft:rgba(212,175,55,.12);  
-  --gold-border:rgba(212,175,55,.32);  
-  --black:#050505;  
-  --black-2:#090909;  
-  --card:#0d0d0d;  
-  --card-2:#111111;  
-  --border:#242424;  
-  --border-soft:#1b1b1b;  
-  --text:#f5f5f5;  
-  --muted:#999;  
-  --muted-2:#707070;  
-  --green:#20b26b;  
-  --red:#ef5350;  
-}  
-  
-html{  
-  background:var(--black);  
-}  
-  
-body{  
-  margin:0;  
-  background:  
-    radial-gradient(  
-      circle at 50% -10%,  
-      rgba(212,175,55,.09),  
-      transparent 38%  
-    ),  
-    var(--black);  
-  color:var(--text);  
-  font-family:Arial,sans-serif;  
-  min-height:100vh;  
-}  
-  
-/* =========================  
-   HEADER  
-========================= */  
-  
-header{  
-  background:  
-    linear-gradient(  
-      180deg,  
-      #0d0d0d 0%,  
-      #070707 100%  
-    );  
-  color:#fff;  
-  padding:15px 16px;  
-  display:flex;  
-  align-items:center;  
-  justify-content:space-between;  
-  gap:10px;  
-  border-bottom:1px solid rgba(212,175,55,.18);  
-  box-shadow:  
-    0 8px 30px rgba(0,0,0,.35);  
-  position:sticky;  
-  top:0;  
-  z-index:800;  
-}  
-  
-header h1{  
-  margin:0;  
-  font-size:20px;  
-  font-weight:800;  
-  letter-spacing:.2px;  
-  color:#fff;  
-}  
-  
-.header-right{  
-  display:flex;  
-  align-items:center;  
-  gap:8px;  
-}  
-  
-.wallet-mini{  
-  background:  
-    linear-gradient(  
-      135deg,  
-      #e7c451,  
-      #c39a22  
-    );  
-  color:#080808;  
-  padding:8px 11px;  
-  border-radius:9px;  
-  font-size:13px;  
-  font-weight:800;  
-  box-shadow:  
-    0 4px 15px rgba(212,175,55,.16);  
-}  
-  
-.menu-button{  
-  background:#141414;  
-  color:var(--gold-light);  
-  border:1px solid var(--gold-border);  
-  border-radius:9px;  
-  padding:8px 11px;  
-  font-size:19px;  
-  cursor:pointer;  
-}  
-  
-/* =========================  
-   MAIN  
-========================= */  
-  
-main{  
-  width:100%;  
-  max-width:700px;  
-  margin:auto;  
-  padding:15px 15px 30px;  
-}  
-  
-/* =========================  
-   PROVIDER SWITCHER  
-========================= */  
-  
-.provider-tabs{  
-  display:grid;  
-  grid-template-columns:1fr 1fr;  
-  gap:8px;  
-  margin-bottom:14px;  
-  padding:5px;  
-  background:#0b0b0b;  
-  border:1px solid #202020;  
-  border-radius:14px;  
-  box-shadow:  
-    inset 0 1px 0 rgba(255,255,255,.02);  
-}  
-  
-.provider-tab{  
-  border:1px solid transparent;  
-  background:transparent;  
-  color:#858585;  
-  padding:12px 9px;  
-  border-radius:10px;  
-  font-weight:800;  
-  cursor:pointer;  
-  text-align:center;  
-  transition:.2s ease;  
-}  
-  
-.provider-tab.active{  
-  background:  
-    linear-gradient(  
-      135deg,  
-      #e4c252,  
-      #c49b27  
-    );  
-  color:#090909;  
-  border-color:#e6c759;  
-  box-shadow:  
-    0 5px 18px rgba(212,175,55,.16);  
-}  
-  
-.provider-tab:not(.active):hover{  
-  background:#151515;  
-  color:#ddd;  
-}  
-  
-/* =========================  
-   WATERMARK  
-========================= */  
-  
-.watermark{  
-  width:100%;  
-  background:  
-    linear-gradient(  
-      135deg,  
-      rgba(212,175,55,.15),  
-      rgba(212,175,55,.04)  
-    );  
-  color:#e8cc72;  
-  border:1px solid var(--gold-border);  
-  border-radius:12px;  
-  padding:12px 14px;  
-  margin-bottom:14px;  
-  font-size:13px;  
-  line-height:1.45;  
-  font-weight:bold;  
-  white-space:pre-wrap;  
-  word-break:break-word;  
-}  
-  
-.hidden{  
-  display:none !important;  
-}  
-  
-/* =========================  
-   CARDS  
-========================= */  
-  
-.card{  
-  background:  
-    linear-gradient(  
-      180deg,  
-      #101010 0%,  
-      #0b0b0b 100%  
-    );  
-  border:1px solid var(--border);  
-  border-radius:16px;  
-  padding:16px;  
-  margin-bottom:13px;  
-  box-shadow:  
-    0 8px 28px rgba(0,0,0,.22);  
-}  
-  
-.card h2{  
-  margin:0 0 13px;  
-  font-size:17px;  
-  font-weight:800;  
-  color:#f4f4f4;  
-  letter-spacing:.1px;  
-}  
-  
-/* =========================  
-   INPUTS  
-========================= */  
-  
-input{  
-  width:100%;  
-  border:1px solid #292929;  
-  border-radius:10px;  
-  padding:13px;  
-  font-size:15px;  
-  outline:none;  
-  background:#080808;  
-  color:#fff;  
-  transition:.2s ease;  
-}  
-  
-input::placeholder{  
-  color:#666;  
-}  
-  
-input:focus{  
-  border-color:var(--gold);  
-  box-shadow:  
-    0 0 0 3px rgba(212,175,55,.08);  
-}  
-  
-.search-wrap{  
-  position:relative;  
-  margin-bottom:9px;  
-}  
-  
-.search-wrap input{  
-  padding-left:39px;  
-}  
-  
-.search-icon{  
-  position:absolute;  
-  left:13px;  
-  top:50%;  
-  transform:translateY(-50%);  
-  color:#777;  
-}  
-  
-/* =========================  
-   CHOICE LIST  
-========================= */  
-  
-.choice-list{  
-  max-height:260px;  
-  overflow:auto;  
-  border:1px solid #242424;  
-  border-radius:11px;  
-  background:#080808;  
-  scrollbar-width:thin;  
-  scrollbar-color:#444 transparent;  
-}  
-  
-.choice{  
-  padding:13px;  
-  border-bottom:1px solid #1d1d1d;  
-  cursor:pointer;  
-  color:#d5d5d5;  
-  transition:.15s ease;  
-}  
-  
-.choice:last-child{  
-  border-bottom:0;  
-}  
-  
-.choice:hover{  
-  background:#151515;  
-  color:#fff;  
-}  
-  
-.choice.selected{  
-  background:  
-    linear-gradient(  
-      90deg,  
-      rgba(212,175,55,.18),  
-      rgba(212,175,55,.07)  
-    );  
-  color:var(--gold-light);  
-  border-left:3px solid var(--gold);  
-  padding-left:10px;  
-}  
-  
-/* =========================  
-   SELECTED BOX  
-========================= */  
-  
-.selected-box{  
-  margin-top:9px;  
-  padding:11px 12px;  
-  background:  
-    rgba(212,175,55,.08);  
-  border:1px solid rgba(212,175,55,.22);  
-  color:#e8cd73;  
-  border-radius:10px;  
-  font-size:14px;  
-  font-weight:bold;  
-}  
-  
-/* =========================  
-   SERVERS  
-========================= */  
-  
-.server-grid{  
-  display:grid;  
-  grid-template-columns:repeat(3,1fr);  
-  gap:9px;  
-}  
-  
-.server{  
-  border:1px solid #282828;  
-  border-radius:12px;  
-  padding:12px;  
-  background:  
-    linear-gradient(  
-      180deg,  
-      #111 0%,  
-      #0b0b0b 100%  
-    );  
-  cursor:pointer;  
-  transition:.18s ease;  
-}  
-  
-.server:hover{  
-  border-color:#555;  
-  transform:translateY(-1px);  
-}  
-  
-.server.selected{  
-  border:1px solid var(--gold);  
-  background:  
-    linear-gradient(  
-      180deg,  
-      rgba(212,175,55,.14),  
-      rgba(212,175,55,.05)  
-    );  
-  box-shadow:  
-    0 6px 20px rgba(212,175,55,.08);  
-}  
-  
-.server-badge{  
-  display:inline-flex;  
-  align-items:center;  
-  gap:4px;  
-  margin-bottom:8px;  
-  padding:4px 7px;  
-  border-radius:999px;  
-  background:#164d35;  
-  color:#66e6a7;  
-  border:1px solid rgba(32,178,107,.22);  
-  font-size:10px;  
-  line-height:1;  
-  font-weight:700;  
-}  
-  
-.server-name{  
-  font-weight:bold;  
-  margin-bottom:8px;  
-  color:#eee;  
-}  
-  
-.server-stock{  
-  font-size:13px;  
-  color:#858585;  
-  margin-bottom:7px;  
-}  
-  
-.server-price{  
-  font-size:18px;  
-  font-weight:bold;  
-  color:var(--gold-light);  
-}  
-  
-/* =========================  
-   PRICE  
-========================= */  
-  
-.price-box{  
-  background:  
-    radial-gradient(  
-      circle at top right,  
-      rgba(212,175,55,.18),  
-      transparent 45%  
-    ),  
-    linear-gradient(  
-      135deg,  
-      #151515,  
-      #090909  
-    );  
-  color:#fff;  
-  border:1px solid var(--gold-border);  
-  border-radius:13px;  
-  padding:16px;  
-  margin-top:13px;  
-}  
-  
-.price-label{  
-  font-size:13px;  
-  color:#999;  
-}  
-  
-.price-value{  
-  font-size:28px;  
-  font-weight:bold;  
-  margin-top:5px;  
-  color:var(--gold-light);  
-}  
-  
-/* =========================  
-   BUY BUTTON  
-========================= */  
-  
-.buy-button{  
-  width:100%;  
-  border:0;  
-  background:  
-    linear-gradient(  
-      135deg,  
-      #e5c354,  
-      #c29a25  
-    );  
-  color:#090909;  
-  padding:15px;  
-  border-radius:10px;  
-  margin-top:12px;  
-  font-size:17px;  
-  font-weight:800;  
-  cursor:pointer;  
-  box-shadow:  
-    0 7px 20px rgba(212,175,55,.14);  
-  transition:.18s ease;  
-}  
-  
-.buy-button:hover:not(:disabled){  
-  transform:translateY(-1px);  
-  box-shadow:  
-    0 10px 25px rgba(212,175,55,.2);  
-}  
-  
-.buy-button:disabled{  
-  opacity:.4;  
-  cursor:not-allowed;  
-  box-shadow:none;  
-}  
-  
-/* =========================  
-   MESSAGES  
-========================= */  
-  
-.message{  
-  margin-top:11px;  
-  min-height:22px;  
-  color:#d9d9d9;  
-  font-weight:bold;  
-  line-height:1.45;  
-}  
-  
-/* =========================  
-   ORDERS  
-========================= */  
-  
-.order{  
-  background:  
-    linear-gradient(  
-      180deg,  
-      #111 0%,  
-      #0b0b0b 100%  
-    );  
-  border:1px solid #252525;  
-  border-radius:13px;  
-  padding:14px;  
-  margin-top:10px;  
-}  
-  
-.order-number{  
-  font-size:20px;  
-  font-weight:bold;  
-  color:#f4f4f4;  
-  letter-spacing:.2px;  
-  word-break:break-word;  
-}  
-  
-.order-meta{  
-  font-size:13px;  
-  color:#858585;  
-  margin-top:5px;  
-  word-break:break-word;  
-}  
-  
-.status{  
-  display:inline-block;  
-  margin-top:8px;  
-  padding:5px 9px;  
-  border-radius:7px;  
-  background:#252525;  
-  color:#bbb;  
-  font-size:12px;  
-  font-weight:bold;  
-}  
-  
-.status.waiting,  
-.status.pending{  
-  background:rgba(212,175,55,.13);  
-  color:#e9ca66;  
-  border:1px solid rgba(212,175,55,.2);  
-}  
-  
-.status.received{  
-  background:rgba(32,178,107,.13);  
-  color:#55d994;  
-  border:1px solid rgba(32,178,107,.2);  
-}  
-  
-.status.cancelled,  
-.status.refunded,  
-.status.failed{  
-  background:rgba(239,83,80,.12);  
-  color:#ff7774;  
-  border:1px solid rgba(239,83,80,.18);  
-}  
-  
-.otp{  
-  margin-top:10px;  
-  background:  
-    linear-gradient(  
-      135deg,  
-      #171717,  
-      #090909  
-    );  
-  color:var(--gold-light);  
-  border:1px solid var(--gold-border);  
-  padding:12px;  
-  border-radius:9px;  
-  font-size:18px;  
-  font-weight:bold;  
-}  
-  
-.order-actions{  
-  display:flex;  
-  gap:8px;  
-  margin-top:10px;  
-}  
-  
-.small-button{  
-  flex:1;  
-  border:0;  
-  border-radius:9px;  
-  padding:11px;  
-  font-weight:bold;  
-  cursor:pointer;  
-}  
-  
-.check{  
-  background:  
-    linear-gradient(  
-      135deg,  
-      #e3c052,  
-      #c19a28  
-    );  
-  color:#090909;  
-}  
-  
-.cancel{  
-  background:#1d1d1d;  
-  color:#ddd;  
-  border:1px solid #303030;  
-}  
-  
-/* =========================  
-   EMPTY / LOADING  
-========================= */  
-  
-.empty{  
-  text-align:center;  
-  padding:18px;  
-  color:#707070;  
-}  
-  
-.loading{  
-  text-align:center;  
-  padding:18px;  
-  color:#858585;  
-}  
-  
-/* =========================  
-   POPUPS  
-========================= */  
-  
-.popup{  
-  position:fixed;  
-  inset:0;  
-  background:rgba(0,0,0,.78);  
-  backdrop-filter:blur(10px);  
-  -webkit-backdrop-filter:blur(10px);  
-  display:flex;  
-  align-items:center;  
-  justify-content:center;  
-  padding:8px;  
-  z-index:9999;  
-}  
-  
-.popup.popup-closed{  
-  display:none !important;  
-  visibility:hidden !important;  
-  opacity:0 !important;  
-  pointer-events:none !important;  
-}  
-  
-.popup-card{  
-  width:100%;  
-  max-width:500px;  
-  max-height:calc(100dvh - 16px);  
-  max-height:calc(100vh - 16px);  
-  background:  
-    linear-gradient(  
-      180deg,  
-      #121212 0%,  
-      #090909 100%  
-    );  
-  border:1px solid rgba(212,175,55,.25);  
-  border-radius:20px;  
-  padding:0;  
-  overflow:hidden;  
-  box-shadow:  
-    0 25px 70px rgba(0,0,0,.65);  
-}  
-  
-.popup-header{  
-  display:flex;  
-  align-items:center;  
-  gap:9px;  
-  padding:11px 13px;  
-  border-bottom:1px solid #252525;  
-}  
-  
-.popup-header-icon{  
-  width:34px;  
-  height:34px;  
-  min-width:34px;  
-  border-radius:10px;  
-  background:rgba(212,175,55,.12);  
-  border:1px solid rgba(212,175,55,.2);  
-  display:flex;  
-  align-items:center;  
-  justify-content:center;  
-  font-size:18px;  
-}  
-  
-.popup-header h2{  
-  margin:0;  
-  flex:1;  
-  font-size:17px;  
-  font-weight:800;  
-  color:#f4f4f4;  
-}  
-  
-.popup-x{  
-  width:31px;  
-  height:31px;  
-  min-width:31px;  
-  border:1px solid #292929;  
-  border-radius:50%;  
-  background:#181818;  
-  color:#aaa;  
-  font-size:19px;  
-  cursor:pointer;  
-}  
-  
-.popup-visual{  
-  padding:9px 13px 3px;  
-  text-align:center;  
-}  
-  
-.popup-sticker{  
-  width:48px;  
-  height:48px;  
-  margin:0 auto;  
-  border-radius:15px;  
-  display:flex;  
-  align-items:center;  
-  justify-content:center;  
-  font-size:25px;  
-  background:  
-    linear-gradient(  
-      135deg,  
-      rgba(212,175,55,.18),  
-      rgba(212,175,55,.05)  
-    );  
-  border:1px solid rgba(212,175,55,.2);  
-}  
-  
-.popup-body{  
-  padding:8px 13px 10px;  
-}  
-  
-.popup-section-title{  
-  display:flex;  
-  align-items:center;  
-  gap:7px;  
-  margin-bottom:7px;  
-  font-size:13px;  
-  font-weight:800;  
-  color:#eee;  
-}  
-  
-.popup-section-title span{  
-  width:24px;  
-  height:24px;  
-  border-radius:7px;  
-  background:rgba(212,175,55,.12);  
-  display:flex;  
-  align-items:center;  
-  justify-content:center;  
-}  
-  
-.popup-item{  
-  margin:0 0 6px;  
-  padding:8px 9px;  
-  background:#111;  
-  border:1px solid #252525;  
-  border-radius:11px;  
-  display:flex;  
-  gap:8px;  
-  align-items:flex-start;  
-}  
-  
-.popup-item-icon{  
-  width:28px;  
-  height:28px;  
-  min-width:28px;  
-  border-radius:8px;  
-  background:#191919;  
-  border:1px solid #292929;  
-  display:flex;  
-  align-items:center;  
-  justify-content:center;  
-}  
-  
-.popup-item-content{  
-  flex:1;  
-  font-size:11.5px;  
-  line-height:1.38;  
-  color:#929292;  
-}  
-  
-.popup-item-content strong{  
-  display:block;  
-  margin-bottom:2px;  
-  color:#eee;  
-  font-size:12px;  
-}  
-  
-.popup-intro{  
-  margin-bottom:7px;  
-  padding:9px 10px;  
-  border-radius:11px;  
-  background:  
-    rgba(212,175,55,.08);  
-  border:1px solid rgba(212,175,55,.18);  
-  color:#bdbdbd;  
-  font-size:11.5px;  
-  line-height:1.4;  
-}  
-  
-.popup-warning{  
-  margin-top:7px;  
-  padding:9px 10px;  
-  border-radius:11px;  
-  background:  
-    rgba(212,175,55,.08);  
-  border:1px solid rgba(212,175,55,.2);  
-  display:flex;  
-  gap:8px;  
-  align-items:flex-start;  
-}  
-  
-.popup-warning-icon{  
-  width:28px;  
-  height:28px;  
-  min-width:28px;  
-  border-radius:8px;  
-  background:rgba(212,175,55,.14);  
-  display:flex;  
-  align-items:center;  
-  justify-content:center;  
-}  
-  
-.popup-warning-content{  
-  font-size:11.5px;  
-  line-height:1.4;  
-  color:#b9b9b9;  
-}  
-  
-.popup-warning-content strong{  
-  display:block;  
-  color:#e6c961;  
-  margin-bottom:2px;  
-}  
-  
-.popup-close{  
-  width:calc(100% - 26px);  
-  margin:0 13px 12px;  
-  border:0;  
-  background:  
-    linear-gradient(  
-      135deg,  
-      #e2c152,  
-      #c19a27  
-    );  
-  color:#090909;  
-  padding:11px;  
-  border-radius:11px;  
-  font-size:13px;  
-  font-weight:800;  
-  cursor:pointer;  
-}  
-  
-/* =========================  
-   MENU  
-========================= */  
-  
-/* =========================
-   CUSTOM CANCEL CONFIRMATION
-========================= */
-.cancel-confirm-overlay{
-  position:fixed;inset:0;z-index:12000;display:none;align-items:center;justify-content:center;
-  padding:18px;background:rgba(0,0,0,.78);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080808">
+<title>Virtual Numbers — Delight Vendor Logs</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+ --bg:#080808;--panel:#121212;--panel2:#191919;--gold:#d4af37;
+ --gold-light:#f1d77a;--text:#f5f5f5;--muted:#a4a4a4;
+ --border:rgba(212,175,55,.24);--green:#32c878;
+ --red:#ff6262;--blue:#68a8ff;--radius:17px
 }
-.cancel-confirm-overlay.open{display:flex;}
-.cancel-confirm-card{
-  width:100%;max-width:390px;padding:22px;border:1px solid var(--gold-border);border-radius:17px;
-  background:linear-gradient(180deg,#151515,#090909);box-shadow:0 20px 60px rgba(0,0,0,.55);
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;min-height:100vh}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.55;cursor:not-allowed}
+.container{max-width:900px;margin:auto;padding:16px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
+.brand{color:var(--gold-light);font-weight:900;font-size:20px}
+.brand small{display:block;color:var(--muted);font-size:11px;font-weight:500;margin-top:4px}
+.wallet{border:1px solid var(--border);background:linear-gradient(135deg,#211c0d,#111);border-radius:14px;padding:12px 15px;min-width:125px}
+.wallet small{color:var(--muted);display:block;font-size:11px;margin-bottom:5px}
+.wallet strong{color:var(--gold-light);font-size:17px}
+h1{font-size:25px;margin:12px 0 8px}
+h2{font-size:18px;margin:0 0 12px}
+p{line-height:1.5}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0}
+.tab{padding:14px 10px;border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:12px;font-weight:800}
+.tab.active{color:#111;background:var(--gold);border-color:var(--gold)}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px}
+.field{width:100%;padding:13px;background:#090909;color:var(--text);border:1px solid #343434;border-radius:11px;outline:none}
+.field:focus{border-color:var(--gold)}
+.btn{border:0;border-radius:11px;padding:12px 15px;font-weight:800}
+.btn-gold{color:#111;background:var(--gold)}
+.btn-dark{color:var(--text);background:#252525;border:1px solid #3b3b3b}
+.btn-danger{color:#ff7777;background:transparent;border:1.5px solid #b64d4d}
+.btn-black{color:white;background:#111}
+.full{width:100%}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.country-button,.service-button,.option-button{display:block;width:100%;text-align:left;background:var(--panel2);color:var(--text);border:1px solid #303030;border-radius:11px;padding:13px}
+.country-button:hover,.service-button:hover,.option-button:hover{border-color:var(--gold)}
+.country-name{font-weight:800}
+.country-meta,.service-button small,.option-button small{display:block;margin-top:5px;color:var(--muted);font-size:12px}
+.section{display:none}
+.section.active{display:block}
+.notice{border:1px solid var(--border);background:rgba(212,175,55,.07);color:#e8dba9;padding:13px;border-radius:11px;font-size:13px;line-height:1.6}
+.message{padding:12px;border-radius:10px;margin:12px 0;font-size:13px;line-height:1.5;display:none;overflow-wrap:anywhere}
+.message.show{display:block}
+.message.error{background:#351818;color:#ffb6b6}
+.message.success{background:#102b1d;color:#9df0bf}
+.message.info{background:#152237;color:#b5d4ff}
+.loading,.empty{padding:22px 10px;text-align:center;color:var(--muted);font-size:13px}
+.row{display:flex;align-items:center;gap:10px}
+.between{justify-content:space-between}
+.row>*{min-width:0}
+.stack{display:flex;flex-direction:column;gap:10px}
+.order-card{background:#101010;border:1px solid rgba(212,175,55,.23);border-radius:19px;padding:16px;margin-bottom:16px;overflow:hidden}
+.order-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.order-heading h3{font-size:19px;line-height:1.3;margin:0 0 7px}
+.order-subtitle{font-size:13px;color:var(--muted);margin:0}
+.badge{display:inline-block;padding:7px 10px;border-radius:30px;font-size:11px;font-weight:800;white-space:nowrap;background:#3b3014;color:#f5d97b}
+.badge.waiting{background:#3b3014;color:#f5d97b}
+.badge.received{background:#123923;color:#83edac}
+.badge.cancelled,.badge.failed{background:#3b1b1b;color:#ffaaaa}
+.badge.refunded{background:#172c42;color:#a7d3ff}
+.number-box{background:#1b1b1b;border:1px solid #252525;border-radius:15px;padding:14px;margin:15px 0}
+.number-label{font-size:11px;letter-spacing:.4px;color:var(--muted);margin-bottom:9px}
+.number-big{font-size:clamp(21px,5.5vw,29px);font-weight:800;letter-spacing:.4px;overflow-wrap:anywhere}
+.number-small{font-size:15px;font-weight:700;overflow-wrap:anywhere}
+.number-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px;color:var(--muted);font-size:12px}
+.timer-area{text-align:center;padding:10px 0 16px}
+.timer-label{color:var(--muted);font-size:14px}
+.timer-value{font-size:34px;color:var(--green);font-weight:900;margin:9px 0}
+.timer-expired{font-size:28px;color:var(--red)}
+.timer-note{font-size:12px;color:var(--muted)}
+.order-actions{display:grid;gap:10px;margin-top:12px}
+.order-actions .btn{width:100%;border-radius:40px;padding:15px 12px;font-size:14px}
+.order-actions .btn-black{background:#171717;border:1px solid #333}
+.order-actions .btn-danger{background:transparent}
+.order-line{font-size:13px;margin:9px 0;overflow-wrap:anywhere;color:#d0d0d0}
+.order-divider{border:0;border-top:1px solid #303030;margin:16px 0}
+.detail-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin:13px 0;font-size:14px}
+.detail-row span:first-child{color:var(--muted)}
+.detail-row strong{text-align:right;overflow-wrap:anywhere}
+.refund-good{color:var(--green)}
+.sms-box{background:#1a1a1a;border:1px solid #2c2c2c;border-radius:14px;padding:16px;margin-top:14px}
+.sms-heading{font-size:12px;color:var(--muted);text-align:center}
+.sms-code{font-size:32px;font-weight:900;text-align:center;margin:15px 0;letter-spacing:1px}
+.copy-button{display:block;margin:0 auto;border:1px solid #444;background:#222;color:white;border-radius:30px;padding:12px 22px;font-weight:800}
+.order-footnote{font-size:12px;color:var(--muted);line-height:1.5;margin:14px 0 0}
+.order-service{font-size:13px;color:#d5d5d5;margin-top:10px}
+hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
+
+/* Verification must reappear on every page load/refresh. */
+.verification-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:7px}
+.verification-overlay.show{display:flex}
+.verification-modal{width:min(100%,510px);max-height:calc(100dvh - 14px);display:flex;flex-direction:column;overflow:auto;overscroll-behavior:contain;background:#111;border:1px solid rgba(212,175,55,.55);border-radius:16px;box-shadow:0 15px 60px #000a}
+.verification-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 13px;background:linear-gradient(120deg,#28200a,#111);border-bottom:1px solid var(--border);flex-shrink:0}
+.verification-head strong{font-size:15px;color:var(--gold-light)}
+.verification-close{border:1px solid #555;background:#242424;color:white;width:32px;height:32px;flex-shrink:0;border-radius:50%;font-size:20px}
+.verification-content{padding:10px 12px}
+.verification-icon{text-align:center;font-size:27px;line-height:1.1;margin:0 0 5px}
+.verification-content h2{text-align:center;color:var(--gold-light);font-size:15px;margin:0 0 9px}
+.verification-intro{font-size:11px;color:#c5c5c5;text-align:center;margin:0 0 9px;line-height:1.4}
+.practice-list{display:grid;gap:6px}
+.practice-card{display:grid;grid-template-columns:27px minmax(0,1fr);gap:8px;align-items:start;border:1px solid rgba(212,175,55,.19);background:#191919;border-radius:9px;padding:8px 9px}
+.practice-icon{font-size:18px;line-height:1.15;text-align:center}
+.practice-card h3{margin:0 0 3px;font-size:11.5px;color:var(--gold-light)}
+.practice-card p{margin:0;font-size:10.5px;line-height:1.35;color:#d0d0d0;overflow-wrap:anywhere}
+.verification-footer{padding:0 12px 11px;flex-shrink:0}
+.verification-footer button{width:100%;padding:11px;border:0;border-radius:9px;background:var(--gold);color:#111;font-weight:900;font-size:13px}
+@media(max-height:650px){
+ .verification-overlay{padding:4px}.verification-modal{max-height:calc(100dvh - 8px);border-radius:12px}
+ .verification-head{padding:7px 10px}.verification-head strong{font-size:13px}
+ .verification-close{width:27px;height:27px}.verification-content{padding:6px 9px}
+ .verification-icon{font-size:21px;margin-bottom:3px}.verification-content h2{font-size:13px;margin-bottom:5px}
+ .verification-intro{font-size:10px;margin-bottom:5px}.practice-list{gap:4px}
+ .practice-card{padding:5px 7px;grid-template-columns:23px minmax(0,1fr);gap:6px}
+ .practice-icon{font-size:15px}.practice-card h3{font-size:10.5px;margin-bottom:2px}
+ .practice-card p{font-size:9.5px;line-height:1.25}.verification-footer{padding:0 9px 7px}
+ .verification-footer button{padding:9px;font-size:12px}
 }
-.cancel-confirm-icon{
-  width:48px;height:48px;display:flex;align-items:center;justify-content:center;margin:0 auto 13px;
-  border-radius:14px;background:rgba(212,175,55,.12);border:1px solid var(--gold-border);font-size:24px;
+@media(max-width:480px){
+ .container{padding:12px}.brand{font-size:17px}.wallet{padding:10px;min-width:110px}
+ .wallet strong{font-size:15px}h1{font-size:22px}.panel{padding:12px}
+ .grid{grid-template-columns:1fr}.order-card{padding:13px}
+ .order-heading h3{font-size:18px}
 }
-.cancel-confirm-card h2{margin:0 0 9px;text-align:center;font-size:19px;color:#f5f5f5;}
-.cancel-confirm-card p{margin:0;color:#aaa;text-align:center;font-size:14px;line-height:1.55;}
-.cancel-confirm-actions{display:flex;gap:9px;margin-top:20px;}
-.cancel-confirm-actions button{flex:1;border:0;border-radius:10px;padding:12px;font-weight:800;cursor:pointer;}
-.cancel-confirm-no{background:#222;color:#ddd;border:1px solid #333!important;}
-.cancel-confirm-yes{background:linear-gradient(135deg,#e3c052,#c19a28);color:#090909;}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+ <div class="brand">Delight Vendor Logs<small>Virtual Number Services</small></div>
+ <div class="wallet"><small>Wallet Balance</small><strong id="walletBalance">Loading…</strong></div>
+</header>
 
-/* =========================
-   CUSTOM CANCELLATION RESULT
-========================= */
-.cancel-result-overlay{
-  position:fixed;inset:0;z-index:12001;display:none;align-items:center;justify-content:center;
-  padding:18px;background:rgba(0,0,0,.78);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
-}
-.cancel-result-overlay.open{display:flex;}
-.cancel-result-card{
-  width:100%;max-width:390px;padding:22px;border:1px solid var(--gold-border);border-radius:17px;
-  background:linear-gradient(180deg,#151515,#090909);box-shadow:0 20px 60px rgba(0,0,0,.55);
-}
-.cancel-result-icon{
-  width:48px;height:48px;display:flex;align-items:center;justify-content:center;margin:0 auto 13px;
-  border-radius:14px;background:rgba(212,175,55,.12);border:1px solid var(--gold-border);font-size:24px;
-}
-.cancel-result-card h2{margin:0 0 9px;text-align:center;font-size:19px;color:#f5f5f5;}
-.cancel-result-card p{margin:0;color:#aaa;text-align:center;font-size:14px;line-height:1.55;overflow-wrap:anywhere;}
-.cancel-result-actions{display:flex;gap:9px;margin-top:20px;}
-.cancel-result-actions button{width:100%;border:0;border-radius:10px;padding:12px;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#e3c052,#c19a28);color:#090909;}
+<h1>Virtual Numbers</h1>
+<p class="muted small">Choose a provider, search for a country and service, then manage your number below.</p>
+<div id="globalMessage" class="message"></div>
 
+<div class="tabs">
+ <button class="tab" id="usaTab" onclick="openUSA()">🇺🇸 USA Numbers</button>
+ <button class="tab" id="allTab" onclick="openAll()">🌍 All Country Numbers</button>
+</div>
 
-.menu{  
-  position:fixed;  
-  top:65px;  
-  right:12px;  
-  width:240px;  
-  background:  
-    linear-gradient(  
-      180deg,  
-      #121212,  
-      #090909  
-    );  
-  border:1px solid #292929;  
-  border-radius:13px;  
-  box-shadow:  
-    0 12px 35px rgba(0,0,0,.5);  
-  z-index:500;  
-  padding:8px;  
-}  
-  
-.menu-item{  
-  padding:13px;  
-  border-radius:9px;  
-  cursor:pointer;  
-  color:#ddd;  
-  transition:.15s ease;  
-}  
-  
-.menu-item:hover{  
-  background:#191919;  
-  color:var(--gold-light);  
-}  
-  
-.menu-close{  
-  color:#e07070;  
-}  
-  
-.menu-close:hover{  
-  color:#ff8585;  
-}  
-  
-/* =========================  
-   SCROLLBARS  
-========================= */  
-  
-.choice-list::-webkit-scrollbar{  
-  width:6px;  
-}  
-  
-.choice-list::-webkit-scrollbar-track{  
-  background:transparent;  
-}  
-  
-.choice-list::-webkit-scrollbar-thumb{  
-  background:#353535;  
-  border-radius:10px;  
-}  
-  
-.choice-list::-webkit-scrollbar-thumb:hover{  
-  background:#555;  
-}  
-  
-/* =========================
-   GUIDED SELECTION FLOW
-========================= */
-
-.guided-card{
-  padding:0;
-  overflow:hidden;
-}
-
-.guided-header{
-  padding:18px 16px 16px;
-  border-bottom:1px solid var(--border);
-}
-
-.guided-header h2{
-  margin:0;
-  font-size:22px;
-  font-weight:800;
-  color:#f4f4f4;
-}
-
-.guided-subtitle{
-  margin-top:7px;
-  color:#999;
-  font-size:14px;
-  line-height:1.45;
-}
-
-.guided-steps{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-  margin-top:20px;
-}
-
-.guided-step-line{
-  height:3px;
-  border-radius:999px;
-  background:#242424;
-  margin-bottom:10px;
-  transition:.2s ease;
-}
-
-.guided-step-row{
-  display:flex;
-  align-items:center;
-  gap:9px;
-}
-
-.guided-step-number{
-  width:34px;
-  height:34px;
-  min-width:34px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#1b1b1b;
-  border:1px solid #292929;
-  color:#888;
-  font-weight:800;
-  transition:.2s ease;
-}
-
-.guided-step-label{
-  color:#888;
-  font-weight:800;
-  font-size:14px;
-}
-
-.guided-step.active .guided-step-line{
-  background:var(--gold);
-}
-
-.guided-step.active .guided-step-number{
-  background:var(--gold);
-  border-color:var(--gold);
-  color:#090909;
-}
-
-.guided-step.active .guided-step-label{
-  color:var(--gold-light);
-}
-
-.guided-step.complete .guided-step-line{
-  background:var(--green);
-}
-
-.guided-step.complete .guided-step-number{
-  background:var(--green);
-  border-color:var(--green);
-  color:#fff;
-}
-
-.guided-step.complete .guided-step-label{
-  color:#55d994;
-}
-
-.guided-body{
-  padding:16px;
-}
-
-.selection-step{
-  width:100%;
-}
-
-.selection-step > h2{
-  margin-top:0;
-}
-
-.step-back{
-  border:1px solid #292929;
-  background:#141414;
-  color:var(--gold-light);
-  padding:10px 14px;
-  border-radius:10px;
-  font-size:14px;
-  font-weight:800;
-  cursor:pointer;
-  margin-bottom:14px;
-}
-
-.step-back:hover{
-  background:#1a1a1a;
-}
-
-@media(max-width:520px){
-  .guided-header h2{
-    font-size:20px;
-  }
-
-  .guided-subtitle{
-    font-size:13px;
-  }
-
-  .guided-steps{
-    gap:6px;
-  }
-
-  .guided-step-row{
-    gap:6px;
-  }
-
-  .guided-step-number{
-    width:31px;
-    height:31px;
-    min-width:31px;
-    font-size:13px;
-  }
-
-  .guided-step-label{
-    font-size:12px;
-  }
-}
-
-/* =========================  
-   MOBILE  
-========================= */  
-  
-@media(max-width:520px){  
-  
-  .server-grid{  
-    grid-template-columns:1fr;  
-  }  
-  
-  header h1{  
-    font-size:17px;  
-  }  
-  
-  main{  
-    padding:13px 12px 25px;  
-  }  
-  
-  .card{  
-    padding:14px;  
-    border-radius:15px;  
-  }  
-  
-  .provider-tab{  
-    font-size:12px;  
-    padding:12px 7px;  
-  }  
-  
-}  
-  
-</style>  </head>  <body>  <header>  <h1>Virtual Numbers</h1>  <div class="header-right">  <div id="walletMini" class="wallet-mini">  
-₦0  
-</div>  <button
-class="menu-button"
-onclick="toggleMenu()"
-
-> 
-
-☰
-</button>
-
-</div>  </header>  <main>  <div class="provider-tabs">  <button
-id="grizzlyProviderTab"
-class="provider-tab active"
-onclick="changeProvider('grizzly')"
-
-> 
-
-All Country Number 1
-</button>
-
-<button
-id="smsbowerProviderTab"
-class="provider-tab"
-onclick="changeProvider('smsbower')"
-
-> 
-
-All Country Number 2
-</button>
-
-</div>  <section class="card guided-card">
-  <div class="guided-header">
-    <h2>Get a Virtual Number</h2>
-    <div class="guided-subtitle">Select a country, service and server to continue.</div>
-    <div class="guided-steps" aria-label="Virtual number selection steps">
-      <div id="stepCountry" class="guided-step active">
-        <div class="guided-step-line"></div>
-        <div class="guided-step-row">
-          <div id="stepCountryNumber" class="guided-step-number">1</div>
-          <div id="stepCountryLabel" class="guided-step-label">Country</div>
-        </div>
-      </div>
-      <div id="stepService" class="guided-step">
-        <div class="guided-step-line"></div>
-        <div class="guided-step-row">
-          <div id="stepServiceNumber" class="guided-step-number">2</div>
-          <div id="stepServiceLabel" class="guided-step-label">Service</div>
-        </div>
-      </div>
-      <div id="stepServer" class="guided-step">
-        <div class="guided-step-line"></div>
-        <div class="guided-step-row">
-          <div id="stepServerNumber" class="guided-step-number">3</div>
-          <div id="stepServerLabel" class="guided-step-label">Server</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="guided-body">
-    <div id="countryStep" class="selection-step">
-      <h2>Country</h2>
-      <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input
-          id="countrySearch"
-          type="search"
-          placeholder="Search country..."
-          autocomplete="off"
-          oninput="filterCountries()"
-        >
-      </div>
-      <div id="countryList" class="choice-list">
-        <div class="loading">Loading countries...</div>
-      </div>
-      <div id="selectedCountryBox" class="selected-box hidden"></div>
-    </div>
-
-    <div id="serviceStep" class="selection-step hidden">
-      <button type="button" class="step-back" onclick="goBackToCountry()">← Back</button>
-      <h2>Service</h2>
-      <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input
-          id="serviceSearch"
-          type="search"
-          placeholder="Search service..."
-          autocomplete="off"
-          oninput="filterServices()"
-          disabled
-        >
-      </div>
-      <div id="serviceList" class="choice-list">
-        <div class="empty">Select a country first.</div>
-      </div>
-      <div id="selectedServiceBox" class="selected-box hidden"></div>
-    </div>
-
-    <div id="serverStep" class="selection-step hidden">
-      <button type="button" class="step-back" onclick="goBackToService()">← Back</button>
-      <h2>Server</h2>
-      <div id="serverList" class="server-grid"></div>
-      <div id="priceBox" class="price-box hidden">
-        <div class="price-label">Price</div>
-        <div id="selectedPrice" class="price-value">Price unavailable</div>
-      </div>
-      <button
-        id="buyButton"
-        class="buy-button"
-        onclick="buyNumber()"
-        disabled
-      >
-        Buy Number
-      </button>
-      <div id="buyMessage" class="message"></div>
-    </div>
-  </div>
+<section id="usaSection" class="section">
+ <div class="panel">
+  <h2>🇺🇸 United States</h2>
+  <p class="muted small">Search for a service, then choose an available option.</p>
+  <input id="usaServiceSearch" class="field" placeholder="Search USA services…" oninput="filterServices('usa')" autocomplete="off">
+  <div id="usaMessage" class="message"></div>
+  <div id="usaServices" class="grid" style="margin-top:12px"><div class="empty">Select USA Numbers to load services.</div></div>
+ </div>
 </section>
 
-<!-- =========================
-     ONE UNIFIED ORDERS SECTION
-========================= -->
-<section class="card">
-  <h2>Orders</h2>
-  <div id="ordersList">
-    <div class="loading">Loading orders...</div>
+<section id="allSection" class="section">
+ <div class="panel">
+  <h2>🌍 All Country Numbers</h2>
+  <div id="allMessage" class="message"></div>
+  <input id="countrySearch" class="field" placeholder="Search country…" autocomplete="off" oninput="filterCountries()">
+  <select id="countrySelect" class="field" style="margin-top:10px" onchange="selectCountryByValue(this.value)">
+   <option value="">Or choose a country from this list…</option>
+  </select>
+  <div id="countryResults" class="grid" style="margin-top:12px"><div class="empty">Select All Country Numbers to load countries.</div></div>
+  <hr>
+  <div id="allServicesWrap" style="display:none">
+   <h2 id="selectedCountryTitle">Select a service</h2>
+   <input id="allServiceSearch" class="field" placeholder="Search services…" oninput="filterServices('all')" autocomplete="off">
+   <div id="allServices" class="grid" style="margin-top:12px"></div>
   </div>
+ </div>
 </section>
-</main>  <div  
-id="menu"  
-class="menu hidden"  
->  <div  
-class="menu-item"  
-onclick="location.href='profile.html'"  
->  
-👤 Profile  
-</div>  <div  
-class="menu-item"  
-onclick="location.href='wallet.html'"  
->  
-💰 Fund Wallet  
-</div>  <div  
-class="menu-item"  
-onclick="location.href='transactions.html'"  
->  
-📜 Transactions  
-</div>  <div  
-class="menu-item"  
-onclick="location.href='purchases.html'"  
->  
-🛒 My Purchases  
-</div>  <div  
-class="menu-item"  
-onclick="location.href='pending.html'"  
->  
-⏳ Pending Orders  
-</div>  <div  
-class="menu-item"  
-onclick="location.href='settings.html'"  
->  
-⚙️ Settings  
-</div>  <div class="menu-item">  <a
-href="https://wa.me/2347015908401"
-target="_blank"
-style="color:inherit;text-decoration:none;"
 
-> 
+<section id="optionsSection" class="section">
+ <div class="panel">
+  <button class="btn btn-dark" onclick="goBack()">← Back</button>
+  <h2 id="optionsTitle" style="margin-top:15px">Choose an option</h2>
+  <p id="optionsSubtitle" class="muted small"></p>
+  <div id="optionsMessage" class="message"></div>
+  <div id="optionsList" class="stack"></div>
+ </div>
+</section>
 
-💬 WhatsApp Support
-</a>
+<section id="confirmSection" class="section">
+ <div class="panel">
+  <button class="btn btn-dark" onclick="goBack()">← Back</button>
+  <h2 style="margin-top:15px">Confirm Purchase</h2>
+  <div id="purchaseSummary" class="notice"></div>
+  <p class="small muted">Make sure your wallet has enough funds before continuing.</p>
+  <div id="confirmMessage" class="message"></div>
+  <button id="confirmPurchaseBtn" class="btn btn-gold full" onclick="purchaseNumber()">Purchase Number</button>
+ </div>
+</section>
 
-</div>  <div  
-class="menu-item menu-close"  
-onclick="toggleMenu()"  
->  
-✖ Close  
-</div>  </div>  <div  
-id="verificationPopup"  
-class="popup"  
->  <div class="popup-card">  <div class="popup-header">  <div class="popup-header-icon">  
-📢  
-</div>  <h2>Important Verification</h2>  <button
-type="button"
-class="popup-x"
-onclick="closeVerificationPopup(event)"
-
-> 
-
-×
-</button>
-
-</div>  <div class="popup-visual">  <div class="popup-sticker">  
-🛡️  
-</div>  </div>  <div class="popup-body">  <div class="popup-section-title">  <span>✨</span>
-
-Best Practices for Success
-
-</div>  <div class="popup-item">  <div class="popup-item-icon">  
-🔄  
-</div>  <div class="popup-item-content">  <strong>Fresh Installation</strong>
-
-Uninstall the app and clear its cache before requesting a new number.
-
-</div>  </div>  <div class="popup-item">  <div class="popup-item-icon">  
-📱  
-</div>  <div class="popup-item-content">  <strong>Official Apps Only</strong>
-
-Use the standard official app version. Modified versions often fail verification.
-
-</div>  </div>  <div class="popup-item">  <div class="popup-item-icon">  
-🌐  
-</div>  <div class="popup-item-content">  <strong>Location Match</strong>
-
-Keep your device settings and connection consistent with the selected country while waiting.
-
-</div>  </div>  <div class="popup-item">  <div class="popup-item-icon">  
-📶  
-</div>  <div class="popup-item-content">  <strong>Stay Connected</strong>
-
-Keep the app open and maintain a stable connection.
-
-</div>  </div>  <div class="popup-warning">  <div class="popup-warning-icon">  
-💡  
-</div>  <div class="popup-warning-content">  <strong>Provider Tip</strong>
-
-If a server does not receive a code, please try another server. Each server shows its availability. Cancel when cancellation is available to receive your refund.
-
-</div>  </div>  </div>  <button
-type="button"
-class="popup-close"
-onclick="closeVerificationPopup(event)"
-
-> 
-
-I Understand
-</button>
-
-</div>  </div>  <div  
-id="portalNoticePopup"  
-class="popup popup-closed"  
-style="display:none;"  
->  <div class="popup-card">  <div class="popup-header">  <div class="popup-header-icon">  
-⚠️  
-</div>  <h2>PORTAL NOTICE</h2>  <button
-type="button"
-class="popup-x"
-onclick="closePortalNotice(event)"
-
-> 
-
-×
-</button>
-
-</div>  <div class="popup-visual">  <div class="popup-sticker">  
-🔐  
-</div>  </div>  <div class="popup-body">  <div class="popup-intro">  If your purchased number does not receive a verification code:
-
-<br><br>
-
-Turn on a VPN and connect to the same country as the number you purchased.
-
-</div>  <div class="popup-item">  <div class="popup-item-icon">  
-🇺🇸  
-</div>  <div class="popup-item-content">  <strong>Example:</strong>
-
-If you purchased a 🇺🇸 USA number, connect your VPN to the United States. You can use either a free or paid VPN.
-
-</div>  </div>  <div class="popup-item">  <div class="popup-item-icon">  
-🔄  
-</div>  <div class="popup-item-content">  <strong>If the code still does not arrive:</strong>
-
-Uninstall and reinstall the app you are trying to register, then try the verification again with the country-matching VPN enabled.
-
-</div>  </div>  <div class="popup-warning">  <div class="popup-warning-icon">  
-📍  
-</div>  <div class="popup-warning-content">  <strong>Please make sure:</strong>
-
-Please make sure your VPN country matches the country of your purchased number.
-
-</div>  </div>  </div>  <button
-type="button"
-class="popup-close"
-onclick="closePortalNotice(event)"
-
-> 
-
-I Understand
-</button>
-
-</div>  </div>
-<div id="cancelResultModal" class="cancel-result-overlay" role="dialog" aria-modal="true" aria-labelledby="cancelResultTitle">
-  <div class="cancel-result-card">
-    <div class="cancel-result-icon">✓</div>
-    <h2 id="cancelResultTitle">Number cancelled</h2>
-    <p id="cancelResultMessage">The number was successfully cancelled.</p>
-    <div class="cancel-result-actions">
-      <button type="button" onclick="closeCancelResult()">Okay</button>
-    </div>
-  </div>
+<section class="panel">
+ <div class="row between">
+  <h2>My Number Orders</h2>
+  <button class="btn btn-dark" onclick="refreshOrders()">Refresh</button>
+ </div>
+ <p class="muted small">Your pending, successful, cancelled, and refunded orders appear below.</p>
+ <div id="ordersMessage" class="message"></div>
+ <div id="ordersList"><div class="loading">Checking your session…</div></div>
+</section>
 </div>
-  <div id="cancelConfirmModal" class="cancel-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="cancelConfirmTitle">
-  <div class="cancel-confirm-card">
-    <div class="cancel-confirm-icon">↩️</div>
-    <h2 id="cancelConfirmTitle">Cancel this number?</h2>
-    <p>You will be refunded after the number is successfully cancelled. Do you want to continue?</p>
-    <div class="cancel-confirm-actions">
-      <button type="button" class="cancel-confirm-no" onclick="resolveCancelConfirmation(false)">No, keep it</button>
-      <button type="button" class="cancel-confirm-yes" onclick="resolveCancelConfirmation(true)">Yes, cancel</button>
-    </div>
+
+<div id="verificationOverlay" class="verification-overlay" role="dialog" aria-modal="true" aria-labelledby="verificationTitle">
+ <div class="verification-modal">
+  <div class="verification-head">
+   <strong id="verificationTitle">📢 Important Verification</strong>
+   <button class="verification-close" aria-label="Close verification message" onclick="dismissVerification()">×</button>
   </div>
+  <div class="verification-content">
+   <div class="verification-icon">🛡️</div>
+   <h2>✨ Best Practices for Success</h2>
+   <p class="verification-intro">Please read these important tips before requesting a number.</p>
+   <div class="practice-list">
+    <div class="practice-card"><div class="practice-icon">📲</div><div><h3>Fresh Installation</h3><p>Uninstall the app and clear its cache before requesting a new number.</p></div></div>
+    <div class="practice-card"><div class="practice-icon">✅</div><div><h3>Official Apps Only</h3><p>Use the standard official app version. Modified versions often fail verification.</p></div></div>
+    <div class="practice-card"><div class="practice-icon">🌍</div><div><h3>Location Match</h3><p>Keep your device settings and connection consistent with the selected country while waiting.</p></div></div>
+    <div class="practice-card"><div class="practice-icon">📶</div><div><h3>Stay Connected</h3><p>Keep the app open and maintain a stable connection while waiting for your code.</p></div></div>
+    <div class="practice-card"><div class="practice-icon">💡</div><div><h3>Provider Tip</h3><p>If a server does not receive a code, try another available server. Cancel only when cancellation is available; a refund depends on provider confirmation and backend processing.</p></div></div>
+   </div>
+  </div>
+  <div class="verification-footer"><button onclick="dismissVerification()">I Understand</button></div>
+ </div>
 </div>
-<script>  
-  
-const SUPABASE_URL =  
-  "https://hkfhehbhmucymusaytoe.supabase.co";  
-  
-const SUPABASE_KEY =  
-  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";  
-  
-const supabaseClient =  
-  window.supabase.createClient(  
-    SUPABASE_URL,  
-    SUPABASE_KEY  
-  );  
-  
-const SMSBOWER_FUNCTION_URL =  
-  `${SUPABASE_URL}/functions/v1/numpool-api`;  
-  
-const GRIZZLY_FUNCTION_URL =  
-  `${SUPABASE_URL}/functions/v1/grizzly-api`;  
-  
-let provider = "grizzly";  
-  
-let countries = [];  
-let services = [];  
-let servers = [];  
-  
-let selectedCountry = null;  
-let selectedService = null;  
-let selectedServer = null;  
-  
-let orders = [];  
-  
-let currentOrderId = null;  
-let currentOrderProvider = null;  
-  
-let watermarkText = "";
 
-let currentSelectionStep = "country";
-let pendingOrderScrollKey = "";  
-  
-function functionURL(providerName){  
-  
-  if(providerName === "grizzly"){  
-    return GRIZZLY_FUNCTION_URL;  
-  }  
-  
-  return SMSBOWER_FUNCTION_URL;  
-  
-}  
-  
-async function getAuthToken(){  
-  
-  const {  
-    data,  
-    error  
-  } =  
-    await supabaseClient.auth.getSession();  
-  
-  if(  
-    error ||  
-    !data?.session?.access_token  
-  ){  
-  
-    const {  
-      data: refreshed,  
-      error: refreshError  
-    } =  
-    await supabaseClient.auth.refreshSession();  
-  
-    if(  
-      refreshError ||  
-      !refreshed?.session?.access_token  
-    ){  
-  
-      alert(  
-        "Your session has expired. Please log in again."  
-      );  
-  
-      location.href =  
-        "login.html";  
-  
-      throw new Error(  
-        "Please log in again."  
-      );  
-  
-    }  
-  
-    return String(  
-      refreshed.session.access_token  
-    );  
-  
-  }  
-  
-  return String(  
-    data.session.access_token  
-  );  
-  
-}  
-  
-async function api(  
-  action,  
-  payload = {},  
-  providerName = provider  
-){  
-  
-  const token =  
-    await getAuthToken();  
-  
-  const response =  
-    await fetch(  
-      functionURL(providerName),  
-      {  
-        method:"POST",  
-  
-        headers:{  
-          "Content-Type":  
-            "application/json",  
-  
-          "apikey":  
-            String(SUPABASE_KEY),  
-  
-          "Authorization":  
-            "Bearer " + String(token)  
-        },  
-  
-        body:JSON.stringify({  
-          action,  
-          ...payload  
-        })  
-      }  
-    );  
-  
-  const data =  
-    await response.json()  
-      .catch(() => ({}));  
-  
-  if(  
-    !response.ok ||  
-    data.success === false  
-  ){  
-  
-    throw new Error(  
-      data.error ||  
-      data.message ||  
-      "Something went wrong."  
-    );  
-  
-  }  
-  
-  return data;  
-  
-}  
-  
-async function loadWatermark(){  
-  
-  const watermark =  
-    document.getElementById(  
-      "virtualNumberWatermark"  
-    );  
-  
-  if(!watermark){  
-    return;  
-  }  
-  
-  watermark.classList.add("hidden");  
-  watermark.textContent = "";  
-  watermarkText = "";  
-  
-  try{  
-  
-    const {  
-      data,  
-      error  
-    } =  
-    await supabaseClient  
-      .from("site_settings")  
-      .select("value")  
-      .eq("key","watermark")  
-      .maybeSingle();  
-  
-    if(error){  
-      console.error(  
-        "Watermark error:",  
-        error  
-      );  
-      return;  
-    }  
-  
-    const text =  
-      String(  
-        data?.value || ""  
-      ).trim();  
-  
-    if(text){  
-  
-      watermarkText = text;  
-      watermark.textContent = text;  
-  
-      watermark.classList.remove(  
-        "hidden"  
-      );  
-  
-    }  
-  
-  }catch(error){  
-  
-    console.error(  
-      "Watermark loading error:",  
-      error  
-    );  
-  
-  }  
-  
-}  
-  
-async function changeProvider(  
-  newProvider  
-){  
-  
-  provider =  
-    newProvider === "smsbower"  
-      ? "smsbower"  
-      : "grizzly";  
-  
-  document  
-    .getElementById(  
-      "grizzlyProviderTab"  
-    )  
-    .classList.toggle(  
-      "active",  
-      provider === "grizzly"  
-    );  
-  
-  document  
-    .getElementById(  
-      "smsbowerProviderTab"  
-    )  
-    .classList.toggle(  
-      "active",  
-      provider === "smsbower"  
-    );  
-  
-  selectedCountry = null;  
-  selectedService = null;  
-  selectedServer = null;  
-  
-  countries = [];  
-  services = [];  
-  servers = [];  
-  
-  document  
-    .getElementById(  
-      "countrySearch"  
-    )  
-    .value = "";  
-  
-  document  
-    .getElementById(  
-      "serviceSearch"  
-    )  
-    .value = "";  
-  
-  document  
-    .getElementById(  
-      "serviceSearch"  
-    )  
-    .disabled = true;  
-  
-  document  
-    .getElementById(  
-      "selectedCountryBox"  
-    )  
-    .classList.add("hidden");  
-  
-  document  
-    .getElementById(  
-      "selectedServiceBox"  
-    )  
-    .classList.add("hidden");  
-  
-  showSelectionStep("country");  
-  
-  document  
-    .getElementById(  
-      "serviceList"  
-    )  
-    .innerHTML = `  
-      <div class="empty">  
-        Select a country first.  
-      </div>  
-    `;  
-  
-  await loadWatermark();  
-  await loadCountries();  
-  await loadAllOrders();  
-  
-}  
-  
-function naira(value){  
-  
-  const n =  
-    Number(value);  
-  
-  if(  
-    !Number.isFinite(n) ||  
-    n <= 0  
-  ){  
-  
-    return "Price unavailable";  
-  
-  }  
-  
-  return (  
-    "₦" +  
-    Math.ceil(n)  
-      .toLocaleString()  
-  );  
-  
-}  
-  
-function escapeHTML(value){  
-  
-  return String(value ?? "")  
-    .replace(/&/g,"&amp;")  
-    .replace(/</g,"&lt;")  
-    .replace(/>/g,"&gt;")  
-    .replace(/"/g,"&quot;")  
-    .replace(/'/g,"&#039;");  
-  
-}  
-  
-function toggleMenu(){  
-  
-  document  
-    .getElementById("menu")  
-    .classList.toggle("hidden");  
-  
-}  
-  
-/* ============================================================  
-   POPUP FIX  
-============================================================ */  
-  
-function forceClosePopup(id){  
-  
-  const popup =  
-    document.getElementById(id);  
-  
-  if(!popup){  
-    return;  
-  }  
-  
-  popup.classList.add(  
-    "popup-closed"  
-  );  
-  
-  popup.style.setProperty(  
-    "display",  
-    "none",  
-    "important"  
-  );  
-  
-  popup.style.setProperty(  
-    "visibility",  
-    "hidden",  
-    "important"  
-  );  
-  
-  popup.style.setProperty(  
-    "opacity",  
-    "0",  
-    "important"  
-  );  
-  
-  popup.style.setProperty(  
-    "pointer-events",  
-    "none",  
-    "important"  
-  );  
-  
-}  
-  
-function forceOpenPopup(id){  
-  
-  const popup =  
-    document.getElementById(id);  
-  
-  if(!popup){  
-    return;  
-  }  
-  
-  popup.classList.remove(  
-    "popup-closed"  
-  );  
-  
-  popup.style.removeProperty(  
-    "display"  
-  );  
-  
-  popup.style.removeProperty(  
-    "visibility"  
-  );  
-  
-  popup.style.removeProperty(  
-    "opacity"  
-  );  
-  
-  popup.style.removeProperty(  
-    "pointer-events"  
-  );  
-  
-  popup.style.display =  
-    "flex";  
-  
-}  
-  
-function closeVerificationPopup(event){  
-  
-  if(event){  
-    event.preventDefault();  
-    event.stopPropagation();  
-  }  
-  
-  forceClosePopup(  
-    "verificationPopup"  
-  );  
-  
-}  
-  
-function closePortalNotice(event){  
-  
-  if(event){  
-    event.preventDefault();  
-    event.stopPropagation();  
-  }  
-  
-  forceClosePopup(  
-    "portalNoticePopup"  
-  );  
-  
-}  
-  
-function showPortalNotice(){  
-  
-  forceOpenPopup(  
-    "portalNoticePopup"  
-  );  
-  
-}  
-  
-  
-/* ============================================================  
-   COUNTRY  
-============================================================ */  
-  
-function countryName(country){  
-  
-  if(!country){  
-    return "";  
-  }  
-  
-  const possibleNames = [  
-  
-    country.name,  
-    country.country_name,  
-    country.countryName,  
-    country.country_label,  
-    country.countryLabel,  
-    country.display_name,  
-    country.displayName,  
-    country.label,  
-    country.title,  
-    country.eng,  
-    country.provider_name,  
-    country.providerName,  
-  
-    country.country?.name,  
-    country.country?.country_name,  
-    country.country?.countryName,  
-    country.country?.label,  
-  
-    country.data?.name,  
-    country.data?.country_name,  
-    country.data?.countryName,  
-    country.data?.label  
-  
-  ];  
-  
-  for(const value of possibleNames){  
-  
-    if(  
-      typeof value === "string" &&  
-      value.trim()  
-    ){  
-  
-      return value.trim();  
-  
-    }  
-  
-  }  
-  
-  return "";  
-  
-}  
-  
-function countryKey(country){  
-  
-  return String(  
-    country?.country_key ||  
-    country?.key ||  
-    country?.slug ||  
-    country?.code ||  
-    country?.country_code ||  
-    country?.country ||  
-    country?.name ||  
-    ""  
-  )  
-    .trim()  
-    .toLowerCase();  
-  
-}  
-  
-function countryId(country){  
-  
-  return (  
-    country?.id ??  
-    country?.country_id ??  
-    country?.countryId ??  
-    null  
-  );  
-  
-}  
-  
-function countryMatches(  
-  country,  
-  query  
-){  
-  
-  const q =  
-    String(query || "")  
-      .trim()  
-      .toLowerCase();  
-  
-  const name =  
-    countryName(country)  
-      .toLowerCase();  
-  
-  const key =  
-    countryKey(country);  
-  
-  const aliases =  
-    Array.isArray(  
-      country?.aliases  
-    )  
-      ? country.aliases  
-      : [];  
-  
-  const code =  
-    String(  
-      country?.code ||  
-      country?.iso ||  
-      country?.iso2 ||  
-      country?.country_code ||  
-      ""  
-    )  
-      .toLowerCase();  
-  
-  const haystack = [  
-    name,  
-    key,  
-    country?.eng,  
-    country?.provider_name,  
-    country?.providerName,  
-    country?.code,  
-    country?.iso,  
-    country?.iso2,  
-    country?.country_code,  
-    country?.slug,  
-    ...aliases  
-  ]  
-    .filter(Boolean)  
-    .join(" ")  
-    .toLowerCase();  
-  
-  if(!q){  
-    return true;  
-  }  
-  
-  if(  
-    q === "us" ||  
-    q === "usa" ||  
-    q === "united states" ||  
-    q === "united states of america"  
-  ){  
-  
-    return (  
-      name === "united states" ||  
-      name === "united states of america" ||  
-      name.includes("united states") ||  
-      key === "us" ||  
-      key === "usa" ||  
-      code === "us" ||  
-      haystack.includes("united states") ||  
-      haystack.includes("usa")  
-    );  
-  
-  }  
-  
-  if(  
-    q === "uk" ||  
-    q === "gb" ||  
-    q === "england" ||  
-    q === "great britain" ||  
-    q === "united kingdom"  
-  ){  
-  
-    return (  
-      name === "united kingdom" ||  
-      name.includes("united kingdom") ||  
-      name === "great britain" ||  
-      name === "england" ||  
-      key === "uk" ||  
-      key === "gb" ||  
-      code === "uk" ||  
-      code === "gb" ||  
-      haystack.includes("united kingdom") ||  
-      haystack.includes("great britain") ||  
-      haystack.includes("england")  
-    );  
-  
-  }  
-  
-  return haystack.includes(q);  
-  
-}  
-  
-function filterCountries(){  
-  
-  const input =  
-    document.getElementById(  
-      "countrySearch"  
-    );  
-  
-  renderCountries(input.value);  
-  
-}  
-  
-async function loadCountries(){  
-  
-  const list =  
-    document.getElementById(  
-      "countryList"  
-    );  
-  
-  list.innerHTML = `  
-    <div class="loading">  
-      Loading countries...  
-    </div>  
-  `;  
-  
-  try{  
-  
-    const data =  
-      await api(  
-        "countries",  
-        {},  
-        provider  
-      );  
-  
-    countries =  
-      Array.isArray(data.countries)  
-        ? data.countries  
-        : [];  
-  
-    renderCountries();  
-  
-  }catch(error){  
-  
-    list.innerHTML = `  
-      <div class="empty">  
-        ${escapeHTML(error.message)}  
-      </div>  
-    `;  
-  
-  }  
-  
-}  
-  
-function renderCountries(query = ""){  
-  
-  const list =  
-    document.getElementById(  
-      "countryList"  
-    );  
-  
-  const filtered =  
-    countries.filter(  
-      country =>  
-        countryMatches(  
-          country,  
-          query  
-        )  
-    );  
-  
-  if(filtered.length === 0){  
-  
-    list.innerHTML = `  
-      <div class="empty">  
-        No country found.  
-      </div>  
-    `;  
-  
-    return;  
-  
-  }  
-  
-  list.innerHTML =  
-    filtered  
-      .map(  
-        country => {  
-  
-          const selected =  
-            selectedCountry &&  
-            countryKey(selectedCountry) ===  
-            countryKey(country);  
-  
-          const displayName =  
-            countryName(country);  
-  
-          return `  
-            <div  
-              class="choice ${  
-                selected ? "selected" : ""  
-              }"  
-              data-country-key="${  
-                escapeHTML(  
-                  countryKey(country)  
-                )  
-              }"  
-            >  
-              ${escapeHTML(  
-                displayName || "Country"  
-              )}  
-            </div>  
-          `;  
-  
-        }  
-      )  
-      .join("");  
-  
-  list  
-    .querySelectorAll(  
-      "[data-country-key]"  
-    )  
-    .forEach(  
-      element => {  
-  
-        element.onclick = () => {  
-  
-          const key =  
-            element.dataset.countryKey;  
-  
-          const country =  
-            countries.find(  
-              item =>  
-                countryKey(item) === key  
-            );  
-  
-          if(country){  
-            selectCountry(country);  
-          }  
-  
-        };  
-  
-      }  
-    );  
-  
-}  
-  
-function updateSelectionProgress(step){
+<script>
+"use strict";
 
-  const steps = ["country","service","server"];
-  const currentIndex = steps.indexOf(step);
+const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
+const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+const FUNCTIONS={
+ textverified:SUPABASE_URL+"/functions/v1/text-verified-api",
+ virtualsms:SUPABASE_URL+"/functions/v1/virtual-sms-api"
+};
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=id=>document.getElementById(id);
 
-  steps.forEach((name,index) => {
+let session=null,currentUser=null,walletBalance=0;
+let flow="none",chosenProvider=null,selectedCountry=null,selectedService=null,selectedOption=null;
+let visibleServices=[],filteredServices=[],countryList=[],allOrders=[];
+let poller=null,countdownTimer=null,countryLoading=false;
+let currentSection=null,optionsCache=[],initGeneration=0,servicesGeneration=0;
 
-    const stepElement = document.getElementById(
-      name === "country"
-        ? "stepCountry"
-        : name === "service"
-          ? "stepService"
-          : "stepServer"
-    );
+function escapeHTML(v){
+ return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function money(v){
+ const n=Number(v);
+ return "₦"+(Number.isFinite(n)?n:0).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function showMessage(id,text,type="info"){
+ const e=$(id);if(e)e.textContent=text||"",e.className="message"+(text?" show "+type:"");
+}
+function showGlobal(text,type="info"){showMessage("globalMessage",text,type);}
+function clearMessages(){
+ ["globalMessage","usaMessage","allMessage","optionsMessage","confirmMessage","ordersMessage"].forEach(id=>showMessage(id,""));
+}
+function setSection(id){
+ document.querySelectorAll(".section").forEach(e=>e.classList.remove("active"));
+ if(id&&$(id))$(id).classList.add("active");
+ currentSection=id;
+}
+function setActiveTab(tab){
+ $("usaTab").classList.toggle("active",tab==="usa");
+ $("allTab").classList.toggle("active",tab==="all");
+}
+function formatError(error,fallback){
+ const m=String(error?.message||"");
+ if(/insufficient funds|insufficient balance/i.test(m))return m;
+ return fallback||m||"The request could not be completed. Please try again.";
+}
+async function invoke(provider,action,extra={}){
+ if(!FUNCTIONS[provider])throw new Error("Unknown provider.");
+ const {data,error}=await sb.auth.getSession();
+ if(error)throw error;
+ const active=data?.session;
+ if(!active?.access_token)throw new Error("Your session has expired. Please sign in again.");
+ const response=await fetch(FUNCTIONS[provider],{
+  method:"POST",
+  headers:{
+   "Content-Type":"application/json",
+   "apikey":SUPABASE_KEY,
+   "Authorization":"Bearer "+active.access_token
+  },
+  body:JSON.stringify({action,...extra})
+ });
+ let body={};
+ try{body=await response.json();}catch{}
+ if(!response.ok||body?.error||body?.success===false)
+  throw new Error(body?.error||body?.message||("Request failed (HTTP "+response.status+")."));
+ return body;
+}
+function getList(payload){
+ if(Array.isArray(payload))return payload;
+ if(!payload||typeof payload!=="object")return [];
+ for(const k of ["data","services","countries","results","items","orders","options","available"]){
+  if(Array.isArray(payload[k]))return payload[k];
+  if(payload[k]&&typeof payload[k]==="object"){
+   for(const n of ["data","items","results","countries","services","options"])
+    if(Array.isArray(payload[k][n]))return payload[k][n];
+  }
+ }
+ return [];
+}
+function getName(x){
+ if(typeof x==="string")return x;
+ if(!x||typeof x!=="object")return "Unknown";
+ return String(x.name??x.service_name??x.serviceName??x.title??x.country_name??x.countryName??x.label??x.description??"Unknown");
+}
+function getCountryCode(c){
+ return String(c?.code??c?.iso2??c?.iso??c?.country_code??c?.countryCode??c?.short_code??c?.shortCode??"").trim();
+}
+function getCountryId(c){return c?.country_id??c?.countryId??c?.id??null;}
+function normalizeCountries(payload){
+ let list=getList(payload);
+ if(!list.length&&payload&&typeof payload==="object"){
+  const source=payload.countries&&typeof payload.countries==="object"?payload.countries:
+   payload.data&&typeof payload.data==="object"&&!Array.isArray(payload.data)?payload.data:null;
+  if(source&&!Array.isArray(source))list=Object.entries(source).map(([key,v])=>{
+   if(typeof v==="string")return {code:key,name:v};
+   if(v&&typeof v==="object")return {...v,code:v.code??v.iso2??v.iso??key,name:v.name??v.country_name??v.countryName??key};
+   return null;
+  }).filter(Boolean);
+ }
+ return list.map(x=>typeof x==="string"
+  ?{name:x,code:"",id:null,_original:x}
+  :x&&typeof x==="object"
+   ?{...x,name:getName(x),code:getCountryCode(x),id:getCountryId(x),_original:x}:null)
+  .filter(x=>x&&x.name&&x.name!=="Unknown");
+}
+function normalizeServices(payload){
+ return getList(payload).map((x,i)=>typeof x==="string"
+  ?{name:x,service_code:x,_original:x,_index:i}
+  :x&&typeof x==="object"
+   ?{...x,name:getName(x),service_code:x.service_code??x.serviceCode??x.code??x.id??x.service??x.key??x.name,_original:x,_index:i}:null)
+  .filter(x=>x&&x.name&&x.name!=="Unknown");
+}
+function serviceCode(s){
+ return String(s?.service_code??s?.serviceCode??s?.code??s?.id??s?.service??s?.key??s?.name??"");
+}
+function servicePrice(o){
+ if(typeof o==="number")return o;
+ if(typeof o==="string"){const n=Number(o);return Number.isFinite(n)?n:null;}
+ const v=o?.price_ngn??o?.customer_price_ngn??o?.priceNGN??o?.price??o?.amount??o?.cost??o?.customerPrice;
+ if(v===null||v===undefined||v==="")return null;
+ const n=Number(v);return Number.isFinite(n)?n:null;
+}
+function optionLabel(o){
+ if(typeof o==="string"||typeof o==="number")return String(o);
+ return String(o?.label??o?.name??o?.server_name??o?.serverName??o?.title??o?.server??"Available option");
+}
+function getOptionPayload(o){return o&&typeof o==="object"?o:{server:o};}
 
-    const numberElement = document.getElementById(
-      name === "country"
-        ? "stepCountryNumber"
-        : name === "service"
-          ? "stepServiceNumber"
-          : "stepServerNumber"
-    );
-
-    if(!stepElement || !numberElement){
-      return;
-    }
-
-    stepElement.classList.remove("active","complete");
-
-    if(index < currentIndex){
-      stepElement.classList.add("complete");
-      numberElement.textContent = "✓";
-    }else if(index === currentIndex){
-      stepElement.classList.add("active");
-      numberElement.textContent = String(index + 1);
-    }else{
-      numberElement.textContent = String(index + 1);
-    }
-
-  });
-
+async function refreshWallet(){
+ if(!currentUser)return;
+ try{
+  const {data,error}=await sb.from("wallet").select("balance").eq("user-id",currentUser.id).maybeSingle();
+  if(error)throw error;
+  if(!data)throw new Error("No wallet row was found for this account.");
+  walletBalance=Number(data.balance??0);
+  if(!Number.isFinite(walletBalance))throw new Error("Wallet balance is invalid.");
+  $("walletBalance").textContent=money(walletBalance);
+ }catch(e){
+  console.error("Wallet refresh failed:",e);
+  $("walletBalance").textContent="Unavailable";
+  showGlobal("Wallet balance could not be loaded. Check the wallet table permissions and wallet row.","error");
+ }
+}
+async function init(){
+ const generation=++initGeneration;
+ $("walletBalance").textContent="Loading…";
+ $("ordersList").innerHTML='<div class="loading">Loading your orders…</div>';
+ try{
+  const {data,error}=await sb.auth.getSession();
+  if(error)throw error;
+  session=data?.session||null;currentUser=session?.user||null;
+  if(generation!==initGeneration)return;
+  if(!currentUser){
+   $("walletBalance").textContent="Sign in required";
+   $("ordersList").innerHTML='<div class="empty">Sign in to view your orders.</div>';
+   showGlobal("Please sign in to use virtual number services.","error");
+   return;
+  }
+  await Promise.allSettled([refreshWallet(),loadOrders()]);
+  if(generation!==initGeneration)return;
+  setSection(null);setActiveTab("");
+  if(poller)clearInterval(poller);
+  poller=setInterval(()=>{if(currentUser)refreshOrders();},30000);
+ }catch(e){
+  console.error("Page initialization failed:",e);
+  $("walletBalance").textContent="Unavailable";
+  $("ordersList").innerHTML='<div class="empty">Could not initialize your account. <button class="btn btn-dark" onclick="init()">Retry</button></div>';
+  showGlobal("Unable to initialize your account. Please retry.","error");
+ }
 }
 
-function showSelectionStep(step){
+/* No sessionStorage/localStorage dismissal flag: refresh always reopens it. */
+function showVerification(){
+ $("verificationOverlay").classList.add("show");
+ document.body.style.overflow="hidden";
+}
+function dismissVerification(){
+ $("verificationOverlay").classList.remove("show");
+ document.body.style.overflow="";
+}
+$("verificationOverlay").addEventListener("click",e=>{
+ if(e.target===$("verificationOverlay"))dismissVerification();
+});
+document.addEventListener("keydown",e=>{
+ if(e.key==="Escape"&&$("verificationOverlay").classList.contains("show"))dismissVerification();
+});
 
-  currentSelectionStep = step;
-
-  const panels = {
-    country: document.getElementById("countryStep"),
-    service: document.getElementById("serviceStep"),
-    server: document.getElementById("serverStep")
-  };
-
-  Object.entries(panels).forEach(([name,panel]) => {
-    if(panel){
-      panel.classList.toggle("hidden", name !== step);
-    }
-  });
-
-  updateSelectionProgress(step);
-
+async function openUSA(){
+ flow="usa";chosenProvider="textverified";
+ selectedCountry={id:187,country_id:187,name:"United States",code:"US"};
+ selectedService=null;selectedOption=null;
+ setActiveTab("usa");setSection("usaSection");
+ $("allServicesWrap").style.display="none";
+ $("usaServiceSearch").value="";
+ $("usaServices").innerHTML='<div class="loading">Loading USA services…</div>';
+ showMessage("usaMessage","");
+ await loadServices();
+}
+async function openAll(){
+ flow="all";chosenProvider="virtualsms";
+ selectedCountry=null;selectedService=null;selectedOption=null;
+ setActiveTab("all");setSection("allSection");
+ $("allServicesWrap").style.display="none";
+ $("countrySearch").value="";
+ $("countrySelect").value="";
+ $("allServiceSearch").value="";
+ $("countryResults").innerHTML='<div class="loading">Loading countries…</div>';
+ showMessage("allMessage","");
+ await loadCountries();
+}
+async function loadCountries(){
+ if(countryLoading)return;
+ countryLoading=true;
+ $("countryResults").innerHTML='<div class="loading">Loading countries…</div>';
+ try{
+  const response=await invoke("virtualsms","countries",{});
+  countryList=normalizeCountries(response);
+  if(!countryList.length){
+   $("countryResults").innerHTML='<div class="empty">The provider returned no countries.</div><button class="btn btn-dark full" onclick="retryCountries()">Retry</button>';
+   showMessage("allMessage","The country list is empty. Check the VirtualSMS Edge Function response.","error");
+   return;
+  }
+  $("countrySelect").innerHTML='<option value="">Choose a country…</option>'+
+   countryList.map((c,i)=>`<option value="${i}">${escapeHTML(c.name)}${c.code?" ("+escapeHTML(c.code)+")":""}</option>`).join("");
+  filterCountries();
+ }catch(e){
+  console.error("Country loading failed:",e);
+  $("countryResults").innerHTML='<div class="empty">Could not load countries right now.</div><button class="btn btn-dark full" onclick="retryCountries()">Retry</button>';
+  showMessage("allMessage",formatError(e,"Could not load countries. Please retry."),"error");
+ }finally{countryLoading=false;}
+}
+async function retryCountries(){countryLoading=false;await loadCountries();}
+function filterCountries(){
+ const q=$("countrySearch").value.trim().toLowerCase();
+ renderCountries(countryList.filter(c=>String(c.name).toLowerCase().includes(q)||String(c.code).toLowerCase().includes(q)));
+}
+function renderCountries(list){
+ if(!list.length){$("countryResults").innerHTML='<div class="empty">No matching countries found.</div>';return;}
+ $("countryResults").innerHTML=list.map(c=>{
+  const i=countryList.indexOf(c);
+  return `<button class="country-button" onclick="selectCountry(${i})"><div class="country-name">${escapeHTML(c.name)}</div><div class="country-meta">${escapeHTML(c.code||"Country")}</div></button>`;
+ }).join("");
+}
+function selectCountryByValue(value){
+ if(value==="")return;
+ selectCountry(Number(value));
+}
+async function selectCountry(index){
+ if(index<0||index>=countryList.length)return;
+ selectedCountry=countryList[index];
+ if(!selectedCountry.code&&selectedCountry.id==null){
+  showMessage("allMessage","This country has no usable provider identifier. Check the provider response.","error");return;
+ }
+ $("countrySelect").value=String(index);
+ $("selectedCountryTitle").textContent=selectedCountry.name+" — Select a service";
+ $("allServicesWrap").style.display="block";
+ $("allServiceSearch").value="";
+ $("allServices").innerHTML='<div class="loading">Loading services…</div>';
+ await loadServices();
 }
 
-function goBackToCountry(){
-
-  if(!selectedCountry){
-    showSelectionStep("country");
-    return;
-  }
-
-  selectedService = null;
-  selectedServer = null;
-  services = [];
-  servers = [];
-
-  const serviceSearch = document.getElementById("serviceSearch");
-  if(serviceSearch){
-    serviceSearch.value = "";
-    serviceSearch.disabled = true;
-  }
-
-  document.getElementById("selectedServiceBox")?.classList.add("hidden");
-  document.getElementById("priceBox")?.classList.add("hidden");
-  const buyButton = document.getElementById("buyButton");
-  if(buyButton){
-    buyButton.disabled = true;
-  }
-  document.getElementById("buyMessage").textContent = "";
-  document.getElementById("serviceList").innerHTML = `
-    <div class="empty">Select a country first.</div>
-  `;
-  document.getElementById("serverList").innerHTML = "";
-
-  showSelectionStep("country");
-
-}
-
-function goBackToService(){
-
-  if(!selectedCountry){
-    showSelectionStep("country");
-    return;
-  }
-
-  selectedServer = null;
-  servers = [];
-
-  document.getElementById("priceBox")?.classList.add("hidden");
-  const buyButton = document.getElementById("buyButton");
-  if(buyButton){
-    buyButton.disabled = true;
-  }
-  document.getElementById("buyMessage").textContent = "";
-  document.getElementById("serverList").innerHTML = "";
-
-  showSelectionStep("service");
-
-}
-
-async function selectCountry(country){  
-  
-  selectedCountry = country;  
-  
-  selectedService = null;  
-  selectedServer = null;  
-  
-  services = [];  
-  servers = [];  
-  
-  document  
-    .getElementById(  
-      "selectedCountryBox"  
-    )  
-    .classList.remove("hidden");  
-  
-  document  
-    .getElementById(  
-      "selectedCountryBox"  
-    )  
-    .textContent =  
-      `Selected: ${  
-        countryName(country) || "Country"  
-      }`;  
-  
-  document  
-    .getElementById(  
-      "countrySearch"  
-    )  
-    .value = "";  
-  
-  renderCountries();  
-  
-  const serviceSearch =  
-    document.getElementById(  
-      "serviceSearch"  
-    );  
-  
-  serviceSearch.disabled = false;  
-  serviceSearch.value = "";  
-  
-  document  
-    .getElementById(  
-      "serviceList"  
-    )  
-    .innerHTML = `  
-      <div class="loading">  
-        Loading live services...  
-      </div>  
-    `;  
-  
-  showSelectionStep("server");  
-  
-  showSelectionStep("service");
-  await loadServices();
-  
-}  
-  
-  
-/* ============================================================  
-   SERVICE  
-============================================================ */  
-  
-function serviceCode(service){  
-  
-  return String(  
-    service?.service_code ||  
-    service?.serviceCode ||  
-    service?.product_code ||  
-    service?.productCode ||  
-    service?.code ||  
-    service?.service_id ||  
-    service?.serviceId ||  
-    service?.id ||  
-    ""  
-  );  
-  
-}  
-  
-function serviceName(service){  
-  
-  if(!service){  
-    return "";  
-  }  
-  
-  const possibleNames = [  
-  
-    service.service_name,  
-    service.serviceName,  
-    service.service_title,  
-    service.serviceTitle,  
-    service.name,  
-    service.title,  
-    service.label,  
-    service.display_name,  
-    service.displayName,  
-    service.product_name,  
-    service.productName,  
-    service.application_name,  
-    service.applicationName,  
-    service.app_name,  
-    service.appName,  
-  
-    service.service?.name,  
-    service.service?.service_name,  
-    service.service?.serviceName,  
-    service.service?.title,  
-    service.service?.label,  
-  
-    service.product?.name,  
-    service.product?.service_name,  
-    service.product?.serviceName,  
-    service.product?.title,  
-    service.product?.label,  
-  
-    service.data?.name,  
-    service.data?.service_name,  
-    service.data?.serviceName,  
-    service.data?.title,  
-    service.data?.label  
-  
-  ];  
-  
-  for(const value of possibleNames){  
-  
-    if(  
-      typeof value === "string" &&  
-      value.trim()  
-    ){  
-  
-      return value.trim();  
-  
-    }  
-  
-  }  
-  
-  return "";  
-  
-}  
-  
 async function loadServices(){
-
-  try{
-
-    const payload =
-      provider === "smsbower"
-        ? {
-            country_id: countryId(selectedCountry)
-          }
-        : {
-            country: countryKey(selectedCountry),
-            country_id: countryId(selectedCountry),
-            country_name: countryName(selectedCountry)
-          };
-
-    const data = await api("services", payload, provider);
-
-    const rawServices =
-      Array.isArray(data?.services)
-        ? data.services
-        : [];
-
-    /*
-      Some provider responses contain the same logical service
-      more than once. Keep one visible service only.
-      Prefer the entry with the highest live stock while keeping
-      its provider/service code intact.
-    */
-    const serviceMap = new Map();
-
-    for(const service of rawServices){
-
-      const nameKey = String(serviceName(service) || "")
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g," ");
-
-      const codeKey = String(serviceCode(service) || "")
-        .trim()
-        .toLowerCase();
-
-      const key = nameKey || codeKey;
-
-      if(!key){
-        continue;
-      }
-
-      const existing = serviceMap.get(key);
-
-      if(!existing){
-        serviceMap.set(key, service);
-        continue;
-      }
-
-      const existingStock = Number(
-        existing?.stock ?? existing?.count ?? existing?.available ?? 0
-      );
-      const incomingStock = Number(
-        service?.stock ?? service?.count ?? service?.available ?? 0
-      );
-
-      if(Number.isFinite(incomingStock) && incomingStock > existingStock){
-        serviceMap.set(key, service);
-      }
-
-    }
-
-    services = Array.from(serviceMap.values());
-
-    renderServices();
-
-  }catch(error){
-
-    document.getElementById("serviceList").innerHTML = `
-      <div class="empty">${escapeHTML(error.message)}</div>
-    `;
-
+ if(!chosenProvider){showGlobal("Please choose a provider first.");return;}
+ const provider=chosenProvider,generation=++servicesGeneration;
+ const container=provider==="textverified"?$("usaServices"):$("allServices");
+ container.innerHTML='<div class="loading">Loading services…</div>';
+ try{
+  const payload=provider==="textverified"
+   ?{numberType:"mobile",reservationType:"verification"}
+   :{country:selectedCountry?.code,countryId:selectedCountry?.id};
+  const response=await invoke(provider,"services",payload);
+  if(provider!==chosenProvider||generation!==servicesGeneration)return;
+  visibleServices=normalizeServices(response);
+  if(!visibleServices.length){
+   container.innerHTML='<div class="empty">No services were returned.</div><button class="btn btn-dark full" onclick="loadServices()">Retry</button>';
+   showMessage(provider==="textverified"?"usaMessage":"allMessage","The provider returned an empty service list.","error");return;
   }
-
+  showMessage(provider==="textverified"?"usaMessage":"allMessage","");
+  filterServices(provider==="textverified"?"usa":"all");
+ }catch(e){
+  console.error("Service loading failed:",e);
+  if(generation!==servicesGeneration)return;
+  container.innerHTML='<div class="empty">Services could not be loaded right now.</div><button class="btn btn-dark full" onclick="loadServices()">Retry</button>';
+  showMessage(provider==="textverified"?"usaMessage":"allMessage",formatError(e,"Unable to load services. Please retry."),"error");
+ }
+}
+function filterServices(which){
+ const provider=which==="usa"?"textverified":"virtualsms";
+ if(chosenProvider!==provider)return;
+ const q=$(which==="usa"?"usaServiceSearch":"allServiceSearch").value.trim().toLowerCase();
+ filteredServices=visibleServices.filter(s=>
+  String(s.name).toLowerCase().includes(q)||
+  String(serviceCode(s)).toLowerCase().includes(q)||
+  String(s.description||"").toLowerCase().includes(q)
+ );
+ renderServices(which);
+}
+function renderServices(which){
+ const container=which==="usa"?$("usaServices"):$("allServices");
+ if(!filteredServices.length){
+  container.innerHTML='<div class="empty">No matching services found.</div>';return;
+ }
+ container.innerHTML=filteredServices.map(s=>{
+  const i=visibleServices.indexOf(s);
+  return `<button class="service-button" onclick="selectService(${i})"><strong>${escapeHTML(s.name)}</strong><small>${escapeHTML(s.description||s.capability||"View available options")}</small></button>`;
+ }).join("");
 }
 
-function filterServices(){  
-  
-  renderServices(  
-    document  
-      .getElementById(  
-        "serviceSearch"  
-      )  
-      .value  
-  );  
-  
-}  
-  
-function renderServices(query = ""){  
-  
-  const list =  
-    document.getElementById(  
-      "serviceList"  
-    );  
-  
-  const q =  
-    String(query || "")  
-      .trim()  
-      .toLowerCase();  
-  
-  const filtered =  
-    services.filter(  
-      service => {  
-  
-        if(!q){  
-          return true;  
-        }  
-  
-        return (  
-          serviceName(service)  
-            .toLowerCase()  
-            .includes(q)  
-          ||  
-          serviceCode(service)  
-            .toLowerCase()  
-            .includes(q)  
-        );  
-  
-      }  
-    );  
-  
-  if(filtered.length === 0){  
-  
-    list.innerHTML = `  
-      <div class="empty">  
-        No live service available for this country.  
-      </div>  
-    `;  
-  
-    return;  
-  
-  }  
-  
-  list.innerHTML =  
-    filtered  
-      .map(  
-        service => {  
-  
-          const stock =  
-            Number(  
-              service?.stock ??  
-              service?.count ??  
-              service?.available ??  
-              0  
-            );  
-  
-          const stockText =  
-            Number.isFinite(stock) &&  
-            stock > 0  
-              ? `${stock.toLocaleString()} available`  
-              : "Live availability";  
-  
-          const selected =  
-            selectedService &&  
-            serviceCode(selectedService) ===  
-            serviceCode(service);  
-  
-          return `  
-            <div  
-              class="choice ${  
-                selected ? "selected" : ""  
-              }"  
-              data-service-code="${  
-                escapeHTML(  
-                  serviceCode(service)  
-                )  
-              }"  
-            >  
-  
-              <strong>  
-                ${escapeHTML(  
-                  serviceName(service) || "Service"  
-                )}  
-              </strong>  
-  
-              <div  
-                style="  
-                  font-size:12px;  
-                  margin-top:4px;  
-                  opacity:.75;  
-                "  
-              >  
-                ${escapeHTML(stockText)}  
-              </div>  
-  
-            </div>  
-          `;  
-  
-        }  
-      )  
-      .join("");  
-  
-  list  
-    .querySelectorAll(  
-      "[data-service-code]"  
-    )  
-    .forEach(  
-      element => {  
-  
-        element.onclick = () => {  
-  
-          const code =  
-            element.dataset.serviceCode;  
-  
-          const service =  
-            services.find(  
-              item =>  
-                serviceCode(item) === code  
-            );  
-  
-          if(service){  
-            selectService(service);  
-          }  
-  
-        };  
-  
-      }  
-    );  
-  
-}  
-  
-async function selectService(service){  
-  
-  selectedService = service;  
-  selectedServer = null;  
-  
-  servers = [];  
-  
-  document  
-    .getElementById(  
-      "selectedServiceBox"  
-    )  
-    .classList.remove("hidden");  
-  
-  document  
-    .getElementById(  
-      "selectedServiceBox"  
-    )  
-    .textContent =  
-      `Selected: ${  
-        serviceName(service) || "Service"  
-      }`;  
-  
-  document  
-    .getElementById(  
-      "serviceSearch"  
-    )  
-    .value = "";  
-  
-  renderServices();
-
-  showSelectionStep("server");  
-  
-  document  
-    .getElementById(  
-      "serverList"  
-    )  
-    .innerHTML = `  
-      <div class="loading">  
-        Loading live server prices...  
-      </div>  
-    `;  
-  
-  document  
-    .getElementById(  
-      "priceBox"  
-    )  
-    .classList.add("hidden");  
-  
-  document  
-    .getElementById(  
-      "buyButton"  
-    )  
-    .disabled = true;  
-  
-  document  
-    .getElementById(  
-      "buyMessage"  
-    )  
-    .textContent = "";  
-  
-  await loadServers();
-  
-}  
-  
-  
-/* ============================================================  
-   SERVER  
-============================================================ */  
-  
-function serverId(server){  
-  
-  return String(  
-    server?.server_id ??  
-    server?.operator_id ??  
-    server?.id ??  
-    server?.operator ??  
-    ""  
-  );  
-  
-}  
-  
-function serverLabel(server){  
-  
-  if(!server){  
-    return "Server";  
-  }  
-  
-  const possibleNames = [  
-  
-    server.label,  
-    server.server_name,  
-    server.serverName,  
-    server.operator_name,  
-    server.operatorName,  
-    server.operator_label,  
-    server.operatorLabel,  
-    server.name,  
-    server.title,  
-    server.display_name,  
-    server.displayName,  
-  
-    server.operator?.name,  
-    server.operator?.label,  
-    server.operator?.server_name,  
-  
-    server.data?.name,  
-    server.data?.label,  
-    server.data?.server_name  
-  
-  ];  
-  
-  for(const value of possibleNames){  
-  
-    if(  
-      typeof value === "string" &&  
-      value.trim()  
-    ){  
-  
-      return value.trim();  
-  
-    }  
-  
-  }  
-  
-  return "Server";  
-  
-}  
-  
-function serverStock(server){  
-  
-  return Number(  
-    server?.stock ??  
-    server?.count ??  
-    server?.available ??  
-    0  
-  );  
-  
-}  
-  
-function serverPrice(server){  
-  
-  return Number(  
-    server?.customer_price_ngn ??  
-    server?.selling_price_ngn ??  
-    server?.price_ngn ??  
-    server?.customer_price ??  
-    server?.price ??  
-    0  
-  );  
-  
-}  
-  
-async function loadServers(){  
-  
-  try{  
-  
-    let data;  
-  
-    if(provider === "smsbower"){  
-  
-      data =  
-        await api(  
-          "prices",  
-          {  
-            country_id:  
-              countryId(  
-                selectedCountry  
-              ),  
-  
-            service_code:  
-              serviceCode(  
-                selectedService  
-              )  
-          },  
-          "smsbower"  
-        );  
-  
-    }else{  
-  
-      data =  
-        await api(  
-          "servers",  
-          {  
-            country:  
-              countryKey(  
-                selectedCountry  
-              ),  
-  
-            country_id:  
-              countryId(  
-                selectedCountry  
-              ),  
-  
-            country_name:  
-              countryName(  
-                selectedCountry  
-              ),  
-  
-            service:  
-              serviceCode(  
-                selectedService  
-              ),  
-  
-            service_code:  
-              serviceCode(  
-                selectedService  
-              ),  
-  
-            service_name:  
-              serviceName(  
-                selectedService  
-              ),  
-  
-            product:  
-              serviceCode(  
-                selectedService  
-              )  
-          },  
-          "grizzly"  
-        );  
-  
-    }  
-  
-    servers =  
-      Array.isArray(data.servers)  
-        ? data.servers  
-        : [];  
-  
-    renderServers();  
-  
-  }catch(error){  
-  
-    document  
-      .getElementById(  
-        "serverList"  
-      )  
-      .innerHTML = `  
-        <div class="empty">  
-          Server is not available right now, please try another server.  
-        </div>  
-      `;  
-  
-  }  
-  
-}  
-  
-function renderServers(){  
-  
-  const list =  
-    document.getElementById(  
-      "serverList"  
-    );  
-  
-  const validServers =  
-    servers.filter(  
-      server => {  
-  
-        const stock =  
-          serverStock(server);  
-  
-        const price =  
-          serverPrice(server);  
-  
-        return (  
-          Number.isFinite(stock) &&  
-          stock > 0 &&  
-          Number.isFinite(price) &&  
-          price > 0  
-        );  
-  
-      }  
-    );  
-  
-  if(validServers.length === 0){  
-  
-    list.innerHTML = `  
-      <div class="empty">  
-        Server is not available right now, please try another server.  
-      </div>  
-    `;  
-  
-    document  
-      .getElementById(  
-        "buyButton"  
-      )  
-      .disabled = true;  
-  
-    return;  
-  
-  }  
-  
-  list.innerHTML =  
-    validServers  
-      .map(  
-        (server,index) => {  
-  
-          const selected =  
-            selectedServer &&  
-            serverId(selectedServer) ===  
-            serverId(server);  
-  
-          return `  
-            <div  
-              class="server ${  
-                selected ? "selected" : ""  
-              }"  
-              data-server-index="${index}"  
-            >  
-  
-              <div class="server-name">  
-                ${escapeHTML(  
-                  serverLabel(server)  
-                )}  
-              </div>  
-  
-              <div class="server-stock">  
-                ${Math.floor(  
-                  serverStock(server)  
-                ).toLocaleString()}  
-                available  
-              </div>  
-  
-              <div class="server-price">  
-                ${naira(  
-                  serverPrice(server)  
-                )}  
-              </div>  
-  
-            </div>  
-          `;  
-  
-        }  
-      )  
-      .join("");  
-  
-  list  
-    .querySelectorAll(  
-      "[data-server-index]"  
-    )  
-    .forEach(  
-      element => {  
-  
-        element.onclick = () => {  
-  
-          const index =  
-            Number(  
-              element.dataset.serverIndex  
-            );  
-  
-          selectServer(  
-            validServers[index]  
-          );  
-  
-        };  
-  
-      }  
-    );  
-  
-}  
-  
-function selectServer(server){  
-  
-  const price =  
-    serverPrice(server);  
-  
-  const stock =  
-    serverStock(server);  
-  
-  if(  
-    !Number.isFinite(price) ||  
-    price <= 0 ||  
-    !Number.isFinite(stock) ||  
-    stock <= 0  
-  ){  
-  
-    selectedServer = null;  
-  
-    document  
-      .getElementById(  
-        "buyButton"  
-      )  
-      .disabled = true;  
-  
-    document  
-      .getElementById(  
-        "priceBox"  
-      )  
-      .classList.add("hidden");  
-  
-    return;  
-  
-  }  
-  
-  selectedServer = server;  
-  
-  renderServers();  
-  
-  document  
-    .getElementById(  
-      "priceBox"  
-    )  
-    .classList.remove("hidden");  
-  
-  document  
-    .getElementById(  
-      "selectedPrice"  
-    )  
-    .textContent =  
-      naira(price);  
-  
-  document  
-    .getElementById(  
-      "buyButton"  
-    )  
-    .disabled = false;  
-  
-  document  
-    .getElementById(  
-      "buyMessage"  
-    )  
-    .textContent = "";
-
-  document
-    .getElementById("buyButton")
-    ?.scrollIntoView({ behavior:"smooth", block:"center" });
-  
-}  
-  
-  
-/* ============================================================  
-   IMMEDIATE PURCHASE ORDER  
-============================================================ */  
-  
-function buildImmediatePurchaseOrder(  
-  data,  
-  providerName  
-){  
-  
-  if(  
-    !data ||  
-    typeof data !== "object"  
-  ){  
-  
-    return null;  
-  
-  }  
-  
-  const number =  
-    firstOrderValue(  
-      [  
-        data,  
-        data.data,  
-        data.result,  
-        data.response  
-      ],  
-      [  
-        "phone_number",  
-        "phoneNumber",  
-        "number",  
-        "phone",  
-        "msisdn"  
-      ]  
-    );  
-  
-  const activationId =
-    providerName === "smsbower"
-      ? smsBowerActivationId({
-          ...data,
-          data:data.data,
-          result:data.result,
-          response:data.response
-        })
-      : firstOrderValue(  
-          [  
-            data,  
-            data.data,  
-            data.result,  
-            data.response  
-          ],  
-          [  
-            "activation_id",  
-            "activationId",  
-            "activationID",  
-            "provider_activation_id",  
-            "providerActivationId"  
-          ]  
-        );  
-  
-  if(!number && !activationId){  
-    return null;  
-  }  
-  
-  return {  
-  
-    id:  
-      firstOrderValue(  
-        [  
-          data,  
-          data.data,  
-          data.result,  
-          data.response  
-        ],  
-        [  
-          "order_id",  
-          "orderId",  
-          "id"  
-        ]  
-      ) ||  
-      activationId,  
-  
-    order_id:  
-      firstOrderValue(  
-        [  
-          data,  
-          data.data,  
-          data.result,  
-          data.response  
-        ],  
-        [  
-          "order_id",  
-          "orderId",  
-          "id"  
-        ]  
-      ) ||  
-      activationId,  
-  
-    activation_id:  
-      activationId,  
-  
-    activationId:  
-      activationId,  
-  
-    phone_number:  
-      number,  
-  
-    phoneNumber:  
-      number,  
-  
-    number:  
-      number,  
-  
-    country:  
-      firstOrderValue(  
-        [  
-          data,  
-          data.data,  
-          data.result,  
-          data.response  
-        ],  
-        [  
-          "country",  
-          "country_id",  
-          "country_key"  
-        ]  
-      ) ||  
-      countryKey(  
-        selectedCountry  
-      ),  
-  
-    country_id:  
-      firstOrderValue(  
-        [  
-          data,  
-          data.data,  
-          data.result,  
-          data.response  
-        ],  
-        [  
-          "country_id",  
-          "country"  
-        ]  
-      ) ||  
-      String(  
-        countryId(  
-          selectedCountry  
-        ) ?? ""  
-      ),  
-  
-    country_name:  
-      firstOrderValue(  
-        [  
-          data,  
-          data.data,  
-          data.result,  
-          data.response  
-        ],  
-        [  
-          "country_name",  
-          "countryName"  
-        ]  
-      ) ||  
-      countryName(  
-        selectedCountry  
-      ),  
-  
-    service:  
-      firstOrderValue(  
-        [  
-          data,  
-          data.data,  
-          data.result,  
-          data.response  
-        ],  
-        [  
-          "service",  
-          "service_code",  
-          "product"  
-        ]  
-      ) ||  
-      serviceCode(  
-        selectedService  
-      ),  
-  
-    service_code:  
-      firstOrderValue(  
-        [  
-          data,  
-          data.data,  
-          data.result,  
-          data.response  
-        ],  
-        [  
-          "service_code",  
-          "service"  
-        ]  
-      ) ||  
-      serviceCode(  
-        selectedService  
-      ),  
-  
-    service_name:  
-      firstOrderValue(  
-        [  
-          data,  
-          data.data,  
-          data.result,  
-          data.response  
-        ],  
-        [  
-          "service_name",  
-          "serviceName"  
-        ]  
-      ) ||  
-      serviceName(  
-        selectedService  
-      ),  
-  
-    provider:  
-      providerName,  
-  
-    provider_id:  
-      firstOrderValue(  
-        [  
-          data,  
-          data.data,  
-          data.result,  
-          data.response  
-        ],  
-        [  
-          "provider_id",  
-          "server_id",  
-          "operator_id"  
-        ]  
-      ) ||  
-      serverId(  
-        selectedServer  
-      ),  
-  
-    server_id:  
-      firstOrderValue(  
-        [  
-          data,  
-          data.data,  
-          data.result,  
-          data.response  
-        ],  
-        [  
-          "server_id",  
-          "provider_id",  
-          "operator_id"  
-        ]  
-      ) ||  
-      serverId(  
-        selectedServer  
-      ),  
-  
-    server_name:  
-      firstOrderValue(  
-        [  
-          data,  
-          data.data,  
-          data.result,  
-          data.response  
-        ],  
-        [  
-          "server_name",  
-          "serverName",  
-          "operator"  
-        ]  
-      ) ||  
-      serverLabel(  
-        selectedServer  
-      ),  
-  
-    customer_price_ngn:  
-      Number(  
-        firstOrderValue(  
-          [  
-            data,  
-            data.data,  
-            data.result,  
-            data.response  
-          ],  
-          [  
-            "customer_price_ngn",  
-            "selling_price_ngn",  
-            "price_ngn",  
-            "price"  
-          ]  
-        )  
-      ) ||  
-      serverPrice(  
-        selectedServer  
-      ),  
-  
-    price:  
-      Number(  
-        firstOrderValue(  
-          [  
-            data,  
-            data.data,  
-            data.result,  
-            data.response  
-          ],  
-          [  
-            "customer_price_ngn",  
-            "selling_price_ngn",  
-            "price_ngn",  
-            "price"  
-          ]  
-        )  
-      ) ||  
-      serverPrice(  
-        selectedServer  
-      ),  
-  
-    status:  
-      "waiting",  
-  
-    created_at:  
-      new Date().toISOString()  
-  
-  };  
-  
-}  
-  
-  
-/* ============================================================  
-   BUY  
-============================================================ */  
-  
-async function buyNumber(){  
-  
-  const button =  
-    document.getElementById(  
-      "buyButton"  
-    );  
-  
-  const message =  
-    document.getElementById(  
-      "buyMessage"  
-    );  
-  
-  if(  
-    !selectedCountry ||  
-    !selectedService ||  
-    !selectedServer  
-  ){  
-  
-    message.textContent =  
-      "Select a country, service and server first.";  
-  
-    return;  
-  
-  }  
-  
-  button.disabled = true;  
-  
-  message.textContent =  
-    "Purchasing number...";  
-  
-  try{  
-  
-    let data;  
-  
-    if(provider === "smsbower"){  
-  
-      data =  
-        await api(  
-          "buy",  
-          {  
-            country_id:  
-              countryId(  
-                selectedCountry  
-              ),  
-  
-            country_name:  
-              countryName(  
-                selectedCountry  
-              ),  
-  
-            service_code:  
-              serviceCode(  
-                selectedService  
-              ),  
-  
-            service_name:  
-              serviceName(  
-                selectedService  
-              ),  
-  
-            server_id:  
-              serverId(  
-                selectedServer  
-              )  
-          },  
-          "smsbower"  
-        );  
-  
-    }else{  
-  
-      data =  
-        await api(  
-          "buy",  
-          {  
-            country:  
-              countryKey(  
-                selectedCountry  
-              ),  
-  
-            country_id:  
-              countryId(  
-                selectedCountry  
-              ),  
-  
-            country_name:  
-              countryName(  
-                selectedCountry  
-              ),  
-  
-            service:  
-              serviceCode(  
-                selectedService  
-              ),  
-  
-            service_code:  
-              serviceCode(  
-                selectedService  
-              ),  
-  
-            service_name:  
-              serviceName(  
-                selectedService  
-              ),  
-  
-            product:  
-              serviceCode(  
-                selectedService  
-              ),  
-  
-            operator:  
-              serverId(  
-                selectedServer  
-              ),  
-  
-            server_id:  
-              serverId(  
-                selectedServer  
-              ),  
-  
-            server_name:  
-              serverLabel(  
-                selectedServer  
-              )  
-          },  
-          "grizzly"  
-        );  
-  
-    }  
-  
-    message.textContent =  
-      typeof data.message === "string"  
-        ? data.message  
-        : "Number successfully purchased.";  
-  
-    const immediateOrder =  
-      buildImmediatePurchaseOrder(  
-        data,  
-        provider  
-      );  
-  
-    if(immediateOrder){  
-  
-      currentOrderId =  
-        orderActionId(  
-          immediateOrder  
-        ) || null;  
-  
-      currentOrderProvider =  
-        provider;  
-  
-      const existingIndex =
-        orders.findIndex(
-          existing =>
-            ordersShareGlobalIdentity(
-              existing,
-              immediateOrder
-            ) ||
-            (
-              ordersHaveSamePurchaseFingerprint(
-                existing,
-                immediateOrder
-              ) &&
-              !orderActivationId(existing)
-            )
-        );  
-  
-      if(existingIndex === -1){  
-  
-        orders = [  
-          immediateOrder,  
-          ...orders  
-        ];  
-  
-      }else{  
-  
-        orders[existingIndex] =  
-          mergeOrderRecords(  
-            orders[existingIndex],  
-            immediateOrder  
-          );  
-  
-      }  
-  
-      pendingOrderScrollKey = renderedOrderKey(immediateOrder);
-
-      renderOrderSections();
-      scrollToPendingOrder();
-
-      attachOrderActions();  
-  
-    }  
-  
-    showPortalNotice();  
-  
-    await loadAllOrders();  
-    scrollToPendingOrder();
-    await loadWallet();  
-    await loadServers();  
-  
-  }catch(error){  
-  
-    message.textContent =  
-      error.message;  
-  
-    button.disabled = false;  
-  
-  }  
-  
-}  
-  
-  
-/* ============================================================  
-   ORDER NORMALIZATION  
-============================================================ */  
-  
-function firstOrderValue(  
-  sources,  
-  keys  
-){  
-  
-  for(const source of sources){  
-  
-    if(!source || typeof source !== "object"){  
-      continue;  
-    }  
-  
-    for(const key of keys){  
-  
-      const value =  
-        source?.[key];  
-  
-      if(  
-        value !== null &&  
-        value !== undefined &&  
-        typeof value !== "object" &&  
-        String(value).trim() !== ""  
-      ){  
-  
-        return String(value).trim();  
-  
-      }  
-  
-    }  
-  
-  }  
-  
-  return "";  
-  
-}  
-  
-function collectOrderSources(  
-  order  
-){  
-  
-  const sources = [];  
-  
-  function add(value){  
-  
-    if(  
-      value &&  
-      typeof value === "object" &&  
-      !sources.includes(value)  
-    ){  
-  
-      sources.push(value);  
-  
-    }  
-  
-  }  
-  
-  add(order);  
-  
-  add(order?.data);  
-  add(order?.result);  
-  add(order?.response);  
-  add(order?.provider_response);  
-  add(order?.providerResponse);  
-  add(order?.provider_result);  
-  add(order?.providerResult);  
-  add(order?.grizzly);  
-  add(order?.grizzly_response);  
-  add(order?.grizzlyResponse);  
-  add(order?.activation);  
-  add(order?.number_data);  
-  add(order?.numberData);  
-  
-  const nested = [  
-    order?.data,  
-    order?.result,  
-    order?.response,  
-    order?.provider_response,  
-    order?.providerResponse,  
-    order?.provider_result,  
-    order?.providerResult,  
-    order?.grizzly,  
-    order?.grizzly_response,  
-    order?.grizzlyResponse,  
-    order?.activation,  
-    order?.number_data,  
-    order?.numberData  
-  ];  
-  
-  nested.forEach(  
-    value => {  
-  
-      if(value && typeof value === "object"){  
-  
-        add(value.data);  
-        add(value.result);  
-        add(value.response);  
-        add(value.activation);  
-        add(value.number);  
-        add(value.number_data);  
-        add(value.numberData);  
-  
-      }  
-  
-    }  
-  );  
-  
-  return sources;  
-  
-}  
-  
-function orderNumber(  
-  order  
-){  
-  
-  const sources =  
-    collectOrderSources(order);  
-  
-  return firstOrderValue(  
-    sources,  
-    [  
-      "number",  
-      "phoneNumber",  
-      "phone_number",  
-      "phone",  
-      "phoneNumberFormatted",  
-      "phone_number_formatted",  
-      "activationNumber",  
-      "activation_number",  
-      "mobile",  
-      "mobile_number",  
-      "msisdn"  
-    ]  
-  );  
-  
-}  
-  
-function orderActivationId(  
-  order  
-){  
-  
-  const sources =  
-    collectOrderSources(order);  
-  
-  return firstOrderValue(  
-    sources,  
-    [  
-      "activationId",  
-      "activation_id",  
-      "activationID",  
-      "provider_activation_id",  
-      "providerActivationId"  
-    ]  
-  );  
-  
-}  
-  
-function orderOtp(  
-  order  
-){  
-  
-  const sources =  
-    collectOrderSources(order);  
-  
-  const directCode =  
-    firstOrderValue(  
-      sources,  
-      [  
-        "otp_code",  
-        "otpCode",  
-        "code",  
-        "sms_code",  
-        "smsCode"  
-      ]  
-    );  
-  
-  if(directCode){  
-    return directCode;  
-  }  
-  
-  for(const source of sources){  
-  
-    const sms =  
-      source?.sms;  
-  
-    if(  
-      sms &&  
-      typeof sms === "object"  
-    ){  
-  
-      const code =  
-        firstOrderValue(  
-          [sms],  
-          [  
-            "code",  
-            "otp_code",  
-            "otpCode",  
-            "sms_code",  
-            "smsCode"  
-          ]  
-        );  
-  
-      if(code){  
-        return code;  
-      }  
-  
-    }  
-  
-  }  
-  
-  return "";  
-  
-}  
-  
-function orderSmsText(  
-  order  
-){  
-  
-  const sources =  
-    collectOrderSources(order);  
-  
-  const directText =  
-    firstOrderValue(  
-      sources,  
-      [  
-        "sms_text",  
-        "smsText",  
-        "text",  
-        "message"  
-      ]  
-    );  
-  
-  if(directText){  
-    return directText;  
-  }  
-  
-  for(const source of sources){  
-  
-    const sms =  
-      source?.sms;  
-  
-    if(  
-      sms &&  
-      typeof sms === "object"  
-    ){  
-  
-      const text =  
-        firstOrderValue(  
-          [sms],  
-          [  
-            "text",  
-            "message"  
-          ]  
-        );  
-  
-      if(text){  
-        return text;  
-      }  
-  
-    }  
-  
-  }  
-  
-  return "";  
-  
-}  
-  
-function orderStatus(  
-  order  
-){  
-  
-  const sources =  
-    collectOrderSources(order);  
-  
-  const direct =  
-    firstOrderValue(  
-      sources,  
-      [  
-        "status",  
-        "state",  
-        "activation_status",  
-        "activationStatus"  
-      ]  
-    );  
-  
-  if(direct){  
-  
-    const clean =  
-      direct.toLowerCase();  
-  
-    if(  
-      orderOtp(order) &&  
-      (  
-        clean === "waiting" ||  
-        clean === "pending"  
-      )  
-    ){  
-  
-      return "received";  
-  
-    }  
-  
-    return clean;  
-  
-  }  
-  
-  if(orderOtp(order)){  
-    return "received";  
-  }  
-  
-  return "waiting";  
-  
-}  
-  
-function normalizeOrder(  
-  order,  
-  providerName  
-){  
-  
-  const normalized = {  
-    ...(  
-      order &&  
-      typeof order === "object"  
-        ? order  
-        : {}  
-    )  
-  };  
-  
-  normalized.provider =  
-    providerName ||  
-    order?.provider ||  
-    "";  
-  
-  normalized.number =  
-    orderNumber(order) ||  
-    "";  
-  
-  normalized.activation_id =  
-    (
-      providerName === "smsbower"
-        ? smsBowerActivationId(order)
-        : orderActivationId(order)
-    ) ||  
-    "";  
-  
-  normalized.activationId =  
-    normalized.activation_id;  
-  
-  normalized.otp_code =  
-    orderOtp(order) ||  
-    "";  
-  
-  normalized.sms_code =  
-    normalized.otp_code;  
-  
-  normalized.code =  
-    normalized.otp_code;  
-  
-  normalized.sms_text =  
-    orderSmsText(order) ||  
-    "";  
-  
-  normalized.status =  
-    orderStatus(normalized);  
-  
-  if(normalized.otp_code){  
-  
-    normalized.status =  
-      "received";  
-  
-  }  
-  
-  return normalized;  
-  
-}  
-  
-function statusLabel(status){  
-  
-  const map = {  
-    waiting:"Pending",  
-    pending:"Pending",  
-    received:"Received",  
-    finished:"Completed",  
-    completed:"Completed",  
-    cancelled:"Cancelled",  
-    refunded:"Refunded",  
-    failed:"Failed"  
-  };  
-  
-  const cleanStatus =  
-    typeof status === "string"  
-      ? status.toLowerCase()  
-      : "";  
-  
-  return (  
-    map[cleanStatus] ||  
-    (  
-      cleanStatus  
-        ? cleanStatus  
-        : "Pending"  
-    )  
-  );  
-  
-}  
-  
-function orderProvider(order){  
-  
-  const value =  
-    String(  
-      order?.provider ||  
-      order?.server ||  
-      ""  
-    ).toLowerCase();  
-  
-  if(  
-    value === "grizzly" ||  
-    value === "grizzly_sms"  
-  ){  
-  
-    return "grizzly";  
-  
-  }  
-  
-  if(value === "fivesim"){  
-    return "grizzly";  
-  }  
-  
-  return "smsbower";  
-  
-}  
-  
-  
-/* ============================================================  
-   GRIZZLY-ONLY ORDER IDENTITY FIX  
-============================================================ */  
-  
-function grizzlyCanonicalNumber(  
-  order  
-){  
-  
-  const number =  
-    orderNumber(order);  
-  
-  if(!number){  
-    return "";  
-  }  
-  
-  return String(number)  
-    .replace(/[^\d]/g,"")  
-    .replace(/^00+/,"");  
-  
-}  
-  
-function grizzlyCanonicalActivation(  
-  order  
-){  
-  
-  const activation =  
-    orderActivationId(order);  
-  
-  if(!activation){  
-    return "";  
-  }  
-  
-  return String(activation)  
-    .trim()  
-    .replace(/\s+/g,"");  
-  
-}  
-  
-function orderPurchaseFingerprint(
-  order
-){
-
-  const number =
-    String(
-      orderNumber(order) || ""
-    )
-      .replace(/[^\d]/g,"")
-      .replace(/^00+/,"");
-
-  const service =
-    String(
-      order?.service_code ||
-      order?.service ||
-      order?.product ||
-      ""
-    )
-      .trim()
-      .toLowerCase();
-
-  const country =
-    String(
-      order?.country_id ||
-      order?.country ||
-      order?.country_key ||
-      ""
-    )
-      .trim()
-      .toLowerCase();
-
-  const server =
-    String(
-      order?.server_id ||
-      order?.provider_id ||
-      order?.operator ||
-      order?.operator_id ||
-      ""
-    )
-      .trim()
-      .toLowerCase();
-
-  if(!number){
-    return "";
+async function selectService(index){
+ if(index<0||index>=visibleServices.length)return;
+ selectedService=visibleServices[index];selectedOption=null;
+ $("optionsTitle").textContent=selectedService.name;
+ $("optionsSubtitle").textContent=(selectedCountry?selectedCountry.name+" · ":"United States · ")+"Choose an available option.";
+ $("optionsList").innerHTML='<div class="loading">Loading prices and availability…</div>';
+ showMessage("optionsMessage","");
+ setSection("optionsSection");
+ try{
+  const code=serviceCode(selectedService);
+  const payload=chosenProvider==="textverified"
+   ?{service:code,serviceCode:code,numberType:"mobile",reservationType:"verification"}
+   :{service:code,serviceCode:code,country:selectedCountry.code,countryCode:selectedCountry.code,countryId:selectedCountry.id};
+  const response=await invoke(chosenProvider,"price",payload);
+  optionsCache=getList(response);
+  if(!optionsCache.length&&(response?.price!==undefined||response?.data?.price!==undefined||response?.price_ngn!==undefined))optionsCache=[response];
+  if(!optionsCache.length){
+   $("optionsList").innerHTML='<div class="empty">No purchasable options were returned.</div><button class="btn btn-dark full" onclick="selectService('+index+')">Retry</button>';return;
   }
-
-  return [
-    number,
-    service,
-    country,
-    server
-  ]
-    .map(value =>
-      String(value)
-        .replace(/[^a-z0-9]+/g,"_")
-        .replace(/^_+|_+$/g,"")
-    )
-    .join("|");
+  renderOptions(optionsCache);
+ }catch(e){
+  console.error("Price request failed:",e);
+  $("optionsList").innerHTML='<div class="empty">Could not load prices or availability.</div><button class="btn btn-dark full" onclick="selectService('+index+')">Retry</button>';
+  showMessage("optionsMessage",formatError(e,"Unable to load prices. Please retry."),"error");
+ }
 }
-
-function ordersHaveSamePurchaseFingerprint(
-  first,
-  second
-){
-
-  const firstFingerprint =
-    orderPurchaseFingerprint(first);
-
-  const secondFingerprint =
-    orderPurchaseFingerprint(second);
-
-  if(
-    !firstFingerprint ||
-    !secondFingerprint
-  ){
-    return false;
-  }
-
-  if(
-    firstFingerprint ===
-    secondFingerprint
-  ){
-    return true;
-  }
-
-  /*
-    Some stored records do not retain server/provider
-    information.  In that case use number + service +
-    country as the safe fallback.
-  */
-  const reducedFingerprint = order => {
-
-    const number =
-      String(
-        orderNumber(order) || ""
-      )
-        .replace(/[^\d]/g,"")
-        .replace(/^00+/,"");
-
-    const service =
-      String(
-        order?.service_code ||
-        order?.service ||
-        order?.product ||
-        ""
-      )
-        .trim()
-        .toLowerCase();
-
-    const country =
-      String(
-        order?.country_id ||
-        order?.country ||
-        order?.country_key ||
-        ""
-      )
-        .trim()
-        .toLowerCase();
-
-    if(!number){
-      return "";
-    }
-
-    return [
-      number,
-      service,
-      country
-    ].join("|");
-  };
-
-  const firstReduced =
-    reducedFingerprint(first);
-
-  const secondReduced =
-    reducedFingerprint(second);
-
-  return (
-    !!firstReduced &&
-    !!secondReduced &&
-    firstReduced === secondReduced
-  );
+function renderOptions(options){
+ $("optionsList").innerHTML=options.map((o,i)=>{
+  const price=servicePrice(o);
+  return `<button class="option-button" onclick="chooseOption(${i})"><div class="row between"><strong>${escapeHTML(optionLabel(o))}</strong><strong>${price===null?"Price unavailable":escapeHTML(money(price))}</strong></div><small>${escapeHTML(o?.description||o?.availability||"Select this option to continue")}</small></button>`;
+ }).join("");
 }
-
-function smsBowerActivationId(
-  order
-){
-
-  if(!order || typeof order !== "object"){
-    return "";
-  }
-
-  const sources =
-    collectOrderSources(order);
-
-  const explicit =
-    firstOrderValue(
-      sources,
-      [
-        "activation_id",
-        "activationId",
-        "activationID",
-        "provider_activation_id",
-        "providerActivationId",
-        "activation_order_id",
-        "activationOrderId",
-        "provider_order_id",
-        "providerOrderId"
-      ]
-    );
-
-  if(explicit){
-    return String(explicit).trim();
-  }
-
-  /*
-    Some SMSBower records expose the provider activation
-    as `order_id` / `orderId`.  Only accept numeric values
-    from those fields so a Supabase UUID cannot be used.
-  */
-  const providerOrderId =
-    firstOrderValue(
-      sources,
-      [
-        "order_id",
-        "orderId"
-      ]
-    );
-
-  if(
-    providerOrderId &&
-    /^\d+$/.test(
-      String(providerOrderId).trim()
-    )
-  ){
-    return String(
-      providerOrderId
-    ).trim();
-  }
-
-  /*
-    SMSBower-compatible activation responses commonly
-    expose the activation identifier as `id`.  Only use
-    a numeric id here so a Supabase UUID/database id is
-    never mistaken for the provider activation.
-  */
-  for(const source of sources){
-
-    const candidate =
-      source?.id;
-
-    if(
-      candidate !== null &&
-      candidate !== undefined &&
-      String(candidate).trim() !== ""
-    ){
-
-      const value =
-        String(candidate).trim();
-
-      if(/^\d+$/.test(value)){
-        return value;
-      }
-
-    }
-
-  }
-
-  return "";
+function chooseOption(index){
+ if(index<0||index>=optionsCache.length)return;
+ selectedOption=optionsCache[index];
+ const price=servicePrice(selectedOption);
+ if(price===null||price<0){showMessage("optionsMessage","This option has no valid price. Choose another option.","error");return;}
+ $("purchaseSummary").innerHTML=
+  `<div><strong>Provider:</strong> ${escapeHTML(chosenProvider==="textverified"?"USA Numbers":"All Country Numbers")}</div>
+   <div style="margin-top:6px"><strong>Country:</strong> ${escapeHTML(selectedCountry?.name||"United States")}</div>
+   <div style="margin-top:6px"><strong>Service:</strong> ${escapeHTML(selectedService?.name||"Selected service")}</div>
+   <div style="margin-top:6px"><strong>Option:</strong> ${escapeHTML(optionLabel(selectedOption))}</div>
+   <div style="margin-top:8px"><strong>Price:</strong> ${escapeHTML(money(price))}</div>
+   <div style="margin-top:6px"><strong>Wallet balance:</strong> ${escapeHTML(money(walletBalance))}</div>`;
+ showMessage("confirmMessage","");
+ setSection("confirmSection");
 }
-
-function grizzlyOrdersRepresentSameOrder(
-  first,
-  second
-){
-
-  if(!first || !second){
-    return false;
-  }
-
-  if(
-    orderProvider(first) !== "grizzly" ||
-    orderProvider(second) !== "grizzly"
-  ){
-    return false;
-  }
-
-  const firstActivation =
-    grizzlyCanonicalActivation(first);
-
-  const secondActivation =
-    grizzlyCanonicalActivation(second);
-
-  /*
-    An activation ID is the strongest identity.
-
-    If BOTH records have an activation ID, they are the
-    same order only when those IDs are exactly the same.
-    Different activations must never be merged just because
-    they happen to have the same phone number.
-  */
-  if(firstActivation && secondActivation){
-    return (
-      firstActivation ===
-      secondActivation
-    );
-  }
-
-  /*
-    If only one record has an activation ID, it can still
-    be the same purchase as a provider/database record that
-    temporarily has no activation ID.  Use the complete
-    purchase fingerprint as the fallback bridge.
-  */
-  return ordersHaveSamePurchaseFingerprint(
-    first,
-    second
-  );
-}function grizzlyOrderUniqueKey(
-  order
-){
-
-  const activation =
-    grizzlyCanonicalActivation(order);
-
-  if(activation){
-
-    return (
-      "grizzly:activation:" +
-      activation
-    );
-
-  }
-
-  const fingerprint =
-    orderPurchaseFingerprint(order);
-
-  if(fingerprint){
-
-    return (
-      "grizzly:fingerprint:" +
-      fingerprint
-    );
-
-  }
-
-  return (
-    "grizzly:unknown:" +
-    JSON.stringify(order || {})
-  );
-
-}function orderDatabaseIdentity(order){
-
-  const sources = collectOrderSources(order);
-
-  const explicitKeys = [
-    "database_id",
-    "databaseId",
-    "db_id",
-    "dbId",
-    "purchase_id",
-    "purchaseId",
-    "record_id",
-    "recordId",
-    "supabase_order_id",
-    "supabaseOrderId"
-  ];
-
-  const value = firstOrderValue(sources, explicitKeys);
-
-  if(value){
-    return String(value).trim();
-  }
-
-  /*
-    Provider order endpoints can expose the same Supabase
-    virtual-number purchase in different shapes.  In that
-    case the real database row ID is available as `id` and
-    the provider activation is available separately as
-    `numpool_order_id`.  Treat the row ID as the shared
-    database identity only when the record also contains
-    numpool_order_id, so a provider-only activation ID is
-    never mistaken for a database ID.
-  */
-  const hasNumpoolOrderId =
-    firstOrderValue(
-      sources,
-      [
-        "numpool_order_id",
-        "numpoolOrderId"
-      ]
-    );
-
-  if(hasNumpoolOrderId){
-
-    const rowId = firstOrderValue(
-      sources,
-      ["id"]
-    );
-
-    if(rowId){
-      return String(rowId).trim();
-    }
-
-  }
-
-  return "";
-}
-
-function orderProviderIndependentKey(order){
-
-  const databaseId = orderDatabaseIdentity(order);
-
-  if(databaseId){
-    return "db:" + databaseId;
-  }
-
-  const activation =
-    String(
-      order?.activation_id ||
-      order?.activationId ||
-      orderActivationId(order) ||
-      ""
-    ).trim();
-
-  const phone = String(orderNumber(order) || "")
-    .replace(/[^\d]/g,"")
-    .replace(/^00+/,"");
-
-  const service = String(
-    order?.service_code || order?.service || order?.product || ""
-  ).trim().toLowerCase();
-
-  const country = String(
-    order?.country_id || order?.country || order?.country_key || ""
-  ).trim().toLowerCase();
-
-  const price = Number(
-    order?.customer_price_ngn ?? order?.price ?? 0
-  );
-
-  if(activation){
-    return "activation:" + activation;
-  }
-
-  if(phone && service && country){
-    return [
-      "purchase",
-      phone,
-      service,
-      country,
-      Number.isFinite(price) ? String(price) : ""
-    ].join("|");
-  }
-
-  return "";
-}
-
-function ordersShareGlobalIdentity(first, second){
-
-  if(!first || !second){
-    return false;
-  }
-
-  const firstDb = orderDatabaseIdentity(first);
-  const secondDb = orderDatabaseIdentity(second);
-
-  if(firstDb && secondDb){
-    return firstDb === secondDb;
-  }
-
-  const firstActivation = String(
-    first?.activation_id || first?.activationId || orderActivationId(first) || ""
-  ).trim();
-  const secondActivation = String(
-    second?.activation_id || second?.activationId || orderActivationId(second) || ""
-  ).trim();
-
-  if(firstActivation && secondActivation){
-    return firstActivation === secondActivation;
-  }
-
-  /*
-    Bridge the immediate-purchase record (which may not yet have
-    an activation ID) to the provider record. Do not merge two
-    independent provider activations merely because the phone is
-    the same.
-  */
-  if(!!firstActivation !== !!secondActivation){
-    return ordersHaveSamePurchaseFingerprint(first, second);
-  }
-
-  return false;
-}
-
-function dedupeOrdersGlobally(sourceOrders){
-
-  const unique = [];
-
-  for(const rawOrder of sourceOrders){
-
-    const normalized = normalizeOrder(
-      rawOrder,
-      rawOrder?.provider || orderProvider(rawOrder)
-    );
-
-    let existingIndex = unique.findIndex(existing =>
-      ordersShareGlobalIdentity(existing, normalized)
-    );
-
-    /*
-      Same exact purchase fingerprint can also occur when the two
-      provider endpoints return the same database order but expose
-      different provider-specific activation fields.
-    */
-    if(existingIndex === -1){
-      existingIndex = unique.findIndex(existing =>
-        ordersHaveSamePurchaseFingerprint(existing, normalized) &&
-        (
-          !orderActivationId(existing) ||
-          !orderActivationId(normalized)
-        )
-      );
-    }
-
-    if(existingIndex === -1){
-      unique.push(normalized);
-    }else{
-      unique[existingIndex] = mergeOrderRecords(
-        unique[existingIndex],
-        normalized
-      );
-    }
-
-  }
-
-  return unique;
-}
-
-function orderUniqueKey(
-  order
-){
-
-  const providerName =
-    orderProvider(order);
-
-  if(providerName === "grizzly"){
-
-    return grizzlyOrderUniqueKey(
-      order
-    );
-
-  }
-
-  const activationId =
-    smsBowerActivationId(order);
-
-  if(activationId){
-
-    return (
-      providerName +
-      ":activation:" +
-      String(activationId)
-    );
-
-  }
-
-  const fingerprint =
-    orderPurchaseFingerprint(order);
-
-  if(fingerprint){
-
-    return (
-      providerName +
-      ":fingerprint:" +
-      fingerprint
-    );
-
-  }
-
-  return (
-    providerName +
-    ":unknown:" +
-    JSON.stringify(order || {})
-  );
-
-}function ordersRepresentSameOrder(
-  first,
-  second
-){
-
-  if(!first || !second){
-    return false;
-  }
-
-  const firstProvider =
-    orderProvider(first);
-
-  const secondProvider =
-    orderProvider(second);
-
-  if(firstProvider !== secondProvider){
-    return false;
-  }
-
-  if(firstProvider === "grizzly"){
-
-    return grizzlyOrdersRepresentSameOrder(
-      first,
-      second
-    );
-
-  }
-
-  const firstActivation =
-    smsBowerActivationId(first);
-
-  const secondActivation =
-    smsBowerActivationId(second);
-
-  /*
-    For SMSBower, activation ID is also the strongest
-    identity.  Different activation IDs are different
-    purchases even when the number is identical.
-  */
-  if(firstActivation && secondActivation){
-    return (
-      firstActivation ===
-      secondActivation
-    );
-  }
-
-  /*
-    One record may be the database/immediate-purchase
-    version while the provider record has the activation ID.
-    Bridge those records with the purchase fingerprint.
-  */
-  return ordersHaveSamePurchaseFingerprint(
-    first,
-    second
-  );
-
-}/* ============================================================  
-   ORDER MERGING FIX  
-============================================================ */  
-  
-function mergeOrderRecords(  
-  existing,  
-  incoming  
-){  
-  
-  const oldOrder =  
-    normalizeOrder(  
-      existing,  
-      orderProvider(existing)  
-    );  
-  
-  const newOrder =  
-    normalizeOrder(  
-      incoming,  
-      orderProvider(incoming)  
-    );  
-  
-  const oldOtp =  
-    orderOtp(oldOrder);  
-  
-  const newOtp =  
-    orderOtp(newOrder);  
-  
-  const oldText =  
-    orderSmsText(oldOrder);  
-  
-  const newText =  
-    orderSmsText(newOrder);  
-  
-  const oldStatus =  
-    String(  
-      orderStatus(oldOrder) || ""  
-    ).toLowerCase();  
-  
-  const newStatus =  
-    String(  
-      orderStatus(newOrder) || ""  
-    ).toLowerCase();  
-  
-  const oldHasFinal =  
-    !!oldOtp ||  
-    [  
-      "received",  
-      "completed",  
-      "finished",  
-      "cancelled",  
-      "refunded",  
-      "failed"  
-    ].includes(oldStatus);  
-  
-  const newHasFinal =  
-    !!newOtp ||  
-    [  
-      "received",  
-      "completed",  
-      "finished",  
-      "cancelled",  
-      "refunded",  
-      "failed"  
-    ].includes(newStatus);  
-  
-  const merged = {  
-    ...oldOrder,  
-    ...newOrder  
-  };  
-  
-  merged.id =  
-    oldOrder.id ??  
-    newOrder.id ??  
-    oldOrder.order_id ??  
-    newOrder.order_id ??  
-    "";  
-  
-  merged.order_id =  
-    oldOrder.order_id ??  
-    newOrder.order_id ??  
-    oldOrder.id ??  
-    newOrder.id ??  
-    "";  
-  
-  merged.activation_id =  
-    orderActivationId(oldOrder) ||  
-    orderActivationId(newOrder) ||  
-    "";  
-  
-  merged.activationId =  
-    merged.activation_id;  
-  
-  merged.number =  
-    orderNumber(oldOrder) ||  
-    orderNumber(newOrder) ||  
-    "";  
-  
-  merged.phone_number =  
-    oldOrder.phone_number ||  
-    newOrder.phone_number ||  
-    merged.number;  
-  
-  merged.phoneNumber =  
-    oldOrder.phoneNumber ||  
-    newOrder.phoneNumber ||  
-    merged.number;  
-  
-  merged.otp_code =  
-    oldOtp ||  
-    newOtp ||  
-    "";  
-  
-  merged.sms_code =  
-    merged.otp_code;  
-  
-  merged.code =  
-    merged.otp_code;  
-  
-  merged.sms_text =  
-    oldText ||  
-    newText ||  
-    "";  
-  
-  if(oldHasFinal && !newHasFinal){  
-  
-    merged.status =  
-      oldOtp  
-        ? "received"  
-        : oldStatus;  
-  
-  }else if(newHasFinal){  
-  
-    merged.status =  
-      newOtp  
-        ? "received"  
-        : newStatus;  
-  
-  }else{  
-  
-    merged.status =  
-      newStatus ||  
-      oldStatus ||  
-      "waiting";  
-  
-  }  
-  
-  if(merged.otp_code){  
-  
-    merged.status =  
-      "received";  
-  
-  }  
-  
-  merged.created_at =  
-    oldOrder.created_at ||  
-    newOrder.created_at ||  
-    oldOrder.purchased_at ||  
-    newOrder.purchased_at ||  
-    new Date().toISOString();  
-  
-  merged.country =  
-    oldOrder.country ||  
-    newOrder.country ||  
-    "";  
-  
-  merged.country_id =  
-    oldOrder.country_id ||  
-    newOrder.country_id ||  
-    "";  
-  
-  merged.country_name =  
-    oldOrder.country_name ||  
-    newOrder.country_name ||  
-    "";  
-  
-  merged.service =  
-    oldOrder.service ||  
-    newOrder.service ||  
-    "";  
-  
-  merged.service_code =  
-    oldOrder.service_code ||  
-    newOrder.service_code ||  
-    "";  
-  
-  merged.service_name =  
-    oldOrder.service_name ||  
-    newOrder.service_name ||  
-    "";  
-  
-  merged.provider =  
-    orderProvider(oldOrder);  
-  
-  merged.customer_price_ngn =  
-    Number(  
-      oldOrder.customer_price_ngn ||  
-      newOrder.customer_price_ngn ||  
-      oldOrder.price ||  
-      newOrder.price ||  
-      0  
-    );  
-  
-  merged.price =  
-    Number(  
-      oldOrder.price ||  
-      newOrder.price ||  
-      oldOrder.customer_price_ngn ||  
-      newOrder.customer_price_ngn ||  
-      0  
-    );  
-  
-  return normalizeOrder(  
-    merged,  
-    orderProvider(merged)  
-  );  
-  
-}  
-  
-function mergeProviderStatusIntoOrder(  
-  order,  
-  data  
-){  
-  
-  if(!order){  
-    return order;  
-  }  
-  
-  const providerName =  
-    orderProvider(order);  
-  
-  const result =  
-    data &&  
-    typeof data === "object"  
-      ? data  
-      : {};  
-  
-  const resultSources = [  
-    result,  
-    result.data,  
-    result.result,  
-    result.response,  
-    result.provider_response,  
-    result.providerResponse,  
-    result.grizzly,  
-    result.grizzly_response,  
-    result.grizzlyResponse  
-  ].filter(  
-    value =>  
-      value &&  
-      typeof value === "object"  
-  );  
-  
-  let otp = "";  
-  let smsText = "";  
-  let returnedStatus = "";  
-  
-  for(const source of resultSources){  
-  
-    const directOtp =  
-      firstOrderValue(  
-        [source],  
-        [  
-          "otp_code",  
-          "otpCode",  
-          "sms_code",  
-          "smsCode",  
-          "code"  
-        ]  
-      );  
-  
-    if(directOtp && !otp){  
-      otp = directOtp;  
-    }  
-  
-    const directText =  
-      firstOrderValue(  
-        [source],  
-        [  
-          "sms_text",  
-          "smsText",  
-          "text",  
-          "message"  
-        ]  
-      );  
-  
-    if(directText && !smsText){  
-      smsText = directText;  
-    }  
-  
-    const directStatus =  
-      firstOrderValue(  
-        [source],  
-        [  
-          "status",  
-          "state",  
-          "activation_status",  
-          "activationStatus"  
-        ]  
-      );  
-  
-    if(directStatus && !returnedStatus){  
-  
-      returnedStatus =  
-        directStatus.toLowerCase();  
-  
-    }  
-  
-    const sms =  
-      source?.sms;  
-  
-    if(  
-      sms &&  
-      typeof sms === "object"  
-    ){  
-  
-      const smsCode =  
-        firstOrderValue(  
-          [sms],  
-          [  
-            "code",  
-            "otp_code",  
-            "otpCode",  
-            "sms_code",  
-            "smsCode"  
-          ]  
-        );  
-  
-      if(smsCode && !otp){  
-        otp = smsCode;  
-      }  
-  
-      const smsMessage =  
-        firstOrderValue(  
-          [sms],  
-          [  
-            "text",  
-            "message"  
-          ]  
-        );  
-  
-      if(  
-        smsMessage &&  
-        !smsText  
-      ){  
-  
-        smsText =  
-          smsMessage;  
-  
-      }  
-  
-    }  
-  
-  }  
-  
-  const activationId =
-    providerName === "smsbower"
-      ? smsBowerActivationId({
-          ...result,
-          data:result.data,
-          result:result.result,
-          response:result.response,
-          provider_response:result.provider_response,
-          providerResponse:result.providerResponse
-        })
-      : firstOrderValue(  
-          resultSources,  
-          [  
-            "activation_id",  
-            "activationId",  
-            "activationID",  
-            "provider_activation_id",  
-            "providerActivationId"  
-          ]  
-        );  
-  
-  const number =  
-    firstOrderValue(  
-      resultSources,  
-      [  
-        "phone_number",  
-        "phoneNumber",  
-        "number",  
-        "phone",  
-        "msisdn"  
-      ]  
-    );  
-  
-  const update = {  
-    ...order  
-  };  
-  
-  if(activationId){  
-  
-    update.activation_id =  
-      activationId;  
-  
-    update.activationId =  
-      activationId;  
-  
-  }  
-  
-  if(number){  
-  
-    update.number =  
-      number;  
-  
-    update.phone_number =  
-      number;  
-  
-    update.phoneNumber =  
-      number;  
-  
-  }  
-  
-  if(otp){  
-  
-    update.otp_code =  
-      otp;  
-  
-    update.sms_code =  
-      otp;  
-  
-    update.code =  
-      otp;  
-  
-    update.status =  
-      "received";  
-  
-  }else if(smsText){  
-  
-    update.sms_text =  
-      smsText;  
-  
-  }  
-  
-  if(  
-    returnedStatus &&  
-    !otp  
-  ){  
-  
-    update.status =  
-      returnedStatus;  
-  
-  }  
-  
-  if(  
-    orderOtp(update)  
-  ){  
-  
-    update.status =  
-      "received";  
-  
-  }  
-  
-  update.provider =  
-    providerName;  
-  
-  return normalizeOrder(  
-    update,  
-    providerName  
-  );  
-  
-}  
-  
-  
-/* ============================================================  
-   ORDER ACTION ID  
-============================================================ */  
-  
-function orderActionId(
-  order
-){
-
-  const providerName =
-    orderProvider(order);
-
-  if(providerName === "smsbower"){
-
-    const smsActivation =
-      smsBowerActivationId(order);
-
-    if(smsActivation){
-      return smsActivation;
-    }
-
-  }
-
-  const activationId =
-    order?.activation_id ||
-    order?.activationId ||
-    orderActivationId(order);
-
-  if(activationId){
-
-    return String(
-      activationId
-    );
-
-  }
-
-  /*
-    A Grizzly order MUST use its real provider activation ID.
-    Never fall back to the local/Supabase numeric row ID.
-  */
-  if(providerName === "grizzly"){
-    return "";
-  }
-
-  const databaseId =
-    order?.id ??
-    order?.order_id ??
-    order?.orderId ??
-    null;
-
-  if(
-    databaseId !== null &&
-    databaseId !== undefined &&
-    String(databaseId).trim() !== ""
-  ){
-    return String(databaseId);
-  }
-
-  return "";
-
-}/* ============================================================  
-   ORDER RENDERING  
-============================================================ */  
-  
-function displayOrderService(order){
-  const direct = firstOrderValue([order], [
-    "service_name","serviceName","service_title","serviceTitle",
-    "application_name","app_name","product_name","name"
-  ]);
-  if(direct && !looksLikeTechnicalCode(direct)) return String(direct).trim();
-
-  const code = String(order?.service_code || order?.serviceCode || order?.service || "").trim();
-  const match = (Array.isArray(services) ? services : []).find(item =>
-    String(serviceCode(item)).toLowerCase() === code.toLowerCase()
-  );
-  const found = match ? serviceName(match) : "";
-  if(found && !looksLikeTechnicalCode(found)) return found;
-
-  const aliases = {
-    wa:"WhatsApp", whatsapp:"WhatsApp", tg:"Telegram", telegram:"Telegram",
-    go:"Google", google:"Google", fb:"Facebook", facebook:"Facebook",
-    ig:"Instagram", instagram:"Instagram", tw:"Twitter/X", twitter:"Twitter",
-    imo:"imo", tik:"TikTok", tiktok:"TikTok", vk:"VK", gmail:"Gmail"
-  };
-  return aliases[code.toLowerCase()] || (code && !looksLikeTechnicalCode(code) ? code : "Virtual number");
-}
-
-function displayOrderCountry(order){
-  const direct = firstOrderValue([order], [
-    "country_name","countryName","country_label","countryLabel",
-    "country_display_name","countryDisplayName"
-  ]);
-  if(direct && !looksLikeTechnicalCode(direct)) return String(direct).trim();
-
-  const key = String(order?.country_key || order?.country_code || order?.countryCode || order?.country || "").trim();
-  const match = (Array.isArray(countries) ? countries : []).find(item =>
-    [countryKey(item), String(countryId(item) ?? ""), String(item?.code || ""), String(item?.country_code || "")]
-      .some(value => value && value.toLowerCase() === key.toLowerCase())
-  );
-  const found = match ? countryName(match) : "";
-  if(found && !looksLikeTechnicalCode(found)) return found;
-
-  const aliases = {
-    "187":"United States", "usa":"United States", "us":"United States",
-    "16":"United Kingdom", "uk":"United Kingdom", "gb":"United Kingdom",
-    "19":"Nigeria", "ng":"Nigeria", "12":"United States"
-  };
-  return aliases[key.toLowerCase()] || (key && !looksLikeTechnicalCode(key) ? key : "Country unavailable");
-}
-
-function looksLikeTechnicalCode(value){
-  const text = String(value ?? "").trim();
-  if(!text) return true;
-  return /^\d+$/.test(text) ||
-    /^(wa\d*|whatsapp\d*|tg\d*|sms\d*|service[_-]?\d+|country[_-]?\d+|[a-z]{1,3}\d{1,5})$/i.test(text);
-}
-
-function renderOrder(  
-  order,  
-  showActions = true  
-){  
-  
-  const normalized =  
-    normalizeOrder(  
-      order,  
-      orderProvider(order)  
-    );  
-  
-  const status =  
-    String(  
-      normalized.status || ""  
-    ).toLowerCase();  
-  
-  const number =  
-    normalized.number ||  
-    "Number unavailable";  
-  
-  const activationId =  
-    normalized.activation_id ||  
-    "";  
-  
-  const otp =  
-    normalized.otp_code ||  
-    "";  
-  
-  const smsText =  
-    normalized.sms_text ||  
-    "";  
-  
-  let otpHTML = "";  
-  
-  if(otp){  
-  
-    otpHTML = `  
-      <div class="otp">  
-        OTP: ${escapeHTML(otp)}  
-      </div>  
-    `;  
-  
-  }else if(smsText){  
-  
-    otpHTML = `  
-      <div class="otp">  
-        SMS: ${escapeHTML(smsText)}  
-      </div>  
-    `;  
-  
-  }  
-  
-  let actionsHTML = "";  
-  
-  const actionId =  
-    orderActionId(normalized);  
-  
-  /*  
-    IMPORTANT:  
-    Received/completed/cancelled/refunded/failed orders  
-    NEVER receive a Cancel button.  
-  
-    Only waiting/pending orders without OTP can be  
-    cancelled or checked.  
-  */  
-  const canCancel =  
-    (  
-      status === "waiting" ||  
-      status === "pending"  
-    ) &&  
-    !otp;  
-  
-  if(  
-    showActions &&  
-    canCancel &&  
-    actionId  
-  ){  
-  
-    actionsHTML = `  
-      <div class="order-actions">  
-  
-        <button  
-          type="button"  
-          class="small-button check"  
-          data-action="check"  
-          data-order-id="${escapeHTML(actionId)}"  
-          data-activation-id="${escapeHTML(  
-            activationId  
-          )}"  
-          data-provider="${escapeHTML(  
-            orderProvider(normalized)  
-          )}"  
-        >  
-          Check Code / Get Code  
-        </button>  
-  
-        <button  
-          type="button"  
-          class="small-button cancel"  
-          data-action="cancel"  
-          data-order-id="${escapeHTML(actionId)}"  
-          data-activation-id="${escapeHTML(  
-            activationId  
-          )}"  
-          data-provider="${escapeHTML(  
-            orderProvider(normalized)  
-          )}"  
-        >  
-          Cancel  
-        </button>  
-  
-      </div>  
-    `;  
-  
-  }  
-  
-  const renderedOrderKey =  
-    orderProvider(normalized) === "grizzly"  
-      ? grizzlyOrderUniqueKey(normalized)  
-      : orderUniqueKey(normalized);  
-  
-  return `  
-    <div  
-      class="order"  
-      data-order-key="${escapeHTML(  
-        renderedOrderKey  
-      )}"  
-    >  
-  
-      <div class="order-number">  
-        ${escapeHTML(number)}  
-      </div>
-      <div class="order-meta">
-        ${escapeHTML(displayOrderService(normalized))}
-        ${displayOrderService(normalized) && displayOrderCountry(normalized) ? " · " : ""}
-        ${escapeHTML(displayOrderCountry(normalized))}
-      </div>  
-  
-      <div class="order-meta">  
-        ${naira(  
-          normalized.customer_price_ngn  
-        )}  
-      </div>  
-  
-      <span  
-        class="status ${escapeHTML(status)}"  
-      >  
-        ${escapeHTML(  
-          statusLabel(status)  
-        )}  
-      </span>  
-  
-      ${otpHTML}  
-  
-      ${actionsHTML}  
-  
-    </div>  
-  `;  
-  
-}  
-  
-  
-/* ============================================================  
-   ONE UNIFIED ORDER RENDERING  
-============================================================ */  
-  
-function renderOrderSections(){
-
-  const ordersList = document.getElementById("ordersList");
-
-  if(!ordersList){
-    return;
-  }
-
-  const uniqueOrders = dedupeOrdersGlobally(
-    Array.isArray(orders) ? orders : []
-  );
-
-  uniqueOrders.sort((a,b) =>
-    new Date(b.created_at || b.purchased_at || b.updated_at || 0) -
-    new Date(a.created_at || a.purchased_at || a.updated_at || 0)
-  );
-
-  orders = uniqueOrders;
-
-  if(orders.length === 0){
-
-    ordersList.innerHTML = `
-      <div class="empty">No orders yet.</div>
-    `;
-
-    currentOrderId = null;
-    currentOrderProvider = null;
-    return;
-  }
-
-  const newestOrder = orders[0];
-  currentOrderId = orderActionId(newestOrder) || null;
-  currentOrderProvider = orderProvider(newestOrder);
-
-  ordersList.innerHTML = orders
-    .map(order => renderOrder(order, true))
-    .join("");
-
-  attachOrderActions();
-
-}
-
-function attachOrderActions(){  
-  
-  document  
-    .querySelectorAll(  
-      '[data-action="check"]'  
-    )  
-    .forEach(  
-      button => {  
-  
-        button.onclick = () => {  
-  
-          checkOrder(  
-            button.dataset.orderId,  
-            button.dataset.provider,  
-            button.closest(".order")  
-              ?.dataset.orderKey || "",  
-            button.dataset.activationId || ""  
-          );  
-  
-        };  
-  
-      }  
-    );  
-  
-  document  
-    .querySelectorAll(  
-      '[data-action="cancel"]'  
-    )  
-    .forEach(  
-      button => {  
-  
-        button.onclick = () => {  
-  
-          cancelOrder(  
-            button.dataset.orderId,  
-            button.dataset.provider,  
-            button.dataset.activationId || "",  
-            button.closest(".order")  
-              ?.dataset.orderKey || ""  
-          );  
-  
-        };  
-  
-      }  
-    );  
-  
-}  
-  
-  
-/* ============================================================  
-   LOAD ALL ORDERS  
-============================================================ */  
-  
-function renderedOrderKey(order){
-
-  const normalized = normalizeOrder(
-    order,
-    orderProvider(order)
-  );
-
-  return orderProvider(normalized) === "grizzly"
-    ? grizzlyOrderUniqueKey(normalized)
-    : orderUniqueKey(normalized);
-
-}
-
-function scrollToPendingOrder(){
-
-  if(!pendingOrderScrollKey){
-    return;
-  }
-
-  const target = Array.from(
-    document.querySelectorAll(".order[data-order-key]")
-  ).find(
-    element => element.dataset.orderKey === pendingOrderScrollKey
-  );
-
-  if(target){
-    target.scrollIntoView({
-      behavior:"smooth",
-      block:"start"
-    });
-
-    pendingOrderScrollKey = "";
-  }
-
-}
-
-async function loadAllOrders(){
-
-  const ordersList = document.getElementById("ordersList");
-
-  try{
-
-    const response = await api("orders", {}, provider);
-
-    const providerOrders =
-      Array.isArray(response?.orders)
-        ? response.orders.map(order =>
-            normalizeOrder(order, provider)
-          )
-        : [];
-
-    orders = providerOrders;
-
-    orders.sort((a,b) =>
-      new Date(b.created_at || b.purchased_at || b.updated_at || 0) -
-      new Date(a.created_at || a.purchased_at || a.updated_at || 0)
-    );
-
-    renderOrderSections();
-    scrollToPendingOrder();
-
-  }catch(error){
-
-    if(Array.isArray(orders) && orders.length > 0){
-      renderOrderSections();
-      scrollToPendingOrder();
-    }else if(ordersList){
-      ordersList.innerHTML = `
-        <div class="empty">${escapeHTML(error.message)}</div>
-      `;
-    }
-
-  }
-
-}
-
-async function checkProviderStatus(
-  order,
-  providerName,
-  orderId = ""
-){
-
-  if(providerName === "grizzly"){
-
-    const activationId =
-      order?.activation_id ||
-      order?.activationId ||
-      orderActivationId(order) ||
-      "";
-
-    return await api(
-      "status",
-      {
-        order_id:
-          activationId ||
-          null,
-
-        activation_id:
-          activationId ||
-          null
-      },
-      "grizzly"
-    );
-
-  }
-
-  const smsActivationId =
-    smsBowerActivationId(order);
-
-  return await api(
-    "check",
-    {
-      /*
-        SMSBower check/get-code MUST use the provider
-        activation ID.  Never substitute the Supabase
-        database UUID for it.
-      */
-      order_id:
-        smsActivationId ||
-        null,
-
-      activation_id:
-        smsActivationId ||
-        null
-    },
-    "smsbower"
-  );
-
-}/* ============================================================  
-   CHECK ONE ORDER  
-============================================================ */  
-  
-async function checkOrder(  
-  orderId,  
-  providerName,  
-  orderKey = "",  
-  activationId = ""  
-){  
-  
-  const targetIndex =  
-    orders.findIndex(  
-      order => {  
-  
-        if(  
-          providerName === "grizzly"  
-        ){  
-  
-          return (  
-            (  
-              orderKey &&  
-              grizzlyOrderUniqueKey(order) ===  
-              orderKey  
-            ) ||  
-            (  
-              activationId &&  
-              String(  
-                grizzlyCanonicalActivation(order)  
-              ) ===  
-              String(activationId).trim()  
-            ) ||  
-            (  
-              !orderKey &&  
-              !activationId &&  
-              String(  
-                orderActionId(order)  
-              ) ===  
-              String(orderId) &&  
-              orderProvider(order) ===  
-              "grizzly"  
-            )  
-          );  
-  
-        }  
-  
-        return (  
-          (  
-            orderKey &&  
-            orderUniqueKey(order) ===  
-            orderKey  
-          ) ||  
-          (  
-            activationId &&  
-            String(  
-              smsBowerActivationId(order)  
-            ) ===  
-            String(activationId) &&  
-            orderProvider(order) ===  
-            providerName  
-          ) ||  
-          (  
-            !orderKey &&  
-            !activationId &&  
-            String(  
-              orderActionId(order)  
-            ) ===  
-            String(orderId) &&  
-            orderProvider(order) ===  
-            providerName  
-          )  
-        );  
-  
-      }  
-    );  
-  
-  if(targetIndex === -1){  
-  
-    alert(  
-      "Order could not be found."  
-    );  
-  
-    return;  
-  
-  }  
-  
-  const target =  
-    orders[targetIndex];  
-  
-  let container = null;  
-  
-  try{  
-  
-    container =  
-      document.querySelector(  
-        `[data-order-key="${CSS.escape(  
-          providerName === "grizzly"  
-            ? grizzlyOrderUniqueKey(target)  
-            : orderUniqueKey(target)  
-        )}"]`  
-      );  
-  
-  }catch{  
-  
-    container = null;  
-  
-  }  
-  
-  let oldHTML = "";  
-  
-  if(container){  
-  
-    oldHTML =  
-      container.innerHTML;  
-  
-    container.innerHTML = `  
-      <div class="loading">  
-        Checking for SMS code...  
-      </div>  
-    `;  
-  
-  }  
-  
-  try{  
-  
-    const data =  
-      await checkProviderStatus(  
-        target,  
-        providerName,  
-        orderId  
-      );  
-  
-    console.log(  
-      "Provider status:",  
-      data  
-    );  
-  
-    orders[targetIndex] =  
-      mergeProviderStatusIntoOrder(  
-        target,  
-        data  
-      );  
-  
-    renderOrderSections();  
-  
-  }catch(error){  
-  
-    if(container){  
-  
-      container.innerHTML =  
-        oldHTML;  
-  
-    }  
-  
-    alert(  
-      "Unable to check code: " +  
-      error.message  
-    );  
-  
-    attachOrderActions();  
-  
-  }  
-  
-}  
-  
-  
-/* ============================================================  
-   SMSBOWER CANCELLATION FIX  
-============================================================ */  
-  
-function smsBowerCancellationActivationId(
-  order,
-  fallbackId = ""
-){
-
-  const activation =
-    smsBowerActivationId(order);
-
-  if(activation){
-    return String(activation).trim();
-  }
-
-  const fallback =
-    String(
-      fallbackId || ""
-    ).trim();
-
-  /*
-    A fallback is accepted only when it looks like a
-    numeric SMSBower activation ID.  This prevents a
-    Supabase UUID from being sent to the provider.
-  */
-  if(/^\d+$/.test(fallback)){
-    return fallback;
-  }
-
-  return "";
-}/* ============================================================  
-   CANCEL ONE EXACT ORDER  
-============================================================ */  
-  
-function showCancelResult(message){
-  const modal = document.getElementById("cancelResultModal");
-  const messageElement = document.getElementById("cancelResultMessage");
-  if(!modal || !messageElement){
-    return;
-  }
-  messageElement.textContent = String(message || "Number cancelled successfully.");
-  modal.classList.add("open");
-}
-
-function closeCancelResult(){
-  const modal = document.getElementById("cancelResultModal");
-  if(modal) modal.classList.remove("open");
-}
-
-let cancelConfirmationResolver = null;
-
-function resolveCancelConfirmation(confirmed){
-  const modal = document.getElementById("cancelConfirmModal");
-  if(modal) modal.classList.remove("open");
-  const resolve = cancelConfirmationResolver;
-  cancelConfirmationResolver = null;
-  if(resolve) resolve(Boolean(confirmed));
-}
-
-function showCancelConfirmation(){
-  return new Promise(resolve => {
-    cancelConfirmationResolver = resolve;
-    const modal = document.getElementById("cancelConfirmModal");
-    if(!modal){
-      resolve(window.confirm("Cancel this number? You will be refunded after the number is successfully cancelled."));
-      return;
-    }
-    modal.classList.add("open");
+async function purchaseNumber(){
+ if(!currentUser){showMessage("confirmMessage","Please sign in again.","error");return;}
+ if(!selectedService||!selectedOption||!selectedCountry){showMessage("confirmMessage","Select a country, service and option first.","error");return;}
+ const price=servicePrice(selectedOption);
+ if(price===null||price<0){showMessage("confirmMessage","The selected option has an invalid price.","error");return;}
+ if(walletBalance<price){showMessage("confirmMessage","Insufficient funds. Please add "+money(price-walletBalance)+".","error");return;}
+ const button=$("confirmPurchaseBtn");
+ button.disabled=true;button.textContent="Processing…";
+ showMessage("confirmMessage","Submitting your purchase request…","info");
+ try{
+  const code=serviceCode(selectedService),option=getOptionPayload(selectedOption);
+  await invoke(chosenProvider,"buy",{
+   service:code,serviceCode:code,serviceName:selectedService.name,
+   country:selectedCountry.code,countryCode:selectedCountry.code,countryId:selectedCountry.id,countryName:selectedCountry.name,
+   option,server:option.server??option.server_id??option.id??option.value,
+   customerPriceNGN:price,priceNGN:price
   });
+  showMessage("confirmMessage","Purchase request submitted. Refreshing your orders…","success");
+  await Promise.allSettled([refreshWallet(),loadOrders()]);
+  setSection(chosenProvider==="textverified"?"usaSection":"allSection");
+  showGlobal("Purchase request submitted. Check My Number Orders for its current status.","success");
+ }catch(e){
+  console.error("Purchase failed:",e);
+  showMessage("confirmMessage",formatError(e,"The purchase could not be completed. Please try again."),"error");
+ }finally{
+  button.disabled=false;button.textContent="Purchase Number";
+ }
+}
+function goBack(){
+ if(currentSection==="confirmSection")setSection("optionsSection");
+ else if(flow==="usa")setSection("usaSection");
+ else if(flow==="all")setSection("allSection");
+ else setSection(null);
 }
 
-async function cancelOrder(  
-  orderId,  
-  providerName,  
-  activationId = "",  
-  orderKey = ""  
-){  
-  
-  /*  
-    FIND THE EXACT ORDER FIRST.  
-  
-    We do this BEFORE showing the confirmation popup  
-    so a received order cannot accidentally be cancelled.  
-  */  
-  const targetIndex =  
-    orders.findIndex(  
-      order => {  
-  
-        if(providerName === "grizzly"){  
-  
-          /*  
-            If an activation ID was supplied, it is  
-            the strongest identity and MUST match exactly.  
-          */  
-          if(activationId){  
-  
-            return (  
-              orderProvider(order) ===  
-              "grizzly" &&  
-              String(  
-                grizzlyCanonicalActivation(order)  
-              ) ===  
-              String(activationId).trim()  
-            );  
-  
-          }  
-  
-          if(orderKey){  
-  
-            return (  
-              orderProvider(order) ===  
-              "grizzly" &&  
-              grizzlyOrderUniqueKey(order) ===  
-              orderKey  
-            );  
-  
-          }  
-  
-          return (  
-            String(  
-              orderActionId(order)  
-            ) ===  
-            String(orderId) &&  
-            orderProvider(order) ===  
-            "grizzly"  
-          );  
-  
-        }  
-  
-        /*  
-          SMSBower:  
-          activation ID is preferred when available.  
-        */  
-        if(activationId){  
-  
-          return (  
-            orderProvider(order) ===  
-            providerName &&  
-            String(  
-              smsBowerActivationId(order)  
-            ) ===  
-            String(activationId).trim()  
-          );  
-  
-        }  
-  
-        if(orderKey){  
-  
-          return (  
-            orderProvider(order) ===  
-            providerName &&  
-            orderUniqueKey(order) ===  
-            orderKey  
-          );  
-  
-        }  
-  
-        return (  
-          String(  
-            orderActionId(order)  
-          ) ===  
-          String(orderId) &&  
-          orderProvider(order) ===  
-          providerName  
-        );  
-  
-      }  
-    );  
-  
-  if(targetIndex === -1){  
-  
-    alert(  
-      "Order could not be found."  
-    );  
-  
-    return;  
-  
-  }  
-  
-  const target =  
-    normalizeOrder(  
-      orders[targetIndex],  
-      providerName  
-    );  
-  
-  /*  
-    CRITICAL SAFETY CHECK:  
-  
-    If the order has already received an OTP,  
-    cancellation is completely blocked.  
-  
-    This also protects against a stale Cancel button  
-    or a status update arriving immediately before  
-    the user presses Cancel.  
-  */  
-  const targetStatus =  
-    String(  
-      orderStatus(target) || ""  
-    ).toLowerCase();  
-  
-  const targetOtp =  
-    orderOtp(target);  
-  
-  if(  
-    targetOtp ||  
-    targetStatus === "received" ||  
-    targetStatus === "completed" ||  
-    targetStatus === "finished"  
-  ){  
-  
-    renderOrderSections();  
-  
-    alert(  
-      "This order has already received its code and cannot be cancelled."  
-    );  
-  
-    return;  
-  
-  }  
-  
-  /*  
-    Only waiting/pending orders can reach cancellation.  
-  */  
-  if(  
-    targetStatus !== "waiting" &&  
-    targetStatus !== "pending"  
-  ){  
-  
-    renderOrderSections();  
-  
-    alert(  
-      "This order cannot be cancelled."  
-    );  
-  
-    return;  
-  
-  }  
-  
-  /*  
-    Confirm only after the exact order has been  
-    identified and verified as cancellable.  
-  */  
-  if(!(await showCancelConfirmation())){
-    return;
-  }  
-  
-  let container = null;  
-  
-  try{  
-  
-    container =  
-      document.querySelector(  
-        `[data-order-key="${CSS.escape(  
-          providerName === "grizzly"  
-            ? grizzlyOrderUniqueKey(target)  
-            : orderUniqueKey(target)  
-        )}"]`  
-      );  
-  
-  }catch{  
-  
-    container = null;  
-  
-  }  
-  
-  const ordersList =  
-    document.getElementById(  
-      "ordersList"  
-    );  
-  
-  if(container){  
-  
-    container.innerHTML = `  
-      <div class="loading">  
-        Cancelling number...  
-      </div>  
-    `;  
-  
-  }else if(ordersList){  
-  
-    ordersList.innerHTML = `  
-      <div class="loading">  
-        Cancelling number...  
-      </div>  
-    `;  
-  
-  }  
-  
-  try{  
-  
-    /*  
-      Re-read the target from the array before sending  
-      cancellation so we do not accidentally send a  
-      different order's activation ID.  
-    */  
-    const exactTarget =  
-      orders[targetIndex];  
-  
-    /*  
-      Check once more immediately before API call.  
-      This prevents cancellation if the OTP arrived  
-      while the confirmation dialog was open.  
-    */  
-    const latestStatus =  
-      String(  
-        orderStatus(exactTarget) || ""  
-      ).toLowerCase();  
-  
-    const latestOtp =  
-      orderOtp(exactTarget);  
-  
-    if(  
-      latestOtp ||  
-      latestStatus === "received" ||  
-      latestStatus === "completed" ||  
-      latestStatus === "finished"  
-    ){  
-  
-      renderOrderSections();  
-  
-      alert(  
-        "This order has already received its code and cannot be cancelled."  
-      );  
-  
-      return;  
-  
-    }  
-  
-    let cancellationActivationId =  
-      activationId ||  
-      exactTarget?.activation_id ||  
-      "";  
-  
-    if(  
-      providerName === "smsbower"  
-    ){  
-  
-      cancellationActivationId =  
-        smsBowerCancellationActivationId(  
-          exactTarget,  
-          cancellationActivationId  
-        );  
-  
-    }else{  
-  
-      cancellationActivationId =  
-        cancellationActivationId ||  
-        orderActivationId(exactTarget) ||  
-        null;  
-  
-    }  
-  
-    if(
-      providerName === "smsbower" &&
-      !cancellationActivationId
-    ){
+async function refreshOrders(){await Promise.allSettled([loadOrders(),refreshWallet()]);}
+async function loadOrders(){
+ if(!currentUser){$("ordersList").innerHTML='<div class="empty">Sign in to view your orders.</div>';return;}
+ try{
+  const {data,error}=await sb.from("virtual_number_orders").select("*")
+   .eq("user_id",currentUser.id).order("created_at",{ascending:false}).limit(50);
+  if(error)throw error;
+  allOrders=data||[];
+  renderOrders();
+  showMessage("ordersMessage","");
+ }catch(e){
+  console.error("Order history loading failed:",e);
+  $("ordersList").innerHTML='<div class="empty">Unable to load your order history. <button class="btn btn-dark" onclick="loadOrders()">Retry</button></div>';
+  showMessage("ordersMessage","Order history could not be refreshed. Check table permissions and try again.","error");
+ }
+}
+function normalizeStatus(o){
+ const s=String(o.status||o.provider_state||"waiting").toLowerCase();
+ if(["received","completed","success","successful","verification_successful"].includes(s))return "received";
+ if(["cancelled","canceled","order_cancelled","order_canceled"].includes(s))return "cancelled";
+ if(["failed","error"].includes(s))return "failed";
+ if(["refunded","refund_completed","cancelled_refunded"].includes(s))return "refunded";
+ return "waiting";
+}
+function statusLabel(s){
+ return({waiting:"Pending",received:"Verification Successful",cancelled:"Order Cancelled",failed:"Failed",refunded:"Refunded"})[s]||s;
+}
+function orderDate(o){
+ const d=o.created_at||o.purchased_at;
+ if(!d)return "Date unavailable";
+ const x=new Date(d);
+ return Number.isNaN(x.getTime())?"Date unavailable":x.toLocaleString();
+}
+function getOrderNumber(o){return o.number??o.phone_number??o.phone??o.phoneNumber??"";}
+function maskNumber(number){
+ const v=String(number||"");
+ if(!v)return "Number unavailable";
+ if(v.length<8)return v;
+ return v.slice(0,4)+"•••"+v.slice(-3);
+}
+function getCode(o){return o.otp_code??o.code??o.sms_code??o.verification_code??"";}
+function getSms(o){return o.full_sms??o.sms_text??o.message??"";}
+function getPrice(o){return Number(o.customer_price_ngn??o.price_ngn??o.price??0);}
+function isRefunded(o,status){
+ return status==="refunded"||Boolean(o.refunded_at||o.refund_processed_at||o.refund_status==="refunded");
+}
+function refundLabel(o,status){
+ if(isRefunded(o,status))return "Refunded";
+ const s=String(o.refund_status||"").toLowerCase();
+ if(s.includes("pending")||s.includes("processing"))return "Processing";
+ if(status==="cancelled"||status==="failed")return s==="not_applicable"?"Not applicable":"Not confirmed";
+ return "Not applicable";
+}
+function durationSeconds(o){
+ const raw=o.expires_at||o.expiry_at||o.expiresAt;
+ if(raw){
+  const end=new Date(raw).getTime();
+  if(Number.isFinite(end))return Math.max(0,Math.floor((end-Date.now())/1000));
+ }
+ const created=new Date(o.created_at||o.purchased_at||Date.now()).getTime();
+ const duration=Number(o.duration_seconds??o.expires_in_seconds??1200);
+ const end=created+(Number.isFinite(duration)&&duration>0?duration:1200)*1000;
+ return Math.max(0,Math.floor((end-Date.now())/1000));
+}
+function countdownText(seconds){
+ const s=Math.max(0,seconds|0),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),r=s%60;
+ return h>0?[h,m,r].map(n=>String(n).padStart(2,"0")).join(":"):[m,r].map(n=>String(n).padStart(2,"0")).join(":");
+}
+function providerName(o){
+ const p=String(o.provider_key||o.provider||"").toLowerCase();
+ return p==="textverified"?"USA · TextVerified":p==="virtualsms"?"All Country Numbers · VirtualSMS":"Virtual Number";
+}
+function renderOrders(){
+ if(!allOrders.length){
+  $("ordersList").innerHTML='<div class="empty">You have no virtual number orders yet.</div>';return;
+ }
+ $("ordersList").innerHTML=allOrders.map(o=>{
+  const status=normalizeStatus(o);
+  const id=Number(o.id);
+  const number=String(getOrderNumber(o)||"");
+  const code=String(getCode(o)||"");
+  const sms=String(getSms(o)||"");
+  const price=getPrice(o);
+  const service=String(o.service_name||o.service_code||"Virtual Number");
+  const country=String(o.country_name||o.country_code||"Unknown country");
+  const pending=status==="waiting";
+  const received=status==="received";
+  const cancelled=status==="cancelled";
+  const failed=status==="failed";
+  const refunded=isRefunded(o,status);
+  const left=durationSeconds(o);
+  const badgeClass=status;
+  let headline=pending?"Purchase Successful!":received?"Verification Successful":cancelled?"Order Cancelled":failed?"Order Failed":"Refunded";
+  let subtitle=pending?"Your number is ready":received?"SMS received for this number":cancelled?"This number order has ended":failed?"This number order failed":"Your refund has been recorded";
+  let icon=pending||received?"✓":"×";
+  let html=`<article class="order-card" data-order-id="${escapeHTML(o.id)}">
+   <div class="order-heading">
+    <div><h3>${escapeHTML(headline)}</h3><p class="order-subtitle">${escapeHTML(subtitle)}</p></div>
+    <span class="badge ${badgeClass}">${escapeHTML(statusLabel(status))}</span>
+   </div>
+   <div class="order-service">${escapeHTML(service)} · ${escapeHTML(country)}</div>
+   <div class="number-box">
+    <div class="number-label">${pending?"YOUR PHONE NUMBER":"PHONE NUMBER"}</div>
+    <div class="${pending?"number-big":"number-small"}">${escapeHTML(number||"Number unavailable")}</div>
+    <div class="number-meta"><span>${escapeHTML(service)} · ${escapeHTML(country)}</span><span>Order #${escapeHTML(o.id)}</span></div>
+   </div>`;
+  if(pending){
+   html+=`<div class="timer-area">
+    <div class="timer-label">Time remaining</div>
+    <div class="timer-value" data-countdown="${escapeHTML(o.id)}">${countdownText(left)}</div>
+    <div class="timer-note">Countdown updates automatically</div>
+   </div>
+   <div class="order-actions">
+    <button class="btn btn-black" onclick="checkOrder(${id})">◉ &nbsp; Check Code</button>
+    <button class="btn btn-danger" onclick="cancelOrder(${id})">⊗ &nbsp; Cancel Order</button>
+   </div>`;
+  }
+  if(received){
+   html+=`<div class="sms-box">
+    <div class="sms-heading">VERIFICATION CODE</div>
+    <div class="sms-code">${escapeHTML(code||"Code unavailable")}</div>
+    ${code?`<button class="copy-button" onclick="copyOrderCode(${id})">▢ &nbsp; Copy Code</button>`:""}
+    ${sms?`<hr><div class="order-line">${escapeHTML(sms)}</div>`:""}
+   </div>`;
+  }
+  if(cancelled||failed||refunded){
+   html+=`<hr class="order-divider">
+    <div class="detail-row"><span>Purchase price</span><strong>${escapeHTML(money(price))}</strong></div>
+    <div class="detail-row"><span>Refund status</span><strong class="${refunded?"refund-good":""}">${escapeHTML(refundLabel(o,status))}</strong></div>
+    <p class="order-footnote">The refund amount and status reflect the recorded transaction. “Refunded” appears only after confirmation.</p>`;
+  }
+  if(!pending&&!received&&!cancelled&&!failed&&!refunded){
+   html+=`<div class="detail-row"><span>Purchase price</span><strong>${escapeHTML(money(price))}</strong></div>`;
+  }
+  html+=`<div class="order-line"><strong>Order date:</strong> ${escapeHTML(orderDate(o))}</div>`;
+  if(o.provider_order_id)html+=`<div class="order-line"><strong>Provider reference:</strong> ${escapeHTML(o.provider_order_id)}</div>`;
+  if(!pending)html+=`<div class="order-actions"><button class="btn btn-black" onclick="checkOrder(${id})">Refresh Status</button></div>`;
+  html+=`</article>`;
+  return html;
+ }).join("");
+ updateCountdowns();
+}
+function updateCountdowns(){
+ document.querySelectorAll("[data-countdown]").forEach(el=>{
+  const id=el.getAttribute("data-countdown");
+  const o=allOrders.find(x=>String(x.id)===String(id));
+  if(!o)return;
+  const seconds=durationSeconds(o);
+  el.textContent=countdownText(seconds);
+  if(seconds<=0){
+   el.classList.add("timer-expired");
+   el.textContent="00:00";
+  }else el.classList.remove("timer-expired");
+ });
+}
+async function copyOrderCode(id){
+ const o=allOrders.find(x=>Number(x.id)===Number(id));
+ const code=getCode(o||{});
+ if(!code){showMessage("ordersMessage","No verification code is available to copy yet.","error");return;}
+ try{
+  await navigator.clipboard.writeText(String(code));
+  showMessage("ordersMessage","Verification code copied.","success");
+ }catch{
+  const t=document.createElement("textarea");
+  t.value=String(code);t.style.position="fixed";t.style.opacity="0";
+  document.body.appendChild(t);t.select();
+  let ok=false;try{ok=document.execCommand("copy");}catch{}
+  t.remove();
+  showMessage("ordersMessage",ok?"Verification code copied.":"Unable to copy automatically. Please select the code manually.",ok?"success":"error");
+ }
+}
+function orderProvider(o){
+ const p=String(o.provider_key||o.provider||"").toLowerCase();
+ if(p.includes("textverified"))return "textverified";
+ if(p.includes("virtualsms"))return "virtualsms";
+ return "virtualsms";
+}
+async function checkOrder(id){
+ const o=allOrders.find(x=>Number(x.id)===Number(id));
+ if(!o){showMessage("ordersMessage","Order not found. Refresh the list and try again.","error");return;}
+ showMessage("ordersMessage","Checking order status…","info");
+ try{
+  await invoke(orderProvider(o),"status",{
+   orderId:o.provider_order_id||o.numpool_order_id||o.id,
+   providerOrderId:o.provider_order_id||o.numpool_order_id,
+   id:o.id,order_id:o.id
+  });
+  await loadOrders();
+  showMessage("ordersMessage","Order status refreshed.","success");
+ }catch(e){
+  console.error("Status check failed:",e);
+  showMessage("ordersMessage",formatError(e,"Unable to check this order right now."),"error");
+ }
+}
+async function cancelOrder(id){
+ const o=allOrders.find(x=>Number(x.id)===Number(id));
+ if(!o){showMessage("ordersMessage","Order not found. Refresh the list and try again.","error");return;}
+ if(normalizeStatus(o)!=="waiting"){showMessage("ordersMessage","Only pending orders can be cancelled.","error");return;}
+ if(!confirm("Cancel this virtual number? A refund is only shown after provider confirmation and successful backend processing."))return;
+ showMessage("ordersMessage","Requesting cancellation…","info");
+ try{
+  await invoke(orderProvider(o),"cancel",{
+   orderId:o.provider_order_id||o.numpool_order_id||o.id,
+   providerOrderId:o.provider_order_id||o.numpool_order_id,
+   id:o.id,order_id:o.id
+  });
+  await Promise.allSettled([loadOrders(),refreshWallet()]);
+  showMessage("ordersMessage","Cancellation request submitted. Check the order for provider confirmation and refund status.","success");
+ }catch(e){
+  console.error("Cancellation failed:",e);
+  showMessage("ordersMessage",formatError(e,"Cancellation could not be confirmed. Check the order status before retrying."),"error");
+ }
+}
 
-      renderOrderSections();
+sb.auth.onAuthStateChange((_event,newSession)=>{
+ setTimeout(()=>{
+  session=newSession;currentUser=newSession?.user||null;
+  if(currentUser)init();
+  else{
+   if(poller)clearInterval(poller);
+   walletBalance=0;allOrders=[];
+   $("walletBalance").textContent="Sign in required";
+   $("ordersList").innerHTML='<div class="empty">Sign in to view your orders.</div>';
+   setSection(null);setActiveTab("");
+  }
+ },0);
+});
 
-      alert(
-        "Unable to cancel: SMSBower activation ID is not available for this order."
-      );
-
-      return;
-    }
-
-    /*
-      Exact order ID + exact activation ID are sent.
-      No other order can be substituted.
-    */
-    const data =  
-      await api(  
-        "cancel",  
-        {  
-          order_id:
-            providerName === "grizzly"
-              ? cancellationActivationId
-              : orderId,
-
-          activation_id:
-            cancellationActivationId ||
-            null  
-        },  
-        providerName  
-      );  
-  
-    /*  
-      Only mark the exact target as cancelled after  
-      the provider confirms successful cancellation.  
-    */  
-    orders[targetIndex] =  
-      normalizeOrder(  
-        {  
-          ...orders[targetIndex],  
-          status:"cancelled"  
-        },  
-        providerName  
-      );  
-  
-    showCancelResult(
-      typeof data.message === "string" && data.message.trim()
-        ? data.message
-        : "Number cancelled successfully."
-    );
-  
-    renderOrderSections();  
-  
-    await loadAllOrders();  
-    await loadWallet();  
-  
-  }catch(error){  
-  
-    alert(  
-      "Cancellation failed: " +  
-      error.message  
-    );  
-  
-    renderOrderSections();  
-  
-  }  
-  
-}  
-  
-async function loadWallet(){  
-  
-  try{  
-  
-    const data =  
-      await api(  
-        "wallet",  
-        {},  
-        "smsbower"  
-      );  
-  
-    const balance =  
-      Number(  
-        data?.wallet?.balance  
-      );  
-  
-    document  
-      .getElementById(  
-        "walletMini"  
-      )  
-      .textContent =  
-        "₦" +  
-        Math.max(  
-          0,  
-          Math.ceil(  
-            Number.isFinite(balance)  
-              ? balance  
-              : 0  
-          )  
-        ).toLocaleString();  
-  
-  }catch{  
-  
-    document  
-      .getElementById(  
-        "walletMini"  
-      )  
-      .textContent =  
-        "₦0";  
-  
-  }  
-  
-}  
-  
-  
-/* ============================================================  
-   AUTOMATIC PENDING STATUS REFRESH  
-============================================================ */  
-  
-async function refreshPendingOrderStatuses(){  
-  
-  const pendingOrders =  
-    orders.filter(  
-      order => {  
-  
-        const status =  
-          String(  
-            orderStatus(order) || ""  
-          ).toLowerCase();  
-  
-        const otp =  
-          orderOtp(order);  
-  
-        return (  
-          (  
-            status === "waiting" ||  
-            status === "pending"  
-          ) &&  
-          !otp  
-        );  
-  
-      }  
-    );  
-  
-  if(pendingOrders.length === 0){  
-    return;  
-  }  
-  
-  let changed = false;  
-  
-  for(const order of pendingOrders){  
-  
-    try{  
-  
-      const providerName =  
-        orderProvider(order);  
-  
-      const orderId =  
-        orderActionId(order);  
-  
-      const data =  
-        await checkProviderStatus(  
-          order,  
-          providerName,  
-          orderId  
-        );  
-  
-      const index =  
-        orders.findIndex(  
-          existing => {  
-  
-            if(providerName === "grizzly"){  
-  
-              return (  
-                orderProvider(existing) ===  
-                "grizzly" &&  
-                grizzlyOrdersRepresentSameOrder(  
-                  existing,  
-                  order  
-                )  
-              );  
-  
-            }  
-  
-            return ordersRepresentSameOrder(  
-              existing,  
-              order  
-            );  
-  
-          }  
-        );  
-  
-      if(index === -1){  
-        continue;  
-      }  
-  
-      const beforeOtp =  
-        orderOtp(  
-          orders[index]  
-        );  
-  
-      const beforeStatus =  
-        String(  
-          orderStatus(  
-            orders[index]  
-          ) || ""  
-        ).toLowerCase();  
-  
-      orders[index] =  
-        mergeProviderStatusIntoOrder(  
-          orders[index],  
-          data  
-        );  
-  
-      const afterOtp =  
-        orderOtp(  
-          orders[index]  
-        );  
-  
-      const afterStatus =  
-        String(  
-          orderStatus(  
-            orders[index]  
-          ) || ""  
-        ).toLowerCase();  
-  
-      if(  
-        beforeOtp !== afterOtp ||  
-        beforeStatus !== afterStatus ||  
-        afterOtp ||  
-        afterStatus === "received" ||  
-        afterStatus === "completed" ||  
-        afterStatus === "cancelled"  
-      ){  
-  
-        changed = true;  
-  
-      }  
-  
-    }catch(error){  
-  
-      console.warn(  
-        "Order status check failed:",  
-        error  
-      );  
-  
-    }  
-  
-  }  
-  
-  if(changed){  
-  
-    renderOrderSections();  
-  
-  }  
-  
-}  
-  
-  
-/* ============================================================  
-   INIT  
-============================================================ */  
-  
-async function init(){  
-  
-  provider = "grizzly";  
-  
-  document  
-    .getElementById(  
-      "grizzlyProviderTab"  
-    )  
-    .classList.add("active");  
-  
-  document  
-    .getElementById(  
-      "smsbowerProviderTab"  
-    )  
-    .classList.remove("active");  
-  
-  forceOpenPopup(  
-    "verificationPopup"  
-  );  
-  
-  await loadWatermark();  
-  await loadCountries();  
-  await loadWallet();  
-  await loadAllOrders();  
-  
-  await refreshPendingOrderStatuses();  
-  
-}  
-  
-setInterval(  
-  async () => {  
-  
-    try{  
-  
-      await refreshPendingOrderStatuses();  
-  
-    }catch(error){  
-  
-      console.warn(  
-        "Automatic order status refresh failed:",  
-        error  
-      );  
-  
-    }  
-  
-  },  
-  15000  
-);  
-  
-init();  
-  
-</script>  </body>  
+document.addEventListener("DOMContentLoaded",()=>{
+ showVerification();
+ init();
+ if(countdownTimer)clearInterval(countdownTimer);
+ countdownTimer=setInterval(updateCountdowns,1000);
+});
+</script>
+</body>
 </html>
