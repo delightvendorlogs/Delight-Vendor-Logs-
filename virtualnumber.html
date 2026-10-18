@@ -156,6 +156,53 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
  .grid{grid-template-columns:1fr}.order-card{padding:13px}
  .order-heading h3{font-size:18px}
 }
+ 
+/* Back to Dashboard — top-left, separate from the wallet */
+.back-dashboard-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0 0 14px;
+    padding: 9px 12px;
+    color: var(--gold-light);
+    background: #151515;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.back-dashboard-btn:hover {
+    background: #222;
+}
+
+/* Fund Wallet — inside the wallet balance box */
+.fund-wallet-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    margin-top: 10px;
+    padding: 9px 10px;
+    background: var(--gold);
+    color: #080808;
+    border-radius: 9px;
+    text-decoration: none;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.fund-wallet-btn:hover {
+    opacity: 0.85;
+}
+
+.wallet {
+    flex-shrink: 0;
+}
+
 </style>
 </head>
 <body>
