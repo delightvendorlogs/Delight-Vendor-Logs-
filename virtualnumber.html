@@ -1,1078 +1,1187 @@
+<!-- PART 1/4 — virtualnumber.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#080808">
-<title>Virtual Numbers — Delight Vendor Logs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Virtual Numbers - Delight Vendor Logs</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-:root{
- --bg:#080808;--panel:#121212;--panel2:#191919;--gold:#d4af37;
- --gold-light:#f1d77a;--text:#f5f5f5;--muted:#a4a4a4;
- --border:rgba(212,175,55,.24);--green:#32c878;
- --red:#ff6262;--blue:#68a8ff;--radius:17px
-}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;min-height:100vh}
-button,input,select{font:inherit}
-button{cursor:pointer}
-button:disabled{opacity:.55;cursor:not-allowed}
-.container{max-width:900px;margin:auto;padding:16px}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
-.brand{color:var(--gold-light);font-weight:900;font-size:20px}
-.brand small{display:block;color:var(--muted);font-size:11px;font-weight:500;margin-top:4px}
-.wallet{border:1px solid var(--border);background:linear-gradient(135deg,#211c0d,#111);border-radius:14px;padding:12px 15px;min-width:125px}
-.wallet small{color:var(--muted);display:block;font-size:11px;margin-bottom:5px}
-.wallet strong{color:var(--gold-light);font-size:17px}
-h1{font-size:25px;margin:12px 0 8px}
-h2{font-size:18px;margin:0 0 12px}
-p{line-height:1.5}
-.muted{color:var(--muted)}
-.small{font-size:12px}
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0}
-.tab{padding:14px 10px;border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:12px;font-weight:800}
-.tab.active{color:#111;background:var(--gold);border-color:var(--gold)}
-.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px}
-.field{width:100%;padding:13px;background:#090909;color:var(--text);border:1px solid #343434;border-radius:11px;outline:none}
-.field:focus{border-color:var(--gold)}
-.btn{border:0;border-radius:11px;padding:12px 15px;font-weight:800}
-.btn-gold{color:#111;background:var(--gold)}
-.btn-dark{color:var(--text);background:#252525;border:1px solid #3b3b3b}
-.btn-danger{color:#ff7777;background:transparent;border:1.5px solid #b64d4d}
-.btn-black{color:white;background:#111}
-.full{width:100%}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.country-button,.service-button,.option-button{display:block;width:100%;text-align:left;background:var(--panel2);color:var(--text);border:1px solid #303030;border-radius:11px;padding:12px}
-.country-button:hover,.service-button:hover,.option-button:hover{border-color:var(--gold)}
-.country-name{font-weight:800}
-.country-meta,.service-button small,.option-button small{display:block;margin-top:5px;color:var(--muted);font-size:12px}
-.section{display:none}
-.section.active{display:block}
-.notice{border:1px solid var(--border);background:rgba(212,175,55,.07);color:#e8dba9;padding:13px;border-radius:11px;font-size:13px;line-height:1.6}
-.message{padding:12px;border-radius:10px;margin:12px 0;font-size:13px;line-height:1.5;display:none;overflow-wrap:anywhere}
-.message.show{display:block}
-.message.error{background:#351818;color:#ffb6b6}
-.message.success{background:#102b1d;color:#9df0bf}
-.message.info{background:#152237;color:#b5d4ff}
-.loading,.empty{padding:18px 10px;text-align:center;color:var(--muted);font-size:13px}
-.row{display:flex;align-items:center;gap:10px}
-.between{justify-content:space-between}
-.row>*{min-width:0}
-.stack{display:flex;flex-direction:column;gap:10px}
-.order-card{background:#101010;border:1px solid rgba(212,175,55,.23);border-radius:19px;padding:16px;margin-bottom:16px;overflow:hidden}
-.order-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.order-heading h3{font-size:19px;line-height:1.3;margin:0 0 7px}
-.order-subtitle{font-size:13px;color:var(--muted);margin:0}
-.badge{display:inline-block;padding:7px 10px;border-radius:30px;font-size:11px;font-weight:800;white-space:nowrap;background:#3b3014;color:#f5d97b}
-.badge.waiting{background:#3b3014;color:#f5d97b}
-.badge.received{background:#123923;color:#83edac}
-.badge.cancelled,.badge.failed{background:#3b1b1b;color:#ffaaaa}
-.badge.refunded{background:#172c42;color:#a7d3ff}
-.number-box{background:#1b1b1b;border:1px solid #252525;border-radius:15px;padding:14px;margin:15px 0}
-.number-label{font-size:11px;letter-spacing:.4px;color:var(--muted);margin-bottom:9px}
-.number-big{font-size:clamp(21px,5.5vw,29px);font-weight:800;letter-spacing:.4px;overflow-wrap:anywhere}
-.number-small{font-size:15px;font-weight:700;overflow-wrap:anywhere}
-.number-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px;color:var(--muted);font-size:12px}
-.timer-area{text-align:center;padding:10px 0 16px}
-.timer-label{color:var(--muted);font-size:14px}
-.timer-value{font-size:34px;color:var(--green);font-weight:900;margin:9px 0}
-.timer-expired{font-size:28px;color:var(--red)}
-.timer-note{font-size:12px;color:var(--muted)}
-.order-actions{display:grid;gap:10px;margin-top:12px}
-.order-actions .btn{width:100%;border-radius:40px;padding:15px 12px;font-size:14px}
-.order-actions .btn-black{background:#171717;border:1px solid #333}
-.order-actions .btn-danger{background:transparent}
-.order-line{font-size:13px;margin:9px 0;overflow-wrap:anywhere;color:#d0d0d0}
-.order-divider{border:0;border-top:1px solid #303030;margin:16px 0}
-.detail-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin:13px 0;font-size:14px}
-.detail-row span:first-child{color:var(--muted)}
-.detail-row strong{text-align:right;overflow-wrap:anywhere}
-.refund-good{color:var(--green)}
-.sms-box{background:#1a1a1a;border:1px solid #2c2c2c;border-radius:14px;padding:16px;margin-top:14px}
-.sms-heading{font-size:12px;color:var(--muted);text-align:center}
-.sms-code{font-size:32px;font-weight:900;text-align:center;margin:15px 0;letter-spacing:1px}
-.copy-button{display:block;margin:0 auto;border:1px solid #444;background:#222;color:white;border-radius:30px;padding:12px 22px;font-weight:800}
-.order-footnote{font-size:12px;color:var(--muted);line-height:1.5;margin:14px 0 0}
-.order-service{font-size:13px;color:#d5d5d5;margin-top:10px}
-hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
+:root{
+  --gold:#d4af37;
+  --gold-light:#f0cf68;
+  --gold-soft:rgba(212,175,55,.12);
+  --gold-border:rgba(212,175,55,.32);
+  --black:#050505;
+  --card:#0d0d0d;
+  --border:#242424;
+  --text:#f5f5f5;
+  --muted:#999;
+  --green:#20b26b;
+  --red:#ef5350;
+}
+html{background:var(--black)}
+body{
+  margin:0;
+  background:radial-gradient(circle at 50% -10%,rgba(212,175,55,.09),transparent 38%),var(--black);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+  min-height:100vh;
+}
+header{
+  background:linear-gradient(180deg,#0d0d0d,#070707);
+  padding:15px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  border-bottom:1px solid rgba(212,175,55,.18);
+  position:sticky;
+  top:0;
+  z-index:800;
+}
+header h1{margin:0;font-size:20px;font-weight:800}
+.header-right{display:flex;align-items:center;gap:8px}
+.wallet-mini{
+  background:linear-gradient(135deg,#e7c451,#c39a22);
+  color:#080808;
+  padding:8px 11px;
+  border-radius:9px;
+  font-size:13px;
+  font-weight:800;
+}
+.menu-button{
+  background:#141414;color:var(--gold-light);
+  border:1px solid var(--gold-border);
+  border-radius:9px;padding:8px 11px;font-size:19px;cursor:pointer
+}
+main{width:100%;max-width:700px;margin:auto;padding:15px 15px 30px}
+.hidden{display:none!important}
+.provider-tabs{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  margin-bottom:14px;padding:5px;background:#0b0b0b;
+  border:1px solid #202020;border-radius:14px
+}
+.provider-tab{
+  border:1px solid transparent;background:transparent;color:#858585;
+  padding:12px 9px;border-radius:10px;font-weight:800;cursor:pointer
+}
+.provider-tab.active{
+  background:linear-gradient(135deg,#e4c252,#c49b27);
+  color:#090909;border-color:#e6c759
+}
+.watermark{
+  width:100%;background:linear-gradient(135deg,rgba(212,175,55,.15),rgba(212,175,55,.04));
+  color:#e8cc72;border:1px solid var(--gold-border);border-radius:12px;
+  padding:12px 14px;margin-bottom:14px;font-size:13px;line-height:1.45;
+  font-weight:bold;white-space:pre-wrap;word-break:break-word
+}
+.card{
+  background:linear-gradient(180deg,#101010,#0b0b0b);
+  border:1px solid var(--border);border-radius:16px;padding:16px;
+  margin-bottom:13px;box-shadow:0 8px 28px rgba(0,0,0,.22)
+}
+.card h2{margin:0 0 13px;font-size:17px;font-weight:800}
+input{
+  width:100%;border:1px solid #292929;border-radius:10px;padding:13px;
+  font-size:15px;outline:none;background:#080808;color:#fff
+}
+input::placeholder{color:#666}
+input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.08)}
+.search-wrap{position:relative;margin-bottom:9px}
+.search-wrap input{padding-left:39px}
+.search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#777}
+.choice-list{
+  max-height:260px;overflow:auto;border:1px solid #242424;
+  border-radius:11px;background:#080808;scrollbar-width:thin
+}
+.choice{padding:13px;border-bottom:1px solid #1d1d1d;cursor:pointer;color:#d5d5d5}
+.choice:last-child{border-bottom:0}
+.choice:hover{background:#151515;color:#fff}
+.choice.selected{
+  background:linear-gradient(90deg,rgba(212,175,55,.18),rgba(212,175,55,.07));
+  color:var(--gold-light);border-left:3px solid var(--gold);padding-left:10px
+}
+.selected-box{
+  margin-top:9px;padding:11px 12px;background:rgba(212,175,55,.08);
+  border:1px solid rgba(212,175,55,.22);color:#e8cd73;border-radius:10px;
+  font-size:14px;font-weight:bold
+}
+.server-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.server{
+  border:1px solid #282828;border-radius:12px;padding:12px;
+  background:linear-gradient(180deg,#111,#0b0b0b);cursor:pointer
+}
+.server:hover{border-color:#555;transform:translateY(-1px)}
+.server.selected{
+  border:1px solid var(--gold);
+  background:linear-gradient(180deg,rgba(212,175,55,.14),rgba(212,175,55,.05))
+}
+.server-badge{
+  display:inline-flex;margin-bottom:8px;padding:4px 7px;border-radius:999px;
+  background:#164d35;color:#66e6a7;border:1px solid rgba(32,178,107,.22);
+  font-size:10px;font-weight:700
+}
+.server-name{font-weight:bold;margin-bottom:8px;color:#eee}
+.server-stock{font-size:13px;color:#858585;margin-bottom:7px}
+.server-price{font-size:18px;font-weight:bold;color:var(--gold-light)}
+.price-box{
+  background:radial-gradient(circle at top right,rgba(212,175,55,.18),transparent 45%),linear-gradient(135deg,#151515,#090909);
+  color:#fff;border:1px solid var(--gold-border);border-radius:13px;padding:16px;margin-top:13px
+}
+.price-label{font-size:13px;color:#999}
+.price-value{font-size:28px;font-weight:bold;margin-top:5px;color:var(--gold-light)}
+.buy-button{
+  width:100%;border:0;background:linear-gradient(135deg,#e5c354,#c29a25);
+  color:#090909;padding:15px;border-radius:10px;margin-top:12px;
+  font-size:17px;font-weight:800;cursor:pointer
+}
+.buy-button:disabled{opacity:.4;cursor:not-allowed}
+.message{margin-top:11px;min-height:22px;color:#d9d9d9;font-weight:bold;line-height:1.45}
+.order{
+  background:linear-gradient(180deg,#111,#0b0b0b);border:1px solid #252525;
+  border-radius:13px;padding:14px;margin-top:10px
+}
+.order-number{font-size:20px;font-weight:bold;color:#f4f4f4;word-break:break-word}
+.order-meta{font-size:13px;color:#858585;margin-top:5px;word-break:break-word}
+.status{display:inline-block;margin-top:8px;padding:5px 9px;border-radius:7px;background:#252525;color:#bbb;font-size:12px;font-weight:bold}
+.status.waiting,.status.pending{background:rgba(212,175,55,.13);color:#e9ca66;border:1px solid rgba(212,175,55,.2)}
+.status.received{background:rgba(32,178,107,.13);color:#55d994;border:1px solid rgba(32,178,107,.2)}
+.status.cancelled,.status.refunded,.status.failed{background:rgba(239,83,80,.12);color:#ff7774;border:1px solid rgba(239,83,80,.18)}
+.otp{margin-top:10px;background:linear-gradient(135deg,#171717,#090909);color:var(--gold-light);border:1px solid var(--gold-border);padding:12px;border-radius:9px;font-size:18px;font-weight:bold}
+.order-actions{display:flex;gap:8px;margin-top:10px}
+.small-button{flex:1;border:0;border-radius:9px;padding:11px;font-weight:bold;cursor:pointer}
+.check{background:linear-gradient(135deg,#e3c052,#c19a28);color:#090909}
+.cancel{background:#1d1d1d;color:#ddd;border:1px solid #303030}
+.empty,.loading{text-align:center;padding:18px;color:#858585}
 
-/* Compact searchable dropdowns */
-.search-picker{position:relative;width:100%;margin-top:10px}
-.search-picker .field{display:block;width:100%}
-.picker-menu{
- display:none;position:absolute;top:calc(100% + 5px);left:0;right:0;
- z-index:1000;background:#141414;border:1px solid var(--border);
- border-radius:12px;padding:5px;max-height:220px;overflow-y:auto;
- overscroll-behavior:contain;box-shadow:0 12px 30px #000b
+/* Existing verification and portal notice pop-ups */
+.popup{
+  position:fixed;inset:0;background:rgba(0,0,0,.78);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:center;padding:8px;z-index:9999
 }
-.picker-menu.open{display:block}
-.picker-menu .country-button,.picker-menu .service-button{
- margin:0 0 4px;padding:11px;border-radius:8px;background:#1b1b1b
+.popup.popup-closed{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+.popup-card{
+  width:100%;max-width:500px;max-height:calc(100dvh - 16px);
+  background:linear-gradient(180deg,#121212,#090909);
+  border:1px solid rgba(212,175,55,.25);border-radius:20px;padding:0;overflow:auto
 }
-.picker-menu .country-button:last-child,.picker-menu .service-button:last-child{margin-bottom:0}
-.picker-menu .country-meta{display:none}
-.picker-menu .service-button small{display:none}
-.picker-placeholder{font-size:12px;color:var(--muted);padding:12px;text-align:center}
-.picker-label{font-size:12px;color:var(--muted);margin:14px 0 7px}
-.selected-value{display:block;margin-top:8px;font-size:12px;color:var(--gold-light)}
-#usaServices,#countryResults,#allServices{display:none!important}
-#allServicesWrap{display:block!important}
-#selectedCountryTitle{font-size:15px}
-.orders-panel{margin-top:18px}
+.popup-header{display:flex;align-items:center;gap:9px;padding:11px 13px;border-bottom:1px solid #252525}
+.popup-header-icon,.popup-sticker{
+  width:38px;height:38px;min-width:38px;border-radius:10px;
+  background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.2);
+  display:flex;align-items:center;justify-content:center;font-size:19px
+}
+.popup-header h2{margin:0;flex:1;font-size:17px;color:#f4f4f4}
+.popup-x{width:31px;height:31px;border:1px solid #292929;border-radius:50%;background:#181818;color:#aaa;font-size:19px;cursor:pointer}
+.popup-visual{padding:12px;text-align:center}
+.popup-sticker{width:48px;height:48px;margin:auto;font-size:25px}
+.popup-body{padding:8px 13px 10px}
+.popup-section-title{display:flex;align-items:center;gap:7px;margin-bottom:7px;font-size:13px;font-weight:800;color:#eee}
+.popup-section-title span{width:24px;height:24px;border-radius:7px;background:rgba(212,175,55,.12);display:flex;align-items:center;justify-content:center}
+.popup-item{margin:0 0 6px;padding:8px 9px;background:#111;border:1px solid #252525;border-radius:11px;display:flex;gap:8px;align-items:flex-start}
+.popup-item-icon{width:28px;height:28px;min-width:28px;border-radius:8px;background:#191919;border:1px solid #292929;display:flex;align-items:center;justify-content:center}
+.popup-item-content{flex:1;font-size:11.5px;line-height:1.38;color:#929292}
+.popup-item-content strong{display:block;margin-bottom:2px;color:#eee;font-size:12px}
+.popup-intro{margin-bottom:7px;padding:9px 10px;border-radius:11px;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.18);color:#bdbdbd;font-size:11.5px;line-height:1.4}
+.popup-warning{margin-top:7px;padding:9px 10px;border-radius:11px;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.2);display:flex;gap:8px;align-items:flex-start}
+.popup-warning-icon{width:28px;height:28px;min-width:28px;border-radius:8px;background:rgba(212,175,55,.14);display:flex;align-items:center;justify-content:center}
+.popup-warning-content{font-size:11.5px;line-height:1.4;color:#b9b9b9}
+.popup-warning-content strong{display:block;color:#e6c961;margin-bottom:2px}
+.popup-close{width:calc(100% - 26px);margin:0 13px 12px;border:0;background:linear-gradient(135deg,#e2c152,#c19a27);color:#090909;padding:11px;border-radius:11px;font-size:13px;font-weight:800;cursor:pointer}
 
-/* Verification must reappear on every page load/refresh. */
-.verification-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:7px}
-.verification-overlay.show{display:flex}
-.verification-modal{width:min(100%,510px);max-height:calc(100dvh - 14px);display:flex;flex-direction:column;overflow:auto;overscroll-behavior:contain;background:#111;border:1px solid rgba(212,175,55,.55);border-radius:16px;box-shadow:0 15px 60px #000a}
-.verification-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 13px;background:linear-gradient(120deg,#28200a,#111);border-bottom:1px solid var(--border);flex-shrink:0}
-.verification-head strong{font-size:15px;color:var(--gold-light)}
-.verification-close{border:1px solid #555;background:#242424;color:white;width:32px;height:32px;flex-shrink:0;border-radius:50%;font-size:20px}
-.verification-content{padding:10px 12px}
-.verification-icon{text-align:center;font-size:27px;line-height:1.1;margin:0 0 5px}
-.verification-content h2{text-align:center;color:var(--gold-light);font-size:15px;margin:0 0 9px}
-.verification-intro{font-size:11px;color:#c5c5c5;text-align:center;margin:0 0 9px;line-height:1.4}
-.practice-list{display:grid;gap:6px}
-.practice-card{display:grid;grid-template-columns:27px minmax(0,1fr);gap:8px;align-items:start;border:1px solid rgba(212,175,55,.19);background:#191919;border-radius:9px;padding:8px 9px}
-.practice-icon{font-size:18px;line-height:1.15;text-align:center}
-.practice-card h3{margin:0 0 3px;font-size:11.5px;color:var(--gold-light)}
-.practice-card p{margin:0;font-size:10.5px;line-height:1.35;color:#d0d0d0;overflow-wrap:anywhere}
-.verification-footer{padding:0 12px 11px;flex-shrink:0}
-.verification-footer button{width:100%;padding:11px;border:0;border-radius:9px;background:var(--gold);color:#111;font-weight:900;font-size:13px}
-@media(max-height:650px){
- .verification-overlay{padding:4px}.verification-modal{max-height:calc(100dvh - 8px);border-radius:12px}
- .verification-head{padding:7px 10px}.verification-head strong{font-size:13px}
- .verification-close{width:27px;height:27px}.verification-content{padding:6px 9px}
- .verification-icon{font-size:21px;margin-bottom:3px}.verification-content h2{font-size:13px;margin-bottom:5px}
- .verification-intro{font-size:10px;margin-bottom:5px}.practice-list{gap:4px}
- .practice-card{padding:5px 7px;grid-template-columns:23px minmax(0,1fr);gap:6px}
- .practice-icon{font-size:15px}.practice-card h3{font-size:10.5px;margin-bottom:2px}
- .practice-card p{font-size:9.5px;line-height:1.25}.verification-footer{padding:0 9px 7px}
- .verification-footer button{padding:9px;font-size:12px}
+/* Custom cancellation confirmation pop-up */
+.cancel-confirm-overlay,.cancel-result-overlay{
+  position:fixed;inset:0;z-index:12000;display:none;align-items:center;justify-content:center;
+  padding:18px;background:rgba(0,0,0,.78);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)
 }
-@media(max-width:480px){
- .container{padding:12px}.brand{font-size:17px}.wallet{padding:10px;min-width:110px}
- .wallet strong{font-size:15px}h1{font-size:22px}.panel{padding:12px}
- .grid{grid-template-columns:1fr}.order-card{padding:13px}
- .order-heading h3{font-size:18px}
+.cancel-confirm-overlay.open,.cancel-result-overlay.open{display:flex}
+.cancel-confirm-card,.cancel-result-card{
+  width:100%;max-width:390px;padding:22px;border:1px solid var(--gold-border);
+  border-radius:17px;background:linear-gradient(180deg,#151515,#090909);
+  box-shadow:0 20px 60px rgba(0,0,0,.55)
 }
- 
-/* Back to Dashboard — top-left, separate from the wallet */
-.back-dashboard-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    margin: 0 0 14px;
-    padding: 9px 12px;
-    color: var(--gold-light);
-    background: #151515;
-    border: 1px solid var(--border);
-    border-radius: 9px;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 700;
+.cancel-confirm-icon,.cancel-result-icon{
+  width:48px;height:48px;display:flex;align-items:center;justify-content:center;
+  margin:0 auto 13px;border-radius:14px;background:rgba(212,175,55,.12);
+  border:1px solid var(--gold-border);font-size:24px
 }
+.cancel-confirm-card h2,.cancel-result-card h2{margin:0 0 9px;text-align:center;font-size:19px;color:#f5f5f5}
+.cancel-confirm-card p,.cancel-result-card p{margin:0;color:#aaa;text-align:center;font-size:14px;line-height:1.55;overflow-wrap:anywhere}
+.cancel-confirm-actions,.cancel-result-actions{display:flex;gap:9px;margin-top:20px}
+.cancel-confirm-actions button,.cancel-result-actions button{flex:1;border:0;border-radius:10px;padding:12px;font-weight:800;cursor:pointer}
+.cancel-confirm-no{background:#222;color:#ddd;border:1px solid #333!important}
+.cancel-confirm-yes,.cancel-result-actions button{background:linear-gradient(135deg,#e3c052,#c19a28);color:#090909}
 
-.back-dashboard-btn:hover {
-    background: #222;
+/* Menu */
+.menu{
+  position:fixed;top:65px;right:12px;width:240px;
+  background:linear-gradient(180deg,#121212,#090909);border:1px solid #292929;
+  border-radius:13px;box-shadow:0 12px 35px rgba(0,0,0,.5);z-index:500;padding:8px
 }
+.menu-item{padding:13px;border-radius:9px;cursor:pointer;color:#ddd}
+.menu-item:hover{background:#191919;color:var(--gold-light)}
+.menu-close{color:#e07070}
 
-/* Fund Wallet — inside the wallet balance box */
-.fund-wallet-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    width: 100%;
-    margin-top: 10px;
-    padding: 9px 10px;
-    background: var(--gold);
-    color: #080808;
-    border-radius: 9px;
-    text-decoration: none;
-    text-align: center;
-    font-size: 12px;
-    font-weight: 800;
+/* Guided country → service → server flow */
+.guided-card{padding:0;overflow:hidden}
+.guided-header{padding:18px 16px 16px;border-bottom:1px solid var(--border)}
+.guided-header h2{margin:0;font-size:22px;font-weight:800;color:#f4f4f4}
+.guided-subtitle{margin-top:7px;color:#999;font-size:14px;line-height:1.45}
+.guided-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
+.guided-step-line{height:3px;border-radius:999px;background:#242424;margin-bottom:10px}
+.guided-step-row{display:flex;align-items:center;gap:9px}
+.guided-step-number{width:34px;height:34px;min-width:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#1b1b1b;border:1px solid #292929;color:#888;font-weight:800}
+.guided-step-label{color:#888;font-weight:800;font-size:14px}
+.guided-step.active .guided-step-line{background:var(--gold)}
+.guided-step.active .guided-step-number{background:var(--gold);border-color:var(--gold);color:#090909}
+.guided-step.active .guided-step-label{color:var(--gold-light)}
+.guided-step.complete .guided-step-line{background:var(--green)}
+.guided-step.complete .guided-step-number{background:var(--green);border-color:var(--green);color:#fff}
+.guided-step.complete .guided-step-label{color:#55d994}
+.guided-body{padding:16px}
+.selection-step{width:100%}
+.selection-step>h2{margin-top:0}
+.step-back{border:1px solid #292929;background:#141414;color:var(--gold-light);padding:10px 14px;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:14px}
+
+@media(max-width:520px){
+  .server-grid{grid-template-columns:1fr}
+  header h1{font-size:17px}
+  main{padding:13px 12px 25px}
+  .card{padding:14px;border-radius:15px}
+  .provider-tab{font-size:12px;padding:12px 7px}
+  .guided-header h2{font-size:20px}
+  .guided-subtitle{font-size:13px}
+  .guided-steps{gap:6px}
+  .guided-step-row{gap:6px}
+  .guided-step-number{width:31px;height:31px;min-width:31px;font-size:13px}
+  .guided-step-label{font-size:12px}
 }
-
-.fund-wallet-btn:hover {
-    opacity: 0.85;
-}
-
-.wallet {
-    flex-shrink: 0;
-}
-
 </style>
 </head>
+
 <body>
-<div class="container">
 <header>
- <div class="brand">Delight Vendor Logs<small>Virtual Number Services</small></div>
- 
-<div class="wallet">
- <small>Wallet Balance</small>
- <strong id="walletBalance">Loading…</strong>
-
- <a href="wallet.html" class="fund-wallet-btn">
-  <span>＋</span> Fund Wallet
- </a>
-</div>
- 
+  <h1>Virtual Numbers</h1>
+  <div class="header-right">
+    <div id="walletMini" class="wallet-mini">₦0</div>
+    <button class="menu-button" type="button" onclick="toggleMenu()">☰</button>
+  </div>
 </header>
- <a href="dashboard.html" class="back-dashboard-btn">
-    <span>←</span> Back to Dashboard
- </a>
 
-<h1>Virtual Numbers</h1>
-<p class="muted small">Choose a number service, search for a country or service, then manage your numbers below.</p>
-<div id="globalMessage" class="message"></div>
+<main>
+  <div class="provider-tabs">
+    <button id="grizzlyProviderTab" class="provider-tab active" type="button" onclick="changeProvider('grizzly')">All Country Number 1</button>
+    <button id="smsbowerProviderTab" class="provider-tab" type="button" onclick="changeProvider('smsbower')">All Country Number 2</button>
+  </div>
 
-<div class="tabs">
- <button class="tab" id="usaTab" onclick="openUSA()">🇺🇸 USA Numbers</button>
- <button class="tab" id="allTab" onclick="openAll()">🌍 All Country Numbers</button>
+  <div id="virtualNumberWatermark" class="watermark hidden"></div>
+
+  <section class="card guided-card">
+    <div class="guided-header">
+      <h2>Get a Virtual Number</h2>
+      <div class="guided-subtitle">Select a country, service and server to continue.</div>
+      <div class="guided-steps" aria-label="Virtual number selection steps">
+        <div id="stepCountry" class="guided-step active">
+          <div class="guided-step-line"></div>
+          <div class="guided-step-row"><div id="stepCountryNumber" class="guided-step-number">1</div><div id="stepCountryLabel" class="guided-step-label">Country</div></div>
+        </div>
+        <div id="stepService" class="guided-step">
+          <div class="guided-step-line"></div>
+          <div class="guided-step-row"><div id="stepServiceNumber" class="guided-step-number">2</div><div id="stepServiceLabel" class="guided-step-label">Service</div></div>
+        </div>
+        <div id="stepServer" class="guided-step">
+          <div class="guided-step-line"></div>
+          <div class="guided-step-row"><div id="stepServerNumber" class="guided-step-number">3</div><div id="stepServerLabel" class="guided-step-label">Server</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="guided-body">
+      <div id="countryStep" class="selection-step">
+        <h2>Country</h2>
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input id="countrySearch" type="search" placeholder="Search country..." autocomplete="off" oninput="filterCountries()">
+        </div>
+        <div id="countryList" class="choice-list"><div class="loading">Loading countries...</div></div>
+        <div id="selectedCountryBox" class="selected-box hidden"></div>
+      </div>
+
+      <div id="serviceStep" class="selection-step hidden">
+        <button type="button" class="step-back" onclick="goBackToCountry()">← Back</button>
+        <h2>Service</h2>
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input id="serviceSearch" type="search" placeholder="Search service..." autocomplete="off" oninput="filterServices()" disabled>
+        </div>
+        <div id="serviceList" class="choice-list"><div class="empty">Select a country first.</div></div>
+        <div id="selectedServiceBox" class="selected-box hidden"></div>
+      </div>
+
+      <div id="serverStep" class="selection-step hidden">
+        <button type="button" class="step-back" onclick="goBackToService()">← Back</button>
+        <h2>Server</h2>
+        <div id="serverList" class="server-grid"></div>
+        <div id="priceBox" class="price-box hidden">
+          <div class="price-label">Price</div>
+          <div id="selectedPrice" class="price-value">Price unavailable</div>
+        </div>
+        <button id="buyButton" class="buy-button" type="button" onclick="buyNumber()" disabled>Buy Number</button>
+        <div id="buyMessage" class="message"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Orders</h2>
+    <div id="ordersList"><div class="loading">Loading orders...</div></div>
+  </section>
+</main>
+
+<div id="menu" class="menu hidden">
+  <div class="menu-item" onclick="location.href='profile.html'">👤 Profile</div>
+  <div class="menu-item" onclick="location.href='wallet.html'">💰 Fund Wallet</div>
+  <div class="menu-item" onclick="location.href='transactions.html'">📜 Transactions</div>
+  <div class="menu-item" onclick="location.href='purchases.html'">🛒 My Purchases</div>
+  <div class="menu-item" onclick="location.href='pending.html'">⏳ Pending Orders</div>
+  <div class="menu-item" onclick="location.href='settings.html'">⚙️ Settings</div>
+  <div class="menu-item"><a href="https://wa.me/2347015908401" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">💬 WhatsApp Support</a></div>
+  <div class="menu-item menu-close" onclick="toggleMenu()">✖ Close</div>
 </div>
 
-<section id="usaSection" class="section">
- <div class="panel">
-  <h2>🇺🇸 United States</h2>
-  <p class="muted small">Search and select the service you need.</p>
-  <div class="search-picker" id="usaPicker">
-   <input id="usaServiceSearch" class="field" placeholder="Select a service or search…" autocomplete="off" onfocus="openPicker('usaServiceMenu')" onclick="openPicker('usaServiceMenu')" oninput="filterServices('usa')">
-   <div id="usaServiceMenu" class="picker-menu"></div>
+<!-- Verification pop-up -->
+<div id="verificationPopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="verificationTitle">
+  <div class="popup-card">
+    <div class="popup-header">
+      <div class="popup-header-icon">📢</div>
+      <h2 id="verificationTitle">Important Verification</h2>
+      <button type="button" class="popup-x" onclick="closeVerificationPopup(event)">×</button>
+    </div>
+    <div class="popup-visual"><div class="popup-sticker">🛡️</div></div>
+    <div class="popup-body">
+      <div class="popup-section-title"><span>✨</span>Best Practices for Success</div>
+      <div class="popup-item"><div class="popup-item-icon">🔄</div><div class="popup-item-content"><strong>Fresh Installation</strong>Uninstall the app and clear its cache before requesting a new number.</div></div>
+      <div class="popup-item"><div class="popup-item-icon">📱</div><div class="popup-item-content"><strong>Official Apps Only</strong>Use the standard official app version. Modified versions often fail verification.</div></div>
+      <div class="popup-item"><div class="popup-item-icon">🌐</div><div class="popup-item-content"><strong>Location Match</strong>Keep your device settings and connection consistent with the selected country while waiting.</div></div>
+      <div class="popup-item"><div class="popup-item-icon">📶</div><div class="popup-item-content"><strong>Stay Connected</strong>Keep the app open and maintain a stable connection.</div></div>
+      <div class="popup-warning"><div class="popup-warning-icon">💡</div><div class="popup-warning-content"><strong>Provider Tip</strong>If a server does not receive a code, try another available server. Cancel when cancellation is available to receive any applicable refund.</div></div>
+    </div>
+    <button type="button" class="popup-close" onclick="closeVerificationPopup(event)">I Understand</button>
   </div>
-  <div id="usaSelected" class="selected-value" style="display:none"></div>
-  <div id="usaMessage" class="message"></div>
- </div>
-</section>
-
-<section id="allSection" class="section">
- <div class="panel">
-  <h2>🌍 All Country Numbers</h2>
-  <div id="allMessage" class="message"></div>
-
-  <div class="picker-label">COUNTRY</div>
-  <div class="search-picker" id="countryPicker">
-   <input id="countrySearch" class="field" placeholder="Select a country or search…" autocomplete="off" onfocus="openPicker('countryMenu')" onclick="openPicker('countryMenu')" oninput="filterCountries()">
-   <div id="countryMenu" class="picker-menu"></div>
-  </div>
-  <div id="countrySelected" class="selected-value" style="display:none"></div>
-
-  <hr>
-
-  <div class="picker-label">SERVICE</div>
-  <div class="search-picker" id="allServicePicker">
-   <input id="allServiceSearch" class="field" placeholder="Select a country first…" autocomplete="off" disabled onfocus="handleAllServiceFocus()" onclick="handleAllServiceFocus()" oninput="filterServices('all')">
-   <div id="allServiceMenu" class="picker-menu"></div>
-  </div>
-  <div id="allSelected" class="selected-value" style="display:none"></div>
- </div>
-</section>
-
-<section id="optionsSection" class="section">
- <div class="panel">
-  <button class="btn btn-dark" onclick="goBack()">← Back</button>
-  <h2 id="optionsTitle" style="margin-top:15px">Choose an option</h2>
-  <p id="optionsSubtitle" class="muted small"></p>
-  <div id="optionsMessage" class="message"></div>
-  <div id="optionsList" class="stack"></div>
- </div>
-</section>
-
-<section id="confirmSection" class="section">
- <div class="panel">
-  <button class="btn btn-dark" onclick="goBack()">← Back</button>
-  <h2 style="margin-top:15px">Confirm Purchase</h2>
-  <div id="purchaseSummary" class="notice"></div>
-  <p class="small muted">Make sure your wallet has enough funds before continuing.</p>
-  <div id="confirmMessage" class="message"></div>
-  <button id="confirmPurchaseBtn" class="btn btn-gold full" onclick="purchaseNumber()">Purchase Number</button>
- </div>
-</section>
-
-<section class="panel orders-panel">
- <div class="row between">
-  <h2>My Number Orders</h2>
-  <button class="btn btn-dark" onclick="refreshOrders()">Refresh</button>
- </div>
- <p class="muted small">Your pending, successful, cancelled, and refunded orders appear below.</p>
- <div id="ordersMessage" class="message"></div>
- <div id="ordersList"><div class="loading">Checking your session…</div></div>
-</section>
 </div>
 
-<div id="verificationOverlay" class="verification-overlay" role="dialog" aria-modal="true" aria-labelledby="verificationTitle">
- <div class="verification-modal">
-  <div class="verification-head">
-   <strong id="verificationTitle">📢 Important Verification</strong>
-   <button class="verification-close" aria-label="Close verification message" onclick="dismissVerification()">×</button>
+<!-- Portal notice pop-up -->
+<div id="portalNoticePopup" class="popup popup-closed" style="display:none" role="dialog" aria-modal="true" aria-labelledby="portalNoticeTitle">
+  <div class="popup-card">
+    <div class="popup-header">
+      <div class="popup-header-icon">⚠️</div>
+      <h2 id="portalNoticeTitle">PORTAL NOTICE</h2>
+      <button type="button" class="popup-x" onclick="closePortalNotice(event)">×</button>
+    </div>
+    <div class="popup-visual"><div class="popup-sticker">🔐</div></div>
+    <div class="popup-body">
+      <div class="popup-intro">If your purchased number does not receive a verification code:<br><br>Use a VPN connected to the same country as the number you purchased, where appropriate for the service.</div>
+      <div class="popup-item"><div class="popup-item-icon">🇺🇸</div><div class="popup-item-content"><strong>Example:</strong>If you purchased a USA number, select the United States as your VPN location.</div></div>
+      <div class="popup-item"><div class="popup-item-icon">🔄</div><div class="popup-item-content"><strong>If the code still does not arrive:</strong>Follow the service's normal troubleshooting steps and try another available number if necessary.</div></div>
+      <div class="popup-warning"><div class="popup-warning-icon">📍</div><div class="popup-warning-content"><strong>Please remember:</strong>Code delivery depends on the provider and receiving service; it cannot be guaranteed.</div></div>
+    </div>
+    <button type="button" class="popup-close" onclick="closePortalNotice(event)">I Understand</button>
   </div>
-  <div class="verification-content">
-   <div class="verification-icon">🛡️</div>
-   <h2>✨ Best Practices for Success</h2>
-   <p class="verification-intro">Please read these important tips before requesting a number.</p>
-   <div class="practice-list">
-    <div class="practice-card"><div class="practice-icon">📲</div><div><h3>Fresh Installation</h3><p>Uninstall the app and clear its cache before requesting a new number.</p></div></div>
-    <div class="practice-card"><div class="practice-icon">✅</div><div><h3>Official Apps Only</h3><p>Use the standard official app version. Modified versions often fail verification.</p></div></div>
-    <div class="practice-card"><div class="practice-icon">🌍</div><div><h3>Location Match</h3><p>Keep your device settings and connection consistent with the selected country while waiting.</p></div></div>
-    <div class="practice-card"><div class="practice-icon">📶</div><div><h3>Stay Connected</h3><p>Keep the app open and maintain a stable connection while waiting for your code.</p></div></div>
-    <div class="practice-card"><div class="practice-icon">💡</div><div><h3>Helpful Tip</h3><p>If a number cannot receive a code, try another available option. Cancel only when cancellation is available; a refund depends on confirmation and backend processing.</p></div></div>
-   </div>
+</div>
+
+<!-- Custom cancellation confirmation pop-up -->
+<div id="cancelConfirmModal" class="cancel-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="cancelConfirmTitle">
+  <div class="cancel-confirm-card">
+    <div class="cancel-confirm-icon">↩️</div>
+    <h2 id="cancelConfirmTitle">Cancel this number?</h2>
+    <p id="cancelConfirmMessage">Do you want to cancel this number order? A refund depends on successful provider cancellation and the provider's refund rules.</p>
+    <div class="cancel-confirm-actions">
+      <button type="button" class="cancel-confirm-no" onclick="resolveCancelConfirmation(false)">No, keep it</button>
+      <button type="button" class="cancel-confirm-yes" onclick="resolveCancelConfirmation(true)">Yes, cancel</button>
+    </div>
   </div>
-  <div class="verification-footer"><button onclick="dismissVerification()">I Understand</button></div>
- </div>
+</div>
+
+<!-- Custom cancellation result pop-up -->
+<div id="cancelResultModal" class="cancel-result-overlay" role="dialog" aria-modal="true" aria-labelledby="cancelResultTitle">
+  <div class="cancel-result-card">
+    <div id="cancelResultIcon" class="cancel-result-icon">✓</div>
+    <h2 id="cancelResultTitle">Cancellation update</h2>
+    <p id="cancelResultMessage"></p>
+    <div class="cancel-result-actions"><button type="button" onclick="closeCancelResult()">Okay</button></div>
+  </div>
 </div>
 
 <script>
-"use strict";
+const SUPABASE_URL = "https://hkfhehbhmucymusaytoe.supabase.co";
+const SUPABASE_KEY = "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
-const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
-const FUNCTIONS={
- textverified:SUPABASE_URL+"/functions/v1/text-verified-api",
- virtualsms:SUPABASE_URL+"/functions/v1/virtual-sms-api"
-};
-const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const $=id=>document.getElementById(id);
+const SMSBOWER_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/numpool-api`;
+const GRIZZLY_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/grizzly-api`;
 
-let session=null,currentUser=null,walletBalance=0;
-let flow="none",chosenProvider=null,selectedCountry=null,selectedService=null,selectedOption=null;
-let visibleServices=[],filteredServices=[],countryList=[],allOrders=[];
-let poller=null,countdownTimer=null,countryLoading=false;
-let currentSection=null,optionsCache=[],initGeneration=0,servicesGeneration=0;
+let provider = "grizzly";
+let countries = [];
+let services = [];
+let servers = [];
+let selectedCountry = null;
+let selectedService = null;
+let selectedServer = null;
+let orders = [];
+let currentSelectionStep = "country";
+let cancelConfirmationResolver = null;
+let cancellingOrderId = null;
+let watermarkText = "";
 
-function escapeHTML(v){
- return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
-function money(v){
- const n=Number(v);
- return "₦"+(Number.isFinite(n)?n:0).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
-}
-function showMessage(id,text,type="info"){
- const e=$(id);if(e)e.textContent=text||"",e.className="message"+(text?" show "+type:"");
-}
-function showGlobal(text,type="info"){showMessage("globalMessage",text,type);}
-function clearMessages(){
- ["globalMessage","usaMessage","allMessage","optionsMessage","confirmMessage","ordersMessage"].forEach(id=>showMessage(id,""));
-}
-function setSection(id){
- document.querySelectorAll(".section").forEach(e=>e.classList.remove("active"));
- if(id&&$(id))$(id).classList.add("active");
- currentSection=id;
-}
-function setActiveTab(tab){
- $("usaTab").classList.toggle("active",tab==="usa");
- $("allTab").classList.toggle("active",tab==="all");
+function functionURL(providerName) {
+  return providerName === "grizzly" ? GRIZZLY_FUNCTION_URL : SMSBOWER_FUNCTION_URL;
 }
 
-/* Keep internal error details out of the customer-facing interface. */
-function formatError(error,fallback){
- const raw=String(error?.message||"");
- const m=raw.toLowerCase();
+async function getAuthToken() {
+  const {data,error} = await supabaseClient.auth.getSession();
+  if (!error && data?.session?.access_token) return String(data.session.access_token);
 
- if(/insufficient funds|insufficient balance|not enough funds|low balance|balance too low/.test(m)){
-  if(/customer|wallet|your balance|user balance|add ₦|user wallet/.test(m)){
-   const amount=raw.match(/₦\s?[\d,.]+/);
-   return "Insufficient funds. Please add "+(amount?amount[0]:"the required amount")+".";
+  const {data:refreshed,error:refreshError} = await supabaseClient.auth.refreshSession();
+  if (refreshError || !refreshed?.session?.access_token) {
+    showResultPopup("Login required","Your session has expired. Please log in again.",false);
+    setTimeout(() => { location.href = "login.html"; },1200);
+    throw new Error("Please log in again.");
   }
-  return "Insufficient funds. Please contact support.";
- }
-
- if(/provider.*(balance|fund)|(?:balance|fund).*(provider|account)|account balance too low|not enough credit|out of credit|credit exhausted|funds exhausted/.test(m)){
-  return "Insufficient funds. Please contact support.";
- }
-
- if(/jwt|unauthori[sz]ed|session expired|invalid token/.test(m)){
-  return "Your session has expired. Please sign in again.";
- }
-
- if(/country.*(required|select)|select.*country/.test(m)){
-  return "Please select a country first.";
- }
-
- if(/service.*(required|select)|select.*service/.test(m)){
-  return "Please select a service first.";
- }
-
- if(/network|fetch failed|failed to fetch|timed? ?out|timeout/.test(m)){
-  return "The request could not be completed right now. Please try again.";
- }
-
- const safeFallback=fallback||"The request could not be completed. Please try again.";
- if(!raw)return safeFallback;
-
- /* Do not expose internal backend/provider names, IDs, or raw error payloads. */
- if(/provider|virtualsms|textverified|numpool|api key|api_key|internal server|stack trace|exception|sql|postgres|supabase/.test(m)){
-  return safeFallback;
- }
-
- /* Avoid exposing opaque backend error messages verbatim. */
- if(raw.length>140||/[{}[\]]/.test(raw))return safeFallback;
- return raw;
+  return String(refreshed.session.access_token);
 }
 
-async function invoke(provider,action,extra={}){
- if(!FUNCTIONS[provider])throw new Error("Unknown service.");
- const {data,error}=await sb.auth.getSession();
- if(error)throw error;
- const active=data?.session;
- if(!active?.access_token)throw new Error("Your session has expired. Please sign in again.");
- const response=await fetch(FUNCTIONS[provider],{
-  method:"POST",
-  headers:{
-   "Content-Type":"application/json",
-   "apikey":SUPABASE_KEY,
-   "Authorization":"Bearer "+active.access_token
-  },
-  body:JSON.stringify({action,...extra})
- });
- let body={};
- try{body=await response.json();}catch{}
- if(!response.ok||body?.error||body?.success===false){
-  const message=body?.error||body?.message||"Request failed.";
-  throw new Error(typeof message==="string"?message:"Request failed.");
- }
- return body;
-}
-function getList(payload){
- if(Array.isArray(payload))return payload;
- if(!payload||typeof payload!=="object")return [];
- for(const k of ["data","services","countries","results","items","orders","options","available"]){
-  if(Array.isArray(payload[k]))return payload[k];
-  if(payload[k]&&typeof payload[k]==="object"){
-   for(const n of ["data","items","results","countries","services","options"])
-    if(Array.isArray(payload[k][n]))return payload[k][n];
-  }
- }
- return [];
-}
-function getName(x){
- if(typeof x==="string")return x;
- if(!x||typeof x!=="object")return "Unknown";
- return String(x.name??x.service_name??x.serviceName??x.title??x.country_name??x.countryName??x.label??"Unknown");
-}
-function getCountryCode(c){
- return String(c?.code??c?.iso2??c?.iso??c?.country_code??c?.countryCode??c?.short_code??c?.shortCode??"").trim();
-}
-function getCountryId(c){return c?.country_id??c?.countryId??c?.id??null;}
-function normalizeCountries(payload){
- let list=getList(payload);
- if(!list.length&&payload&&typeof payload==="object"){
-  const source=payload.countries&&typeof payload.countries==="object"?payload.countries:
-   payload.data&&typeof payload.data==="object"&&!Array.isArray(payload.data)?payload.data:null;
-  if(source&&!Array.isArray(source))list=Object.entries(source).map(([key,v])=>{
-   if(typeof v==="string")return {code:key,name:v};
-   if(v&&typeof v==="object")return {...v,code:v.code??v.iso2??v.iso??key,name:v.name??v.country_name??v.countryName??key};
-   return null;
-  }).filter(Boolean);
- }
- return list.map(x=>typeof x==="string"
-  ?{name:x,code:"",id:null,_original:x}
-  :x&&typeof x==="object"
-   ?{...x,name:getName(x),code:getCountryCode(x),id:getCountryId(x),_original:x}:null)
-  .filter(x=>x&&x.name&&x.name!=="Unknown");
-}
-function normalizeServices(payload){
- return getList(payload).map((x,i)=>typeof x==="string"
-  ?{name:cleanServiceName(x),service_code:x,_original:x,_index:i}
-  :x&&typeof x==="object"
-   ?{...x,name:cleanServiceName(getName(x)),service_code:x.service_code??x.serviceCode??x.code??x.id??x.service??x.key??x.name,_original:x,_index:i}:null)
-  .filter(x=>x&&x.name&&x.name!=="Unknown");
-}
-
-/* Remove duplicated display names while preserving the original service code. */
-function cleanServiceName(value){
- let name=String(value??"").trim();
- name=name.replace(/\s+/g," ");
- name=name.replace(/^(.+?)\s*[-–—|]\s*\1$/i,"$1");
- name=name.replace(/^(.+?)\s+\1$/i,"$1");
- return name?name.charAt(0).toLocaleUpperCase()+name.slice(1):"Unknown";
-}
-function serviceCode(s){
- return String(s?.service_code??s?.serviceCode??s?.code??s?.id??s?.service??s?.key??s?.name??"");
-}
-function servicePrice(o){
- if(typeof o==="number")return o;
- if(typeof o==="string"){const n=Number(o);return Number.isFinite(n)?n:null;}
- const v=o?.price_ngn??o?.customer_price_ngn??o?.priceNGN??o?.price??o?.amount??o?.cost??o?.customerPrice;
- if(v===null||v===undefined||v==="")return null;
- const n=Number(v);return Number.isFinite(n)?n:null;
-}
-function optionLabel(o){
- if(typeof o==="string"||typeof o==="number")return String(o);
- return String(o?.label??o?.name??o?.server_name??o?.serverName??o?.title??o?.server??"Available option");
-}
-function getOptionPayload(o){return o&&typeof o==="object"?o:{server:o};}
-
-function openPicker(id){
- const menu=$(id);
- if(!menu)return;
- closePickers(id);
- menu.classList.add("open");
-}
-function closePickers(exceptId){
- ["usaServiceMenu","countryMenu","allServiceMenu"].forEach(id=>{
-  if(id!==exceptId)$(id)?.classList.remove("open");
- });
-}
-document.addEventListener("click",e=>{
- if(!e.target.closest(".search-picker"))closePickers();
-});
-document.addEventListener("keydown",e=>{
- if(e.key==="Escape")closePickers();
-});
-
-async function refreshWallet(){
- if(!currentUser)return;
- try{
-  const {data,error}=await sb.from("wallet").select("balance").eq("user-id",currentUser.id).maybeSingle();
-  if(error)throw error;
-  if(!data)throw new Error("No wallet row was found for this account.");
-  walletBalance=Number(data.balance??0);
-  if(!Number.isFinite(walletBalance))throw new Error("Wallet balance is invalid.");
-  $("walletBalance").textContent=money(walletBalance);
- }catch(e){
-  console.error("Wallet refresh failed:",e);
-  $("walletBalance").textContent="Unavailable";
-  showGlobal("Wallet balance could not be loaded. Please refresh the page or contact support.","error");
- }
-}
-async function init(){
- const generation=++initGeneration;
- $("walletBalance").textContent="Loading…";
- $("ordersList").innerHTML='<div class="loading">Loading your orders…</div>';
- try{
-  const {data,error}=await sb.auth.getSession();
-  if(error)throw error;
-  session=data?.session||null;currentUser=session?.user||null;
-  if(generation!==initGeneration)return;
-  if(!currentUser){
-   $("walletBalance").textContent="Sign in required";
-   $("ordersList").innerHTML='<div class="empty">Sign in to view your orders.</div>';
-   showGlobal("Please sign in to use virtual number services.","error");
-   return;
-  }
-  await Promise.allSettled([refreshWallet(),loadOrders()]);
-  if(generation!==initGeneration)return;
-  setSection(null);setActiveTab("");
-  if(poller)clearInterval(poller);
-  poller=setInterval(()=>{if(currentUser)refreshOrders();},30000);
- }catch(e){
-  console.error("Page initialization failed:",e);
-  $("walletBalance").textContent="Unavailable";
-  $("ordersList").innerHTML='<div class="empty">Could not initialize your account. <button class="btn btn-dark" onclick="init()">Retry</button></div>';
-  showGlobal("Unable to initialize your account. Please retry.","error");
- }
-}
-
-function showVerification(){
- $("verificationOverlay").classList.add("show");
- document.body.style.overflow="hidden";
-}
-function dismissVerification(){
- $("verificationOverlay").classList.remove("show");
- document.body.style.overflow="";
-}
-$("verificationOverlay").addEventListener("click",e=>{
- if(e.target===$("verificationOverlay"))dismissVerification();
-});
-document.addEventListener("keydown",e=>{
- if(e.key==="Escape"&&$("verificationOverlay").classList.contains("show"))dismissVerification();
-});
-
-async function openUSA(){
- flow="usa";chosenProvider="textverified";
- selectedCountry={id:187,country_id:187,name:"United States",code:"US"};
- selectedService=null;selectedOption=null;
- setActiveTab("usa");setSection("usaSection");
- $("usaServiceSearch").value="";
- $("usaServiceSearch").placeholder="Select a service or search…";
- $("usaServiceMenu").innerHTML='<div class="picker-placeholder">Loading services…</div>';
- $("usaSelected").style.display="none";
- openPicker("usaServiceMenu");
- showMessage("usaMessage","");
- await loadServices();
-}
-async function openAll(){
- flow="all";chosenProvider="virtualsms";
- selectedCountry=null;selectedService=null;selectedOption=null;
- setActiveTab("all");setSection("allSection");
- $("countrySearch").value="";
- $("countrySearch").placeholder="Select a country or search…";
- $("countrySelected").style.display="none";
- $("countryMenu").innerHTML='<div class="picker-placeholder">Loading countries…</div>';
- $("allServiceSearch").value="";
- $("allServiceSearch").disabled=true;
- $("allServiceSearch").placeholder="Select a country first…";
- $("allServiceMenu").innerHTML='<div class="picker-placeholder">Select a country first.</div>';
- $("allSelected").style.display="none";
- openPicker("countryMenu");
- showMessage("allMessage","");
- await loadCountries();
-}
-
-async function loadCountries(){
- if(countryLoading)return;
- countryLoading=true;
- try{
-  const response=await invoke("virtualsms","countries",{});
-  countryList=normalizeCountries(response);
-  if(!countryList.length){
-   $("countryMenu").innerHTML='<div class="picker-placeholder">No countries are available.</div><button class="btn btn-dark full" onclick="retryCountries()">Retry</button>';
-   showMessage("allMessage","Countries could not be loaded. Please retry.","error");
-   return;
-  }
-  filterCountries();
- }catch(e){
-  console.error("Country loading failed:",e);
-  $("countryMenu").innerHTML='<div class="picker-placeholder">Could not load countries.</div><button class="btn btn-dark full" onclick="retryCountries()">Retry</button>';
-  showMessage("allMessage",formatError(e,"Could not load countries. Please retry."),"error");
- }finally{countryLoading=false;}
-}
-async function retryCountries(){countryLoading=false;await loadCountries();}
-
-function countryMatches(c,q){
- const name=String(c.name||"").toLowerCase();
- const code=String(c.code||"").toLowerCase();
- if(!q)return true;
- if(name.includes(q)||code.includes(q))return true;
- const aliases={
-  "us":["usa","united states","united states of america","america"],
-  "usa":["us","united states","united states of america","america"],
-  "united states":["usa","us","america"],
-  "uk":["united kingdom","britain","great britain","england"],
-  "united kingdom":["uk","britain","great britain","england"],
-  "england":["uk","united kingdom","britain","great britain"]
- };
- for(const [key,values] of Object.entries(aliases)){
-  if(q===key||values.some(v=>q===v)){
-   if(name.includes(key)||values.some(v=>name.includes(v))||values.includes(code)||code===key)return true;
-  }
- }
- if(q==="us"||q==="usa")return name.includes("united states")||code==="us";
- if(q==="uk")return name.includes("united kingdom")||name.includes("britain")||name==="england"||code==="gb";
- if(q==="england")return name.includes("united kingdom")||name==="england"||name.includes("britain")||code==="gb";
- return false;
-}
-function filterCountries(){
- const q=$("countrySearch").value.trim().toLowerCase();
- renderCountries(countryList.filter(c=>countryMatches(c,q)));
-}
-function renderCountries(list){
- const menu=$("countryMenu");
- if(!list.length){menu.innerHTML='<div class="picker-placeholder">No matching countries found.</div>';return;}
- menu.innerHTML=list.map(c=>{
-  const i=countryList.indexOf(c);
-  return `<button type="button" class="country-button" onclick="selectCountry(${i})"><div class="country-name">${escapeHTML(c.name)}</div></button>`;
- }).join("");
-}
-async function selectCountryByValue(value){
- if(value==="")return;
- await selectCountry(Number(value));
-}
-async function selectCountry(index){
- if(index<0||index>=countryList.length)return;
- selectedCountry=countryList[index];
- if(!selectedCountry.code&&selectedCountry.id==null){
-  showMessage("allMessage","This country is not available right now. Please choose another country.","error");return;
- }
- selectedService=null;selectedOption=null;
- $("countrySearch").value=selectedCountry.name;
- $("countrySelected").textContent="Selected: "+selectedCountry.name;
- $("countrySelected").style.display="block";
- closePickers();
- $("allServiceSearch").disabled=false;
- $("allServiceSearch").value="";
- $("allServiceSearch").placeholder="Select a service or search…";
- $("allServiceMenu").innerHTML='<div class="picker-placeholder">Loading services…</div>';
- $("allSelected").style.display="none";
- showMessage("allMessage","");
- openPicker("allServiceMenu");
- await loadServices();
-}
-
-function handleAllServiceFocus(){
- if(!selectedCountry){
-  closePickers();
-  showMessage("allMessage","Please select a country first.","info");
-  $("countrySearch").focus();
-  openPicker("countryMenu");
-  return;
- }
- openPicker("allServiceMenu");
-}
-
-async function loadServices(){
- if(!chosenProvider)return;
- const provider=chosenProvider,generation=++servicesGeneration;
- const menu=provider==="textverified"?$("usaServiceMenu"):$("allServiceMenu");
- menu.innerHTML='<div class="picker-placeholder">Loading services…</div>';
- try{
-  const payload=provider==="textverified"
-   ?{numberType:"mobile",reservationType:"verification"}
-   :{country:selectedCountry?.code,countryId:selectedCountry?.id};
-  const response=await invoke(provider,"services",payload);
-  if(provider!==chosenProvider||generation!==servicesGeneration)return;
-  visibleServices=normalizeServices(response);
-  if(!visibleServices.length){
-   menu.innerHTML='<div class="picker-placeholder">No services are available.</div><button class="btn btn-dark full" onclick="loadServices()">Retry</button>';
-   showMessage(provider==="textverified"?"usaMessage":"allMessage","No services were returned. Please retry later.","error");return;
-  }
-  /* Remove duplicate display entries without changing the service code of the first entry. */
-  const seen=new Set();
-  visibleServices=visibleServices.filter(s=>{
-   const key=s.name.toLocaleLowerCase();
-   if(seen.has(key))return false;
-   seen.add(key);return true;
+async function api(action,payload={},providerName=provider) {
+  const token = await getAuthToken();
+  const response = await fetch(functionURL(providerName),{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "apikey":String(SUPABASE_KEY),
+      "Authorization":"Bearer "+String(token)
+    },
+    body:JSON.stringify({action,...payload})
   });
-  showMessage(provider==="textverified"?"usaMessage":"allMessage","");
-  filterServices(provider==="textverified"?"usa":"all");
- }catch(e){
-  console.error("Service loading failed:",e);
-  if(generation!==servicesGeneration)return;
-  menu.innerHTML='<div class="picker-placeholder">Services could not be loaded.</div><button class="btn btn-dark full" onclick="loadServices()">Retry</button>';
-  showMessage(provider==="textverified"?"usaMessage":"allMessage",formatError(e,"Unable to load services. Please retry."),"error");
- }
-}
-function filterServices(which){
- const provider=which==="usa"?"textverified":"virtualsms";
- if(chosenProvider!==provider)return;
- const q=$(which==="usa"?"usaServiceSearch":"allServiceSearch").value.trim().toLowerCase();
- filteredServices=visibleServices.filter(s=>
-  String(s.name).toLowerCase().includes(q)||
-  String(serviceCode(s)).toLowerCase().includes(q)||
-  String(s.description||"").toLowerCase().includes(q)
- );
- renderServices(which);
-}
-function renderServices(which){
- const menu=which==="usa"?$("usaServiceMenu"):$("allServiceMenu");
- if(!filteredServices.length){
-  menu.innerHTML='<div class="picker-placeholder">No matching services found.</div>';return;
- }
- menu.innerHTML=filteredServices.map(s=>{
-  const i=visibleServices.indexOf(s);
-  return `<button type="button" class="service-button" onclick="selectService(${i})"><strong>${escapeHTML(s.name)}</strong></button>`;
- }).join("");
-}
-async function selectService(index){
- if(index<0||index>=visibleServices.length)return;
- selectedService=visibleServices[index];selectedOption=null;
- closePickers();
- if(chosenProvider==="textverified"){
-  $("usaServiceSearch").value=selectedService.name;
-  $("usaSelected").textContent="Selected: "+selectedService.name;
-  $("usaSelected").style.display="block";
- }else{
-  $("allServiceSearch").value=selectedService.name;
-  $("allSelected").textContent="Selected: "+selectedService.name;
-  $("allSelected").style.display="block";
- }
- $("optionsTitle").textContent=selectedService.name;
- $("optionsSubtitle").textContent=(selectedCountry?selectedCountry.name+" · ":"United States · ")+"Choose an available option.";
- $("optionsList").innerHTML='<div class="loading">Loading prices and availability…</div>';
- showMessage("optionsMessage","");
- setSection("optionsSection");
- try{
-  const code=serviceCode(selectedService);
-  const payload=chosenProvider==="textverified"
-   ?{service:code,serviceCode:code,numberType:"mobile",reservationType:"verification"}
-   :{service:code,serviceCode:code,country:selectedCountry.code,countryCode:selectedCountry.code,countryId:selectedCountry.id};
-  const response=await invoke(chosenProvider,"price",payload);
-  optionsCache=getList(response);
-  if(!optionsCache.length&&(response?.price!==undefined||response?.data?.price!==undefined||response?.price_ngn!==undefined))optionsCache=[response];
-  if(!optionsCache.length){
-   $("optionsList").innerHTML='<div class="empty">No purchasable options are available.</div><button class="btn btn-dark full" onclick="selectService('+index+')">Retry</button>';return;
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || data.success === false || data.error) {
+    throw new Error(data.error || data.message || `Request failed (${response.status}).`);
   }
-  renderOptions(optionsCache);
- }catch(e){
-  console.error("Price request failed:",e);
-  $("optionsList").innerHTML='<div class="empty">Could not load prices or availability.</div><button class="btn btn-dark full" onclick="selectService('+index+')">Retry</button>';
-  showMessage("optionsMessage",formatError(e,"Unable to load prices. Please retry."),"error");
- }
-}
-function renderOptions(options){
- $("optionsList").innerHTML=options.map((o,i)=>{
-  const price=servicePrice(o);
-  return `<button class="option-button" onclick="chooseOption(${i})"><div class="row between"><strong>${escapeHTML(optionLabel(o))}</strong><strong>${price===null?"Price unavailable":escapeHTML(money(price))}</strong></div><small>${escapeHTML(o?.description||o?.availability||"Select this option to continue")}</small></button>`;
- }).join("");
-}
-function chooseOption(index){
- if(index<0||index>=optionsCache.length)return;
- selectedOption=optionsCache[index];
- const price=servicePrice(selectedOption);
- if(price===null||price<0){showMessage("optionsMessage","This option has no valid price. Choose another option.","error");return;}
- $("purchaseSummary").innerHTML=
-  `<div><strong>Service:</strong> ${escapeHTML(selectedService?.name||"Selected service")}</div>
-   <div style="margin-top:6px"><strong>Country:</strong> ${escapeHTML(selectedCountry?.name||"United States")}</div>
-   <div style="margin-top:6px"><strong>Option:</strong> ${escapeHTML(optionLabel(selectedOption))}</div>
-   <div style="margin-top:8px"><strong>Price:</strong> ${escapeHTML(money(price))}</div>
-   <div style="margin-top:6px"><strong>Wallet balance:</strong> ${escapeHTML(money(walletBalance))}</div>`;
- showMessage("confirmMessage","");
- setSection("confirmSection");
-}
-async function purchaseNumber(){
- if(!currentUser){showMessage("confirmMessage","Please sign in again.","error");return;}
- if(!selectedService||!selectedOption||!selectedCountry){showMessage("confirmMessage","Select a country, service and option first.","error");return;}
- const price=servicePrice(selectedOption);
- if(price===null||price<0){showMessage("confirmMessage","The selected option has an invalid price.","error");return;}
- if(walletBalance<price){showMessage("confirmMessage","Insufficient funds. Please add "+money(price-walletBalance)+".","error");return;}
- const button=$("confirmPurchaseBtn");
- button.disabled=true;button.textContent="Processing…";
- showMessage("confirmMessage","Submitting your purchase request…","info");
- try{
-  const code=serviceCode(selectedService),option=getOptionPayload(selectedOption);
-  await invoke(chosenProvider,"buy",{
-   service:code,serviceCode:code,serviceName:selectedService.name,
-   country:selectedCountry.code,countryCode:selectedCountry.code,countryId:selectedCountry.id,countryName:selectedCountry.name,
-   option,server:option.server??option.server_id??option.id??option.value,
-   customerPriceNGN:price,priceNGN:price
-  });
-  showMessage("confirmMessage","Purchase request submitted. Refreshing your orders…","success");
-  await Promise.allSettled([refreshWallet(),loadOrders()]);
-  setSection(chosenProvider==="textverified"?"usaSection":"allSection");
-  showGlobal("Purchase request submitted. Check My Number Orders for its current status.","success");
- }catch(e){
-  console.error("Purchase failed:",e);
-  showMessage("confirmMessage",formatError(e,"The purchase could not be completed. Please try again."),"error");
- }finally{
-  button.disabled=false;button.textContent="Purchase Number";
- }
-}
-function goBack(){
- if(currentSection==="confirmSection")setSection("optionsSection");
- else if(flow==="usa")setSection("usaSection");
- else if(flow==="all")setSection("allSection");
- else setSection(null);
+  return data;
 }
 
-async function refreshOrders(){await Promise.allSettled([loadOrders(),refreshWallet()]);}
-async function loadOrders(){
- if(!currentUser){$("ordersList").innerHTML='<div class="empty">Sign in to view your orders.</div>';return;}
- try{
-  const {data,error}=await sb.from("virtual_number_orders").select("*")
-   .eq("user_id",currentUser.id).order("created_at",{ascending:false}).limit(50);
-  if(error)throw error;
-  allOrders=data||[];
-  renderOrders();
-  showMessage("ordersMessage","");
- }catch(e){
-  console.error("Order history loading failed:",e);
-  $("ordersList").innerHTML='<div class="empty">Unable to load your order history. <button class="btn btn-dark" onclick="loadOrders()">Retry</button></div>';
-  showMessage("ordersMessage","Order history could not be refreshed. Please try again.","error");
- }
-}
-function normalizeStatus(o){
- const s=String(o.status||o.provider_state||"waiting").toLowerCase();
- if(["received","completed","success","successful","verification_successful"].includes(s))return "received";
- if(["cancelled","canceled","order_cancelled","order_canceled"].includes(s))return "cancelled";
- if(["failed","error"].includes(s))return "failed";
- if(["refunded","refund_completed","cancelled_refunded"].includes(s))return "refunded";
- return "waiting";
-}
-function statusLabel(s){
- return({waiting:"Pending",received:"Verification Successful",cancelled:"Order Cancelled",failed:"Failed",refunded:"Refunded"})[s]||s;
-}
-function orderDate(o){
- const d=o.created_at||o.purchased_at;
- if(!d)return "Date unavailable";
- const x=new Date(d);
- return Number.isNaN(x.getTime())?"Date unavailable":x.toLocaleString();
-}
-function getOrderNumber(o){return o.number??o.phone_number??o.phone??o.phoneNumber??"";}
-function maskNumber(number){
- const v=String(number||"");
- if(!v)return "Number unavailable";
- if(v.length<8)return v;
- return v.slice(0,4)+"•••"+v.slice(-3);
-}
-function getCode(o){return o.otp_code??o.code??o.sms_code??o.verification_code??"";}
-function getSms(o){return o.full_sms??o.sms_text??o.message??"";}
-function getPrice(o){return Number(o.customer_price_ngn??o.price_ngn??o.price??0);}
-function isRefunded(o,status){
- return status==="refunded"||Boolean(o.refunded_at||o.refund_processed_at||o.refund_status==="refunded");
-}
-function refundLabel(o,status){
- if(isRefunded(o,status))return "Refunded";
- const s=String(o.refund_status||"").toLowerCase();
- if(s.includes("pending")||s.includes("processing"))return "Processing";
- if(status==="cancelled"||status==="failed")return s==="not_applicable"?"Not applicable":"Not confirmed";
- return "Not applicable";
-}
-function durationSeconds(o){
- const raw=o.expires_at||o.expiry_at||o.expiresAt;
- if(raw){
-  const end=new Date(raw).getTime();
-  if(Number.isFinite(end))return Math.max(0,Math.floor((end-Date.now())/1000));
- }
- const created=new Date(o.created_at||o.purchased_at||Date.now()).getTime();
- const duration=Number(o.duration_seconds??o.expires_in_seconds??1200);
- const end=created+(Number.isFinite(duration)&&duration>0?duration:1200)*1000;
- return Math.max(0,Math.floor((end-Date.now())/1000));
-}
-function countdownText(seconds){
- const s=Math.max(0,seconds|0),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),r=s%60;
- return h>0?[h,m,r].map(n=>String(n).padStart(2,"0")).join(":"):[m,r].map(n=>String(n).padStart(2,"0")).join(":");
-}
-function renderOrders(){
- if(!allOrders.length){
-  $("ordersList").innerHTML='<div class="empty">You have no virtual number orders yet.</div>';return;
- }
- $("ordersList").innerHTML=allOrders.map(o=>{
-  const status=normalizeStatus(o);
-  const id=Number(o.id);
-  const number=String(getOrderNumber(o)||"");
-  const code=String(getCode(o)||"");
-  const sms=String(getSms(o)||"");
-  const price=getPrice(o);
-  const service=String(o.service_name||o.service_code||"Virtual Number");
-  const country=String(o.country_name||o.country_code||"Unknown country");
-  const pending=status==="waiting";
-  const received=status==="received";
-  const cancelled=status==="cancelled";
-  const failed=status==="failed";
-  const refunded=isRefunded(o,status);
-  const left=durationSeconds(o);
-  let headline=pending?"Purchase Successful!":received?"Verification Successful":cancelled?"Order Cancelled":failed?"Order Failed":"Refunded";
-  let subtitle=pending?"Your number is ready":received?"SMS received for this number":cancelled?"This number order has ended":failed?"This number order failed":"Your refund has been recorded";
-  let html=`<article class="order-card" data-order-id="${escapeHTML(o.id)}">
-   <div class="order-heading">
-    <div><h3>${escapeHTML(headline)}</h3><p class="order-subtitle">${escapeHTML(subtitle)}</p></div>
-    <span class="badge ${status}">${escapeHTML(statusLabel(status))}</span>
-   </div>
-   <div class="order-service">${escapeHTML(service)} · ${escapeHTML(country)}</div>
-   <div class="number-box">
-    <div class="number-label">${pending?"YOUR PHONE NUMBER":"PHONE NUMBER"}</div>
-    <div class="${pending?"number-big":"number-small"}">${escapeHTML(number||"Number unavailable")}</div>
-    <div class="number-meta"><span>${escapeHTML(service)} · ${escapeHTML(country)}</span><span>Order #${escapeHTML(o.id)}</span></div>
-   </div>`;
-  if(pending){
-   html+=`<div class="timer-area">
-    <div class="timer-label">Time remaining</div>
-    <div class="timer-value" data-countdown="${escapeHTML(o.id)}">${countdownText(left)}</div>
-    <div class="timer-note">Countdown updates automatically</div>
-   </div>
-   <div class="order-actions">
-    <button class="btn btn-black" onclick="checkOrder(${id})">◉ &nbsp; Check Code</button>
-    <button class="btn btn-danger" onclick="cancelOrder(${id})">⊗ &nbsp; Cancel Order</button>
-   </div>`;
-  }
-  if(received){
-   html+=`<div class="sms-box">
-    <div class="sms-heading">VERIFICATION CODE</div>
-    <div class="sms-code">${escapeHTML(code||"Code unavailable")}</div>
-    ${code?`<button class="copy-button" onclick="copyOrderCode(${id})">▢ &nbsp; Copy Code</button>`:""}
-    ${sms?`<hr><div class="order-line">${escapeHTML(sms)}</div>`:""}
-   </div>`;
-  }
-  if(cancelled||failed||refunded){
-   html+=`<hr class="order-divider">
-    <div class="detail-row"><span>Purchase price</span><strong>${escapeHTML(money(price))}</strong></div>
-    <div class="detail-row"><span>Refund status</span><strong class="${refunded?"refund-good":""}">${escapeHTML(refundLabel(o,status))}</strong></div>
-    <p class="order-footnote">The refund amount and status reflect the recorded transaction. “Refunded” appears only after confirmation.</p>`;
-  }
-  if(!pending&&!received&&!cancelled&&!failed&&!refunded){
-   html+=`<div class="detail-row"><span>Purchase price</span><strong>${escapeHTML(money(price))}</strong></div>`;
-  }
-  html+=`<div class="order-line"><strong>Order date:</strong> ${escapeHTML(orderDate(o))}</div>`;
-  html+=`<div class="order-actions"><button class="btn btn-black" onclick="checkOrder(${id})">${pending?"Refresh Status":"Refresh Status"}</button></div>`;
-  html+=`</article>`;
-  return html;
- }).join("");
- updateCountdowns();
-}
-function updateCountdowns(){
- document.querySelectorAll("[data-countdown]").forEach(el=>{
-  const id=el.getAttribute("data-countdown");
-  const o=allOrders.find(x=>String(x.id)===String(id));
-  if(!o)return;
-  const seconds=durationSeconds(o);
-  el.textContent=countdownText(seconds);
-  if(seconds<=0){
-   el.classList.add("timer-expired");
-   el.textContent="00:00";
-  }else el.classList.remove("timer-expired");
- });
-}
-async function copyOrderCode(id){
- const o=allOrders.find(x=>Number(x.id)===Number(id));
- const code=getCode(o||{});
- if(!code){showMessage("ordersMessage","No verification code is available to copy yet.","error");return;}
- try{
-  await navigator.clipboard.writeText(String(code));
-  showMessage("ordersMessage","Verification code copied.","success");
- }catch{
-  const t=document.createElement("textarea");
-  t.value=String(code);t.style.position="fixed";t.style.opacity="0";
-  document.body.appendChild(t);t.select();
-  let ok=false;try{ok=document.execCommand("copy");}catch{}
-  t.remove();
-  showMessage("ordersMessage",ok?"Verification code copied.":"Unable to copy automatically. Please select the code manually.",ok?"success":"error");
- }
-}
-function orderProvider(o){
- const p=String(o.provider_key||o.provider||"").toLowerCase();
- if(p.includes("textverified"))return "textverified";
- if(p.includes("virtualsms"))return "virtualsms";
- return "virtualsms";
-}
-async function checkOrder(id){
- const o=allOrders.find(x=>Number(x.id)===Number(id));
- if(!o){showMessage("ordersMessage","Order not found. Refresh the list and try again.","error");return;}
- showMessage("ordersMessage","Checking order status…","info");
- try{
-  await invoke(orderProvider(o),"status",{
-   orderId:o.provider_order_id||o.numpool_order_id||o.id,
-   providerOrderId:o.provider_order_id||o.numpool_order_id,
-   id:o.id,order_id:o.id
-  });
-  await loadOrders();
-  showMessage("ordersMessage","Order status refreshed.","success");
- }catch(e){
-  console.error("Status check failed:",e);
-  showMessage("ordersMessage",formatError(e,"Unable to check this order right now."),"error");
- }
-}
-async function cancelOrder(id){
- const o=allOrders.find(x=>Number(x.id)===Number(id));
- if(!o){showMessage("ordersMessage","Order not found. Refresh the list and try again.","error");return;}
- if(normalizeStatus(o)!=="waiting"){showMessage("ordersMessage","Only pending orders can be cancelled.","error");return;}
- if(!confirm("Cancel this virtual number? A refund is only shown after confirmation and successful processing."))return;
- showMessage("ordersMessage","Requesting cancellation…","info");
- try{
-  await invoke(orderProvider(o),"cancel",{
-   orderId:o.provider_order_id||o.numpool_order_id||o.id,
-   providerOrderId:o.provider_order_id||o.numpool_order_id,
-   id:o.id,order_id:o.id
-  });
-  await Promise.allSettled([loadOrders(),refreshWallet()]);
-  showMessage("ordersMessage","Cancellation request submitted. Check the order for confirmation and refund status.","success");
- }catch(e){
-  console.error("Cancellation failed:",e);
-  showMessage("ordersMessage",formatError(e,"Cancellation could not be confirmed. Check the order status before retrying."),"error");
- }
+function escapeHTML(value) {
+  return String(value ?? "")
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;").replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 }
 
-sb.auth.onAuthStateChange((_event,newSession)=>{
- setTimeout(()=>{
-  session=newSession;currentUser=newSession?.user||null;
-  if(currentUser)init();
-  else{
-   if(poller)clearInterval(poller);
-   walletBalance=0;allOrders=[];
-   $("walletBalance").textContent="Sign in required";
-   $("ordersList").innerHTML='<div class="empty">Sign in to view your orders.</div>';
-   setSection(null);setActiveTab("");
+function naira(value) {
+  const n = Number(value);
+  return Number.isFinite(n) && n >= 0 ? "₦"+Math.ceil(n).toLocaleString() : "Price unavailable";
+}
+
+function toggleMenu() {
+  document.getElementById("menu").classList.toggle("hidden");
+}
+
+function forceClosePopup(id) {
+  const popup = document.getElementById(id);
+  if (!popup) return;
+  popup.classList.add("popup-closed");
+  popup.style.setProperty("display","none","important");
+  popup.style.setProperty("visibility","hidden","important");
+  popup.style.setProperty("opacity","0","important");
+  popup.style.setProperty("pointer-events","none","important");
+}
+
+function forceOpenPopup(id) {
+  const popup = document.getElementById(id);
+  if (!popup) return;
+  popup.classList.remove("popup-closed");
+  popup.style.removeProperty("display");
+  popup.style.removeProperty("visibility");
+  popup.style.removeProperty("opacity");
+  popup.style.removeProperty("pointer-events");
+  popup.style.display = "flex";
+}
+
+function closeVerificationPopup(event) {
+  event?.preventDefault();
+  event?.stopPropagation();
+  forceClosePopup("verificationPopup");
+}
+
+function closePortalNotice(event) {
+  event?.preventDefault();
+  event?.stopPropagation();
+  forceClosePopup("portalNoticePopup");
+}
+
+function showPortalNotice() {
+  forceOpenPopup("portalNoticePopup");
+}
+
+function showResultPopup(title,message,success=true) {
+  const modal = document.getElementById("cancelResultModal");
+  document.getElementById("cancelResultTitle").textContent = title;
+  document.getElementById("cancelResultMessage").textContent = message;
+  document.getElementById("cancelResultIcon").textContent = success ? "✓" : "!";
+  modal.classList.add("open");
+}
+
+function closeCancelResult() {
+  document.getElementById("cancelResultModal").classList.remove("open");
+}
+
+function askCancelConfirmation(orderId) {
+  cancellingOrderId = orderId;
+  document.getElementById("cancelConfirmModal").classList.add("open");
+  return new Promise(resolve => { cancelConfirmationResolver = resolve; });
+}
+
+function resolveCancelConfirmation(confirmed) {
+  document.getElementById("cancelConfirmModal").classList.remove("open");
+  const resolve = cancelConfirmationResolver;
+  cancelConfirmationResolver = null;
+  if (resolve) resolve(Boolean(confirmed));
+}
+
+function countryName(country) {
+  const names = [
+    country?.name,country?.country_name,country?.countryName,
+    country?.country_label,country?.countryLabel,country?.display_name,
+    country?.displayName,country?.label,country?.title,country?.eng,
+    country?.provider_name,country?.providerName,country?.country?.name,
+    country?.country?.country_name,country?.country?.countryName,
+    country?.country?.label,country?.data?.name,country?.data?.country_name,
+    country?.data?.countryName,country?.data?.label
+  ];
+  const found = names.find(v => typeof v === "string" && v.trim());
+  return found ? found.trim() : "";
+}
+
+function countryKey(country) {
+  return String(country?.country_key || country?.key || country?.slug ||
+    country?.code || country?.country_code || country?.country ||
+    country?.name || "").trim().toLowerCase();
+}
+
+function countryId(country) {
+  return country?.id ?? country?.country_id ?? country?.countryId ?? null;
+}
+
+function countryMatches(country,query) {
+  const q = String(query || "").trim().toLowerCase();
+  return !q || countryName(country).toLowerCase().includes(q) ||
+    countryKey(country).includes(q) ||
+    String(countryId(country) ?? "").includes(q);
+}
+
+function serviceName(service) {
+  const options = [
+    service?.name,service?.service_name,service?.serviceName,
+    service?.title,service?.label,service?.app,service?.code,
+    service?.service?.name,service?.data?.name
+  ];
+  const found = options.find(v => typeof v === "string" && v.trim());
+  return found ? found.trim() : "";
+}
+
+function serviceCode(service) {
+  return String(service?.service_code ?? service?.serviceCode ??
+    service?.code ?? service?.id ?? service?.key ?? "").trim();
+}
+
+function serviceMatches(service,query) {
+  const q = String(query || "").trim().toLowerCase();
+  return !q || serviceName(service).toLowerCase().includes(q) ||
+    serviceCode(service).toLowerCase().includes(q);
+}
+
+function getArray(data,...keys) {
+  if (Array.isArray(data)) return data;
+  for (const key of keys) if (Array.isArray(data?.[key])) return data[key];
+  if (Array.isArray(data?.data)) return data.data;
+  if (Array.isArray(data?.result)) return data.result;
+  return [];
+}
+
+function showSelectionStep(step) {
+  currentSelectionStep = step;
+  document.getElementById("countryStep").classList.toggle("hidden",step !== "country");
+  document.getElementById("serviceStep").classList.toggle("hidden",step !== "service");
+  document.getElementById("serverStep").classList.toggle("hidden",step !== "server");
+
+  const names = ["country","service","server"];
+  names.forEach((name,index) => {
+    const element = document.getElementById("step"+name[0].toUpperCase()+name.slice(1));
+    const activeIndex = names.indexOf(step);
+    element.classList.toggle("active",index === activeIndex);
+    element.classList.toggle("complete",index < activeIndex);
+  });
+}
+
+function goBackToCountry() {
+  showSelectionStep("country");
+}
+
+function goBackToService() {
+  showSelectionStep("service");
+}
+
+async function loadWatermark() {
+  const watermark = document.getElementById("virtualNumberWatermark");
+  watermark.classList.add("hidden");
+  watermark.textContent = "";
+  watermarkText = "";
+
+  try {
+    const {data,error} = await supabaseClient.from("site_settings")
+      .select("value").eq("key","watermark").maybeSingle();
+    if (error) throw error;
+    const text = String(data?.value || "").trim();
+    if (text) {
+      watermarkText = text;
+      watermark.textContent = text;
+      watermark.classList.remove("hidden");
+    }
+  } catch (error) {
+    console.warn("Watermark loading failed:",error);
   }
- },0);
+}
+
+async function loadWallet() {
+  const {data:{user},error:userError} = await supabaseClient.auth.getUser();
+  if (userError || !user) {
+    document.getElementById("walletMini").textContent = "₦—";
+    return;
+  }
+  const {data,error} = await supabaseClient.from("wallet")
+    .select("balance").eq("user-id",user.id).maybeSingle();
+  if (error) {
+    console.warn("Wallet loading failed:",error);
+    return;
+  }
+  document.getElementById("walletMini").textContent = naira(data?.balance ?? 0);
+}
+
+async function changeProvider(newProvider) {
+  provider = newProvider === "smsbower" ? "smsbower" : "grizzly";
+  document.getElementById("grizzlyProviderTab").classList.toggle("active",provider === "grizzly");
+  document.getElementById("smsbowerProviderTab").classList.toggle("active",provider === "smsbower");
+
+  selectedCountry = null;
+  selectedService = null;
+  selectedServer = null;
+  countries = [];
+  services = [];
+  servers = [];
+
+  document.getElementById("countrySearch").value = "";
+  document.getElementById("serviceSearch").value = "";
+  document.getElementById("serviceSearch").disabled = true;
+  document.getElementById("selectedCountryBox").classList.add("hidden");
+  document.getElementById("selectedServiceBox").classList.add("hidden");
+  document.getElementById("serviceList").innerHTML = '<div class="empty">Select a country first.</div>';
+  document.getElementById("serverList").innerHTML = "";
+  document.getElementById("priceBox").classList.add("hidden");
+  document.getElementById("buyButton").disabled = true;
+  document.getElementById("buyMessage").textContent = "";
+  showSelectionStep("country");
+
+  await loadWatermark();
+  await loadCountries();
+  await loadAllOrders();
+}
+
+async function loadCountries() {
+  const list = document.getElementById("countryList");
+  list.innerHTML = '<div class="loading">Loading countries...</div>';
+  try {
+    const data = await api("countries");
+    countries = getArray(data,"countries","results","items");
+    renderCountries();
+  } catch (error) {
+    list.innerHTML = `<div class="empty">${escapeHTML(formatError(error))}</div>`;
+  }
+}
+
+function filterCountries() {
+  renderCountries();
+}
+
+function renderCountries() {
+  const list = document.getElementById("countryList");
+  const query = document.getElementById("countrySearch").value;
+  const filtered = countries.filter(c => countryMatches(c,query))
+    .sort((a,b) => countryName(a).localeCompare(countryName(b)));
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty">No countries found.</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(country => {
+    const name = countryName(country) || "Unknown country";
+    const selected = selectedCountry && String(countryId(selectedCountry)) === String(countryId(country));
+    return `<div class="choice ${selected ? "selected" : ""}" data-country-id="${escapeHTML(countryId(country) ?? "")}">${escapeHTML(name)}</div>`;
+  }).join("");
+
+  list.querySelectorAll(".choice").forEach((node,index) => {
+    node.addEventListener("click",() => selectCountry(filtered[index]));
+  });
+}
+
+async function selectCountry(country) {
+  selectedCountry = country;
+  selectedService = null;
+  selectedServer = null;
+  services = [];
+  servers = [];
+
+  document.getElementById("selectedCountryBox").textContent = "Selected: "+countryName(country);
+  document.getElementById("selectedCountryBox").classList.remove("hidden");
+  document.getElementById("serviceSearch").value = "";
+  document.getElementById("serviceSearch").disabled = false;
+  document.getElementById("selectedServiceBox").classList.add("hidden");
+  document.getElementById("serverList").innerHTML = "";
+  document.getElementById("priceBox").classList.add("hidden");
+  document.getElementById("buyButton").disabled = true;
+  document.getElementById("buyMessage").textContent = "";
+  showSelectionStep("service");
+
+  const list = document.getElementById("serviceList");
+  list.innerHTML = '<div class="loading">Loading services...</div>';
+
+  try {
+    const data = await api("services",{
+      country_id:countryId(country),
+      country:countryName(country),
+      country_key:countryKey(country)
+    });
+    services = getArray(data,"services","apps","results","items");
+    renderServices();
+  } catch (error) {
+    list.innerHTML = `<div class="empty">${escapeHTML(formatError(error))}</div>`;
+  }
+}
+
+function filterServices() {
+  renderServices();
+}
+
+function renderServices() {
+  const list = document.getElementById("serviceList");
+  const query = document.getElementById("serviceSearch").value;
+  const filtered = services.filter(s => serviceMatches(s,query));
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty">No services found for this country.</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map((service,index) =>
+    `<div class="choice" data-service-index="${index}">${escapeHTML(serviceName(service) || serviceCode(service) || "Service")}</div>`
+  ).join("");
+
+  list.querySelectorAll(".choice").forEach((node,index) => {
+    node.addEventListener("click",() => selectService(filtered[index]));
+  });
+}
+
+async function selectService(service) {
+  selectedService = service;
+  selectedServer = null;
+  servers = [];
+
+  document.getElementById("selectedServiceBox").textContent = "Selected: "+(serviceName(service) || serviceCode(service));
+  document.getElementById("selectedServiceBox").classList.remove("hidden");
+  document.getElementById("serverList").innerHTML = '<div class="loading">Loading available servers...</div>';
+  document.getElementById("priceBox").classList.add("hidden");
+  document.getElementById("buyButton").disabled = true;
+  document.getElementById("buyMessage").textContent = "";
+  showSelectionStep("server");
+
+  try {
+    const data = await api("servers",{
+      country_id:countryId(selectedCountry),
+      country:countryName(selectedCountry),
+      country_key:countryKey(selectedCountry),
+      service_code:serviceCode(service),
+      service_name:serviceName(service)
+    });
+    servers = getArray(data,"servers","numbers","results","items");
+    renderServers();
+  } catch (error) {
+    document.getElementById("serverList").innerHTML =
+      `<div class="empty">${escapeHTML(formatError(error))}</div>`;
+  }
+}
+
+function serverPrice(server) {
+  const values = [
+    server?.customer_price_ngn,server?.customerPriceNgn,
+    server?.price_ngn,server?.priceNgn,server?.price,
+    server?.cost_ngn,server?.costNgn,server?.amount
+  ];
+  for (const value of values) {
+    const n = Number(value);
+    if (value !== null && value !== undefined && Number.isFinite(n) && n > 0) return n;
+  }
+  return null;
+}
+
+function serverLabel(server,index) {
+  return String(server?.name || server?.server_name || server?.serverName ||
+    server?.label || server?.title || `Server ${index+1}`);
+}
+
+function serverStock(server) {
+  const value = server?.stock ?? server?.available ?? server?.count ?? server?.quantity;
+  return value === undefined || value === null ? null : Number(value);
+}
+
+function renderServers() {
+  const list = document.getElementById("serverList");
+  if (!servers.length) {
+    list.innerHTML = '<div class="empty">No servers are currently available for this service.</div>';
+    return;
+  }
+
+  list.innerHTML = servers.map((server,index) => {
+    const price = serverPrice(server);
+    const stock = serverStock(server);
+    const unavailable = stock !== null && Number.isFinite(stock) && stock <= 0;
+    return `<div class="server ${selectedServer === server ? "selected" : ""} ${unavailable ? "unavailable" : ""}" data-server-index="${index}">
+      <div class="server-badge">${unavailable ? "Unavailable" : "Available"}</div>
+      <div class="server-name">${escapeHTML(serverLabel(server,index))}</div>
+      <div class="server-stock">${stock === null || !Number.isFinite(stock) ? "Stock status varies" : `${Math.max(0,stock)} available`}</div>
+      <div class="server-price">${price === null ? "Price unavailable" : naira(price)}</div>
+    </div>`;
+  }).join("");
+
+  list.querySelectorAll(".server").forEach((node,index) => {
+    node.addEventListener("click",() => selectServer(servers[index]));
+  });
+}
+
+function selectServer(server) {
+  const price = serverPrice(server);
+  const stock = serverStock(server);
+  if (stock !== null && Number.isFinite(stock) && stock <= 0) {
+    showResultPopup("Server unavailable","This server has no available numbers right now. Please select another server.",false);
+    return;
+  }
+  selectedServer = server;
+  renderServers();
+  document.getElementById("priceBox").classList.remove("hidden");
+  document.getElementById("selectedPrice").textContent = price === null ? "Price unavailable" : naira(price);
+  document.getElementById("buyButton").disabled = price === null;
+  document.getElementById("buyMessage").textContent = "";
+}
+
+function formatError(error) {
+  const raw = String(error?.message || error || "Something went wrong.");
+  const text = raw.toLowerCase();
+
+  if (text.includes("insufficient") && (text.includes("wallet") || text.includes("balance"))) {
+    return "Your wallet balance is too low for this purchase. Please fund your wallet and try again.";
+  }
+  if (text.includes("insufficient") && (text.includes("provider") || text.includes("supplier") || text.includes("fund"))) {
+    return "Insufficient funds. Please contact support.";
+  }
+  if (text.includes("session") || text.includes("jwt") || text.includes("unauthorized")) {
+    return "Your session may have expired. Please log in again.";
+  }
+  return raw.length > 240 ? raw.slice(0,237)+"..." : raw;
+}
+
+function normalizeStatus(order) {
+  const raw = String(order?.status || order?.provider_state || order?.providerState || "pending").toLowerCase();
+  if (raw.includes("cancel")) return "cancelled";
+  if (raw.includes("refund")) return "refunded";
+  if (raw.includes("fail") || raw.includes("error")) return "failed";
+  if (raw.includes("received") || raw.includes("complete") || raw.includes("success") || order?.otp_code || order?.otp) return "received";
+  if (raw.includes("expire")) return "expired";
+  if (raw.includes("pending") || raw.includes("wait") || raw.includes("active") || raw.includes("sent")) return "pending";
+  return raw || "pending";
+}
+
+function orderNumber(order) {
+  return String(order?.number || order?.phone_number || order?.phoneNumber || "");
+}
+
+function orderOTP(order) {
+  return String(order?.otp_code || order?.otp || order?.code || "");
+}
+
+function orderProvider(order) {
+  return String(order?.provider_key || order?.provider || order?.server || "grizzly").toLowerCase();
+}
+
+function orderExpiresAt(order) {
+  return order?.provider_expires_at || order?.expires_at ||
+    order?.expiry_at || order?.expiresAt || order?.expires || null;
+}
+
+function canCancelOrder(order) {
+  const status = normalizeStatus(order);
+  return ["pending","waiting","active"].includes(status) && !order?.cancelled_at && !order?.refunded_at;
+}
+
+function orderTitle(order) {
+  return order?.service_name || order?.serviceName || order?.service_code || order?.service || "Virtual number";
+}
+
+async function loadAllOrders() {
+  const container = document.getElementById("ordersList");
+  container.innerHTML = '<div class="loading">Loading orders...</div>';
+
+  try {
+    const {data:{user},error:userError} = await supabaseClient.auth.getUser();
+    if (userError || !user) throw new Error("Please log in to view your orders.");
+
+    const {data,error} = await supabaseClient.from("virtual_number_orders")
+      .select("*").eq("user_id",user.id).order("created_at",{ascending:false}).limit(50);
+
+    if (error) throw error;
+    orders = data || [];
+    renderOrders();
+  } catch (error) {
+    container.innerHTML = `<div class="empty">${escapeHTML(formatError(error))}</div>`;
+  }
+}
+
+function renderOrders() {
+  const container = document.getElementById("ordersList");
+  if (!orders.length) {
+    container.innerHTML = '<div class="empty">You have no virtual number orders yet.</div>';
+    return;
+  }
+
+  container.innerHTML = orders.map(order => {
+    const status = normalizeStatus(order);
+    const number = orderNumber(order);
+    const otp = orderOTP(order);
+    const expires = orderExpiresAt(order);
+    const price = order.customer_price_ngn ?? order.customerPriceNgn ?? order.price_ngn;
+    const service = orderTitle(order);
+    const statusLabel = status === "received" ? "Code received" :
+      status.charAt(0).toUpperCase()+status.slice(1);
+    const pendingWithoutNumber = status === "pending" && !number;
+    const numberMarkup = number
+      ? `<div class="order-number">${escapeHTML(number)}</div>`
+      : `<div class="order-meta">${pendingWithoutNumber ? "Your number is still being processed. Please check again shortly." : "No number was returned for this order."}</div>`;
+    const otpMarkup = otp
+      ? `<div class="otp">Verification code: ${escapeHTML(otp)}</div>`
+      : "";
+    const expiresMarkup = expires
+      ? `<div class="order-meta">Expires: ${escapeHTML(new Date(expires).toLocaleString())}</div>`
+      : "";
+    const actions = canCancelOrder(order)
+      ? `<div class="order-actions">
+           <button class="small-button check" type="button" data-check-order="${escapeHTML(order.id)}">Check code</button>
+           <button class="small-button cancel" type="button" data-cancel-order="${escapeHTML(order.id)}">Cancel number</button>
+         </div>`
+      : `<div class="order-actions">
+           ${status === "pending" ? `<button class="small-button check" type="button" data-check-order="${escapeHTML(order.id)}">Check status</button>` : ""}
+         </div>`;
+
+    return `<article class="order">
+      ${numberMarkup}
+      <div class="order-meta">${escapeHTML(service)}</div>
+      <div class="order-meta">Order: ${escapeHTML(order.id ?? "—")}</div>
+      <div class="order-meta">Price: ${price === undefined || price === null ? "—" : naira(price)}</div>
+      <span class="status ${escapeHTML(status)}">${escapeHTML(statusLabel)}</span>
+      ${otpMarkup}
+      ${expiresMarkup}
+      ${pendingWithoutNumber ? '<div class="order-meta">This is not yet a completed purchase. A number will appear here when the provider confirms it.</div>' : ""}
+      ${actions}
+    </article>`;
+  }).join("");
+
+  container.querySelectorAll("[data-check-order]").forEach(button => {
+    button.addEventListener("click",() => checkOrder(button.dataset.checkOrder));
+  });
+  container.querySelectorAll("[data-cancel-order]").forEach(button => {
+    button.addEventListener("click",() => cancelOrder(button.dataset.cancelOrder));
+  });
+}
+
+async function buyNumber() {
+  const button = document.getElementById("buyButton");
+  const message = document.getElementById("buyMessage");
+
+  if (!selectedCountry || !selectedService || !selectedServer) {
+    message.textContent = "Please select a country, service and server first.";
+    return;
+  }
+
+  const price = serverPrice(selectedServer);
+  if (price === null) {
+    message.textContent = "This server has no valid price. Please select another server.";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Processing...";
+  message.textContent = "Checking availability and processing your purchase...";
+
+  try {
+    const response = await api("buy",{
+      country_id:countryId(selectedCountry),
+      country_name:countryName(selectedCountry),
+      country_key:countryKey(selectedCountry),
+      service_code:serviceCode(selectedService),
+      service_name:serviceName(selectedService),
+      server_id:selectedServer?.id ?? selectedServer?.server_id ?? selectedServer?.serverId ?? null,
+      server:selectedServer?.server ?? selectedServer?.name ?? selectedServer?.server_name ?? null,
+      server_data:selectedServer
+    });
+
+    const nested = response?.order || response?.data?.order || response?.data || response?.result || response;
+    const successFlag = response?.success === true || nested?.success === true;
+    const returnedNumber = orderNumber(nested);
+    const returnedId = nested?.id ?? nested?.order_id ?? nested?.orderId ?? nested?.provider_order_id;
+
+    // Never tell the customer a number is ready unless the provider actually returned one.
+    if (!successFlag && !returnedId && !returnedNumber) {
+      throw new Error(response?.message || response?.error || "The provider has not confirmed this purchase. Please check your orders before trying again.");
+    }
+
+    message.textContent = "";
+    await loadAllOrders();
+    await loadWallet();
+
+    if (returnedNumber) {
+      showResultPopup("Purchase successful",`Your number ${returnedNumber} is ready. Check your Orders section for the verification code.`,true);
+    } else {
+      showResultPopup("Purchase processing","Your request has been recorded, but the provider has not returned a number yet. Check Orders shortly. Do not purchase again until the order status is clear.",false);
+    }
+  } catch (error) {
+    const messageText = formatError(error);
+    message.textContent = messageText;
+    showResultPopup("Purchase not confirmed",messageText,false);
+    await loadAllOrders();
+    await loadWallet();
+  } finally {
+    button.textContent = "Buy Number";
+    button.disabled = !selectedServer || serverPrice(selectedServer) === null;
+  }
+}
+
+async function checkOrder(orderId) {
+  const order = orders.find(item => String(item.id) === String(orderId));
+  if (!order) {
+    showResultPopup("Order not found","Refresh the page and try again.",false);
+    return;
+  }
+
+  try {
+    const providerName = orderProvider(order);
+    const result = await api("check",{
+      order_id:order.id,
+      provider_order_id:order.provider_order_id || order.numpool_order_id || order.provider_order_id,
+      number:orderNumber(order)
+    },providerName);
+
+    await loadAllOrders();
+    await loadWallet();
+
+    const nested = result?.order || result?.data || result?.result || result;
+    const otp = orderOTP(nested);
+    if (otp) {
+      showResultPopup("Verification code received",`Your verification code is ${otp}.`,true);
+    } else {
+      showResultPopup("Order status checked","The provider has not delivered a verification code yet. Your order is still being checked.",false);
+    }
+  } catch (error) {
+    showResultPopup("Could not check order",formatError(error),false);
+  }
+}
+
+async function cancelOrder(orderId) {
+  const order = orders.find(item => String(item.id) === String(orderId));
+  if (!order) {
+    showResultPopup("Order not found","Refresh the page and try again.",false);
+    return;
+  }
+  if (!canCancelOrder(order)) {
+    showResultPopup("Cancellation unavailable","This order cannot currently be cancelled.",false);
+    return;
+  }
+
+  const confirmed = await askCancelConfirmation(orderId);
+  if (!confirmed) return;
+
+  const button = document.querySelector(`[data-cancel-order="${CSS.escape(String(orderId))}"]`);
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Cancelling...";
+  }
+
+  try {
+    const result = await api("cancel",{
+      order_id:order.id,
+      provider_order_id:order.provider_order_id || order.numpool_order_id || null,
+      number:orderNumber(order)
+    },orderProvider(order));
+
+    const nested = result?.order || result?.data || result?.result || result;
+    const status = normalizeStatus(nested);
+    await loadAllOrders();
+    await loadWallet();
+
+    if (status === "cancelled" || result?.cancelled === true || result?.refunded === true || nested?.cancelled === true) {
+      showResultPopup("Number cancelled","The provider confirmed cancellation. Any applicable refund will follow your order's refund status.",true);
+    } else {
+      showResultPopup("Cancellation requested","The provider has not confirmed the cancellation yet. Please check your order status before trying again.",false);
+    }
+  } catch (error) {
+    showResultPopup("Cancellation not confirmed",formatError(error),false);
+    await loadAllOrders();
+  } finally {
+    cancellingOrderId = null;
+  }
+}
+
+document.getElementById("cancelConfirmModal").addEventListener("click",event => {
+  if (event.target.id === "cancelConfirmModal") resolveCancelConfirmation(false);
+});
+document.getElementById("cancelResultModal").addEventListener("click",event => {
+  if (event.target.id === "cancelResultModal") closeCancelResult();
+});
+document.addEventListener("keydown",event => {
+  if (event.key === "Escape") {
+    resolveCancelConfirmation(false);
+    closeCancelResult();
+    closeVerificationPopup();
+    closePortalNotice();
+  }
 });
 
-document.addEventListener("DOMContentLoaded",()=>{
- showVerification();
- init();
- if(countdownTimer)clearInterval(countdownTimer);
- countdownTimer=setInterval(updateCountdowns,1000);
-});
+async function initializePage() {
+  try {
+    const {data:{user},error} = await supabaseClient.auth.getUser();
+    if (error || !user) {
+      location.href = "login.html";
+      return;
+    }
+    await Promise.allSettled([loadWallet(),loadWatermark()]);
+    await loadCountries();
+    await loadAllOrders();
+  } catch (error) {
+    console.error("Virtual numbers page initialization failed:",error);
+    showResultPopup("Page loading issue",formatError(error),false);
+  }
+}
+
+initializePage();
 </script>
 </body>
 </html>
