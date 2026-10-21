@@ -1,21 +1,30 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#050505">
+  <meta name="description" content="Manage your Delight Vendor Logs profile, wallet balance, account information, and customer support.">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="My Profile - Delight Vendor Logs">
+  <meta property="og:description" content="Manage your Delight Vendor Logs account and wallet.">
+  <meta property="og:image" content="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="My Profile - Delight Vendor Logs">
+  <meta name="twitter:description" content="Manage your Delight Vendor Logs account and wallet.">
+  <meta name="twitter:image" content="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png">
+
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png">
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png">
 
   <title>My Profile - Delight Vendor Logs</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-
     * {
       box-sizing: border-box;
     }
@@ -28,9 +37,7 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    /* =========================
-       PROFILE HEADER
-    ========================= */
+    /* PROFILE HEADER */
 
     .profile-header {
       margin: 20px 28px 28px;
@@ -43,11 +50,7 @@
           rgba(212,175,55,.12),
           transparent 35%
         ),
-        linear-gradient(
-          135deg,
-          #17130a,
-          #050505
-        );
+        linear-gradient(135deg, #17130a, #050505);
       display: flex;
       align-items: center;
       gap: 18px;
@@ -66,46 +69,56 @@
       border-radius: 50%;
       right: -90px;
       top: -100px;
+      pointer-events: none;
     }
 
+    /* REAL DV LOGO */
+
     .dv-logo {
-      width: 72px;
-      height: 72px;
-      min-width: 72px;
-      border-radius: 22px;
+      width: 76px;
+      height: 76px;
+      min-width: 76px;
+      padding: 5px;
+      border-radius: 20px;
       background: rgba(212,175,55,.10);
       border: 2px solid rgba(212,175,55,.28);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 30px;
-      font-weight: 800;
-      color: #d4af37;
       position: relative;
       z-index: 2;
+      overflow: hidden;
+    }
+
+    .dv-logo img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 13px;
     }
 
     .header-text {
       position: relative;
       z-index: 2;
+      min-width: 0;
     }
 
     .header-text h1 {
       margin: 0 0 7px;
       font-size: 24px;
-      line-height: 1.15;
+      line-height: 1.2;
       color: #ffffff;
+      overflow-wrap: anywhere;
     }
 
     .header-text p {
       margin: 0;
       color: rgba(255,255,255,.58);
-      font-size: 16px;
+      font-size: 15px;
     }
 
-    /* =========================
-       SECTIONS
-    ========================= */
+    /* SECTIONS */
 
     .section {
       margin: 0 28px 25px;
@@ -130,9 +143,7 @@
       flex: 1;
     }
 
-    /* =========================
-       CARD
-    ========================= */
+    /* CARDS */
 
     .card {
       background: #0d0d0d;
@@ -187,18 +198,12 @@
       word-break: break-word;
     }
 
-    /* =========================
-       WALLET
-    ========================= */
+    /* WALLET */
 
     .wallet-card {
       padding: 20px 22px;
       border-radius: 24px;
-      background: linear-gradient(
-        135deg,
-        #191407,
-        #080808
-      );
+      background: linear-gradient(135deg, #191407, #080808);
       color: white;
       border: 1px solid #332a12;
     }
@@ -212,6 +217,7 @@
     .wallet-icon {
       width: 54px;
       height: 54px;
+      min-width: 54px;
       border-radius: 16px;
       background: rgba(212,175,55,.10);
       display: flex;
@@ -233,6 +239,7 @@
       font-size: 25px;
       font-weight: 800;
       color: #d4af37;
+      overflow-wrap: anywhere;
     }
 
     .fund-wallet {
@@ -248,12 +255,18 @@
       cursor: pointer;
     }
 
-    /* =========================
-       CLICKABLE ROW
-    ========================= */
+    .fund-wallet:hover {
+      background: #f0cf68;
+    }
+
+    /* CLICKABLE ROWS */
 
     .clickable {
       cursor: pointer;
+    }
+
+    .clickable:hover {
+      background: #14120b;
     }
 
     .arrow {
@@ -262,60 +275,64 @@
       line-height: 1;
     }
 
-    /* =========================
-       BUTTONS
-    ========================= */
+    /* BUTTONS */
 
-    .logout {
-      display: block;
-      width: calc(100% - 56px);
-      margin: 5px 28px 13px;
-      padding: 17px;
-      border: 0;
-      border-radius: 20px;
-      background: linear-gradient(
-        135deg,
-        #d4af37,
-        #f0cf68
-      );
-      color: #080808;
-      font-size: 18px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
+    .logout,
     .back-dashboard {
       display: block;
       width: calc(100% - 56px);
-      margin: 0 28px 20px;
+      margin-left: 28px;
+      margin-right: 28px;
       padding: 16px;
-      border: 2px solid #3a3017;
       border-radius: 20px;
-      background: transparent;
-      color: #d4af37;
       font-size: 17px;
       font-weight: 800;
       cursor: pointer;
     }
 
-    /* =========================
-       CONTACT SUPPORT
-    ========================= */
+    .logout {
+      margin-top: 5px;
+      margin-bottom: 13px;
+      border: 0;
+      background: linear-gradient(135deg, #d4af37, #f0cf68);
+      color: #080808;
+    }
+
+    .back-dashboard {
+      margin-top: 0;
+      margin-bottom: 20px;
+      border: 2px solid #3a3017;
+      background: transparent;
+      color: #d4af37;
+    }
+
+    .logout:hover {
+      filter: brightness(1.08);
+    }
+
+    .back-dashboard:hover {
+      background: #15120a;
+    }
+
+    /* CONTACT SUPPORT MODAL */
 
     .contact-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,.70);
+      background: rgba(0,0,0,.78);
       z-index: 999;
       align-items: center;
       justify-content: center;
       padding: 20px;
+      overflow-y: auto;
     }
 
     .contact-modal {
       width: 100%;
       max-width: 430px;
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
       background: #0d0d0d;
       border: 1px solid #292929;
       border-radius: 25px;
@@ -349,6 +366,7 @@
       margin: 0 0 20px;
       color: #777777;
       font-size: 14px;
+      line-height: 1.5;
     }
 
     .contact-option {
@@ -363,6 +381,7 @@
       color: white;
       font-size: 16px;
       font-weight: 800;
+      overflow-wrap: anywhere;
     }
 
     .contact-option.telegram {
@@ -371,6 +390,13 @@
 
     .contact-option.whatsapp {
       background: #25d366;
+      color: #062b15;
+    }
+
+    .contact-option.email {
+      background: #17130a;
+      border: 1px solid #55451b;
+      color: #f0cf68;
     }
 
     .contact-icon {
@@ -388,18 +414,19 @@
     .contact-option-text {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 4px;
+      min-width: 0;
+      overflow-wrap: anywhere;
     }
 
     .contact-option-text span {
       font-size: 12px;
       font-weight: 600;
-      opacity: .8;
+      opacity: .85;
+      overflow-wrap: anywhere;
     }
 
-    /* =========================
-       FOOTER
-    ========================= */
+    /* FOOTER */
 
     .support-text {
       text-align: center;
@@ -419,574 +446,517 @@
       background: #111008;
       font-size: 13px;
       font-weight: 700;
+      text-align: center;
     }
 
     #message {
       text-align: center;
       margin: 10px 20px;
-      color: #d22;
+      color: #ff7777;
+      overflow-wrap: anywhere;
     }
 
+    /* MOBILE RESPONSIVENESS */
+
+    @media (max-width: 480px) {
+      .profile-header {
+        margin: 15px 14px 24px;
+        padding: 17px 13px;
+        gap: 12px;
+        min-height: 120px;
+        border-radius: 22px;
+      }
+
+      .dv-logo {
+        width: 62px;
+        height: 62px;
+        min-width: 62px;
+        border-radius: 17px;
+      }
+
+      .header-text h1 {
+        font-size: 19px;
+      }
+
+      .header-text p {
+        font-size: 13px;
+      }
+
+      .section {
+        margin-left: 14px;
+        margin-right: 14px;
+        margin-bottom: 22px;
+      }
+
+      .profile-row {
+        padding: 16px;
+        gap: 13px;
+        min-height: 88px;
+      }
+
+      .icon-box {
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        border-radius: 15px;
+        font-size: 23px;
+      }
+
+      .row-label {
+        font-size: 12px;
+      }
+
+      .row-value {
+        font-size: 16px;
+      }
+
+      .wallet-card {
+        padding: 18px;
+      }
+
+      .wallet-balance {
+        font-size: 23px;
+      }
+
+      .logout,
+      .back-dashboard {
+        width: calc(100% - 28px);
+        margin-left: 14px;
+        margin-right: 14px;
+        font-size: 16px;
+      }
+
+      .contact-modal {
+        padding: 20px 16px;
+        border-radius: 21px;
+      }
+
+      .contact-option {
+        gap: 11px;
+        padding: 12px;
+        font-size: 14px;
+      }
+
+      .contact-icon {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        font-size: 21px;
+      }
+
+      .contact-option-text span {
+        font-size: 11px;
+      }
+    }
   </style>
-
 </head>
-
 
 <body>
 
+  <!-- PROFILE HEADER -->
 
-<!-- =========================
-     PROFILE HEADER
-========================= -->
+  <div class="profile-header">
 
-<div class="profile-header">
+    <div class="dv-logo">
+      <img
+        src="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png"
+        alt="Delight Vendor Logs logo"
+        onerror="this.style.display='none';this.parentElement.textContent='DV';this.parentElement.style.fontSize='27px';this.parentElement.style.fontWeight='800';this.parentElement.style.color='#d4af37';"
+      >
+    </div>
 
-  <div class="dv-logo">
-    DV
-  </div>
-
-  <div class="header-text">
-
-    <h1>
-      Delight Vendor Logs
-    </h1>
-
-    <p id="memberSince">
-      Member since...
-    </p>
+    <div class="header-text">
+      <h1>Delight Vendor Logs</h1>
+      <p id="memberSince">Member since...</p>
+    </div>
 
   </div>
 
-</div>
 
+  <!-- ACCOUNT INFORMATION -->
 
-<!-- =========================
-     ACCOUNT INFORMATION
-========================= -->
+  <section class="section">
 
-<section class="section">
+    <div class="section-title">
+      Account Information
+    </div>
 
-  <div class="section-title">
-    Account Information
-  </div>
+    <div class="card">
 
-  <div class="card">
+      <div class="profile-row">
 
-    <div class="profile-row">
+        <div class="icon-box">👤</div>
 
-      <div class="icon-box">
-        👤
-      </div>
-
-      <div class="row-info">
-
-        <div class="row-label">
-          Full Name
+        <div class="row-info">
+          <div class="row-label">Full Name</div>
+          <div class="row-value" id="userName">Loading...</div>
         </div>
 
-        <div
-          class="row-value"
-          id="userName"
-        >
-          Loading...
+      </div>
+
+      <div class="profile-row">
+
+        <div class="icon-box">✉️</div>
+
+        <div class="row-info">
+          <div class="row-label">Email</div>
+          <div class="row-value" id="userEmail">Loading...</div>
         </div>
 
       </div>
 
     </div>
 
+  </section>
 
-    <div class="profile-row">
 
-      <div class="icon-box">
-        ✉️
+  <!-- WALLET -->
+
+  <section class="section">
+
+    <div class="section-title">
+      Wallet
+    </div>
+
+    <div class="wallet-card">
+
+      <div class="wallet-title">
+
+        <div class="wallet-icon">💳</div>
+
+        <div>
+          <div class="wallet-label">Available Wallet</div>
+          <div class="wallet-balance" id="walletBalance">₦0.00</div>
+        </div>
+
       </div>
 
-      <div class="row-info">
+      <button
+        class="fund-wallet"
+        type="button"
+        onclick="window.location.href='wallet.html'"
+      >
+        + Fund Wallet
+      </button>
 
-        <div class="row-label">
-          Email
+    </div>
+
+  </section>
+
+
+  <!-- SUPPORT -->
+
+  <section class="section">
+
+    <div class="section-title">
+      Support
+    </div>
+
+    <div class="card">
+
+      <div
+        class="profile-row clickable"
+        role="button"
+        tabindex="0"
+        onclick="openContactSupport()"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openContactSupport();}"
+      >
+
+        <div class="icon-box">🎧</div>
+
+        <div class="row-info">
+          <div class="row-value">Help &amp; Support</div>
+          <div class="row-label" style="margin-top:5px;text-transform:none;">
+            Telegram, WhatsApp and Email
+          </div>
         </div>
 
-        <div
-          class="row-value"
-          id="userEmail"
-        >
-          Loading...
-        </div>
+        <div class="arrow">›</div>
 
       </div>
 
     </div>
 
+  </section>
+
+
+  <!-- LOG OUT -->
+
+  <button
+    class="logout"
+    type="button"
+    onclick="logout()"
+  >
+    ⇥ &nbsp; Log Out
+  </button>
+
+
+  <!-- BACK TO DASHBOARD -->
+
+  <button
+    class="back-dashboard"
+    type="button"
+    onclick="window.location.href='dashboard.html'"
+  >
+    ← &nbsp; Back to Dashboard
+  </button>
+
+
+  <div class="support-text">
+    Need help? Contact us on WhatsApp 💬
   </div>
 
-</section>
-
-
-<!-- =========================
-     WALLET
-========================= -->
-
-<section class="section">
-
-  <div class="section-title">
-    Wallet
+  <div class="member-badge" id="memberBadge">
+    DV Member since...
   </div>
 
-  <div class="wallet-card">
-
-    <div class="wallet-title">
-
-      <div class="wallet-icon">
-        💳
-      </div>
-
-      <div>
-
-        <div class="wallet-label">
-          Available Wallet
-        </div>
-
-        <div
-          class="wallet-balance"
-          id="walletBalance"
-        >
-          ₦0.00
-        </div>
-
-      </div>
-
-    </div>
-
-    <button
-      class="fund-wallet"
-      type="button"
-      onclick="window.location.href='wallet.html'"
-    >
-      + Fund Wallet
-    </button>
-
-  </div>
-
-</section>
+  <p id="message" role="alert"></p>
 
 
-<!-- =========================
-     SUPPORT
-========================= -->
-
-<section class="section">
-
-  <div class="section-title">
-    Support
-  </div>
-
-  <div class="card">
-
-    <div
-      class="profile-row clickable"
-      onclick="openContactSupport()"
-    >
-
-      <div class="icon-box">
-        🎧
-      </div>
-
-      <div class="row-info">
-
-        <div class="row-value">
-          Help &amp; Support
-        </div>
-
-      </div>
-
-      <div class="arrow">
-        ›
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- =========================
-     LOG OUT
-========================= -->
-
-<button
-  class="logout"
-  type="button"
-  onclick="logout()"
->
-  ⇥ &nbsp; Log Out
-</button>
-
-
-<!-- =========================
-     BACK TO DASHBOARD
-========================= -->
-
-<button
-  class="back-dashboard"
-  type="button"
-  onclick="window.location.href='dashboard.html'"
->
-  ← &nbsp; Back to Dashboard
-</button>
-
-
-<div class="support-text">
-  Need help? Contact us on WhatsApp 💬
-</div>
-
-
-<div
-  class="member-badge"
-  id="memberBadge"
->
-  DV Member since...
-</div>
-
-
-<p id="message"></p>
-
-
-<!-- =========================
-     CONTACT SUPPORT MODAL
-========================= -->
-
-<div
-  class="contact-overlay"
-  id="contactOverlay"
-  onclick="closeContactSupport(event)"
->
+  <!-- CONTACT SUPPORT MODAL -->
 
   <div
-    class="contact-modal"
-    onclick="event.stopPropagation()"
+    class="contact-overlay"
+    id="contactOverlay"
+    onclick="closeContactSupport(event)"
   >
 
-    <button
-      class="contact-close"
-      type="button"
-      onclick="closeContactSupport()"
-    >
-      ×
-    </button>
-
-    <h2 class="contact-title">
-      Contact Support
-    </h2>
-
-    <p class="contact-subtitle">
-      Choose where you want to contact us.
-    </p>
-
-
-    <a
-      class="contact-option telegram"
-      href="https://t.me/DelightVendorLogsSupportBot"
-      target="_blank"
-      rel="noopener noreferrer"
+    <div
+      class="contact-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="contactTitle"
+      onclick="event.stopPropagation()"
     >
 
-      <div class="contact-icon">
-        ✈️
-      </div>
+      <button
+        class="contact-close"
+        type="button"
+        aria-label="Close support options"
+        onclick="closeContactSupport()"
+      >
+        ×
+      </button>
 
-      <div class="contact-option-text">
-        Contact Us on Telegram
-        <span>
-          @DelightVendorLogsSupportBot
-        </span>
-      </div>
+      <h2 class="contact-title" id="contactTitle">
+        Contact Support
+      </h2>
 
-    </a>
+      <p class="contact-subtitle">
+        Choose how you would like to contact Delight Vendor Logs support.
+      </p>
 
 
-    <a
-      class="contact-option whatsapp"
-      href="https://wa.me/2347015908401"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
+      <!-- TELEGRAM -->
 
-      <div class="contact-icon">
-        ☎
-      </div>
+      <a
+        class="contact-option telegram"
+        href="https://t.me/DelightVendorLogsSupportBot"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
 
-      <div class="contact-option-text">
-        Contact Us on WhatsApp
-        <span>
-          WhatsApp Support
-        </span>
-      </div>
+        <div class="contact-icon">✈️</div>
 
-    </a>
+        <div class="contact-option-text">
+          Contact Us on Telegram
+          <span>@DelightVendorLogsSupportBot</span>
+        </div>
+
+      </a>
+
+
+      <!-- WHATSAPP -->
+
+      <a
+        class="contact-option whatsapp"
+        href="https://wa.me/2347015908401"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+
+        <div class="contact-icon">☎</div>
+
+        <div class="contact-option-text">
+          Contact Us on WhatsApp
+          <span>Chat with our support team</span>
+        </div>
+
+      </a>
+
+
+      <!-- EMAIL SUPPORT -->
+
+      <a
+        class="contact-option email"
+        href="mailto:delightvendorlogs@gmail.com?subject=Delight%20Vendor%20Logs%20Support"
+      >
+
+        <div class="contact-icon">✉️</div>
+
+        <div class="contact-option-text">
+          Contact Us by Email
+          <span>delightvendorlogs@gmail.com</span>
+        </div>
+
+      </a>
+
+    </div>
 
   </div>
 
-</div>
 
+  <script>
+    /* SUPABASE */
 
-<script>
+    const SUPABASE_URL =
+      "https://hkfhehbhmucymusaytoe.supabase.co";
 
-/* =========================
-   SUPABASE
-========================= */
+    const SUPABASE_KEY =
+      "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
-const SUPABASE_URL =
-  "https://hkfhehbhmucymusaytoe.supabase.co";
-
-const SUPABASE_KEY =
-  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
-
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
-
-/* =========================
-   CONTACT SUPPORT
-========================= */
-
-function openContactSupport() {
-
-  document
-    .getElementById("contactOverlay")
-    .style.display = "flex";
-
-}
-
-
-function closeContactSupport(event) {
-
-  if (
-    event &&
-    event.target !==
-      document.getElementById("contactOverlay")
-  ) {
-
-    return;
-
-  }
-
-
-  document
-    .getElementById("contactOverlay")
-    .style.display = "none";
-
-}
-
-
-/* =========================
-   WHATSAPP
-========================= */
-
-function openWhatsApp() {
-
-  window.open(
-    "https://wa.me/2347015908401",
-    "_blank"
-  );
-
-}
-
-
-/* =========================
-   LOAD PROFILE
-========================= */
-
-async function loadProfile() {
-
-  const {
-    data: {
-      user
-    },
-    error
-  } =
-    await supabaseClient.auth.getUser();
-
-
-  if (error || !user) {
-
-    window.location.href =
-      "login.html";
-
-    return;
-
-  }
-
-
-  /* =========================
-     NAME
-  ========================= */
-
-  let name =
-    user.user_metadata?.name;
-
-
-  if (!name) {
-
-    const firstName =
-      user.user_metadata?.first_name || "";
-
-    const lastName =
-      user.user_metadata?.last_name || "";
-
-    name =
-      (
-        firstName +
-        " " +
-        lastName
-      ).trim();
-
-  }
-
-
-  document
-    .getElementById("userName")
-    .textContent =
-      name || "Not set";
-
-
-  /* =========================
-     EMAIL
-  ========================= */
-
-  document
-    .getElementById("userEmail")
-    .textContent =
-      user.email || "Not available";
-
-
-  /* =========================
-     MEMBER SINCE
-     FETCHED FROM SUPABASE
-  ========================= */
-
-  if (user.created_at) {
-
-    const joinedDate =
-      new Date(user.created_at);
-
-
-    const memberSince =
-      joinedDate.toLocaleDateString(
-        "en-US",
-        {
-          month: "long",
-          year: "numeric"
-        }
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
       );
 
 
-    document
-      .getElementById("memberSince")
-      .textContent =
-        "Member since " +
-        memberSince;
+    /* CONTACT SUPPORT */
+
+    function openContactSupport() {
+      document.getElementById("contactOverlay").style.display = "flex";
+    }
+
+    function closeContactSupport(event) {
+      if (
+        event &&
+        event.target !== document.getElementById("contactOverlay")
+      ) {
+        return;
+      }
+
+      document.getElementById("contactOverlay").style.display = "none";
+    }
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Escape") {
+        document.getElementById("contactOverlay").style.display = "none";
+      }
+    });
 
 
-    document
-      .getElementById("memberBadge")
-      .textContent =
-        "DV Member since " +
-        memberSince;
+    /* LOAD PROFILE */
 
-  }
+    async function loadProfile() {
+      const {
+        data: { user },
+        error
+      } = await supabaseClient.auth.getUser();
 
-
-  /* =========================
-     WALLET
-  ========================= */
-
-  const {
-    data: balance,
-    error: walletError
-  } =
-    await supabaseClient.rpc(
-      "get_my_wallet"
-    );
+      if (error || !user) {
+        window.location.href = "login.html";
+        return;
+      }
 
 
-  if (walletError) {
+      /* NAME */
 
-    console.error(
-      "Wallet error:",
-      walletError
-    );
+      let name = user.user_metadata?.name;
 
-    document
-      .getElementById("walletBalance")
-      .textContent =
-        "Unable to load";
+      if (!name) {
+        const firstName =
+          user.user_metadata?.first_name || "";
 
-    return;
+        const lastName =
+          user.user_metadata?.last_name || "";
 
-  }
+        name = (firstName + " " + lastName).trim();
+      }
+
+      document.getElementById("userName").textContent =
+        name || "Not set";
 
 
-  document
-    .getElementById("walletBalance")
-    .textContent =
-      "₦" +
-      Number(balance || 0)
-        .toLocaleString(
+      /* EMAIL */
+
+      document.getElementById("userEmail").textContent =
+        user.email || "Not available";
+
+
+      /* MEMBER SINCE */
+
+      if (user.created_at) {
+        const joinedDate = new Date(user.created_at);
+
+        const memberSince = joinedDate.toLocaleDateString(
+          "en-US",
+          {
+            month: "long",
+            year: "numeric"
+          }
+        );
+
+        document.getElementById("memberSince").textContent =
+          "Member since " + memberSince;
+
+        document.getElementById("memberBadge").textContent =
+          "DV Member since " + memberSince;
+      }
+
+
+      /* WALLET
+         Keep using the existing Supabase RPC.
+      */
+
+      const {
+        data: balance,
+        error: walletError
+      } = await supabaseClient.rpc("get_my_wallet");
+
+      if (walletError) {
+        console.error("Wallet error:", walletError);
+
+        document.getElementById("walletBalance").textContent =
+          "Unable to load";
+
+        return;
+      }
+
+      document.getElementById("walletBalance").textContent =
+        "₦" +
+        Number(balance || 0).toLocaleString(
           "en-NG",
           {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
           }
         );
-
-}
-
-
-/* =========================
-   LOG OUT
-========================= */
-
-async function logout() {
-
-  const {
-    error
-  } =
-    await supabaseClient.auth.signOut();
+    }
 
 
-  if (error) {
+    /* LOG OUT */
 
-    document
-      .getElementById("message")
-      .textContent =
-        error.message;
+    async function logout() {
+      const {
+        error
+      } = await supabaseClient.auth.signOut();
 
-    return;
+      if (error) {
+        document.getElementById("message").textContent =
+          error.message;
 
-  }
+        return;
+      }
+
+      window.location.href = "login.html";
+    }
 
 
-  window.location.href =
-    "login.html";
+    /* START */
 
-}
-
-
-/* =========================
-   START
-========================= */
-
-loadProfile();
-
-</script>
-
+    loadProfile();
+  </script>
 
 </body>
-
 </html>
