@@ -23,7 +23,56 @@ button{cursor:pointer}
 button:disabled{opacity:.55;cursor:not-allowed}
 .container{max-width:900px;margin:auto;padding:16px}
 header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
-.brand{color:var(--gold-light);font-weight:900;font-size:20px}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:var(--gold-light);
+  font-weight:900;
+  font-size:20px;
+  min-width:0;
+}
+
+.brand-logo{
+  width:48px;
+  height:48px;
+  flex-shrink:0;
+  object-fit:contain;
+  display:block;
+  border-radius:10px;
+}
+
+.brand-text{
+  display:block;
+  min-width:0;
+  line-height:1.2;
+}
+
+.brand small{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:500;
+  margin-top:4px;
+}
+
+@media(max-width:480px){
+  .brand{
+    font-size:15px;
+    gap:7px;
+  }
+
+  .brand-logo{
+    width:42px;
+    height:42px;
+  }
+
+  .brand small{
+    font-size:10px;
+  }
+}
+
 .brand small{display:block;color:var(--muted);font-size:11px;font-weight:500;margin-top:4px}
 .wallet{border:1px solid var(--border);background:linear-gradient(135deg,#211c0d,#111);border-radius:14px;padding:12px 15px;min-width:125px;flex-shrink:0}
 .wallet small{color:var(--muted);display:block;font-size:11px;margin-bottom:5px}
@@ -172,7 +221,19 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
 
 <div class="container">
 <header>
- <div class="brand">Delight Vendor Logs<small>Virtual Number Services</small></div>
+
+<div class="brand">
+  <img
+    class="brand-logo"
+    src="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png"
+    alt="Delight Vendor Logs logo"
+  >
+  <div class="brand-text">
+    Delight Vendor Logs
+    <small>Virtual Number Services</small>
+  </div>
+</div>
+
  <div class="wallet">
   <small>Wallet Balance</small>
   <strong id="walletBalance">Loading…</strong>
