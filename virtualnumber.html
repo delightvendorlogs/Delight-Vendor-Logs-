@@ -863,32 +863,71 @@ async function refreshOrders(){
  await Promise.allSettled([loadOrders(),refreshWallet()]);
 }
 
+
 async function loadOrders(){
  if(!currentUser){
   $("ordersList").innerHTML='<div class="empty">Sign in to view your orders.</div>';
   return;
  }
+
  const userId=currentUser.id;
+
  try{
-  /* Select the actual saved columns instead of an empty column list. */
   const {data,error}=await sb.from("virtual_number_orders")
    .select("*")
    .eq("user_id",userId)
    .order("created_at",{ascending:false})
    .limit(50);
+
   if(error)throw error;
   if(currentUser?.id!==userId)return;
-  allOrders=data||[];
+
+  /*
+   * Hide ONLY automatic refunds caused by insufficient provider funds.
+   *
+   * These are failed purchase attempts, not real purchased numbers.
+   * Keep the database records for auditing and refund history.
+   *
+   * Do not hide ordinary cancelled orders or refunds for real numbers.
+   */
+  const automaticRefundMarkers = [
+   "provider_insufficient_funds_refunded",
+   "virtualsms_insufficient_funds_refunded"
+  ];
+
+  allOrders=(data||[]).filter(o=>{
+   const providerState=String(o.provider_state||"")
+    .trim()
+    .toLowerCase();
+
+   const isAutomaticProviderRefund=automaticRefundMarkers.some(marker=>
+    providerState===marker || providerState.includes(marker)
+   );
+
+   // Hide only these automatic provider-insufficient-funds refunds.
+   // Genuine cancelled or refunded number orders remain visible.
+   return !isAutomaticProviderRefund;
+  });
+
   renderOrders();
   showMessage("ordersMessage","");
+
  }catch(e){
   console.error("Order history loading failed:",e);
+
   if(currentUser?.id===userId){
-   $("ordersList").innerHTML='<div class="empty">Unable to load your order history. <button class="btn btn-dark" onclick="loadOrders()">Retry</button></div>';
-   showMessage("ordersMessage","Order history could not be refreshed. Please try again.","error");
+   $("ordersList").innerHTML=
+    '<div class="empty">Unable to load your order history. <button class="btn btn-dark" onclick="loadOrders()">Retry</button></div>';
+
+   showMessage(
+    "ordersMessage",
+    "Order history could not be refreshed. Please try again.",
+    "error"
+   );
   }
  }
 }
+
 
 function normalizeStatus(o){
  const s=String(o.status||o.provider_state||"waiting").toLowerCase().trim();
