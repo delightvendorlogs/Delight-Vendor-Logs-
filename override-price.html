@@ -9,43 +9,75 @@
 <title>Price Overrides — Delight Vendor Logs</title>
 <link rel="icon" href="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
 <style>
 :root{color-scheme:dark;--bg:#090909;--panel:#141414;--panel2:#1c1c1c;--border:#303030;--text:#f6f6f6;--muted:#a0a0a0;--accent:#d8ff45;--danger:#ff6868;--success:#9ee6a5}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
-button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
 header{padding:18px 16px;border-bottom:1px solid var(--border);background:#101010;position:sticky;top:0;z-index:5}
 .head-inner{max-width:1150px;margin:auto;display:flex;align-items:center;gap:12px}
-.logo{width:39px;height:39px;object-fit:contain}.brand{font-weight:800;font-size:17px}.subtitle{color:var(--muted);font-size:12px}
+.logo{width:39px;height:39px;object-fit:contain}
+.brand{font-weight:800;font-size:17px}
+.subtitle{color:var(--muted);font-size:12px}
 main{max-width:1150px;margin:25px auto;padding:0 15px 60px}
-h1{font-size:25px;margin:0 0 5px}h2{font-size:17px;margin:0}p{margin:5px 0}
-.muted{color:var(--muted)}.small{font-size:12px}
+h1{font-size:25px;margin:0 0 5px}
+h2{font-size:17px;margin:0}
+p{margin:5px 0}
+.muted{color:var(--muted)}
+.small{font-size:12px}
 .panel{background:var(--panel);border:1px solid var(--border);border-radius:15px;padding:18px;margin-top:18px}
 .tabs{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}
 .tab,.btn{border:1px solid var(--border);border-radius:9px;padding:10px 14px;background:var(--panel2);color:var(--text)}
 .tab.active,.btn.primary{background:var(--accent);color:#101010;border-color:var(--accent);font-weight:750}
-.btn.danger{color:var(--danger);border-color:#633434}.btn.smallbtn{padding:6px 9px;font-size:12px}
+.btn.danger{color:var(--danger);border-color:#633434}
+.btn.smallbtn{padding:6px 9px;font-size:12px}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field label{font-size:13px;color:#d4d4d4}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label{font-size:13px;color:#d4d4d4}
 input,select{width:100%;min-width:0;padding:12px;border:1px solid #3b3b3b;border-radius:9px;background:#0c0c0c;color:var(--text)}
 input:focus,select:focus{outline:2px solid #8ea82e;border-color:transparent}
 input::placeholder{color:#737373}
-.checkrow{display:flex;gap:9px;align-items:center;margin:12px 0}.checkrow input{width:auto}
+.checkrow{display:flex;gap:9px;align-items:center;margin:12px 0}
+.checkrow input{width:auto}
 .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
 .notice{padding:12px;border-radius:9px;margin-top:12px;font-size:13px;display:none}
-.notice.show{display:block}.notice.error{background:#321919;color:#ffb5b5}.notice.ok{background:#162919;color:#b8f3bf}.notice.info{background:#22251a;color:#e7efba}
+.notice.show{display:block}
+.notice.error{background:#321919;color:#ffb5b5}
+.notice.ok{background:#162919;color:#b8f3bf}
+.notice.info{background:#22251a;color:#e7efba}
 .rule-summary{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
-.stat{background:#101010;border:1px solid var(--border);padding:10px 13px;border-radius:10px}.stat strong{font-size:20px;display:block}
-.searchbar{margin:14px 0}.table-wrap{overflow-x:auto;margin-top:12px}
+.stat{background:#101010;border:1px solid var(--border);padding:10px 13px;border-radius:10px}
+.stat strong{font-size:20px;display:block}
+.searchbar{margin:14px 0}
+.table-wrap{overflow-x:auto;margin-top:12px}
 table{width:100%;border-collapse:collapse;min-width:760px}
 th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--border);font-size:13px}
 th{color:var(--muted);font-weight:600}
 .pill{display:inline-block;padding:4px 8px;border-radius:30px;font-size:11px;background:#292929}
-.pill.on{background:#18301d;color:#b7efbd}.pill.off{background:#342020;color:#ffb6b6}
-.empty{text-align:center;padding:28px 10px;color:var(--muted)}.hidden{display:none!important}
+.pill.on{background:#18301d;color:#b7efbd}
+.pill.off{background:#342020;color:#ffb6b6}
+.empty{text-align:center;padding:28px 10px;color:var(--muted)}
+.hidden{display:none!important}
 .priority-list{margin:12px 0 0;padding-left:22px;color:#c8c8c8;font-size:13px}
 .priority-list li{margin:5px 0}
 footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
+
+/* Searchable country and service dropdowns */
+.choices{margin-bottom:0;width:100%}
+.choices__inner{background:#0c0c0c;border:1px solid #3b3b3b;border-radius:9px;color:#f6f6f6;min-height:46px;padding:7px 10px;font-size:15px}
+.choices__input{background:#0c0c0c!important;color:#f6f6f6!important;margin-bottom:0!important}
+.choices__list--single{padding:4px 16px 4px 4px}
+.choices__list--dropdown,.choices__list[aria-expanded]{background:#141414;border:1px solid #3b3b3b;color:#f6f6f6;z-index:30;word-break:break-word}
+.choices__list--dropdown .choices__item--selectable.is-highlighted,.choices__list[aria-expanded] .choices__item--selectable.is-highlighted{background:#292929;color:#d8ff45}
+.choices__list--dropdown .choices__item,.choices__list[aria-expanded] .choices__item{padding:10px}
+.choices[data-type*=select-one]::after{border-color:#d8ff45 transparent transparent}
+.choices.is-focused .choices__inner,.choices.is-open .choices__inner{border-color:#8ea82e}
+.choices.is-disabled .choices__inner{opacity:.5;cursor:not-allowed}
 @media(max-width:650px){.grid{grid-template-columns:1fr}.panel{padding:14px}h1{font-size:22px}header{padding:12px}}
 </style>
 </head>
@@ -116,7 +148,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
             <select id="countrySelect">
               <option value="">Loading countries…</option>
             </select>
-            <span id="countryHelp" class="muted small">Choose a country or select All countries.</span>
+            <span id="countryHelp" class="muted small">Type to search for a country, or select All countries.</span>
           </div>
 
           <div class="field">
@@ -124,7 +156,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
             <select id="serviceSelect">
               <option value="">Loading services…</option>
             </select>
-            <span id="serviceHelp" class="muted small">Choose a service or select All services.</span>
+            <span id="serviceHelp" class="muted small">Type to search for a service, or select All services.</span>
           </div>
 
           <div class="field">
@@ -191,6 +223,8 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
   let services = [];
   let busy = false;
   let catalogRequest = 0;
+  let countryChoices = null;
+  let serviceChoices = null;
 
   function escapeHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, ch => ({
@@ -315,6 +349,68 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     return data;
   }
 
+  function destroySearchableDropdowns() {
+    if (countryChoices) {
+      countryChoices.destroy();
+      countryChoices = null;
+    }
+    if (serviceChoices) {
+      serviceChoices.destroy();
+      serviceChoices = null;
+    }
+  }
+
+  function initSearchableDropdowns() {
+    if (!window.Choices) {
+      throw new Error("Search dropdown library did not load. Check your internet connection and refresh the page.");
+    }
+
+    destroySearchableDropdowns();
+
+    countryChoices = new Choices($("countrySelect"), {
+      searchEnabled: true,
+      searchPlaceholderValue: "Type a country to search...",
+      shouldSort: false,
+      itemSelectText: "",
+      allowHTML: false,
+      searchResultLimit: 100,
+      fuseOptions: {threshold: 0.35}
+    });
+
+    serviceChoices = new Choices($("serviceSelect"), {
+      searchEnabled: true,
+      searchPlaceholderValue: "Type a service to search...",
+      shouldSort: false,
+      itemSelectText: "",
+      allowHTML: false,
+      searchResultLimit: 100,
+      fuseOptions: {threshold: 0.35}
+    });
+  }
+
+  function setDropdownValue(type, value) {
+    const instance = type === "country" ? countryChoices : serviceChoices;
+    const select = type === "country" ? $("countrySelect") : $("serviceSelect");
+
+    if (instance) {
+      instance.setChoiceByValue(String(value));
+    } else {
+      select.value = String(value);
+    }
+  }
+
+  function refreshDropdownChoices() {
+    if (countryChoices) {
+      countryChoices.destroy();
+      countryChoices = null;
+    }
+    if (serviceChoices) {
+      serviceChoices.destroy();
+      serviceChoices = null;
+    }
+    initSearchableDropdowns();
+  }
+
   async function verifyAdmin() {
     const {data: sessionData, error: sessionError} = await sb.auth.getSession();
     if (sessionError) throw sessionError;
@@ -357,6 +453,8 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
 
   async function loadCatalogs() {
     const request = ++catalogRequest;
+    destroySearchableDropdowns();
+
     $("countrySelect").replaceChildren(option("Loading countries…", ""));
     $("serviceSelect").replaceChildren(option("Loading services…", ""));
     $("countrySelect").disabled = true;
@@ -364,7 +462,6 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
 
     try {
       if (provider === "textverified") {
-        // The supplied TextVerified pricing function uses United States, ID 187.
         countries = [{value:"US",name:"United States",country_id:187}];
 
         const result = await sb.functions.invoke("text-verified-api", {
@@ -372,13 +469,12 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
         });
         const data = assertFunctionResult(result, "TextVerified services");
         services = normalizeList(data, "services");
-
       } else {
-        // Use the real provider catalog; do not invent country or service choices.
         const countryResult = await sb.functions.invoke("virtual-sms-api", {
           body: {action:"countries"}
         });
         const countryData = assertFunctionResult(countryResult, "Virtual SMS countries");
+
         countries = normalizeList(countryData, "countries")
           .map(item => ({
             value: countryValue(item),
@@ -388,6 +484,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
           .filter(item => item.value);
 
         const selectedCountry = $("allCountries").checked ? "" : $("countrySelect").value;
+
         const serviceResult = await sb.functions.invoke("virtual-sms-api", {
           body: selectedCountry
             ? {action:"services", country:selectedCountry}
@@ -398,24 +495,35 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
       }
 
       if (request !== catalogRequest) return;
+
       renderCountryOptions();
       renderServiceOptions();
+      initSearchableDropdowns();
       syncScopeFields();
 
     } catch (error) {
       if (request !== catalogRequest) return;
       console.error(error);
+
       countries = provider === "textverified"
         ? [{value:"US",name:"United States",country_id:187}]
         : [];
       services = [];
+
       renderCountryOptions();
       renderServiceOptions();
+
+      try {
+        initSearchableDropdowns();
+      } catch (dropdownError) {
+        console.error(dropdownError);
+      }
+
       syncScopeFields();
 
       notice(
         "Could not load " + (provider === "textverified" ? "TextVerified" : "Virtual SMS") +
-        " options. Check that you are signed in and the provider Edge Function is deployed. " +
+        " options. Check your sign-in, internet connection, and provider Edge Function. " +
         (error.message || ""),
         "error"
       );
@@ -423,6 +531,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
       if (request === catalogRequest) {
         $("countrySelect").disabled = false;
         $("serviceSelect").disabled = false;
+        syncScopeFields();
       }
     }
   }
@@ -430,6 +539,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
   function renderCountryOptions(selectedValue) {
     const select = $("countrySelect");
     const previous = selectedValue ?? select.value;
+
     select.replaceChildren(option("Choose a country…", ""));
 
     if (provider === "virtualsms") {
@@ -452,10 +562,12 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
   function renderServiceOptions(selectedValue) {
     const select = $("serviceSelect");
     const previous = selectedValue ?? select.value;
+
     select.replaceChildren(option("Choose a service…", ""));
     select.appendChild(option("All services", "__ALL__"));
 
     const seen = new Set();
+
     services.forEach(item => {
       const value = serviceValue(item);
       if (!value || seen.has(norm(value))) return;
@@ -506,8 +618,17 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     $("ruleId").value = "";
     $("active").checked = true;
     $("saveBtn").textContent = "Save markup";
+
     renderCountryOptions();
     renderServiceOptions();
+
+    if (countryChoices) countryChoices.destroy();
+    if (serviceChoices) serviceChoices.destroy();
+
+    countryChoices = null;
+    serviceChoices = null;
+
+    initSearchableDropdowns();
     syncScopeFields();
   }
 
@@ -517,10 +638,22 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
 
     $("countrySelect").disabled = allCountries || provider === "textverified";
     $("serviceSelect").disabled = allServices;
+
+    if (countryChoices) {
+      if (allCountries || provider === "textverified") countryChoices.disable();
+      else countryChoices.enable();
+    }
+
+    if (serviceChoices) {
+      if (allServices) serviceChoices.disable();
+      else serviceChoices.enable();
+    }
+
     $("countryHelp").textContent = provider === "textverified"
       ? "TextVerified pricing is configured for the United States (ID 187)."
-      : "Choose a provider country, or select All countries.";
-    $("serviceHelp").textContent = "Choose a service, or select All services.";
+      : "Type to search countries, or select All countries.";
+
+    $("serviceHelp").textContent = "Type to search services, or select All services.";
   }
 
   async function editRule(id) {
@@ -537,18 +670,21 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     await loadCatalogs();
 
     if (provider === "textverified") {
-      $("countrySelect").value = "US";
+      setDropdownValue("country", "US");
     } else if (!isAllCountry(r)) {
       const value = r.country_key || (r.country_id != null ? String(r.country_id) : "");
       if ([...$("countrySelect").options].some(o => o.value === value)) {
-        $("countrySelect").value = value;
+        setDropdownValue("country", value);
       }
     }
 
     if (r.service_code) {
-      const match = [...$("serviceSelect").options].find(o => norm(o.value) === norm(r.service_code));
-      if (match) $("serviceSelect").value = match.value;
-      else {
+      const match = [...$("serviceSelect").options]
+        .find(o => norm(o.value) === norm(r.service_code));
+
+      if (match) {
+        setDropdownValue("service", match.value);
+      } else {
         notice("This saved service is not present in the provider's current service list. Refresh the provider catalog before editing it.", "error");
       }
     }
@@ -569,12 +705,12 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
       throw new Error("Enter a valid markup percentage between 0 and 100000.");
     }
 
-    if (!allCountries && !countryValueSelected) {
-      throw new Error("Choose a country or select All countries.");
+    if (!allCountries && (!countryValueSelected || countryValueSelected === "__ALL__")) {
+      throw new Error("Choose a country or select Apply to all countries.");
     }
 
-    if (!allServices && !serviceValueSelected) {
-      throw new Error("Choose a service or select All services.");
+    if (!allServices && (!serviceValueSelected || serviceValueSelected === "__ALL__")) {
+      throw new Error("Choose a service or select Apply to all services.");
     }
 
     let countryKey = null;
@@ -586,6 +722,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
         countryId = 187;
       } else {
         countryKey = countryValueSelected;
+
         if (/^\d+$/.test(countryValueSelected)) {
           const n = Number(countryValueSelected);
           if (Number.isSafeInteger(n)) countryId = n;
@@ -664,6 +801,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
         is_active: !r.is_active,
         updated_at: new Date().toISOString()
       }).eq("id", Number(id)).eq("server", provider);
+
       if (error) throw error;
       await loadRules(false);
       notice("Rule status updated.", "ok");
@@ -687,8 +825,10 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     try {
       const {error} = await sb.from(TABLE).delete()
         .eq("id", Number(id)).eq("server", provider);
+
       if (error) throw error;
       if (Number($("ruleId").value) === Number(id)) resetForm();
+
       await loadRules(false);
       notice("Markup rule deleted.", "ok");
     } catch (error) {
@@ -701,8 +841,10 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
 
   async function signIn() {
     if (busy) return;
+
     const email = $("email").value.trim();
     const password = $("password").value;
+
     if (!email || !password) {
       notice("Enter your admin email and password.", "error");
       return;
@@ -712,6 +854,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     try {
       const {error} = await sb.auth.signInWithPassword({email,password});
       if (error) throw error;
+
       if (await verifyAdmin()) {
         await loadRules(false);
         await loadCatalogs();
@@ -727,6 +870,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
   async function signOut() {
     const {error} = await sb.auth.signOut();
     if (error) notice(error.message, "error");
+
     currentUser = null;
     isAdmin = false;
     $("appPanel").classList.add("hidden");
@@ -737,12 +881,16 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
 
   async function selectProvider(nextProvider) {
     if (nextProvider === provider) return;
+
     provider = nextProvider;
+
     document.querySelectorAll("[data-provider]").forEach(button => {
       button.classList.toggle("active", button.dataset.provider === provider);
     });
+
     $("providerTitle").textContent = provider === "textverified"
       ? "TextVerified Markups" : "Virtual SMS Markups";
+
     resetForm();
     renderRules();
     clearNotice();
@@ -751,11 +899,15 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
 
   async function refreshAll() {
     if (busy) return;
+
     setBusy(true);
     try {
       await loadRules(false);
       await loadCatalogs();
-      if (!$("notice").classList.contains("show")) notice("Rules and provider options refreshed.", "ok");
+
+      if (!$("notice").classList.contains("show")) {
+        notice("Rules and provider options refreshed.", "ok");
+      }
     } catch (error) {
       notice(error.message || "Could not refresh the page data.", "error");
     } finally {
@@ -770,10 +922,15 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     }
 
     sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-      auth: {persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+      auth: {
+        persistSession:true,
+        autoRefreshToken:true,
+        detectSessionInUrl:true
+      }
     });
 
     $("loginBtn").addEventListener("click", signIn);
+
     $("password").addEventListener("keydown", e => {
       if (e.key === "Enter") signIn();
     });
@@ -787,11 +944,17 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
       console.error(error);
       $("appPanel").classList.add("hidden");
       $("loginPanel").classList.remove("hidden");
-      notice("Could not verify admin access or load rules. Check the is_admin_user() RPC and Supabase table permissions. " + (error.message || ""), "error");
+
+      notice(
+        "Could not verify admin access or load rules. Check the is_admin_user() RPC and Supabase table permissions. " +
+        (error.message || ""),
+        "error"
+      );
     }
 
     sb.auth.onAuthStateChange((_event, session) => {
       currentUser = session?.user || null;
+
       if (!currentUser) {
         isAdmin = false;
         $("appPanel").classList.add("hidden");
@@ -801,10 +964,12 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
   }
 
   $("ruleForm").addEventListener("submit", saveRule);
+
   $("resetBtn").addEventListener("click", () => {
     resetForm();
     clearNotice();
   });
+
   $("refreshBtn").addEventListener("click", refreshAll);
   $("logoutBtn").addEventListener("click", signOut);
   $("allCountries").addEventListener("change", syncScopeFields);
@@ -813,18 +978,36 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
 
   $("countrySelect").addEventListener("change", async () => {
     if (provider !== "virtualsms" || $("allCountries").checked) return;
+
     const previousService = $("serviceSelect").value;
+    const selectedCountry = $("countrySelect").value;
+
     try {
-      const selectedCountry = $("countrySelect").value;
       const result = await sb.functions.invoke("virtual-sms-api", {
         body: selectedCountry
           ? {action:"services",country:selectedCountry}
           : {action:"services"}
       });
+
       const data = assertFunctionResult(result, "Virtual SMS services");
       services = normalizeList(data, "services");
+
       renderServiceOptions(previousService);
+
+      if (serviceChoices) serviceChoices.destroy();
+      serviceChoices = new Choices($("serviceSelect"), {
+        searchEnabled:true,
+        searchPlaceholderValue:"Type a service to search...",
+        shouldSort:false,
+        itemSelectText:"",
+        allowHTML:false,
+        searchResultLimit:100,
+        fuseOptions:{threshold:0.35}
+      });
+
+      syncScopeFields();
     } catch (error) {
+      console.error(error);
       notice("Could not load services for that country. " + (error.message || ""), "error");
     }
   });
@@ -832,6 +1015,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
   $("rulesBody").addEventListener("click", event => {
     const button = event.target.closest("button");
     if (!button) return;
+
     if (button.dataset.edit) editRule(button.dataset.edit);
     if (button.dataset.toggle) toggleRule(button.dataset.toggle);
     if (button.dataset.delete) deleteRule(button.dataset.delete);
