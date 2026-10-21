@@ -9,8 +9,11 @@
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#050505">
   <link rel="canonical" href="https://delightvendorlog.com/">
-  <link rel="icon" type="image/png" href="/assets/favicon.png">
-  <link rel="apple-touch-icon" href="/assets/favicon.png">
+
+  <!-- Favicon: use the actual DV logo -->
+  <link rel="icon" type="image/png" sizes="any" href="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png?v=3">
+  <link rel="shortcut icon" type="image/png" href="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png?v=3">
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png?v=3">
 
   <meta property="og:site_name" content="Delight Vendor Logs">
   <meta property="og:title" content="Delight Vendor Logs — Your Digital Marketplace">
@@ -101,18 +104,14 @@
       flex-shrink: 1;
     }
 
-    .logo-mark {
+    /* Actual DV logo in the header */
+    .logo-image {
       width: 43px;
       height: 43px;
-      display: grid;
-      place-items: center;
+      display: block;
       flex-shrink: 0;
-      border-radius: 12px;
-      color: #050505;
-      background: linear-gradient(135deg, var(--gold-light), var(--gold-dark));
-      font-size: 27px;
-      font-weight: 900;
-      box-shadow: 0 0 22px rgba(212, 175, 55, .13);
+      object-fit: contain;
+      border-radius: 10px;
     }
 
     .logo-text {
@@ -435,6 +434,21 @@
       max-width: 340px;
     }
 
+    /* Actual DV logo beside the footer brand name */
+    .footer-brand-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-brand-logo {
+      width: 38px;
+      height: 38px;
+      display: block;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
     .footer-brand strong {
       display: block;
       color: var(--gold-light);
@@ -650,11 +664,10 @@
         gap: 7px;
       }
 
-      .logo-mark {
+      .logo-image {
         width: 35px;
         height: 35px;
         border-radius: 10px;
-        font-size: 22px;
       }
 
       .logo-text {
@@ -750,10 +763,9 @@
         font-size: 11px;
       }
 
-      .logo-mark {
+      .logo-image {
         width: 31px;
         height: 31px;
-        font-size: 20px;
       }
     }
 
@@ -772,7 +784,13 @@
   <header class="site-header">
     <div class="container nav">
       <a class="brand" href="/" aria-label="Delight Vendor Logs homepage">
-        <div class="logo-mark" aria-hidden="true">D</div>
+        <img
+          class="logo-image"
+          src="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png"
+          alt="Delight Vendor Logs logo"
+          width="43"
+          height="43"
+        >
         <div class="logo-text">
           Delight
           <span>VENDOR LOGS</span>
@@ -963,7 +981,16 @@
     <div class="container">
       <div class="footer-main">
         <div class="footer-brand">
-          <strong>Delight Vendor Logs</strong>
+          <div class="footer-brand-heading">
+            <img
+              class="footer-brand-logo"
+              src="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png"
+              alt="Delight Vendor Logs logo"
+              width="38"
+              height="38"
+            >
+            <strong>Delight Vendor Logs</strong>
+          </div>
           <p>Your digital marketplace. Why go far when you can get all in our site?</p>
         </div>
 
