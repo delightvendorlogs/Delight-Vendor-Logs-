@@ -1,1265 +1,1204 @@
-<!DOCTYPE html>  <html lang="en">  
-<head>  
-<meta charset="UTF-8">  
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">  
-<meta name="theme-color" content="#080808">  
-<title>Virtual Numbers — Delight Vendor Logs</title>  
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>  
-:root{  
- --bg:#080808;--panel:#121212;--panel2:#191919;--gold:#d4af37;  
- --gold-light:#f1d77a;--text:#f5f5f5;--muted:#a4a4a4;  
- --border:rgba(212,175,55,.24);--green:#32c878;  
- --red:#ff6262;--blue:#68a8ff;--radius:17px  
-}  
-*{box-sizing:border-box}  
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;min-height:100vh}  
-button,input,select{font:inherit}  
-button{cursor:pointer}  
-button:disabled{opacity:.55;cursor:not-allowed}  
-.container{max-width:900px;margin:auto;padding:16px}  
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}  
-  
-.brand{
-  color:var(--gold-light);
-  font-weight:900;
-  font-size:20px;
-  min-width:0;
+<!DOCTYPE html>  <html lang="en">    <head>    
+<meta charset="UTF-8">    
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">    
+<meta name="theme-color" content="#080808">    
+<title>Virtual Numbers — Delight Vendor Logs</title>    
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>    
+:root{    
+ --bg:#080808;--panel:#121212;--panel2:#191919;--gold:#d4af37;    
+ --gold-light:#f1d77a;--text:#f5f5f5;--muted:#a4a4a4;    
+ --border:rgba(212,175,55,.24);--green:#32c878;    
+ --red:#ff6262;--blue:#68a8ff;--radius:17px    
+}    
+*{box-sizing:border-box}    
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;min-height:100vh}    
+button,input,select{font:inherit}    
+button{cursor:pointer}    
+button:disabled{opacity:.55;cursor:not-allowed}    
+.container{max-width:900px;margin:auto;padding:16px}    
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}    
+.brand{color:var(--gold-light);font-weight:900;font-size:20px}    
+.brand small{display:block;color:var(--muted);font-size:11px;font-weight:500;margin-top:4px}    
+.wallet{border:1px solid var(--border);background:linear-gradient(135deg,#211c0d,#111);border-radius:14px;padding:12px 15px;min-width:125px;flex-shrink:0}    
+.wallet small{color:var(--muted);display:block;font-size:11px;margin-bottom:5px}    
+.wallet strong{color:var(--gold-light);font-size:17px}    
+h1{font-size:25px;margin:12px 0 8px}    
+h2{font-size:18px;margin:0 0 12px}    
+p{line-height:1.5}    
+.muted{color:var(--muted)}    
+.small{font-size:12px}    
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0}    
+.tab{padding:14px 10px;border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:12px;font-weight:800}    
+.tab.active{color:#111;background:var(--gold);border-color:var(--gold)}    
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px}    
+.field{width:100%;padding:13px;background:#090909;color:var(--text);border:1px solid #343434;border-radius:11px;outline:none}    
+.field:focus{border-color:var(--gold)}    
+.btn{border:0;border-radius:11px;padding:12px 15px;font-weight:800}    
+.btn-gold{color:#111;background:var(--gold)}    
+.btn-dark{color:var(--text);background:#252525;border:1px solid #3b3b3b}    
+.btn-danger{color:#ff7777;background:transparent;border:1.5px solid #b64d4d}    
+.btn-black{color:white;background:#111}    
+.full{width:100%}    
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}    
+.country-button,.service-button,.option-button{display:block;width:100%;text-align:left;background:var(--panel2);color:var(--text);border:1px solid #303030;border-radius:11px;padding:12px}    
+.country-button:hover,.service-button:hover,.option-button:hover{border-color:var(--gold)}    
+.country-name{font-weight:800}    
+.country-meta,.service-button small,.option-button small{display:block;margin-top:5px;color:var(--muted);font-size:12px}    
+.section{display:none}    
+.section.active{display:block}    
+.notice{border:1px solid var(--border);background:rgba(212,175,55,.07);color:#e8dba9;padding:13px;border-radius:11px;font-size:13px;line-height:1.6}    
+.message{padding:12px;border-radius:10px;margin:12px 0;font-size:13px;line-height:1.5;display:none;overflow-wrap:anywhere}    
+.message.show{display:block}    
+.message.error{background:#351818;color:#ffb6b6}    
+.message.success{background:#102b1d;color:#9df0bf}    
+.message.info{background:#152237;color:#b5d4ff}    
+.loading,.empty{padding:18px 10px;text-align:center;color:var(--muted);font-size:13px}    
+.row{display:flex;align-items:center;gap:10px}    
+.between{justify-content:space-between}    
+.row>*{min-width:0}    
+.stack{display:flex;flex-direction:column;gap:10px}    
+.order-card{background:#101010;border:1px solid rgba(212,175,55,.23);border-radius:19px;padding:16px;margin-bottom:16px;overflow:hidden}    
+.order-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}    
+.order-heading h3{font-size:19px;line-height:1.3;margin:0 0 7px}    
+.order-subtitle{font-size:13px;color:var(--muted);margin:0}    
+.badge{display:inline-block;padding:7px 10px;border-radius:30px;font-size:11px;font-weight:800;white-space:nowrap;background:#3b3014;color:#f5d97b}    
+.badge.waiting{background:#3b3014;color:#f5d97b}    
+.badge.received{background:#123923;color:#83edac}    
+.badge.cancelled,.badge.failed{background:#3b1b1b;color:#ffaaaa}    
+.badge.refunded{background:#172c42;color:#a7d3ff}    
+.number-box{background:#1b1b1b;border:1px solid #252525;border-radius:15px;padding:14px;margin:15px 0}    
+.number-label{font-size:11px;letter-spacing:.4px;color:var(--muted);margin-bottom:9px}    
+.number-big{font-size:clamp(21px,5.5vw,29px);font-weight:800;letter-spacing:.4px;overflow-wrap:anywhere}    
+.number-small{font-size:15px;font-weight:700;overflow-wrap:anywhere}    
+.number-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px;color:var(--muted);font-size:12px}    
+.timer-area{text-align:center;padding:10px 0 16px}    
+.timer-label{color:var(--muted);font-size:14px}    
+.timer-value{font-size:34px;color:var(--green);font-weight:900;margin:9px 0}    
+.timer-expired{font-size:28px;color:var(--red)}    
+.timer-note{font-size:12px;color:var(--muted)}    
+.order-actions{display:grid;gap:10px;margin-top:12px}    
+.order-actions .btn{width:100%;border-radius:40px;padding:15px 12px;font-size:14px}    
+.order-actions .btn-black{background:#171717;border:1px solid #333}    
+.order-actions .btn-danger{background:transparent}    
+.order-line{font-size:13px;margin:9px 0;overflow-wrap:anywhere;color:#d0d0d0}    
+.order-divider{border:0;border-top:1px solid #303030;margin:16px 0}    
+.detail-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin:13px 0;font-size:14px}    
+.detail-row span:first-child{color:var(--muted)}    
+.detail-row strong{text-align:right;overflow-wrap:anywhere}    
+.refund-good{color:var(--green)}    
+.sms-box{background:#1a1a1a;border:1px solid #2c2c2c;border-radius:14px;padding:16px;margin-top:14px}    
+.sms-heading{font-size:12px;color:var(--muted);text-align:center}    
+.sms-code{font-size:32px;font-weight:900;text-align:center;margin:15px 0;letter-spacing:1px}    
+.copy-button{display:block;margin:0 auto;border:1px solid #444;background:#222;color:white;border-radius:30px;padding:12px 22px;font-weight:800}    
+.order-footnote{font-size:12px;color:var(--muted);line-height:1.5;margin:14px 0 0}    
+.order-service{font-size:13px;color:#d5d5d5;margin-top:10px}    
+hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}    .search-picker{position:relative;width:100%;margin-top:10px}
+.search-picker .field{display:block;width:100%}
+.picker-menu{display:none;position:absolute;top:calc(100% + 5px);left:0;right:0;z-index:1000;background:#141414;border:1px solid var(--border);border-radius:12px;padding:5px;max-height:220px;overflow-y:auto;overscroll-behavior:contain;box-shadow:0 12px 30px #000b}
+.picker-menu.open{display:block}
+.picker-menu .country-button,.picker-menu .service-button{margin:0 0 4px;padding:11px;border-radius:8px;background:#1b1b1b}
+.picker-menu .country-button:last-child,.picker-menu .service-button:last-child{margin-bottom:0}
+.picker-menu .country-meta,.picker-menu .service-button small{display:none}
+.picker-placeholder{font-size:12px;color:var(--muted);padding:12px;text-align:center}
+.picker-label{font-size:12px;color:var(--muted);margin:14px 0 7px}
+.selected-value{display:block;margin-top:8px;font-size:12px;color:var(--gold-light)}
+#usaServices,#countryResults,#allServices{display:none!important}
+#allServicesWrap{display:block!important}
+#selectedCountryTitle{font-size:15px}
+.orders-panel{margin-top:18px}
+
+.back-dashboard-btn{display:inline-flex;align-items:center;gap:7px;margin:0 0 14px;padding:9px 12px;color:var(--gold-light);background:#151515;border:1px solid var(--border);border-radius:9px;text-decoration:none;font-size:13px;font-weight:700}
+.back-dashboard-btn:hover{background:#222}
+.fund-wallet-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:10px;padding:9px 10px;background:var(--gold);color:#080808;border-radius:9px;text-decoration:none;text-align:center;font-size:12px;font-weight:800}
+.fund-wallet-btn:hover{opacity:.85}
+
+/* Original verification popup */
+.verification-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:7px}
+.verification-overlay.show{display:flex}
+.verification-modal{width:min(100%,510px);max-height:calc(100dvh - 14px);display:flex;flex-direction:column;overflow:auto;overscroll-behavior:contain;background:#111;border:1px solid rgba(212,175,55,.55);border-radius:16px;box-shadow:0 15px 60px #000a}
+.verification-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 13px;background:linear-gradient(120deg,#28200a,#111);border-bottom:1px solid var(--border);flex-shrink:0}
+.verification-head strong{font-size:15px;color:var(--gold-light)}
+.verification-close{border:1px solid #555;background:#242424;color:white;width:32px;height:32px;flex-shrink:0;border-radius:50%;font-size:20px}
+.verification-content{padding:10px 12px}
+.verification-icon{text-align:center;font-size:27px;line-height:1.1;margin:0 0 5px}
+.verification-content h2{text-align:center;color:var(--gold-light);font-size:15px;margin:0 0 9px}
+.verification-intro{font-size:11px;color:#c5c5c5;text-align:center;margin:0 0 9px;line-height:1.4}
+.practice-list{display:grid;gap:6px}
+.practice-card{display:grid;grid-template-columns:27px minmax(0,1fr);gap:8px;align-items:start;border:1px solid rgba(212,175,55,.19);background:#191919;border-radius:9px;padding:8px 9px}
+.practice-icon{font-size:18px;line-height:1.15;text-align:center}
+.practice-card h3{margin:0 0 3px;font-size:11.5px;color:var(--gold-light)}
+.practice-card p{margin:0;font-size:10.5px;line-height:1.35;color:#d0d0d0;overflow-wrap:anywhere}
+.verification-footer{padding:0 12px 11px;flex-shrink:0}
+.verification-footer button{width:100%;padding:11px;border:0;border-radius:9px;background:var(--gold);color:#111;font-weight:900;font-size:13px}
+
+/* New in-page cancellation confirmation popup */
+.cancel-overlay{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.82)}
+.cancel-overlay.show{display:flex}
+.cancel-modal{width:min(100%,420px);background:#121212;border:1px solid rgba(212,175,55,.5);border-radius:18px;padding:20px;box-shadow:0 18px 55px #000b}
+.cancel-icon{text-align:center;font-size:36px;margin-bottom:8px}
+.cancel-modal h2{text-align:center;color:var(--gold-light);margin:0 0 8px}
+.cancel-description{text-align:center;color:#c6c6c6;font-size:13px;line-height:1.55;margin:0 0 16px}
+.cancel-details{background:#1b1b1b;border:1px solid #303030;border-radius:12px;padding:12px;margin-bottom:16px}
+.cancel-details .detail-row{margin:9px 0;font-size:13px}
+.cancel-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cancel-buttons button{width:100%;padding:13px 8px}
+.cancel-confirm{background:#a83232;color:#fff;border:0;border-radius:10px;font-weight:800}
+.cancel-dismiss{background:#292929;color:#fff;border:1px solid #444;border-radius:10px;font-weight:800}
+.cancel-status{font-size:12px;color:var(--muted);text-align:center;line-height:1.5;margin-top:12px;display:none}
+.cancel-status.show{display:block}
+.cancel-confirm:disabled,.cancel-dismiss:disabled{opacity:.5;cursor:wait}
+
+@media(max-height:650px){
+.verification-overlay{padding:4px}.verification-modal{max-height:calc(100dvh - 8px);border-radius:12px}
+.verification-head{padding:7px 10px}.verification-head strong{font-size:13px}
+.verification-close{width:27px;height:27px}.verification-content{padding:6px 9px}
+.verification-icon{font-size:21px;margin-bottom:3px}.verification-content h2{font-size:13px;margin-bottom:5px}
+.verification-intro{font-size:10px;margin-bottom:5px}.practice-list{gap:4px}
+.practice-card{padding:5px 7px;grid-template-columns:23px minmax(0,1fr);gap:6px}
+.practice-icon{font-size:15px}.practice-card h3{font-size:10.5px;margin-bottom:2px}
+.practice-card p{font-size:9.5px;line-height:1.25}.verification-footer{padding:0 9px 7px}
+.verification-footer button{padding:9px;font-size:12px}
+}
+@media(max-width:480px){
+.container{padding:12px}.brand{font-size:17px}.wallet{padding:10px;min-width:110px}
+.wallet strong{font-size:15px}h1{font-size:22px}.panel{padding:12px}
+.grid{grid-template-columns:1fr}.order-card{padding:13px}
+.order-heading h3{font-size:18px}.cancel-modal{padding:16px}
+}
+</style>  </head>  <body>
+
+<div class="container">    
+<header>    
+ <div class="brand">Delight Vendor Logs<small>Virtual Number Services</small></div>    
+ <div class="wallet">    
+  <small>Wallet Balance</small>    
+  <strong id="walletBalance">Loading…</strong>    
+  <a href="wallet.html" class="fund-wallet-btn"><span>＋</span> Fund Wallet</a>    
+ </div>    
+</header>  <a href="dashboard.html" class="back-dashboard-btn"><span>←</span> Back to Dashboard</a>  <h1>Virtual Numbers</h1>    
+<p class="muted small">Choose a number service, search for a country or service, then manage your numbers below.</p>    
+<div id="globalMessage" class="message"></div>  <div class="tabs">    
+ <button class="tab" id="usaTab" onclick="openUSA()">🇺🇸 USA Numbers</button>    
+ <button class="tab" id="allTab" onclick="openAll()">🌍 All Country Numbers</button>    
+</div>  <section id="usaSection" class="section">    
+ <div class="panel">    
+  <h2>🇺🇸 United States</h2>    
+  <p class="muted small">Search and select the service you need.</p>    
+  <div class="search-picker" id="usaPicker">    
+   <input id="usaServiceSearch" class="field" placeholder="Select a service or search…" autocomplete="off" onfocus="openPicker('usaServiceMenu')" onclick="openPicker('usaServiceMenu')" oninput="filterServices('usa')">    
+   <div id="usaServiceMenu" class="picker-menu"></div>    
+  </div>    
+  <div id="usaSelected" class="selected-value" style="display:none"></div>    
+  <div id="usaMessage" class="message"></div>    
+ </div>    
+</section>  <section id="allSection" class="section">    
+ <div class="panel">    
+  <h2>🌍 All Country Numbers</h2>    
+  <div id="allMessage" class="message"></div>    
+  <div class="picker-label">COUNTRY</div>    
+  <div class="search-picker" id="countryPicker">    
+   <input id="countrySearch" class="field" placeholder="Select a country or search…" autocomplete="off" onfocus="openPicker('countryMenu')" onclick="openPicker('countryMenu')" oninput="filterCountries()">    
+   <div id="countryMenu" class="picker-menu"></div>    
+  </div>    
+  <div id="countrySelected" class="selected-value" style="display:none"></div>    
+  <hr>    
+  <div class="picker-label">SERVICE</div>    
+  <div class="search-picker" id="allServicePicker">    
+   <input id="allServiceSearch" class="field" placeholder="Select a country first…" autocomplete="off" disabled onfocus="handleAllServiceFocus()" onclick="handleAllServiceFocus()" oninput="filterServices('all')">    
+   <div id="allServiceMenu" class="picker-menu"></div>    
+  </div>    
+  <div id="allSelected" class="selected-value" style="display:none"></div>    
+ </div>    
+</section>  <section id="optionsSection" class="section">    
+ <div class="panel">    
+  <button class="btn btn-dark" onclick="goBack()">← Back</button>    
+  <h2 id="optionsTitle" style="margin-top:15px">Choose an option</h2>    
+  <p id="optionsSubtitle" class="muted small"></p>    
+  <div id="optionsMessage" class="message"></div>    
+  <div id="optionsList" class="stack"></div>    
+ </div>    
+</section>  <section id="confirmSection" class="section">    
+ <div class="panel">    
+  <button class="btn btn-dark" onclick="goBack()">← Back</button>    
+  <h2 style="margin-top:15px">Confirm Purchase</h2>    
+  <div id="purchaseSummary" class="notice"></div>    
+  <p class="small muted">Make sure your wallet has enough funds before continuing.</p>    
+  <div id="confirmMessage" class="message"></div>    
+  <button id="confirmPurchaseBtn" class="btn btn-gold full" onclick="purchaseNumber()">Purchase Number</button>    
+ </div>    
+</section>  <section class="panel orders-panel">    
+ <div class="row between">    
+  <h2>My Number Orders</h2>    
+  <button class="btn btn-dark" onclick="refreshOrders()">Refresh</button>    
+ </div>    
+ <p class="muted small">Your pending, successful, cancelled, and refunded orders appear below.</p>    
+ <div id="ordersMessage" class="message"></div>    
+ <div id="ordersList"><div class="loading">Checking your session…</div></div>    
+</section>    
+</div>  <!-- Original verification popup is unchanged -->  <div id="verificationOverlay" class="verification-overlay" role="dialog" aria-modal="true" aria-labelledby="verificationTitle">    
+ <div class="verification-modal">    
+  <div class="verification-head">    
+   <strong id="verificationTitle">📢 Important Verification</strong>    
+   <button class="verification-close" aria-label="Close verification message" onclick="dismissVerification()">×</button>    
+  </div>    
+  <div class="verification-content">    
+   <div class="verification-icon">🛡️</div>    
+   <h2>✨ Best Practices for Success</h2>    
+   <p class="verification-intro">Please read these important tips before requesting a number.</p>    
+   <div class="practice-list">    
+    <div class="practice-card"><div class="practice-icon">📲</div><div><h3>Fresh Installation</h3><p>Uninstall the app and clear its cache before requesting a new number.</p></div></div>    
+    <div class="practice-card"><div class="practice-icon">✅</div><div><h3>Official Apps Only</h3><p>Use the standard official app version. Modified versions often fail verification.</p></div></div>    
+    <div class="practice-card"><div class="practice-icon">🌍</div><div><h3>Location Match</h3><p>Keep your device settings and connection consistent with the selected country while waiting.</p></div></div>    
+    <div class="practice-card"><div class="practice-icon">📶</div><div><h3>Stay Connected</h3><p>Keep the app open and maintain a stable connection while waiting for your code.</p></div></div>    
+    <div class="practice-card"><div class="practice-icon">💡</div><div><h3>Helpful Tip</h3><p>If a number cannot receive a code, try another available option. Cancel only when cancellation is available; a refund depends on confirmation and backend processing.</p></div></div>    
+   </div>    
+  </div>    
+  <div class="verification-footer"><button onclick="dismissVerification()">I Understand</button></div>    
+ </div>    
+</div>  <!-- Cancellation confirmation popup -->  <div id="cancelOverlay" class="cancel-overlay" role="dialog" aria-modal="true" aria-labelledby="cancelTitle" aria-hidden="true">    
+ <div class="cancel-modal">    
+  <div class="cancel-icon">⚠️</div>    
+  <h2 id="cancelTitle">Cancel Number Order?</h2>    
+  <p class="cancel-description">Are you sure you want to request cancellation for this order? Cancellation and any refund must be confirmed by the provider and saved order record.</p>    
+  <div id="cancelDetails" class="cancel-details"></div>    
+  <div class="cancel-buttons">    
+   <button id="cancelDismissBtn" class="cancel-dismiss" type="button" onclick="closeCancelPopup()">Keep Order</button>    
+   <button id="cancelConfirmBtn" class="cancel-confirm" type="button" onclick="confirmCancelOrder()">Yes, Cancel</button>    
+  </div>    
+  <div id="cancelPopupStatus" class="cancel-status"></div>    
+ </div>    
+</div>  <script>    
+"use strict";    const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
+const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+const FUNCTIONS={
+textverified:SUPABASE_URL+"/functions/v1/text-verified-api",
+virtualsms:SUPABASE_URL+"/functions/v1/virtual-sms-api"
+};
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=id=>document.getElementById(id);
+
+let session=null,currentUser=null,walletBalance=0;
+let flow="none",chosenProvider=null,selectedCountry=null,selectedService=null,selectedOption=null;
+let visibleServices=[],filteredServices=[],countryList=[],allOrders=[];
+let poller=null,countdownTimer=null,countryLoading=false;
+let currentSection=null,optionsCache=[],initGeneration=0,servicesGeneration=0;
+let cancellationOrderId=null,cancellationBusy=false;
+
+function escapeHTML(v){
+return String(v??"").replace(/[&<>"']/g,c=>({
+"&":"&","<":"<",">":">",'"':""","'":"'"
+}[c]));
+}
+function money(v){
+const n=Number(v);
+return "₦"+(Number.isFinite(n)?n:0).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function showMessage(id,text,type="info"){
+const e=$(id);
+if(e)e.textContent=text||"",e.className="message"+(text?" show "+type:"");
+}
+function showGlobal(text,type="info"){showMessage("globalMessage",text,type);}
+function clearMessages(){
+["globalMessage","usaMessage","allMessage","optionsMessage","confirmMessage","ordersMessage"].forEach(id=>showMessage(id,""));
+}
+function setSection(id){
+document.querySelectorAll(".section").forEach(e=>e.classList.remove("active"));
+if(id&&$(id))$(id).classList.add("active");
+currentSection=id;
+}
+function setActiveTab(tab){
+$("usaTab").classList.toggle("active",tab==="usa");
+$("allTab").classList.toggle("active",tab==="all");
 }
 
-.brand-identity{
-  display:flex;
-  align-items:center;
-  gap:9px;
-  min-width:0;
+function formatError(error,fallback){
+const raw=String(error?.message||"");
+const m=raw.toLowerCase();
+
+if(/insufficient funds|insufficient balance|not enough funds|low balance|balance too low/.test(m)){
+if(/customer|wallet|your balance|user balance|add ₦|user wallet/.test(m)){
+const amount=raw.match(/₦\s?[\d,.]+/);
+return "Insufficient funds. Please add "+(amount?amount[0]:"the required amount")+".";
+}
+return "Insufficient funds. Please contact support.";
+}
+if(/provider.(balance|fund)|(?:balance|fund).(provider|account)|account balance too low|not enough credit|out of credit|credit exhausted|funds exhausted/.test(m)){
+return "Insufficient funds. Please contact support.";
+}
+if(/jwt|unauthori[sz]ed|session expired|invalid token/.test(m)){
+return "Your session has expired. Please sign in again.";
+}
+if(/country.*(required|select)|select.country/.test(m))return "Please select a country first.";
+if(/service.(required|select)|select.*service/.test(m))return "Please select a service first.";
+if(/network|fetch failed|failed to fetch|timed? ?out|timeout/.test(m)){
+return "The request could not be completed right now. Please try again.";
 }
 
-.brand-identity span{
-  line-height:1.2;
+const safeFallback=fallback||"The request could not be completed. Please try again.";
+if(!raw)return safeFallback;
+if(/provider|virtualsms|textverified|numpool|api key|api_key|internal server|stack trace|exception|sql|postgres|supabase/.test(m)){
+return safeFallback;
+}
+if(raw.length>140||/[{}[]]/.test(raw))return safeFallback;
+return raw;
 }
 
-.brand-logo{
-  width:42px;
-  height:42px;
-  object-fit:contain;
-  flex-shrink:0;
-  display:block;
-  border-radius:50%;
+async function invoke(provider,action,extra={}){
+if(!FUNCTIONS[provider])throw new Error("Unknown service.");
+const {data,error}=await sb.auth.getSession();
+if(error)throw error;
+const active=data?.session;
+if(!active?.access_token)throw new Error("Your session has expired. Please sign in again.");
+
+const response=await fetch(FUNCTIONS[provider],{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"apikey":SUPABASE_KEY,
+"Authorization":"Bearer "+active.access_token
+},
+body:JSON.stringify({action,...extra})
+});
+let body={};
+try{body=await response.json();}catch{}
+if(!response.ok||body?.error||body?.success===false){
+const message=body?.error||body?.message||"Request failed.";
+throw new Error(typeof message==="string"?message:"Request failed.");
+}
+return body;
 }
 
-.brand small{
-  display:block;
-  color:var(--muted);
-  font-size:11px;
-  font-weight:500;
-  margin-top:4px;
-  margin-left:51px;
+function getList(payload){
+if(Array.isArray(payload))return payload;
+if(!payload||typeof payload!=="object")return [];
+for(const k of ["data","services","countries","results","items","orders","options","available"]){
+if(Array.isArray(payload[k]))return payload[k];
+if(payload[k]&&typeof payload[k]==="object"){
+for(const n of ["data","items","results","countries","services","options"]){
+if(Array.isArray(payload[k][n]))return payload[k][n];
+}
+}
+}
+return [];
+}
+function getName(x){
+if(typeof x==="string")return x;
+if(!x||typeof x!=="object")return "Unknown";
+return String(x.name??x.service_name??x.serviceName??x.title??x.country_name??x.countryName??x.label??"Unknown");
+}
+function getCountryCode(c){
+return String(c?.code??c?.iso2??c?.iso??c?.country_code??c?.countryCode??c?.short_code??c?.shortCode??"").trim();
+}
+function getCountryId(c){return c?.country_id??c?.countryId??c?.id??null;}
+
+function normalizeCountries(payload){
+let list=getList(payload);
+if(!list.length&&payload&&typeof payload==="object"){
+const source=payload.countries&&typeof payload.countries==="object"?payload.countries:
+payload.data&&typeof payload.data==="object"&&!Array.isArray(payload.data)?payload.data:null;
+if(source&&!Array.isArray(source)){
+list=Object.entries(source).map(([key,v])=>{
+if(typeof v==="string")return {code:key,name:v};
+if(v&&typeof v==="object")return {...v,code:v.code??v.iso2??v.iso??key,name:v.name??v.country_name??v.countryName??key};
+return null;
+}).filter(Boolean);
+}
+}
+return list.map(x=>typeof x==="string"
+?{name:x,code:"",id:null,_original:x}
+:x&&typeof x==="object"
+?{...x,name:getName(x),code:getCountryCode(x),id:getCountryId(x),_original:x}:null)
+.filter(x=>x&&x.name&&x.name!=="Unknown");
+}
+function cleanServiceName(value){
+let name=String(value??"").trim().replace(/\s+/g," ");
+name=name.replace(/^(.+?)\s[-–—|]\s*\1$/i,"$1");
+name=name.replace(/^(.+?)\s+\1$/i,"$1");
+return name?name.charAt(0).toLocaleUpperCase()+name.slice(1):"Unknown";
+}
+function normalizeServices(payload){
+return getList(payload).map((x,i)=>typeof x==="string"
+?{name:cleanServiceName(x),service_code:x,_original:x,_index:i}
+:x&&typeof x==="object"
+?{...x,name:cleanServiceName(getName(x)),service_code:x.service_code??x.serviceCode??x.code??x.id??x.service??x.key??x.name,_original:x,_index:i}:null)
+.filter(x=>x&&x.name&&x.name!=="Unknown");
+}
+function serviceCode(s){
+return String(s?.service_code??s?.serviceCode??s?.code??s?.id??s?.service??s?.key??s?.name??"");
+}
+function servicePrice(o){
+if(typeof o==="number")return o;
+if(typeof o==="string"){const n=Number(o);return Number.isFinite(n)?n:null;}
+const v=o?.price_ngn??o?.customer_price_ngn??o?.priceNGN??o?.price??o?.amount??o?.cost??o?.customerPrice;
+if(v===null||v===undefined||v==="")return null;
+const n=Number(v);
+return Number.isFinite(n)?n:null;
+}
+function optionLabel(o){
+if(typeof o==="string"||typeof o==="number")return String(o);
+return String(o?.label??o?.name??o?.server_name??o?.serverName??o?.title??o?.server??"Available option");
+}
+function getOptionPayload(o){return o&&typeof o==="object"?o:{server:o};}
+
+function openPicker(id){
+const menu=$(id);
+if(!menu)return;
+closePickers(id);
+menu.classList.add("open");
+}
+function closePickers(exceptId){
+["usaServiceMenu","countryMenu","allServiceMenu"].forEach(id=>{
+if(id!==exceptId)$(id)?.classList.remove("open");
+});
+}
+document.addEventListener("click",e=>{
+if(!e.target.closest(".search-picker"))closePickers();
+});
+document.addEventListener("keydown",e=>{
+if(e.key==="Escape"){
+closePickers();
+if($("cancelOverlay").classList.contains("show")&&!cancellationBusy)closeCancelPopup();
+}
+});
+
+async function refreshWallet(){
+if(!currentUser)return;
+try{
+const {data,error}=await sb.from("wallet").select("balance").eq("user-id",currentUser.id).maybeSingle();
+if(error)throw error;
+if(!data)throw new Error("No wallet row was found for this account.");
+walletBalance=Number(data.balance??0);
+if(!Number.isFinite(walletBalance))throw new Error("Wallet balance is invalid.");
+$("walletBalance").textContent=money(walletBalance);
+}catch(e){
+console.error("Wallet refresh failed:",e);
+$("walletBalance").textContent="Unavailable";
+showGlobal("Wallet balance could not be loaded. Please refresh the page or contact support.","error");
+}
+}
+async function init(){
+const generation=++initGeneration;
+$("walletBalance").textContent="Loading…";
+$("ordersList").innerHTML='<div class="loading">Loading your orders…</div>';
+try{
+const {data,error}=await sb.auth.getSession();
+if(error)throw error;
+session=data?.session||null;
+currentUser=session?.user||null;
+if(generation!==initGeneration)return;
+if(!currentUser){
+$("walletBalance").textContent="Sign in required";
+$("ordersList").innerHTML='<div class="empty">Sign in to view your orders.</div>';
+showGlobal("Please sign in to use virtual number services.","error");
+return;
+}
+await Promise.allSettled([refreshWallet(),loadOrders()]);
+if(generation!==initGeneration)return;
+setSection(null);
+setActiveTab("");
+if(poller)clearInterval(poller);
+poller=setInterval(()=>{if(currentUser)refreshOrders();},30000);
+}catch(e){
+console.error("Page initialization failed:",e);
+$("walletBalance").textContent="Unavailable";
+$("ordersList").innerHTML='<div class="empty">Could not initialize your account. <button class="btn btn-dark" onclick="init()">Retry</button></div>';
+showGlobal("Unable to initialize your account. Please retry.","error");
+}
 }
 
-.wallet{border:1px solid var(--border);background:linear-gradient(135deg,#211c0d,#111);border-radius:14px;padding:12px 15px;min-width:125px;flex-shrink:0}  
-.wallet small{color:var(--muted);display:block;font-size:11px;margin-bottom:5px}  
-.wallet strong{color:var(--gold-light);font-size:17px}  
-h1{font-size:25px;margin:12px 0 8px}  
-h2{font-size:18px;margin:0 0 12px}  
-p{line-height:1.5}  
-.muted{color:var(--muted)}  
-.small{font-size:12px}  
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0}  
-.tab{padding:14px 10px;border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:12px;font-weight:800}  
-.tab.active{color:#111;background:var(--gold);border-color:var(--gold)}  
-.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px}  
-.field{width:100%;padding:13px;background:#090909;color:var(--text);border:1px solid #343434;border-radius:11px;outline:none}  
-.field:focus{border-color:var(--gold)}  
-.btn{border:0;border-radius:11px;padding:12px 15px;font-weight:800}  
-.btn-gold{color:#111;background:var(--gold)}  
-.btn-dark{color:var(--text);background:#252525;border:1px solid #3b3b3b}  
-.btn-danger{color:#ff7777;background:transparent;border:1.5px solid #b64d4d}  
-.btn-black{color:white;background:#111}  
-.full{width:100%}  
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}  
-.country-button,.service-button,.option-button{display:block;width:100%;text-align:left;background:var(--panel2);color:var(--text);border:1px solid #303030;border-radius:11px;padding:12px}  
-.country-button:hover,.service-button:hover,.option-button:hover{border-color:var(--gold)}  
-.country-name{font-weight:800}  
-.country-meta,.service-button small,.option-button small{display:block;margin-top:5px;color:var(--muted);font-size:12px}  
-.section{display:none}  
-.section.active{display:block}  
-.notice{border:1px solid var(--border);background:rgba(212,175,55,.07);color:#e8dba9;padding:13px;border-radius:11px;font-size:13px;line-height:1.6}  
-.message{padding:12px;border-radius:10px;margin:12px 0;font-size:13px;line-height:1.5;display:none;overflow-wrap:anywhere}  
-.message.show{display:block}  
-.message.error{background:#351818;color:#ffb6b6}  
-.message.success{background:#102b1d;color:#9df0bf}  
-.message.info{background:#152237;color:#b5d4ff}  
-.loading,.empty{padding:18px 10px;text-align:center;color:var(--muted);font-size:13px}  
-.row{display:flex;align-items:center;gap:10px}  
-.between{justify-content:space-between}  
-.row>*{min-width:0}  
-.stack{display:flex;flex-direction:column;gap:10px}  
-.order-card{background:#101010;border:1px solid rgba(212,175,55,.23);border-radius:19px;padding:16px;margin-bottom:16px;overflow:hidden}  
-.order-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}  
-.order-heading h3{font-size:19px;line-height:1.3;margin:0 0 7px}  
-.order-subtitle{font-size:13px;color:var(--muted);margin:0}  
-.badge{display:inline-block;padding:7px 10px;border-radius:30px;font-size:11px;font-weight:800;white-space:nowrap;background:#3b3014;color:#f5d97b}  
-.badge.waiting{background:#3b3014;color:#f5d97b}  
-.badge.received{background:#123923;color:#83edac}  
-.badge.cancelled,.badge.failed{background:#3b1b1b;color:#ffaaaa}  
-.badge.refunded{background:#172c42;color:#a7d3ff}  
-.number-box{background:#1b1b1b;border:1px solid #252525;border-radius:15px;padding:14px;margin:15px 0}  
-.number-label{font-size:11px;letter-spacing:.4px;color:var(--muted);margin-bottom:9px}  
-.number-big{font-size:clamp(21px,5.5vw,29px);font-weight:800;letter-spacing:.4px;overflow-wrap:anywhere}  
-.number-small{font-size:15px;font-weight:700;overflow-wrap:anywhere}  
-.number-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px;color:var(--muted);font-size:12px}  
-.timer-area{text-align:center;padding:10px 0 16px}  
-.timer-label{color:var(--muted);font-size:14px}  
-.timer-value{font-size:34px;color:var(--green);font-weight:900;margin:9px 0}  
-.timer-expired{font-size:28px;color:var(--red)}  
-.timer-note{font-size:12px;color:var(--muted)}  
-.order-actions{display:grid;gap:10px;margin-top:12px}  
-.order-actions .btn{width:100%;border-radius:40px;padding:15px 12px;font-size:14px}  
-.order-actions .btn-black{background:#171717;border:1px solid #333}  
-.order-actions .btn-danger{background:transparent}  
-.order-line{font-size:13px;margin:9px 0;overflow-wrap:anywhere;color:#d0d0d0}  
-.order-divider{border:0;border-top:1px solid #303030;margin:16px 0}  
-.detail-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin:13px 0;font-size:14px}  
-.detail-row span:first-child{color:var(--muted)}  
-.detail-row strong{text-align:right;overflow-wrap:anywhere}  
-.refund-good{color:var(--green)}  
-.sms-box{background:#1a1a1a;border:1px solid #2c2c2c;border-radius:14px;padding:16px;margin-top:14px}  
-.sms-heading{font-size:12px;color:var(--muted);text-align:center}  
-.sms-code{font-size:32px;font-weight:900;text-align:center;margin:15px 0;letter-spacing:1px}  
-.copy-button{display:block;margin:0 auto;border:1px solid #444;background:#222;color:white;border-radius:30px;padding:12px 22px;font-weight:800}  
-.order-footnote{font-size:12px;color:var(--muted);line-height:1.5;margin:14px 0 0}  
-.order-service{font-size:13px;color:#d5d5d5;margin-top:10px}  
-hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}  
-  
-.search-picker{position:relative;width:100%;margin-top:10px}  
-.search-picker .field{display:block;width:100%}  
-.picker-menu{display:none;position:absolute;top:calc(100% + 5px);left:0;right:0;z-index:1000;background:#141414;border:1px solid var(--border);border-radius:12px;padding:5px;max-height:220px;overflow-y:auto;overscroll-behavior:contain;box-shadow:0 12px 30px #000b}  
-.picker-menu.open{display:block}  
-.picker-menu .country-button,.picker-menu .service-button{margin:0 0 4px;padding:11px;border-radius:8px;background:#1b1b1b}  
-.picker-menu .country-button:last-child,.picker-menu .service-button:last-child{margin-bottom:0}  
-.picker-menu .country-meta,.picker-menu .service-button small{display:none}  
-.picker-placeholder{font-size:12px;color:var(--muted);padding:12px;text-align:center}  
-.picker-label{font-size:12px;color:var(--muted);margin:14px 0 7px}  
-.selected-value{display:block;margin-top:8px;font-size:12px;color:var(--gold-light)}  
-#usaServices,#countryResults,#allServices{display:none!important}  
-#allServicesWrap{display:block!important}  
-#selectedCountryTitle{font-size:15px}  
-.orders-panel{margin-top:18px}  
-  
-.back-dashboard-btn{display:inline-flex;align-items:center;gap:7px;margin:0 0 14px;padding:9px 12px;color:var(--gold-light);background:#151515;border:1px solid var(--border);border-radius:9px;text-decoration:none;font-size:13px;font-weight:700}  
-.back-dashboard-btn:hover{background:#222}  
-.fund-wallet-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:10px;padding:9px 10px;background:var(--gold);color:#080808;border-radius:9px;text-decoration:none;text-align:center;font-size:12px;font-weight:800}  
-.fund-wallet-btn:hover{opacity:.85}  
-  
-/* Original verification popup */  
-.verification-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:7px}  
-.verification-overlay.show{display:flex}  
-.verification-modal{width:min(100%,510px);max-height:calc(100dvh - 14px);display:flex;flex-direction:column;overflow:auto;overscroll-behavior:contain;background:#111;border:1px solid rgba(212,175,55,.55);border-radius:16px;box-shadow:0 15px 60px #000a}  
-.verification-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 13px;background:linear-gradient(120deg,#28200a,#111);border-bottom:1px solid var(--border);flex-shrink:0}  
-.verification-head strong{font-size:15px;color:var(--gold-light)}  
-.verification-close{border:1px solid #555;background:#242424;color:white;width:32px;height:32px;flex-shrink:0;border-radius:50%;font-size:20px}  
-.verification-content{padding:10px 12px}  
-.verification-icon{text-align:center;font-size:27px;line-height:1.1;margin:0 0 5px}  
-.verification-content h2{text-align:center;color:var(--gold-light);font-size:15px;margin:0 0 9px}  
-.verification-intro{font-size:11px;color:#c5c5c5;text-align:center;margin:0 0 9px;line-height:1.4}  
-.practice-list{display:grid;gap:6px}  
-.practice-card{display:grid;grid-template-columns:27px minmax(0,1fr);gap:8px;align-items:start;border:1px solid rgba(212,175,55,.19);background:#191919;border-radius:9px;padding:8px 9px}  
-.practice-icon{font-size:18px;line-height:1.15;text-align:center}  
-.practice-card h3{margin:0 0 3px;font-size:11.5px;color:var(--gold-light)}  
-.practice-card p{margin:0;font-size:10.5px;line-height:1.35;color:#d0d0d0;overflow-wrap:anywhere}  
-.verification-footer{padding:0 12px 11px;flex-shrink:0}  
-.verification-footer button{width:100%;padding:11px;border:0;border-radius:9px;background:var(--gold);color:#111;font-weight:900;font-size:13px}  
-  
-/* New in-page cancellation confirmation popup */  
-.cancel-overlay{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.82)}  
-.cancel-overlay.show{display:flex}  
-.cancel-modal{width:min(100%,420px);background:#121212;border:1px solid rgba(212,175,55,.5);border-radius:18px;padding:20px;box-shadow:0 18px 55px #000b}  
-.cancel-icon{text-align:center;font-size:36px;margin-bottom:8px}  
-.cancel-modal h2{text-align:center;color:var(--gold-light);margin:0 0 8px}  
-.cancel-description{text-align:center;color:#c6c6c6;font-size:13px;line-height:1.55;margin:0 0 16px}  
-.cancel-details{background:#1b1b1b;border:1px solid #303030;border-radius:12px;padding:12px;margin-bottom:16px}  
-.cancel-details .detail-row{margin:9px 0;font-size:13px}  
-.cancel-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px}  
-.cancel-buttons button{width:100%;padding:13px 8px}  
-.cancel-confirm{background:#a83232;color:#fff;border:0;border-radius:10px;font-weight:800}  
-.cancel-dismiss{background:#292929;color:#fff;border:1px solid #444;border-radius:10px;font-weight:800}  
-.cancel-status{font-size:12px;color:var(--muted);text-align:center;line-height:1.5;margin-top:12px;display:none}  
-.cancel-status.show{display:block}  
-.cancel-confirm:disabled,.cancel-dismiss:disabled{opacity:.5;cursor:wait}  
-  
-@media(max-height:650px){  
-.verification-overlay{padding:4px}.verification-modal{max-height:calc(100dvh - 8px);border-radius:12px}  
-.verification-head{padding:7px 10px}.verification-head strong{font-size:13px}  
-.verification-close{width:27px;height:27px}.verification-content{padding:6px 9px}  
-.verification-icon{font-size:21px;margin-bottom:3px}.verification-content h2{font-size:13px;margin-bottom:5px}  
-.verification-intro{font-size:10px;margin-bottom:5px}.practice-list{gap:4px}  
-.practice-card{padding:5px 7px;grid-template-columns:23px minmax(0,1fr);gap:6px}  
-.practice-icon{font-size:15px}.practice-card h3{font-size:10.5px;margin-bottom:2px}  
-.practice-card p{font-size:9.5px;line-height:1.25}.verification-footer{padding:0 9px 7px}  
-.verification-footer button{padding:9px;font-size:12px}  
-}  
-@media(max-width:480px){  
-.container{padding:12px}.brand{font-size:17px}.wallet{padding:10px;min-width:110px}  
-.wallet strong{font-size:15px}h1{font-size:22px}.panel{padding:12px}  
-.grid{grid-template-columns:1fr}.order-card{padding:13px}  
-.order-heading h3{font-size:18px}.cancel-modal{padding:16px}  
-}  
-</style>  </head>  <body>  
-<div class="container">  
- 
-<header>
-  <div class="brand">
-    <div class="brand-identity">
-      <img
-        src="/assets/dv-logo.png"
-        alt="Delight Vendor Logs logo"
-        class="brand-logo"
-        data-brand-logo
-      >
-      <span data-brand-name>Delight Vendor Logs</span>
-    </div>
-    <small>Virtual Number Services</small>
-  </div>
+function showVerification(){
+$("verificationOverlay").classList.add("show");
+document.body.style.overflow="hidden";
+}
+function dismissVerification(){
+$("verificationOverlay").classList.remove("show");
+document.body.style.overflow=$("cancelOverlay").classList.contains("show")?"hidden":"";
+}
+$("verificationOverlay").addEventListener("click",e=>{
+if(e.target===$("verificationOverlay"))dismissVerification();
+});
 
-  <div class="wallet">
-    <small>Wallet Balance</small>
-    <strong id="walletBalance">Loading…</strong>
-    <a href="wallet.html" class="fund-wallet-btn">
-      <span>＋</span> Fund Wallet
-    </a>
-  </div>
-</header>
+async function openUSA(){
+flow="usa";
+chosenProvider="textverified";
+selectedCountry={id:187,country_id:187,name:"United States",code:"US"};
+selectedService=null;
+selectedOption=null;
+setActiveTab("usa");
+setSection("usaSection");
+$("usaServiceSearch").value="";
+$("usaServiceSearch").placeholder="Select a service or search…";
+$("usaServiceMenu").innerHTML='<div class="picker-placeholder">Loading services…</div>';
+$("usaSelected").style.display="none";
+openPicker("usaServiceMenu");
+showMessage("usaMessage","");
+await loadServices();
+}
+async function openAll(){
+flow="all";
+chosenProvider="virtualsms";
+selectedCountry=null;
+selectedService=null;
+selectedOption=null;
+setActiveTab("all");
+setSection("allSection");
+$("countrySearch").value="";
+$("countrySearch").placeholder="Select a country or search…";
+$("countrySelected").style.display="none";
+$("countryMenu").innerHTML='<div class="picker-placeholder">Loading countries…</div>';
+$("allServiceSearch").value="";
+$("allServiceSearch").disabled=true;
+$("allServiceSearch").placeholder="Select a country first…";
+$("allServiceMenu").innerHTML='<div class="picker-placeholder">Select a country first.</div>';
+$("allSelected").style.display="none";
+openPicker("countryMenu");
+showMessage("allMessage","");
+await loadCountries();
+}
 
-<a href="dashboard.html" class="back-dashboard-btn"><span>←</span> Back to Dashboard</a>
+async function loadCountries(){
+if(countryLoading)return;
+countryLoading=true;
+try{
+const response=await invoke("virtualsms","countries",{});
+countryList=normalizeCountries(response);
+if(!countryList.length){
+$("countryMenu").innerHTML='<div class="picker-placeholder">No countries are available.</div><button class="btn btn-dark full" onclick="retryCountries()">Retry</button>';
+showMessage("allMessage","Countries could not be loaded. Please retry.","error");
+return;
+}
+filterCountries();
+}catch(e){
+console.error("Country loading failed:",e);
+$("countryMenu").innerHTML='<div class="picker-placeholder">Could not load countries.</div><button class="btn btn-dark full" onclick="retryCountries()">Retry</button>';
+showMessage("allMessage",formatError(e,"Could not load countries. Please retry."),"error");
+}finally{
+countryLoading=false;
+}
+}
+async function retryCountries(){countryLoading=false;await loadCountries();}
 
-<h1>Virtual Numbers</h1>  
-<p class="muted small">Choose a number service, search for a country or service, then manage your numbers below.</p>  
-<div id="globalMessage" class="message"></div>  <div class="tabs">  
- <button class="tab" id="usaTab" onclick="openUSA()">🇺🇸 USA Numbers</button>  
- <button class="tab" id="allTab" onclick="openAll()">🌍 All Country Numbers</button>  
-</div>  <section id="usaSection" class="section">  
- <div class="panel">  
-  <h2>🇺🇸 United States</h2>  
-  <p class="muted small">Search and select the service you need.</p>  
-  <div class="search-picker" id="usaPicker">  
-   <input id="usaServiceSearch" class="field" placeholder="Select a service or search…" autocomplete="off" onfocus="openPicker('usaServiceMenu')" onclick="openPicker('usaServiceMenu')" oninput="filterServices('usa')">  
-   <div id="usaServiceMenu" class="picker-menu"></div>  
-  </div>  
-  <div id="usaSelected" class="selected-value" style="display:none"></div>  
-  <div id="usaMessage" class="message"></div>  
- </div>  
-</section>  <section id="allSection" class="section">  
- <div class="panel">  
-  <h2>🌍 All Country Numbers</h2>  
-  <div id="allMessage" class="message"></div>  
-  <div class="picker-label">COUNTRY</div>  
-  <div class="search-picker" id="countryPicker">  
-   <input id="countrySearch" class="field" placeholder="Select a country or search…" autocomplete="off" onfocus="openPicker('countryMenu')" onclick="openPicker('countryMenu')" oninput="filterCountries()">  
-   <div id="countryMenu" class="picker-menu"></div>  
-  </div>  
-  <div id="countrySelected" class="selected-value" style="display:none"></div>  
-  <hr>  
-  <div class="picker-label">SERVICE</div>  
-  <div class="search-picker" id="allServicePicker">  
-   <input id="allServiceSearch" class="field" placeholder="Select a country first…" autocomplete="off" disabled onfocus="handleAllServiceFocus()" onclick="handleAllServiceFocus()" oninput="filterServices('all')">  
-   <div id="allServiceMenu" class="picker-menu"></div>  
-  </div>  
-  <div id="allSelected" class="selected-value" style="display:none"></div>  
- </div>  
-</section>  <section id="optionsSection" class="section">  
- <div class="panel">  
-  <button class="btn btn-dark" onclick="goBack()">← Back</button>  
-  <h2 id="optionsTitle" style="margin-top:15px">Choose an option</h2>  
-  <p id="optionsSubtitle" class="muted small"></p>  
-  <div id="optionsMessage" class="message"></div>  
-  <div id="optionsList" class="stack"></div>  
- </div>  
-</section>  <section id="confirmSection" class="section">  
- <div class="panel">  
-  <button class="btn btn-dark" onclick="goBack()">← Back</button>  
-  <h2 style="margin-top:15px">Confirm Purchase</h2>  
-  <div id="purchaseSummary" class="notice"></div>  
-  <p class="small muted">Make sure your wallet has enough funds before continuing.</p>  
-  <div id="confirmMessage" class="message"></div>  
-  <button id="confirmPurchaseBtn" class="btn btn-gold full" onclick="purchaseNumber()">Purchase Number</button>  
- </div>  
-</section>  <section class="panel orders-panel">  
- <div class="row between">  
-  <h2>My Number Orders</h2>  
-  <button class="btn btn-dark" onclick="refreshOrders()">Refresh</button>  
- </div>  
- <p class="muted small">Your pending, successful, cancelled, and refunded orders appear below.</p>  
- <div id="ordersMessage" class="message"></div>  
- <div id="ordersList"><div class="loading">Checking your session…</div></div>  
-</section>  
-</div>  <!-- Original verification popup is unchanged -->  <div id="verificationOverlay" class="verification-overlay" role="dialog" aria-modal="true" aria-labelledby="verificationTitle">  
- <div class="verification-modal">  
-  <div class="verification-head">  
-   <strong id="verificationTitle">📢 Important Verification</strong>  
-   <button class="verification-close" aria-label="Close verification message" onclick="dismissVerification()">×</button>  
-  </div>  
-  <div class="verification-content">  
-   <div class="verification-icon">🛡️</div>  
-   <h2>✨ Best Practices for Success</h2>  
-   <p class="verification-intro">Please read these important tips before requesting a number.</p>  
-   <div class="practice-list">  
-    <div class="practice-card"><div class="practice-icon">📲</div><div><h3>Fresh Installation</h3><p>Uninstall the app and clear its cache before requesting a new number.</p></div></div>  
-    <div class="practice-card"><div class="practice-icon">✅</div><div><h3>Official Apps Only</h3><p>Use the standard official app version. Modified versions often fail verification.</p></div></div>  
-    <div class="practice-card"><div class="practice-icon">🌍</div><div><h3>Location Match</h3><p>Keep your device settings and connection consistent with the selected country while waiting.</p></div></div>  
-    <div class="practice-card"><div class="practice-icon">📶</div><div><h3>Stay Connected</h3><p>Keep the app open and maintain a stable connection while waiting for your code.</p></div></div>  
-    <div class="practice-card"><div class="practice-icon">💡</div><div><h3>Helpful Tip</h3><p>If a number cannot receive a code, try another available option. Cancel only when cancellation is available; a refund depends on confirmation and backend processing.</p></div></div>  
-   </div>  
-  </div>  
-  <div class="verification-footer"><button onclick="dismissVerification()">I Understand</button></div>  
- </div>  
-</div>  <!-- Cancellation confirmation popup -->  <div id="cancelOverlay" class="cancel-overlay" role="dialog" aria-modal="true" aria-labelledby="cancelTitle" aria-hidden="true">  
- <div class="cancel-modal">  
-  <div class="cancel-icon">⚠️</div>  
-  <h2 id="cancelTitle">Cancel Number Order?</h2>  
-  <p class="cancel-description">Are you sure you want to request cancellation for this order? Cancellation and any refund must be confirmed by the provider and saved order record.</p>  
-  <div id="cancelDetails" class="cancel-details"></div>  
-  <div class="cancel-buttons">  
-   <button id="cancelDismissBtn" class="cancel-dismiss" type="button" onclick="closeCancelPopup()">Keep Order</button>  
-   <button id="cancelConfirmBtn" class="cancel-confirm" type="button" onclick="confirmCancelOrder()">Yes, Cancel</button>  
-  </div>  
-  <div id="cancelPopupStatus" class="cancel-status"></div>  
- </div>  
-</div>  <script>  
-"use strict";  
-  
-const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";  
-const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";  
-const FUNCTIONS={  
- textverified:SUPABASE_URL+"/functions/v1/text-verified-api",  
- virtualsms:SUPABASE_URL+"/functions/v1/virtual-sms-api"  
-};  
-const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);  
-const $=id=>document.getElementById(id);  
-  
-let session=null,currentUser=null,walletBalance=0;  
-let flow="none",chosenProvider=null,selectedCountry=null,selectedService=null,selectedOption=null;  
-let visibleServices=[],filteredServices=[],countryList=[],allOrders=[];  
-let poller=null,countdownTimer=null,countryLoading=false;  
-let currentSection=null,optionsCache=[],initGeneration=0,servicesGeneration=0;  
-let cancellationOrderId=null,cancellationBusy=false;  
-  
-function escapeHTML(v){  
- return String(v??"").replace(/[&<>"']/g,c=>({  
-  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"  
- }[c]));  
-}  
-function money(v){  
- const n=Number(v);  
- return "₦"+(Number.isFinite(n)?n:0).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});  
-}  
-function showMessage(id,text,type="info"){  
- const e=$(id);  
- if(e)e.textContent=text||"",e.className="message"+(text?" show "+type:"");  
-}  
-function showGlobal(text,type="info"){showMessage("globalMessage",text,type);}  
-function clearMessages(){  
- ["globalMessage","usaMessage","allMessage","optionsMessage","confirmMessage","ordersMessage"].forEach(id=>showMessage(id,""));  
-}  
-function setSection(id){  
- document.querySelectorAll(".section").forEach(e=>e.classList.remove("active"));  
- if(id&&$(id))$(id).classList.add("active");  
- currentSection=id;  
-}  
-function setActiveTab(tab){  
- $("usaTab").classList.toggle("active",tab==="usa");  
- $("allTab").classList.toggle("active",tab==="all");  
-}  
-  
-function formatError(error,fallback){  
- const raw=String(error?.message||"");  
- const m=raw.toLowerCase();  
-  
- if(/insufficient funds|insufficient balance|not enough funds|low balance|balance too low/.test(m)){  
-  if(/customer|wallet|your balance|user balance|add ₦|user wallet/.test(m)){  
-   const amount=raw.match(/₦\s?[\d,.]+/);  
-   return "Insufficient funds. Please add "+(amount?amount[0]:"the required amount")+".";  
-  }  
-  return "Insufficient funds. Please contact support.";  
- }  
- if(/provider.(balance|fund)|(?:balance|fund).(provider|account)|account balance too low|not enough credit|out of credit|credit exhausted|funds exhausted/.test(m)){  
-  return "Insufficient funds. Please contact support.";  
- }  
- if(/jwt|unauthori[sz]ed|session expired|invalid token/.test(m)){  
-  return "Your session has expired. Please sign in again.";  
- }  
- if(/country.*(required|select)|select.*country/.test(m))return "Please select a country first.";  
- if(/service.*(required|select)|select.*service/.test(m))return "Please select a service first.";  
- if(/network|fetch failed|failed to fetch|timed? ?out|timeout/.test(m)){  
-  return "The request could not be completed right now. Please try again.";  
- }  
-  
- const safeFallback=fallback||"The request could not be completed. Please try again.";  
- if(!raw)return safeFallback;  
- if(/provider|virtualsms|textverified|numpool|api key|api_key|internal server|stack trace|exception|sql|postgres|supabase/.test(m)){  
-  return safeFallback;  
- }  
- if(raw.length>140||/[{}[\]]/.test(raw))return safeFallback;  
- return raw;  
-}  
-  
-async function invoke(provider,action,extra={}){  
- if(!FUNCTIONS[provider])throw new Error("Unknown service.");  
- const {data,error}=await sb.auth.getSession();  
- if(error)throw error;  
- const active=data?.session;  
- if(!active?.access_token)throw new Error("Your session has expired. Please sign in again.");  
-  
- const response=await fetch(FUNCTIONS[provider],{  
-  method:"POST",  
-  headers:{  
-   "Content-Type":"application/json",  
-   "apikey":SUPABASE_KEY,  
-   "Authorization":"Bearer "+active.access_token  
-  },  
-  body:JSON.stringify({action,...extra})  
- });  
- let body={};  
- try{body=await response.json();}catch{}  
- if(!response.ok||body?.error||body?.success===false){  
-  const message=body?.error||body?.message||"Request failed.";  
-  throw new Error(typeof message==="string"?message:"Request failed.");  
- }  
- return body;  
-}  
-  
-function getList(payload){  
- if(Array.isArray(payload))return payload;  
- if(!payload||typeof payload!=="object")return [];  
- for(const k of ["data","services","countries","results","items","orders","options","available"]){  
-  if(Array.isArray(payload[k]))return payload[k];  
-  if(payload[k]&&typeof payload[k]==="object"){  
-   for(const n of ["data","items","results","countries","services","options"]){  
-    if(Array.isArray(payload[k][n]))return payload[k][n];  
-   }  
-  }  
- }  
- return [];  
-}  
-function getName(x){  
- if(typeof x==="string")return x;  
- if(!x||typeof x!=="object")return "Unknown";  
- return String(x.name??x.service_name??x.serviceName??x.title??x.country_name??x.countryName??x.label??"Unknown");  
-}  
-function getCountryCode(c){  
- return String(c?.code??c?.iso2??c?.iso??c?.country_code??c?.countryCode??c?.short_code??c?.shortCode??"").trim();  
-}  
-function getCountryId(c){return c?.country_id??c?.countryId??c?.id??null;}  
-  
-function normalizeCountries(payload){  
- let list=getList(payload);  
- if(!list.length&&payload&&typeof payload==="object"){  
-  const source=payload.countries&&typeof payload.countries==="object"?payload.countries:  
-   payload.data&&typeof payload.data==="object"&&!Array.isArray(payload.data)?payload.data:null;  
-  if(source&&!Array.isArray(source)){  
-   list=Object.entries(source).map(([key,v])=>{  
-    if(typeof v==="string")return {code:key,name:v};  
-    if(v&&typeof v==="object")return {...v,code:v.code??v.iso2??v.iso??key,name:v.name??v.country_name??v.countryName??key};  
-    return null;  
-   }).filter(Boolean);  
-  }  
- }  
- return list.map(x=>typeof x==="string"  
-  ?{name:x,code:"",id:null,_original:x}  
-  :x&&typeof x==="object"  
-   ?{...x,name:getName(x),code:getCountryCode(x),id:getCountryId(x),_original:x}:null)  
-  .filter(x=>x&&x.name&&x.name!=="Unknown");  
-}  
-function cleanServiceName(value){  
- let name=String(value??"").trim().replace(/\s+/g," ");  
- name=name.replace(/^(.+?)\s[-–—|]\s*\1$/i,"$1");  
- name=name.replace(/^(.+?)\s+\1$/i,"$1");  
- return name?name.charAt(0).toLocaleUpperCase()+name.slice(1):"Unknown";  
-}  
-function normalizeServices(payload){  
- return getList(payload).map((x,i)=>typeof x==="string"  
-  ?{name:cleanServiceName(x),service_code:x,_original:x,_index:i}  
-  :x&&typeof x==="object"  
-   ?{...x,name:cleanServiceName(getName(x)),service_code:x.service_code??x.serviceCode??x.code??x.id??x.service??x.key??x.name,_original:x,_index:i}:null)  
-  .filter(x=>x&&x.name&&x.name!=="Unknown");  
-}  
-function serviceCode(s){  
- return String(s?.service_code??s?.serviceCode??s?.code??s?.id??s?.service??s?.key??s?.name??"");  
-}  
-function servicePrice(o){  
- if(typeof o==="number")return o;  
- if(typeof o==="string"){const n=Number(o);return Number.isFinite(n)?n:null;}  
- const v=o?.price_ngn??o?.customer_price_ngn??o?.priceNGN??o?.price??o?.amount??o?.cost??o?.customerPrice;  
- if(v===null||v===undefined||v==="")return null;  
- const n=Number(v);  
- return Number.isFinite(n)?n:null;  
-}  
-function optionLabel(o){  
- if(typeof o==="string"||typeof o==="number")return String(o);  
- return String(o?.label??o?.name??o?.server_name??o?.serverName??o?.title??o?.server??"Available option");  
-}  
-function getOptionPayload(o){return o&&typeof o==="object"?o:{server:o};}  
-  
-function openPicker(id){  
- const menu=$(id);  
- if(!menu)return;  
- closePickers(id);  
- menu.classList.add("open");  
-}  
-function closePickers(exceptId){  
- ["usaServiceMenu","countryMenu","allServiceMenu"].forEach(id=>{  
-  if(id!==exceptId)$(id)?.classList.remove("open");  
- });  
-}  
-document.addEventListener("click",e=>{  
- if(!e.target.closest(".search-picker"))closePickers();  
-});  
-document.addEventListener("keydown",e=>{  
- if(e.key==="Escape"){  
-  closePickers();  
-  if($("cancelOverlay").classList.contains("show")&&!cancellationBusy)closeCancelPopup();  
- }  
-});  
-  
-async function refreshWallet(){  
- if(!currentUser)return;  
- try{  
-  const {data,error}=await sb.from("wallet").select("balance").eq("user-id",currentUser.id).maybeSingle();  
-  if(error)throw error;  
-  if(!data)throw new Error("No wallet row was found for this account.");  
-  walletBalance=Number(data.balance??0);  
-  if(!Number.isFinite(walletBalance))throw new Error("Wallet balance is invalid.");  
-  $("walletBalance").textContent=money(walletBalance);  
- }catch(e){  
-  console.error("Wallet refresh failed:",e);  
-  $("walletBalance").textContent="Unavailable";  
-  showGlobal("Wallet balance could not be loaded. Please refresh the page or contact support.","error");  
- }  
-}  
-async function init(){  
- const generation=++initGeneration;  
- $("walletBalance").textContent="Loading…";  
- $("ordersList").innerHTML='<div class="loading">Loading your orders…</div>';  
- try{  
-  const {data,error}=await sb.auth.getSession();  
-  if(error)throw error;  
-  session=data?.session||null;  
-  currentUser=session?.user||null;  
-  if(generation!==initGeneration)return;  
-  if(!currentUser){  
-   $("walletBalance").textContent="Sign in required";  
-   $("ordersList").innerHTML='<div class="empty">Sign in to view your orders.</div>';  
-   showGlobal("Please sign in to use virtual number services.","error");  
-   return;  
-  }  
-  await Promise.allSettled([refreshWallet(),loadOrders()]);  
-  if(generation!==initGeneration)return;  
-  setSection(null);  
-  setActiveTab("");  
-  if(poller)clearInterval(poller);  
-  poller=setInterval(()=>{if(currentUser)refreshOrders();},30000);  
- }catch(e){  
-  console.error("Page initialization failed:",e);  
-  $("walletBalance").textContent="Unavailable";  
-  $("ordersList").innerHTML='<div class="empty">Could not initialize your account. <button class="btn btn-dark" onclick="init()">Retry</button></div>';  
-  showGlobal("Unable to initialize your account. Please retry.","error");  
- }  
-}  
-  
-function showVerification(){  
- $("verificationOverlay").classList.add("show");  
- document.body.style.overflow="hidden";  
-}  
-function dismissVerification(){  
- $("verificationOverlay").classList.remove("show");  
- document.body.style.overflow=$("cancelOverlay").classList.contains("show")?"hidden":"";  
-}  
-$("verificationOverlay").addEventListener("click",e=>{  
- if(e.target===$("verificationOverlay"))dismissVerification();  
-});  
-  
-async function openUSA(){  
- flow="usa";  
- chosenProvider="textverified";  
- selectedCountry={id:187,country_id:187,name:"United States",code:"US"};  
- selectedService=null;  
- selectedOption=null;  
- setActiveTab("usa");  
- setSection("usaSection");  
- $("usaServiceSearch").value="";  
- $("usaServiceSearch").placeholder="Select a service or search…";  
- $("usaServiceMenu").innerHTML='<div class="picker-placeholder">Loading services…</div>';  
- $("usaSelected").style.display="none";  
- openPicker("usaServiceMenu");  
- showMessage("usaMessage","");  
- await loadServices();  
-}  
-async function openAll(){  
- flow="all";  
- chosenProvider="virtualsms";  
- selectedCountry=null;  
- selectedService=null;  
- selectedOption=null;  
- setActiveTab("all");  
- setSection("allSection");  
- $("countrySearch").value="";  
- $("countrySearch").placeholder="Select a country or search…";  
- $("countrySelected").style.display="none";  
- $("countryMenu").innerHTML='<div class="picker-placeholder">Loading countries…</div>';  
- $("allServiceSearch").value="";  
- $("allServiceSearch").disabled=true;  
- $("allServiceSearch").placeholder="Select a country first…";  
- $("allServiceMenu").innerHTML='<div class="picker-placeholder">Select a country first.</div>';  
- $("allSelected").style.display="none";  
- openPicker("countryMenu");  
- showMessage("allMessage","");  
- await loadCountries();  
-}  
-  
-async function loadCountries(){  
- if(countryLoading)return;  
- countryLoading=true;  
- try{  
-  const response=await invoke("virtualsms","countries",{});  
-  countryList=normalizeCountries(response);  
-  if(!countryList.length){  
-   $("countryMenu").innerHTML='<div class="picker-placeholder">No countries are available.</div><button class="btn btn-dark full" onclick="retryCountries()">Retry</button>';  
-   showMessage("allMessage","Countries could not be loaded. Please retry.","error");  
-   return;  
-  }  
-  filterCountries();  
- }catch(e){  
-  console.error("Country loading failed:",e);  
-  $("countryMenu").innerHTML='<div class="picker-placeholder">Could not load countries.</div><button class="btn btn-dark full" onclick="retryCountries()">Retry</button>';  
-  showMessage("allMessage",formatError(e,"Could not load countries. Please retry."),"error");  
- }finally{  
-  countryLoading=false;  
- }  
-}  
-async function retryCountries(){countryLoading=false;await loadCountries();}  
-  
-function countryMatches(c,q){  
- const name=String(c.name||"").toLowerCase();  
- const code=String(c.code||"").toLowerCase();  
- if(!q)return true;  
- if(name.includes(q)||code.includes(q))return true;  
- const aliases={  
-  "us":["usa","united states","united states of america","america"],  
-  "usa":["us","united states","united states of america","america"],  
-  "united states":["usa","us","america"],  
-  "uk":["united kingdom","britain","great britain","england"],  
-  "united kingdom":["uk","britain","great britain","england"],  
-  "england":["uk","united kingdom","britain","great britain"]  
- };  
- for(const [key,values] of Object.entries(aliases)){  
-  if(q===key||values.some(v=>q===v)){  
-   if(name.includes(key)||values.some(v=>name.includes(v))||values.includes(code)||code===key)return true;  
-  }  
- }  
- if(q==="us"||q==="usa")return name.includes("united states")||code==="us";  
- if(q==="uk")return name.includes("united kingdom")||name.includes("britain")||name==="england"||code==="gb";  
- if(q==="england")return name.includes("united kingdom")||name==="england"||name.includes("britain")||code==="gb";  
- return false;  
-}  
-function filterCountries(){  
- const q=$("countrySearch").value.trim().toLowerCase();  
- renderCountries(countryList.filter(c=>countryMatches(c,q)));  
-}  
-function renderCountries(list){  
- const menu=$("countryMenu");  
- if(!list.length){  
-  menu.innerHTML='<div class="picker-placeholder">No matching countries found.</div>';  
-  return;  
- }  
- menu.innerHTML=list.map(c=>{  
-  const i=countryList.indexOf(c);  
-  return `<button type="button" class="country-button" onclick="selectCountry(${i})"><div class="country-name">${escapeHTML(c.name)}</div></button>`;  
- }).join("");  
-}  
-async function selectCountry(index){  
- if(index<0||index>=countryList.length)return;  
- selectedCountry=countryList[index];  
- if(!selectedCountry.code&&selectedCountry.id==null){  
-  showMessage("allMessage","This country is not available right now. Please choose another country.","error");  
-  return;  
- }  
- selectedService=null;  
- selectedOption=null;  
- $("countrySearch").value=selectedCountry.name;  
- $("countrySelected").textContent="Selected: "+selectedCountry.name;  
- $("countrySelected").style.display="block";  
- closePickers();  
- $("allServiceSearch").disabled=false;  
- $("allServiceSearch").value="";  
- $("allServiceSearch").placeholder="Select a service or search…";  
- $("allServiceMenu").innerHTML='<div class="picker-placeholder">Loading services…</div>';  
- $("allSelected").style.display="none";  
- showMessage("allMessage","");  
- openPicker("allServiceMenu");  
- await loadServices();  
-}  
-function handleAllServiceFocus(){  
- if(!selectedCountry){  
-  closePickers();  
-  showMessage("allMessage","Please select a country first.","info");  
-  $("countrySearch").focus();  
-  openPicker("countryMenu");  
-  return;  
- }  
- openPicker("allServiceMenu");  
-}  
-  
-async function loadServices(){  
- if(!chosenProvider)return;  
- const provider=chosenProvider;  
- const generation=++servicesGeneration;  
- const menu=provider==="textverified"?$("usaServiceMenu"):$("allServiceMenu");  
- menu.innerHTML='<div class="picker-placeholder">Loading services…</div>';  
- try{  
-  const payload=provider==="textverified"  
-   ?{numberType:"mobile",reservationType:"verification"}  
-   :{country:selectedCountry?.code,countryId:selectedCountry?.id};  
-  const response=await invoke(provider,"services",payload);  
-  if(provider!==chosenProvider||generation!==servicesGeneration)return;  
-  visibleServices=normalizeServices(response);  
-  if(!visibleServices.length){  
-   menu.innerHTML='<div class="picker-placeholder">No services are available.</div><button class="btn btn-dark full" onclick="loadServices()">Retry</button>';  
-   showMessage(provider==="textverified"?"usaMessage":"allMessage","No services were returned. Please retry later.","error");  
-   return;  
-  }  
-  const seen=new Set();  
-  visibleServices=visibleServices.filter(s=>{  
-   const key=s.name.toLocaleLowerCase();  
-   if(seen.has(key))return false;  
-   seen.add(key);  
-   return true;  
-  });  
-  showMessage(provider==="textverified"?"usaMessage":"allMessage","");  
-  filterServices(provider==="textverified"?"usa":"all");  
- }catch(e){  
-  console.error("Service loading failed:",e);  
-  if(generation!==servicesGeneration)return;  
-  menu.innerHTML='<div class="picker-placeholder">Services could not be loaded.</div><button class="btn btn-dark full" onclick="loadServices()">Retry</button>';  
-  showMessage(provider==="textverified"?"usaMessage":"allMessage",formatError(e,"Unable to load services. Please retry."),"error");  
- }  
-}  
-function filterServices(which){  
- const provider=which==="usa"?"textverified":"virtualsms";  
- if(chosenProvider!==provider)return;  
- const q=$(which==="usa"?"usaServiceSearch":"allServiceSearch").value.trim().toLowerCase();  
- filteredServices=visibleServices.filter(s=>  
-  String(s.name).toLowerCase().includes(q)||  
-  String(serviceCode(s)).toLowerCase().includes(q)||  
-  String(s.description||"").toLowerCase().includes(q)  
- );  
- renderServices(which);  
-}  
-function renderServices(which){  
- const menu=which==="usa"?$("usaServiceMenu"):$("allServiceMenu");  
- if(!filteredServices.length){  
-  menu.innerHTML='<div class="picker-placeholder">No matching services found.</div>';  
-  return;  
- }  
- menu.innerHTML=filteredServices.map(s=>{  
-  const i=visibleServices.indexOf(s);  
-  return `<button type="button" class="service-button" onclick="selectService(${i})"><strong>${escapeHTML(s.name)}</strong></button>`;  
- }).join("");  
-}  
-async function selectService(index){  
- if(index<0||index>=visibleServices.length)return;  
- selectedService=visibleServices[index];  
- selectedOption=null;  
- closePickers();  
- if(chosenProvider==="textverified"){  
-  $("usaServiceSearch").value=selectedService.name;  
-  $("usaSelected").textContent="Selected: "+selectedService.name;  
-  $("usaSelected").style.display="block";  
- }else{  
-  $("allServiceSearch").value=selectedService.name;  
-  $("allSelected").textContent="Selected: "+selectedService.name;  
-  $("allSelected").style.display="block";  
- }  
- $("optionsTitle").textContent=selectedService.name;  
- $("optionsSubtitle").textContent=(selectedCountry?selectedCountry.name+" · ":"United States · ")+"Choose an available option.";  
- $("optionsList").innerHTML='<div class="loading">Loading prices and availability…</div>';  
- showMessage("optionsMessage","");  
- setSection("optionsSection");  
- try{  
-  const code=serviceCode(selectedService);  
-  const payload=chosenProvider==="textverified"  
-   ?{service:code,serviceCode:code,numberType:"mobile",reservationType:"verification"}  
-   :{service:code,serviceCode:code,country:selectedCountry.code,countryCode:selectedCountry.code,countryId:selectedCountry.id};  
-  const response=await invoke(chosenProvider,"price",payload);  
-  optionsCache=getList(response);  
-  if(!optionsCache.length&&(response?.price!==undefined||response?.data?.price!==undefined||response?.price_ngn!==undefined))optionsCache=[response];  
-  if(!optionsCache.length){  
-   $("optionsList").innerHTML='<div class="empty">No purchasable options are available.</div><button class="btn btn-dark full" onclick="selectService('+index+')">Retry</button>';  
-   return;  
-  }  
-  renderOptions(optionsCache);  
- }catch(e){  
-  console.error("Price request failed:",e);  
-  $("optionsList").innerHTML='<div class="empty">Could not load prices or availability.</div><button class="btn btn-dark full" onclick="selectService('+index+')">Retry</button>';  
-  showMessage("optionsMessage",formatError(e,"Unable to load prices. Please retry."),"error");  
- }  
-}  
-function renderOptions(options){  
- $("optionsList").innerHTML=options.map((o,i)=>{  
-  const price=servicePrice(o);  
-  return `<button class="option-button" onclick="chooseOption(${i})"><div class="row between"><strong>${escapeHTML(optionLabel(o))}</strong><strong>${price===null?"Price unavailable":escapeHTML(money(price))}</strong></div><small>${escapeHTML(o?.description||o?.availability||"Select this option to continue")}</small></button>`;  
- }).join("");  
-}  
-function chooseOption(index){  
- if(index<0||index>=optionsCache.length)return;  
- selectedOption=optionsCache[index];  
- const price=servicePrice(selectedOption);  
- if(price===null||price<0){  
-  showMessage("optionsMessage","This option has no valid price. Choose another option.","error");  
-  return;  
- }  
- $("purchaseSummary").innerHTML=  
-  `<div><strong>Service:</strong> ${escapeHTML(selectedService?.name||"Selected service")}</div>  
-   <div style="margin-top:6px"><strong>Country:</strong> ${escapeHTML(selectedCountry?.name||"United States")}</div>  
-   <div style="margin-top:6px"><strong>Option:</strong> ${escapeHTML(optionLabel(selectedOption))}</div>  
-   <div style="margin-top:8px"><strong>Price:</strong> ${escapeHTML(money(price))}</div>  
-   <div style="margin-top:6px"><strong>Wallet balance:</strong> ${escapeHTML(money(walletBalance))}</div>`;  
- showMessage("confirmMessage","");  
- setSection("confirmSection");  
-}  
-async function purchaseNumber(){  
- if(!currentUser){showMessage("confirmMessage","Please sign in again.","error");return;}  
- if(!selectedService||!selectedOption||!selectedCountry){  
-  showMessage("confirmMessage","Select a country, service and option first.","error");  
-  return;  
- }  
- const price=servicePrice(selectedOption);  
- if(price===null||price<0){showMessage("confirmMessage","The selected option has an invalid price.","error");return;}  
- if(walletBalance<price){showMessage("confirmMessage","Insufficient funds. Please add "+money(price-walletBalance)+".","error");return;}  
-  
- const button=$("confirmPurchaseBtn");  
- button.disabled=true;  
- button.textContent="Processing…";  
- showMessage("confirmMessage","Submitting your purchase request…","info");  
- try{  
-  const code=serviceCode(selectedService);  
-  const option=getOptionPayload(selectedOption);  
-  await invoke(chosenProvider,"buy",{  
-   service:code,serviceCode:code,serviceName:selectedService.name,  
-   country:selectedCountry.code,countryCode:selectedCountry.code,countryId:selectedCountry.id,countryName:selectedCountry.name,  
-   option,server:option.server??option.server_id??option.id??option.value,  
-   customerPriceNGN:price,priceNGN:price  
-  });  
-  showMessage("confirmMessage","Purchase request submitted. Refreshing your orders…","success");  
-  await Promise.allSettled([refreshWallet(),loadOrders()]);  
-  setSection(chosenProvider==="textverified"?"usaSection":"allSection");  
-  showGlobal("Purchase request submitted. Check My Number Orders for its current status.","success");  
- }catch(e){  
-  console.error("Purchase failed:",e);  
-  showMessage("confirmMessage",formatError(e,"The purchase could not be completed. Please try again."),"error");  
- }finally{  
-  button.disabled=false;  
-  button.textContent="Purchase Number";  
- }  
-}  
-function goBack(){  
- if(currentSection==="confirmSection")setSection("optionsSection");  
- else if(flow==="usa")setSection("usaSection");  
- else if(flow==="all")setSection("allSection");  
- else setSection(null);  
-}  
-  
-async function refreshOrders(){  
- await Promise.allSettled([loadOrders(),refreshWallet()]);  
-}  
-async function loadOrders(){  
- if(!currentUser){  
-  $("ordersList").innerHTML='<div class="empty">Sign in to view your orders.</div>';  
-  return;  
- }  
- try{  
-  const {data,error}=await sb.from("virtual_number_orders").select("*")  
-   .eq("user_id",currentUser.id).order("created_at",{ascending:false}).limit(50);  
-  if(error)throw error;  
-  allOrders=data||[];  
-  renderOrders();  
-  showMessage("ordersMessage","");  
- }catch(e){  
-  console.error("Order history loading failed:",e);  
-  $("ordersList").innerHTML='<div class="empty">Unable to load your order history. <button class="btn btn-dark" onclick="loadOrders()">Retry</button></div>';  
-  showMessage("ordersMessage","Order history could not be refreshed. Please try again.","error");  
- }  
-}  
-function normalizeStatus(o){  
- const s=String(o.status||o.provider_state||"waiting").toLowerCase().trim();  
- if(["received","completed","complete","success","successful","verification_successful","sms_received"].includes(s))return "received";  
- if(["refunded","refund_completed","cancelled_refunded","canceled_refunded","refunded_cancelled","refunded_canceled"].includes(s))return "refunded";  
- if(["cancelled","canceled","order_cancelled","order_canceled"].includes(s))return "cancelled";  
- if(["failed","error"].includes(s))return "failed";  
- return "waiting";  
-}  
-function statusLabel(s){  
- return({waiting:"Pending",received:"Verification Successful",cancelled:"Order Cancelled",failed:"Failed",refunded:"Refunded"})[s]||s;  
-}  
-function orderDate(o){  
- const d=o.created_at||o.purchased_at;  
- if(!d)return "Date unavailable";  
- const x=new Date(d);  
- return Number.isNaN(x.getTime())?"Date unavailable":x.toLocaleString();  
-}  
-function getOrderNumber(o){return o.number??o.phone_number??o.phone??o.phoneNumber??"";}  
-function getCode(o){return o.otp_code??o.code??o.sms_code??o.verification_code??"";}  
-function getSms(o){return o.full_sms??o.sms_text??o.message??"";}  
-function getPrice(o){  
- const n=Number(o.customer_price_ngn??o.price_ngn??o.price??0);  
- return Number.isFinite(n)?n:0;  
-}  
-function isRefunded(o,status){  
- const refundStatus=String(o.refund_status||"").toLowerCase();  
- return status==="refunded"||Boolean(o.refunded_at||o.refund_processed_at||["refunded","completed","succeeded"].includes(refundStatus));  
-}  
-function refundLabel(o,status){  
- if(isRefunded(o,status))return "Refunded";  
- const s=String(o.refund_status||"").toLowerCase();  
- if(s.includes("pending")||s.includes("processing"))return "Processing";  
- if(status==="cancelled"||status==="failed")return s==="not_applicable"?"Not applicable":"Not confirmed";  
- return "Not applicable";  
-}  
-function durationSeconds(o){  
- const raw=o.provider_expires_at||o.expires_at||o.expiry_at||o.expiresAt;  
- if(raw){  
-  const end=new Date(raw).getTime();  
-  if(Number.isFinite(end))return Math.max(0,Math.floor((end-Date.now())/1000));  
- }  
- const durationValue=o.duration_seconds??o.expires_in_seconds;  
- if(durationValue!==undefined&&durationValue!==null&&durationValue!==""){  
-  const created=new Date(o.created_at||o.purchased_at||Date.now()).getTime();  
-  const duration=Number(durationValue);  
-  if(Number.isFinite(created)&&Number.isFinite(duration)&&duration>0){  
-   return Math.max(0,Math.floor((created+duration*1000-Date.now())/1000));  
-  }  
- }  
- return null;  
-}  
-function countdownText(seconds){  
- const s=Math.max(0,seconds|0),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),r=s%60;  
- return h>0?[h,m,r].map(n=>String(n).padStart(2,"0")).join(":"):[m,r].map(n=>String(n).padStart(2,"0")).join(":");  
-}  
-function renderOrders(){  
- if(!allOrders.length){  
-  $("ordersList").innerHTML='<div class="empty">You have no virtual number orders yet.</div>';  
-  return;  
- }  
- $("ordersList").innerHTML=allOrders.map(o=>{  
-  const status=normalizeStatus(o);  
-  const id=Number(o.id);  
-  const number=String(getOrderNumber(o)||"");  
-  const code=String(getCode(o)||"");  
-  const sms=String(getSms(o)||"");  
-  const price=getPrice(o);  
-  const service=String(o.service_name||o.service_code||"Virtual Number");  
-  const country=String(o.country_name||o.country_code||"Unknown country");  
-  const pending=status==="waiting";  
-  const received=status==="received";  
-  const cancelled=status==="cancelled";  
-  const failed=status==="failed";  
-  const refunded=isRefunded(o,status);  
-  const left=durationSeconds(o);  
-  
-  const headline=pending?(number?"Number Reserved":"Purchase Pending"):  
-   received?"Verification Successful":  
-   cancelled?"Order Cancelled":failed?"Order Failed":"Refunded";  
-  const subtitle=pending?(number?"Waiting for verification code":"Waiting for provider confirmation"):  
-   received?"SMS received for this number":  
-   cancelled?"This number order has ended":  
-   failed?"This number order failed":"Your refund has been recorded";  
-  
-  let html=`<article class="order-card" data-order-id="${escapeHTML(o.id)}">  
-   <div class="order-heading">  
-    <div><h3>${escapeHTML(headline)}</h3><p class="order-subtitle">${escapeHTML(subtitle)}</p></div>  
-    <span class="badge ${status}">${escapeHTML(statusLabel(status))}</span>  
-   </div>  
-   <div class="order-service">${escapeHTML(service)} · ${escapeHTML(country)}</div>  
-   <div class="number-box">  
-    <div class="number-label">${pending?"YOUR PHONE NUMBER":"PHONE NUMBER"}</div>  
-    <div class="${pending?"number-big":"number-small"}">${escapeHTML(number||"Waiting for provider number")}</div>  
-    <div class="number-meta"><span>${escapeHTML(service)} · ${escapeHTML(country)}</span><span>Order #${escapeHTML(o.id)}</span></div>  
-   </div>`;  
-  
-  if(pending){  
-   html+=`<div class="timer-area">  
-    <div class="timer-label">${left===null?"Expiry information":"Time remaining"}</div>  
-    <div class="timer-value ${left===0?"timer-expired":""}" data-countdown="${escapeHTML(o.id)}">${left===null?"—":countdownText(left)}</div>  
-    <div class="timer-note">${left===null?"Waiting for provider expiry information":"Countdown updates automatically"}</div>  
-   </div>  
-   <div class="order-actions">  
-    <button class="btn btn-black" onclick="checkOrder(${id})">◉ &nbsp; Check Code</button>  
-    <button class="btn btn-danger" onclick="cancelOrder(${id})">⊗ &nbsp; Cancel Order</button>  
-   </div>`;  
-  }  
-  if(received){  
-   html+=`<div class="sms-box">  
-    <div class="sms-heading">VERIFICATION CODE</div>  
-    <div class="sms-code">${escapeHTML(code||"Code unavailable")}</div>  
-    ${code?`<button class="copy-button" onclick="copyOrderCode(${id})">▢ &nbsp; Copy Code</button>`:""}  
-    ${sms?`<hr><div class="order-line">${escapeHTML(sms)}</div>`:""}  
-   </div>`;  
-  }  
-  if(cancelled||failed||refunded){  
-   html+=`<hr class="order-divider">  
-    <div class="detail-row"><span>Purchase price</span><strong>${escapeHTML(money(price))}</strong></div>  
-    <div class="detail-row"><span>Refund status</span><strong class="${refunded?"refund-good":""}">${escapeHTML(refundLabel(o,status))}</strong></div>  
-    <p class="order-footnote">The refund amount and status reflect the recorded transaction. “Refunded” appears only after confirmation.</p>`;  
-  }  
-  if(!pending&&!received&&!cancelled&&!failed&&!refunded){  
-   html+=`<div class="detail-row"><span>Purchase price</span><strong>${escapeHTML(money(price))}</strong></div>`;  
-  }  
-  html+=`<div class="order-line"><strong>Order date:</strong> ${escapeHTML(orderDate(o))}</div>`;  
-  html+=`<div class="order-actions"><button class="btn btn-black" onclick="checkOrder(${id})">Refresh Status</button></div>`;  
-  html+=`</article>`;  
-  return html;  
- }).join("");  
- updateCountdowns();  
-}  
-function updateCountdowns(){  
- document.querySelectorAll("[data-countdown]").forEach(el=>{  
-  const id=el.getAttribute("data-countdown");  
-  const o=allOrders.find(x=>String(x.id)===String(id));  
-  if(!o)return;  
-  const seconds=durationSeconds(o);  
-  if(seconds===null){  
-   el.textContent="—";  
-   el.classList.remove("timer-expired");  
-   return;  
-  }  
-  el.textContent=countdownText(seconds);  
-  if(seconds<=0){  
-   el.classList.add("timer-expired");  
-   el.textContent="00:00";  
-  }else el.classList.remove("timer-expired");  
- });  
-}  
-async function copyOrderCode(id){  
- const o=allOrders.find(x=>Number(x.id)===Number(id));  
- const code=getCode(o||{});  
- if(!code){showMessage("ordersMessage","No verification code is available to copy yet.","error");return;}  
- try{  
-  await navigator.clipboard.writeText(String(code));  
-  showMessage("ordersMessage","Verification code copied.","success");  
- }catch{  
-  const t=document.createElement("textarea");  
-  t.value=String(code);  
-  t.style.position="fixed";  
-  t.style.opacity="0";  
-  document.body.appendChild(t);  
-  t.select();  
-  let ok=false;  
-  try{ok=document.execCommand("copy");}catch{}  
-  t.remove();  
-  showMessage("ordersMessage",ok?"Verification code copied.":"Unable to copy automatically. Please select the code manually.",ok?"success":"error");  
- }  
-}  
-  
-/* Never send a cancellation/status request to an unknown provider. */  
-function orderProvider(o){  
- const p=String(o.provider_key||o.provider||"").toLowerCase().replace(/[_\s]/g,"-");  
- if(p.includes("textverified")||p.includes("text-verified"))return "textverified";  
- if(p.includes("virtualsms")||p.includes("virtual-sms"))return "virtualsms";  
- return null;  
-}  
-function providerOrderId(o){  
- return o.provider_order_id??o.providerOrderId??o.virtualsms_order_id??o.textverified_order_id??o.numpool_order_id??null;  
-}  
-function orderActionPayload(o){  
- const providerId=providerOrderId(o);  
- return {  
-  orderId:providerId??o.id,  
-  providerOrderId:providerId,  
-  id:o.id,  
-  order_id:o.id  
- };  
-}  
-async function checkOrder(id){  
- const o=allOrders.find(x=>String(x.id)===String(id));  
- if(!o){  
-  showMessage("ordersMessage","Order not found. Refresh the list and try again.","error");  
-  return;  
- }  
- const provider=orderProvider(o);  
- if(!provider){  
-  showMessage("ordersMessage","The saved order does not identify a supported provider. Contact support before trying again.","error");  
-  return;  
- }  
- showMessage("ordersMessage","Checking order status…","info");  
- try{  
-  await invoke(provider,"status",orderActionPayload(o));  
-  await Promise.allSettled([loadOrders(),refreshWallet()]);  
-  const updated=allOrders.find(x=>String(x.id)===String(id));  
-  const status=updated?normalizeStatus(updated):"waiting";  
-  if(status==="received"){  
-   showMessage("ordersMessage","Verification code received. Check the order card.","success");  
-  }else if(status==="cancelled"){  
-   showMessage("ordersMessage","The saved order status now confirms cancellation.","success");  
-  }else if(status==="refunded"){  
-   showMessage("ordersMessage","The saved order status confirms a refund.","success");  
-  }else if(status==="failed"){  
-   showMessage("ordersMessage","The saved order status is failed. Check the refund status shown on the order.","info");  
-  }else{  
-   showMessage("ordersMessage","Status check completed. The saved order is still pending; no cancellation or refund has been confirmed.","info");  
-  }  
- }catch(e){  
-  console.error("Status check failed:",e);  
-  showMessage("ordersMessage",formatError(e,"Unable to check this order right now."),"error");  
- }  
-}  
-  
-/* Custom cancellation popup */  
-function cancelOrder(id){  
- const o=allOrders.find(x=>String(x.id)===String(id));  
- if(!o){  
-  showMessage("ordersMessage","Order not found. Refresh the list and try again.","error");  
-  return;  
- }  
- if(normalizeStatus(o)!=="waiting"){  
-  showMessage("ordersMessage","Only pending orders can be cancelled.","error");  
-  return;  
- }  
- if(!orderProvider(o)){  
-  showMessage("ordersMessage","The saved order does not identify a supported provider. Contact support before trying to cancel it.","error");  
-  return;  
- }  
- cancellationOrderId=String(o.id);  
- cancellationBusy=false;  
- $("cancelTitle").textContent="Cancel Number Order?";  
- $("cancelPopupStatus").textContent="";  
- $("cancelPopupStatus").className="cancel-status";  
- $("cancelDetails").innerHTML=  
-  `<div class="detail-row"><span>Service</span><strong>${escapeHTML(o.service_name||o.service_code||"Virtual Number")}</strong></div>  
-   <div class="detail-row"><span>Country</span><strong>${escapeHTML(o.country_name||o.country_code||"Unknown country")}</strong></div>  
-   <div class="detail-row"><span>Phone number</span><strong>${escapeHTML(getOrderNumber(o)||"Not assigned yet")}</strong></div>  
-   <div class="detail-row"><span>Order ID</span><strong>${escapeHTML(o.id)}</strong></div>  
-   <div class="detail-row"><span>Purchase price</span><strong>${escapeHTML(money(getPrice(o)))}</strong></div>`;  
- $("cancelConfirmBtn").disabled=false;  
- $("cancelConfirmBtn").textContent="Yes, Cancel";  
- $("cancelDismissBtn").disabled=false;  
- $("cancelOverlay").classList.add("show");  
- $("cancelOverlay").setAttribute("aria-hidden","false");  
- document.body.style.overflow="hidden";  
- $("cancelDismissBtn").focus();  
-}  
-function closeCancelPopup(){  
- if(cancellationBusy)return;  
- $("cancelOverlay").classList.remove("show");  
- $("cancelOverlay").setAttribute("aria-hidden","true");  
- document.body.style.overflow=$("verificationOverlay").classList.contains("show")?"hidden":"";  
- cancellationOrderId=null;  
-}  
-$("cancelOverlay").addEventListener("click",e=>{  
- if(e.target===$("cancelOverlay")&&!cancellationBusy)closeCancelPopup();  
-});  
-async function confirmCancelOrder(){  
- if(cancellationBusy||cancellationOrderId===null)return;  
- const o=allOrders.find(x=>String(x.id)===cancellationOrderId);  
- if(!o){  
-  closeCancelPopup();  
-  showMessage("ordersMessage","Order not found. Refresh the list and try again.","error");  
-  return;  
- }  
- if(normalizeStatus(o)!=="waiting"){  
-  closeCancelPopup();  
-  showMessage("ordersMessage","This order is no longer pending. Refresh the order list.","info");  
-  return;  
- }  
- const provider=orderProvider(o);  
- if(!provider){  
-  $("cancelPopupStatus").textContent="Provider could not be identified. No cancellation request was sent.";  
-  $("cancelPopupStatus").className="cancel-status show";  
-  return;  
- }  
-  
- cancellationBusy=true;  
- $("cancelConfirmBtn").disabled=true;  
- $("cancelDismissBtn").disabled=true;  
- $("cancelConfirmBtn").textContent="Requesting…";  
- $("cancelPopupStatus").textContent="Sending cancellation request and checking the saved order status…";  
- $("cancelPopupStatus").className="cancel-status show";  
- showMessage("ordersMessage","Requesting cancellation…","info");  
-  
- try{  
-  await invoke(provider,"cancel",orderActionPayload(o));  
-  
-  /* Refresh the real saved order and wallet; do not create a local order or fake a refund. */  
-  await Promise.allSettled([loadOrders(),refreshWallet()]);  
-  
-  const updated=allOrders.find(x=>String(x.id)===cancellationOrderId);  
-  const status=updated?normalizeStatus(updated):"waiting";  
-  const refundConfirmed=updated&&isRefunded(updated,status);  
-  
-  if(status==="refunded"||refundConfirmed){  
-   $("cancelTitle").textContent="Refund Confirmed";  
-   $("cancelPopupStatus").textContent="The saved order record confirms the refund. Your wallet balance has been refreshed.";  
-   $("cancelPopupStatus").className="cancel-status show";  
-   showMessage("ordersMessage","The saved order record confirms a refund.","success");  
-  }else if(status==="cancelled"){  
-   $("cancelTitle").textContent="Cancellation Confirmed";  
-   $("cancelPopupStatus").textContent="The saved order record confirms cancellation. A refund has not been confirmed unless the order explicitly shows Refunded.";  
-   $("cancelPopupStatus").className="cancel-status show";  
-   showMessage("ordersMessage","The saved order record confirms cancellation. Refund status is shown on the order card.","success");  
-  }else{  
-   $("cancelTitle").textContent="Request Submitted";  
-   $("cancelPopupStatus").textContent="The cancellation request was sent, but the saved order is still pending. Cancellation and refund are not yet confirmed. Refresh the order status before trying again.";  
-   $("cancelPopupStatus").className="cancel-status show";  
-   showMessage("ordersMessage","Cancellation request submitted, but cancellation is not yet confirmed. The order remains pending.","info");  
-  }  
-  
-  $("cancelConfirmBtn").textContent="Close";  
-  $("cancelConfirmBtn").disabled=false;  
-  $("cancelConfirmBtn").onclick=finishCancelPopup;  
-  $("cancelDismissBtn").textContent="Close";  
-  $("cancelDismissBtn").disabled=false;  
-  $("cancelDismissBtn").onclick=finishCancelPopup;  
- }catch(e){  
-  console.error("Cancellation failed:",e);  
-  $("cancelTitle").textContent="Cancellation Not Confirmed";  
-  $("cancelPopupStatus").textContent=formatError(e,"Cancellation could not be confirmed. Check the order status before retrying.");  
-  $("cancelPopupStatus").className="cancel-status show";  
-  showMessage("ordersMessage","Cancellation could not be confirmed. Refresh the order status before trying again.","error");  
-  $("cancelConfirmBtn").textContent="Close";  
-  $("cancelConfirmBtn").disabled=false;  
-  $("cancelConfirmBtn").onclick=finishCancelPopup;  
-  $("cancelDismissBtn").textContent="Close";  
-  $("cancelDismissBtn").disabled=false;  
-  $("cancelDismissBtn").onclick=finishCancelPopup;  
- }finally{  
-  cancellationBusy=false;  
- }  
-}  
-function finishCancelPopup(){  
- cancellationBusy=false;  
- $("cancelConfirmBtn").onclick=confirmCancelOrder;  
- $("cancelDismissBtn").onclick=closeCancelPopup;  
- closeCancelPopup();  
-}  
-  
-sb.auth.onAuthStateChange((_event,newSession)=>{  
- setTimeout(()=>{  
-  session=newSession;  
-  currentUser=newSession?.user||null;  
-  if(currentUser)init();  
-  else{  
-   if(poller)clearInterval(poller);  
-   walletBalance=0;  
-   allOrders=[];  
-   $("walletBalance").textContent="Sign in required";  
-   $("ordersList").innerHTML='<div class="empty">Sign in to view your orders.</div>';  
-   setSection(null);  
-   setActiveTab("");  
-  }  
- },0);  
-});  
-  
-document.addEventListener("DOMContentLoaded",()=>{  
- showVerification();  
- init();  
- if(countdownTimer)clearInterval(countdownTimer);  
- countdownTimer=setInterval(updateCountdowns,1000);  
-});  
-</script>  </body>  
-</html>  
+function countryMatches(c,q){
+const name=String(c.name||"").toLowerCase();
+const code=String(c.code||"").toLowerCase();
+if(!q)return true;
+if(name.includes(q)||code.includes(q))return true;
+const aliases={
+"us":["usa","united states","united states of america","america"],
+"usa":["us","united states","united states of america","america"],
+"united states":["usa","us","america"],
+"uk":["united kingdom","britain","great britain","england"],
+"united kingdom":["uk","britain","great britain","england"],
+"england":["uk","united kingdom","britain","great britain"]
+};
+for(const [key,values] of Object.entries(aliases)){
+if(q===key||values.some(v=>q===v)){
+if(name.includes(key)||values.some(v=>name.includes(v))||values.includes(code)||code===key)return true;
+}
+}
+if(q==="us"||q==="usa")return name.includes("united states")||code==="us";
+if(q==="uk")return name.includes("united kingdom")||name.includes("britain")||name==="england"||code==="gb";
+if(q==="england")return name.includes("united kingdom")||name==="england"||name.includes("britain")||code==="gb";
+return false;
+}
+function filterCountries(){
+const q=$("countrySearch").value.trim().toLowerCase();
+renderCountries(countryList.filter(c=>countryMatches(c,q)));
+}
+function renderCountries(list){
+const menu=$("countryMenu");
+if(!list.length){
+menu.innerHTML='<div class="picker-placeholder">No matching countries found.</div>';
+return;
+}
+menu.innerHTML=list.map(c=>{
+const i=countryList.indexOf(c);
+return <button type="button" class="country-button" onclick="selectCountry(${i})"><div class="country-name">${escapeHTML(c.name)}</div></button>;
+}).join("");
+}
+async function selectCountry(index){
+if(index<0||index>=countryList.length)return;
+selectedCountry=countryList[index];
+if(!selectedCountry.code&&selectedCountry.id==null){
+showMessage("allMessage","This country is not available right now. Please choose another country.","error");
+return;
+}
+selectedService=null;
+selectedOption=null;
+$("countrySearch").value=selectedCountry.name;
+$("countrySelected").textContent="Selected: "+selectedCountry.name;
+$("countrySelected").style.display="block";
+closePickers();
+$("allServiceSearch").disabled=false;
+$("allServiceSearch").value="";
+$("allServiceSearch").placeholder="Select a service or search…";
+$("allServiceMenu").innerHTML='<div class="picker-placeholder">Loading services…</div>';
+$("allSelected").style.display="none";
+showMessage("allMessage","");
+openPicker("allServiceMenu");
+await loadServices();
+}
+function handleAllServiceFocus(){
+if(!selectedCountry){
+closePickers();
+showMessage("allMessage","Please select a country first.","info");
+$("countrySearch").focus();
+openPicker("countryMenu");
+return;
+}
+openPicker("allServiceMenu");
+}
+
+async function loadServices(){
+if(!chosenProvider)return;
+const provider=chosenProvider;
+const generation=++servicesGeneration;
+const menu=provider==="textverified"?$("usaServiceMenu"):$("allServiceMenu");
+menu.innerHTML='<div class="picker-placeholder">Loading services…</div>';
+try{
+const payload=provider==="textverified"
+?{numberType:"mobile",reservationType:"verification"}
+:{country:selectedCountry?.code,countryId:selectedCountry?.id};
+const response=await invoke(provider,"services",payload);
+if(provider!==chosenProvider||generation!==servicesGeneration)return;
+visibleServices=normalizeServices(response);
+if(!visibleServices.length){
+menu.innerHTML='<div class="picker-placeholder">No services are available.</div><button class="btn btn-dark full" onclick="loadServices()">Retry</button>';
+showMessage(provider==="textverified"?"usaMessage":"allMessage","No services were returned. Please retry later.","error");
+return;
+}
+const seen=new Set();
+visibleServices=visibleServices.filter(s=>{
+const key=s.name.toLocaleLowerCase();
+if(seen.has(key))return false;
+seen.add(key);
+return true;
+});
+showMessage(provider==="textverified"?"usaMessage":"allMessage","");
+filterServices(provider==="textverified"?"usa":"all");
+}catch(e){
+console.error("Service loading failed:",e);
+if(generation!==servicesGeneration)return;
+menu.innerHTML='<div class="picker-placeholder">Services could not be loaded.</div><button class="btn btn-dark full" onclick="loadServices()">Retry</button>';
+showMessage(provider==="textverified"?"usaMessage":"allMessage",formatError(e,"Unable to load services. Please retry."),"error");
+}
+}
+function filterServices(which){
+const provider=which==="usa"?"textverified":"virtualsms";
+if(chosenProvider!==provider)return;
+const q=$(which==="usa"?"usaServiceSearch":"allServiceSearch").value.trim().toLowerCase();
+filteredServices=visibleServices.filter(s=>
+String(s.name).toLowerCase().includes(q)||
+String(serviceCode(s)).toLowerCase().includes(q)||
+String(s.description||"").toLowerCase().includes(q)
+);
+renderServices(which);
+}
+function renderServices(which){
+const menu=which==="usa"?$("usaServiceMenu"):$("allServiceMenu");
+if(!filteredServices.length){
+menu.innerHTML='<div class="picker-placeholder">No matching services found.</div>';
+return;
+}
+menu.innerHTML=filteredServices.map(s=>{
+const i=visibleServices.indexOf(s);
+return <button type="button" class="service-button" onclick="selectService(${i})"><strong>${escapeHTML(s.name)}</strong></button>;
+}).join("");
+}
+async function selectService(index){
+if(index<0||index>=visibleServices.length)return;
+selectedService=visibleServices[index];
+selectedOption=null;
+closePickers();
+if(chosenProvider==="textverified"){
+$("usaServiceSearch").value=selectedService.name;
+$("usaSelected").textContent="Selected: "+selectedService.name;
+$("usaSelected").style.display="block";
+}else{
+$("allServiceSearch").value=selectedService.name;
+$("allSelected").textContent="Selected: "+selectedService.name;
+$("allSelected").style.display="block";
+}
+$("optionsTitle").textContent=selectedService.name;
+$("optionsSubtitle").textContent=(selectedCountry?selectedCountry.name+" · ":"United States · ")+"Choose an available option.";
+$("optionsList").innerHTML='<div class="loading">Loading prices and availability…</div>';
+showMessage("optionsMessage","");
+setSection("optionsSection");
+try{
+const code=serviceCode(selectedService);
+const payload=chosenProvider==="textverified"
+?{service:code,serviceCode:code,numberType:"mobile",reservationType:"verification"}
+:{service:code,serviceCode:code,country:selectedCountry.code,countryCode:selectedCountry.code,countryId:selectedCountry.id};
+const response=await invoke(chosenProvider,"price",payload);
+optionsCache=getList(response);
+if(!optionsCache.length&&(response?.price!==undefined||response?.data?.price!==undefined||response?.price_ngn!==undefined))optionsCache=[response];
+if(!optionsCache.length){
+$("optionsList").innerHTML='<div class="empty">No purchasable options are available.</div><button class="btn btn-dark full" onclick="selectService('+index+')">Retry</button>';
+return;
+}
+renderOptions(optionsCache);
+}catch(e){
+console.error("Price request failed:",e);
+$("optionsList").innerHTML='<div class="empty">Could not load prices or availability.</div><button class="btn btn-dark full" onclick="selectService('+index+')">Retry</button>';
+showMessage("optionsMessage",formatError(e,"Unable to load prices. Please retry."),"error");
+}
+}
+function renderOptions(options){
+$("optionsList").innerHTML=options.map((o,i)=>{
+const price=servicePrice(o);
+return <button class="option-button" onclick="chooseOption(${i})"><div class="row between"><strong>${escapeHTML(optionLabel(o))}</strong><strong>${price===null?"Price unavailable":escapeHTML(money(price))}</strong></div><small>${escapeHTML(o?.description||o?.availability||"Select this option to continue")}</small></button>;
+}).join("");
+}
+function chooseOption(index){
+if(index<0||index>=optionsCache.length)return;
+selectedOption=optionsCache[index];
+const price=servicePrice(selectedOption);
+if(price===null||price<0){
+showMessage("optionsMessage","This option has no valid price. Choose another option.","error");
+return;
+}
+$("purchaseSummary").innerHTML=
+`<div><strong>Service:</strong> ${escapeHTML(selectedService?.name||"Selected service")}</div>
+
+   <div style="margin-top:6px"><strong>Country:</strong> ${escapeHTML(selectedCountry?.name||"United States")}</div>    
+   <div style="margin-top:6px"><strong>Option:</strong> ${escapeHTML(optionLabel(selectedOption))}</div>    
+   <div style="margin-top:8px"><strong>Price:</strong> ${escapeHTML(money(price))}</div>    
+   <div style="margin-top:6px"><strong>Wallet balance:</strong> ${escapeHTML(money(walletBalance))}</div>`;    
+ showMessage("confirmMessage","");    
+ setSection("confirmSection");    
+}    
+async function purchaseNumber(){    
+ if(!currentUser){showMessage("confirmMessage","Please sign in again.","error");return;}    
+ if(!selectedService||!selectedOption||!selectedCountry){    
+  showMessage("confirmMessage","Select a country, service and option first.","error");    
+  return;    
+ }    
+ const price=servicePrice(selectedOption);    
+ if(price===null||price<0){showMessage("confirmMessage","The selected option has an invalid price.","error");return;}    
+ if(walletBalance<price){showMessage("confirmMessage","Insufficient funds. Please add "+money(price-walletBalance)+".","error");return;}    const button=$("confirmPurchaseBtn");
+button.disabled=true;
+button.textContent="Processing…";
+showMessage("confirmMessage","Submitting your purchase request…","info");
+try{
+const code=serviceCode(selectedService);
+const option=getOptionPayload(selectedOption);
+await invoke(chosenProvider,"buy",{
+service:code,serviceCode:code,serviceName:selectedService.name,
+country:selectedCountry.code,countryCode:selectedCountry.code,countryId:selectedCountry.id,countryName:selectedCountry.name,
+option,server:option.server??option.server_id??option.id??option.value,
+customerPriceNGN:price,priceNGN:price
+});
+showMessage("confirmMessage","Purchase request submitted. Refreshing your orders…","success");
+await Promise.allSettled([refreshWallet(),loadOrders()]);
+setSection(chosenProvider==="textverified"?"usaSection":"allSection");
+showGlobal("Purchase request submitted. Check My Number Orders for its current status.","success");
+}catch(e){
+console.error("Purchase failed:",e);
+showMessage("confirmMessage",formatError(e,"The purchase could not be completed. Please try again."),"error");
+}finally{
+button.disabled=false;
+button.textContent="Purchase Number";
+}
+}
+function goBack(){
+if(currentSection==="confirmSection")setSection("optionsSection");
+else if(flow==="usa")setSection("usaSection");
+else if(flow==="all")setSection("allSection");
+else setSection(null);
+}
+
+async function refreshOrders(){
+await Promise.allSettled([loadOrders(),refreshWallet()]);
+}
+async function loadOrders(){
+if(!currentUser){
+$("ordersList").innerHTML='<div class="empty">Sign in to view your orders.</div>';
+return;
+}
+try{
+const {data,error}=await sb.from("virtual_number_orders").select("")
+.eq("user_id",currentUser.id).order("created_at",{ascending:false}).limit(50);
+if(error)throw error;
+allOrders=data||[];
+renderOrders();
+showMessage("ordersMessage","");
+}catch(e){
+console.error("Order history loading failed:",e);
+$("ordersList").innerHTML='<div class="empty">Unable to load your order history. <button class="btn btn-dark" onclick="loadOrders()">Retry</button></div>';
+showMessage("ordersMessage","Order history could not be refreshed. Please try again.","error");
+}
+}
+function normalizeStatus(o){
+const s=String(o.status||o.provider_state||"waiting").toLowerCase().trim();
+if(["received","completed","complete","success","successful","verification_successful","sms_received"].includes(s))return "received";
+if(["refunded","refund_completed","cancelled_refunded","canceled_refunded","refunded_cancelled","refunded_canceled"].includes(s))return "refunded";
+if(["cancelled","canceled","order_cancelled","order_canceled"].includes(s))return "cancelled";
+if(["failed","error"].includes(s))return "failed";
+return "waiting";
+}
+function statusLabel(s){
+return({waiting:"Pending",received:"Verification Successful",cancelled:"Order Cancelled",failed:"Failed",refunded:"Refunded"})[s]||s;
+}
+function orderDate(o){
+const d=o.created_at||o.purchased_at;
+if(!d)return "Date unavailable";
+const x=new Date(d);
+return Number.isNaN(x.getTime())?"Date unavailable":x.toLocaleString();
+}
+function getOrderNumber(o){return o.number??o.phone_number??o.phone??o.phoneNumber??"";}
+function getCode(o){return o.otp_code??o.code??o.sms_code??o.verification_code??"";}
+function getSms(o){return o.full_sms??o.sms_text??o.message??"";}
+function getPrice(o){
+const n=Number(o.customer_price_ngn??o.price_ngn??o.price??0);
+return Number.isFinite(n)?n:0;
+}
+function isRefunded(o,status){
+const refundStatus=String(o.refund_status||"").toLowerCase();
+return status==="refunded"||Boolean(o.refunded_at||o.refund_processed_at||["refunded","completed","succeeded"].includes(refundStatus));
+}
+function refundLabel(o,status){
+if(isRefunded(o,status))return "Refunded";
+const s=String(o.refund_status||"").toLowerCase();
+if(s.includes("pending")||s.includes("processing"))return "Processing";
+if(status==="cancelled"||status==="failed")return s==="not_applicable"?"Not applicable":"Not confirmed";
+return "Not applicable";
+}
+function durationSeconds(o){
+const raw=o.provider_expires_at||o.expires_at||o.expiry_at||o.expiresAt;
+if(raw){
+const end=new Date(raw).getTime();
+if(Number.isFinite(end))return Math.max(0,Math.floor((end-Date.now())/1000));
+}
+const durationValue=o.duration_seconds??o.expires_in_seconds;
+if(durationValue!==undefined&&durationValue!==null&&durationValue!==""){
+const created=new Date(o.created_at||o.purchased_at||Date.now()).getTime();
+const duration=Number(durationValue);
+if(Number.isFinite(created)&&Number.isFinite(duration)&&duration>0){
+return Math.max(0,Math.floor((created+duration1000-Date.now())/1000));
+}
+}
+return null;
+}
+function countdownText(seconds){
+const s=Math.max(0,seconds|0),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),r=s%60;
+return h>0?[h,m,r].map(n=>String(n).padStart(2,"0")).join(":"):[m,r].map(n=>String(n).padStart(2,"0")).join(":");
+}
+function renderOrders(){
+if(!allOrders.length){
+$("ordersList").innerHTML='<div class="empty">You have no virtual number orders yet.</div>';
+return;
+}
+$("ordersList").innerHTML=allOrders.map(o=>{
+const status=normalizeStatus(o);
+const id=Number(o.id);
+const number=String(getOrderNumber(o)||"");
+const code=String(getCode(o)||"");
+const sms=String(getSms(o)||"");
+const price=getPrice(o);
+const service=String(o.service_name||o.service_code||"Virtual Number");
+const country=String(o.country_name||o.country_code||"Unknown country");
+const pending=status==="waiting";
+const received=status==="received";
+const cancelled=status==="cancelled";
+const failed=status==="failed";
+const refunded=isRefunded(o,status);
+const left=durationSeconds(o);
+
+const headline=pending?(number?"Number Reserved":"Purchase Pending"):
+received?"Verification Successful":
+cancelled?"Order Cancelled":failed?"Order Failed":"Refunded";
+const subtitle=pending?(number?"Waiting for verification code":"Waiting for provider confirmation"):
+received?"SMS received for this number":
+cancelled?"This number order has ended":
+failed?"This number order failed":"Your refund has been recorded";
+
+let html=`<article class="order-card" data-order-id="${escapeHTML(o.id)}">
+
+   <div class="order-heading">    
+    <div><h3>${escapeHTML(headline)}</h3><p class="order-subtitle">${escapeHTML(subtitle)}</p></div>    
+    <span class="badge ${status}">${escapeHTML(statusLabel(status))}</span>    
+   </div>    
+   <div class="order-service">${escapeHTML(service)} · ${escapeHTML(country)}</div>    
+   <div class="number-box">    
+    <div class="number-label">${pending?"YOUR PHONE NUMBER":"PHONE NUMBER"}</div>    
+    <div class="${pending?"number-big":"number-small"}">${escapeHTML(number||"Waiting for provider number")}</div>    
+    <div class="number-meta"><span>${escapeHTML(service)} · ${escapeHTML(country)}</span><span>Order #${escapeHTML(o.id)}</span></div>    
+   </div>`;    if(pending){
+html+=`<div class="timer-area">
+<div class="timer-label">${left===null?"Expiry information":"Time remaining"}</div>
+<div class="timer-value ${left===0?"timer-expired":""}" data-countdown="${escapeHTML(o.id)}">${left===null?"—":countdownText(left)}</div>
+<div class="timer-note">${left===null?"Waiting for provider expiry information":"Countdown updates automatically"}</div>
+
+   </div>    
+   <div class="order-actions">    
+    <button class="btn btn-black" onclick="checkOrder(${id})">◉ &nbsp; Check Code</button>    
+    <button class="btn btn-danger" onclick="cancelOrder(${id})">⊗ &nbsp; Cancel Order</button>    
+   </div>`;    
+  }    
+  if(received){    
+   html+=`<div class="sms-box">    
+    <div class="sms-heading">VERIFICATION CODE</div>    
+    <div class="sms-code">${escapeHTML(code||"Code unavailable")}</div>    
+    ${code?`<button class="copy-button" onclick="copyOrderCode(${id})">▢ &nbsp; Copy Code</button>`:""}    
+    ${sms?`<hr><div class="order-line">${escapeHTML(sms)}</div>`:""}    
+   </div>`;    
+  }    
+  if(cancelled||failed||refunded){    
+   html+=`<hr class="order-divider">    
+    <div class="detail-row"><span>Purchase price</span><strong>${escapeHTML(money(price))}</strong></div>    
+    <div class="detail-row"><span>Refund status</span><strong class="${refunded?"refund-good":""}">${escapeHTML(refundLabel(o,status))}</strong></div>    
+    <p class="order-footnote">The refund amount and status reflect the recorded transaction. “Refunded” appears only after confirmation.</p>`;    
+  }    
+  if(!pending&&!received&&!cancelled&&!failed&&!refunded){    
+   html+=`<div class="detail-row"><span>Purchase price</span><strong>${escapeHTML(money(price))}</strong></div>`;    
+  }    
+  html+=`<div class="order-line"><strong>Order date:</strong> ${escapeHTML(orderDate(o))}</div>`;    
+  html+=`<div class="order-actions"><button class="btn btn-black" onclick="checkOrder(${id})">Refresh Status</button></div>`;    
+  html+=`</article>`;    
+  return html;    
+ }).join("");    
+ updateCountdowns();    
+}    
+function updateCountdowns(){    
+ document.querySelectorAll("[data-countdown]").forEach(el=>{    
+  const id=el.getAttribute("data-countdown");    
+  const o=allOrders.find(x=>String(x.id)===String(id));    
+  if(!o)return;    
+  const seconds=durationSeconds(o);    
+  if(seconds===null){    
+   el.textContent="—";    
+   el.classList.remove("timer-expired");    
+   return;    
+  }    
+  el.textContent=countdownText(seconds);    
+  if(seconds<=0){    
+   el.classList.add("timer-expired");    
+   el.textContent="00:00";    
+  }else el.classList.remove("timer-expired");    
+ });    
+}    
+async function copyOrderCode(id){    
+ const o=allOrders.find(x=>Number(x.id)===Number(id));    
+ const code=getCode(o||{});    
+ if(!code){showMessage("ordersMessage","No verification code is available to copy yet.","error");return;}    
+ try{    
+  await navigator.clipboard.writeText(String(code));    
+  showMessage("ordersMessage","Verification code copied.","success");    
+ }catch{    
+  const t=document.createElement("textarea");    
+  t.value=String(code);    
+  t.style.position="fixed";    
+  t.style.opacity="0";    
+  document.body.appendChild(t);    
+  t.select();    
+  let ok=false;    
+  try{ok=document.execCommand("copy");}catch{}    
+  t.remove();    
+  showMessage("ordersMessage",ok?"Verification code copied.":"Unable to copy automatically. Please select the code manually.",ok?"success":"error");    
+ }    
+}    /* Never send a cancellation/status request to an unknown provider. */
+function orderProvider(o){
+const p=String(o.provider_key||o.provider||"").toLowerCase().replace(/[_\s]/g,"-");
+if(p.includes("textverified")||p.includes("text-verified"))return "textverified";
+if(p.includes("virtualsms")||p.includes("virtual-sms"))return "virtualsms";
+return null;
+}
+function providerOrderId(o){
+return o.provider_order_id??o.providerOrderId??o.virtualsms_order_id??o.textverified_order_id??o.numpool_order_id??null;
+}
+function orderActionPayload(o){
+const providerId=providerOrderId(o);
+return {
+orderId:providerId??o.id,
+providerOrderId:providerId,
+id:o.id,
+order_id:o.id
+};
+}
+async function checkOrder(id){
+const o=allOrders.find(x=>String(x.id)===String(id));
+if(!o){
+showMessage("ordersMessage","Order not found. Refresh the list and try again.","error");
+return;
+}
+const provider=orderProvider(o);
+if(!provider){
+showMessage("ordersMessage","The saved order does not identify a supported provider. Contact support before trying again.","error");
+return;
+}
+showMessage("ordersMessage","Checking order status…","info");
+try{
+await invoke(provider,"status",orderActionPayload(o));
+await Promise.allSettled([loadOrders(),refreshWallet()]);
+const updated=allOrders.find(x=>String(x.id)===String(id));
+const status=updated?normalizeStatus(updated):"waiting";
+if(status==="received"){
+showMessage("ordersMessage","Verification code received. Check the order card.","success");
+}else if(status==="cancelled"){
+showMessage("ordersMessage","The saved order status now confirms cancellation.","success");
+}else if(status==="refunded"){
+showMessage("ordersMessage","The saved order status confirms a refund.","success");
+}else if(status==="failed"){
+showMessage("ordersMessage","The saved order status is failed. Check the refund status shown on the order.","info");
+}else{
+showMessage("ordersMessage","Status check completed. The saved order is still pending; no cancellation or refund has been confirmed.","info");
+}
+}catch(e){
+console.error("Status check failed:",e);
+showMessage("ordersMessage",formatError(e,"Unable to check this order right now."),"error");
+}
+}
+
+/* Custom cancellation popup */
+function cancelOrder(id){
+const o=allOrders.find(x=>String(x.id)===String(id));
+if(!o){
+showMessage("ordersMessage","Order not found. Refresh the list and try again.","error");
+return;
+}
+if(normalizeStatus(o)!=="waiting"){
+showMessage("ordersMessage","Only pending orders can be cancelled.","error");
+return;
+}
+if(!orderProvider(o)){
+showMessage("ordersMessage","The saved order does not identify a supported provider. Contact support before trying to cancel it.","error");
+return;
+}
+cancellationOrderId=String(o.id);
+cancellationBusy=false;
+$("cancelTitle").textContent="Cancel Number Order?";
+$("cancelPopupStatus").textContent="";
+$("cancelPopupStatus").className="cancel-status";
+$("cancelDetails").innerHTML=
+`<div class="detail-row"><span>Service</span><strong>${escapeHTML(o.service_name||o.service_code||"Virtual Number")}</strong></div>
+
+   <div class="detail-row"><span>Country</span><strong>${escapeHTML(o.country_name||o.country_code||"Unknown country")}</strong></div>    
+   <div class="detail-row"><span>Phone number</span><strong>${escapeHTML(getOrderNumber(o)||"Not assigned yet")}</strong></div>    
+   <div class="detail-row"><span>Order ID</span><strong>${escapeHTML(o.id)}</strong></div>    
+   <div class="detail-row"><span>Purchase price</span><strong>${escapeHTML(money(getPrice(o)))}</strong></div>`;    
+ $("cancelConfirmBtn").disabled=false;    
+ $("cancelConfirmBtn").textContent="Yes, Cancel";    
+ $("cancelDismissBtn").disabled=false;    
+ $("cancelOverlay").classList.add("show");    
+ $("cancelOverlay").setAttribute("aria-hidden","false");    
+ document.body.style.overflow="hidden";    
+ $("cancelDismissBtn").focus();    
+}    
+function closeCancelPopup(){    
+ if(cancellationBusy)return;    
+ $("cancelOverlay").classList.remove("show");    
+ $("cancelOverlay").setAttribute("aria-hidden","true");    
+ document.body.style.overflow=$("verificationOverlay").classList.contains("show")?"hidden":"";    
+ cancellationOrderId=null;    
+}    
+$("cancelOverlay").addEventListener("click",e=>{    
+ if(e.target===$("cancelOverlay")&&!cancellationBusy)closeCancelPopup();    
+});    
+async function confirmCancelOrder(){    
+ if(cancellationBusy||cancellationOrderId===null)return;    
+ const o=allOrders.find(x=>String(x.id)===cancellationOrderId);    
+ if(!o){    
+  closeCancelPopup();    
+  showMessage("ordersMessage","Order not found. Refresh the list and try again.","error");    
+  return;    
+ }    
+ if(normalizeStatus(o)!=="waiting"){    
+  closeCancelPopup();    
+  showMessage("ordersMessage","This order is no longer pending. Refresh the order list.","info");    
+  return;    
+ }    
+ const provider=orderProvider(o);    
+ if(!provider){    
+  $("cancelPopupStatus").textContent="Provider could not be identified. No cancellation request was sent.";    
+  $("cancelPopupStatus").className="cancel-status show";    
+  return;    
+ }    cancellationBusy=true;
+$("cancelConfirmBtn").disabled=true;
+$("cancelDismissBtn").disabled=true;
+$("cancelConfirmBtn").textContent="Requesting…";
+$("cancelPopupStatus").textContent="Sending cancellation request and checking the saved order status…";
+$("cancelPopupStatus").className="cancel-status show";
+showMessage("ordersMessage","Requesting cancellation…","info");
+
+try{
+await invoke(provider,"cancel",orderActionPayload(o));
+
+/* Refresh the real saved order and wallet; do not create a local order or fake a refund. */
+await Promise.allSettled([loadOrders(),refreshWallet()]);
+
+const updated=allOrders.find(x=>String(x.id)===cancellationOrderId);
+const status=updated?normalizeStatus(updated):"waiting";
+const refundConfirmed=updated&&isRefunded(updated,status);
+
+if(status==="refunded"||refundConfirmed){
+$("cancelTitle").textContent="Refund Confirmed";
+$("cancelPopupStatus").textContent="The saved order record confirms the refund. Your wallet balance has been refreshed.";
+$("cancelPopupStatus").className="cancel-status show";
+showMessage("ordersMessage","The saved order record confirms a refund.","success");
+}else if(status==="cancelled"){
+$("cancelTitle").textContent="Cancellation Confirmed";
+$("cancelPopupStatus").textContent="The saved order record confirms cancellation. A refund has not been confirmed unless the order explicitly shows Refunded.";
+$("cancelPopupStatus").className="cancel-status show";
+showMessage("ordersMessage","The saved order record confirms cancellation. Refund status is shown on the order card.","success");
+}else{
+$("cancelTitle").textContent="Request Submitted";
+$("cancelPopupStatus").textContent="The cancellation request was sent, but the saved order is still pending. Cancellation and refund are not yet confirmed. Refresh the order status before trying again.";
+$("cancelPopupStatus").className="cancel-status show";
+showMessage("ordersMessage","Cancellation request submitted, but cancellation is not yet confirmed. The order remains pending.","info");
+}
+
+$("cancelConfirmBtn").textContent="Close";
+$("cancelConfirmBtn").disabled=false;
+$("cancelConfirmBtn").onclick=finishCancelPopup;
+$("cancelDismissBtn").textContent="Close";
+$("cancelDismissBtn").disabled=false;
+$("cancelDismissBtn").onclick=finishCancelPopup;
+}catch(e){
+console.error("Cancellation failed:",e);
+$("cancelTitle").textContent="Cancellation Not Confirmed";
+$("cancelPopupStatus").textContent=formatError(e,"Cancellation could not be confirmed. Check the order status before retrying.");
+$("cancelPopupStatus").className="cancel-status show";
+showMessage("ordersMessage","Cancellation could not be confirmed. Refresh the order status before trying again.","error");
+$("cancelConfirmBtn").textContent="Close";
+$("cancelConfirmBtn").disabled=false;
+$("cancelConfirmBtn").onclick=finishCancelPopup;
+$("cancelDismissBtn").textContent="Close";
+$("cancelDismissBtn").disabled=false;
+$("cancelDismissBtn").onclick=finishCancelPopup;
+}finally{
+cancellationBusy=false;
+}
+}
+function finishCancelPopup(){
+cancellationBusy=false;
+$("cancelConfirmBtn").onclick=confirmCancelOrder;
+$("cancelDismissBtn").onclick=closeCancelPopup;
+closeCancelPopup();
+}
+
+sb.auth.onAuthStateChange((_event,newSession)=>{
+setTimeout(()=>{
+session=newSession;
+currentUser=newSession?.user||null;
+if(currentUser)init();
+else{
+if(poller)clearInterval(poller);
+walletBalance=0;
+allOrders=[];
+$("walletBalance").textContent="Sign in required";
+$("ordersList").innerHTML='<div class="empty">Sign in to view your orders.</div>';
+setSection(null);
+setActiveTab("");
+}
+},0);
+});
+
+document.addEventListener("DOMContentLoaded",()=>{
+showVerification();
+init();
+if(countdownTimer)clearInterval(countdownTimer);
+countdownTimer=setInterval(updateCountdowns,1000);
+});
+</script>  </body>
+
+</html>    
