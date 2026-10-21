@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,95 +10,49 @@
 <link rel="icon" href="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{
-  color-scheme:dark;
-  --bg:#090909;--panel:#141414;--panel2:#1c1c1c;
-  --border:#303030;--text:#f6f6f6;--muted:#a0a0a0;
-  --accent:#d8ff45;--danger:#ff6868;--success:#9ee6a5;
-}
+:root{color-scheme:dark;--bg:#090909;--panel:#141414;--panel2:#1c1c1c;--border:#303030;--text:#f6f6f6;--muted:#a0a0a0;--accent:#d8ff45;--danger:#ff6868;--success:#9ee6a5}
 *{box-sizing:border-box}
-body{
-  margin:0;background:var(--bg);color:var(--text);
-  font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;
-}
-button,input,select{font:inherit}
-button{cursor:pointer}
-button:disabled{opacity:.5;cursor:not-allowed}
-header{
-  padding:18px 16px;border-bottom:1px solid var(--border);
-  background:#101010;position:sticky;top:0;z-index:5;
-}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}
+header{padding:18px 16px;border-bottom:1px solid var(--border);background:#101010;position:sticky;top:0;z-index:5}
 .head-inner{max-width:1150px;margin:auto;display:flex;align-items:center;gap:12px}
-.logo{width:39px;height:39px;object-fit:contain}
-.brand{font-weight:800;font-size:17px}
-.subtitle{color:var(--muted);font-size:12px}
+.logo{width:39px;height:39px;object-fit:contain}.brand{font-weight:800;font-size:17px}.subtitle{color:var(--muted);font-size:12px}
 main{max-width:1150px;margin:25px auto;padding:0 15px 60px}
-h1{font-size:25px;margin:0 0 5px}
-h2{font-size:17px;margin:0}
-p{margin:5px 0}
-.muted{color:var(--muted)}
-.small{font-size:12px}
-.panel{
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:15px;padding:18px;margin-top:18px;
-}
+h1{font-size:25px;margin:0 0 5px}h2{font-size:17px;margin:0}p{margin:5px 0}
+.muted{color:var(--muted)}.small{font-size:12px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:15px;padding:18px;margin-top:18px}
 .tabs{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}
-.tab,.btn{
-  border:1px solid var(--border);border-radius:9px;
-  padding:10px 14px;background:var(--panel2);color:var(--text);
-}
+.tab,.btn{border:1px solid var(--border);border-radius:9px;padding:10px 14px;background:var(--panel2);color:var(--text)}
 .tab.active,.btn.primary{background:var(--accent);color:#101010;border-color:var(--accent);font-weight:750}
-.btn.danger{color:var(--danger);border-color:#633434}
-.btn.success{color:var(--success)}
-.btn.smallbtn{padding:6px 9px;font-size:12px}
+.btn.danger{color:var(--danger);border-color:#633434}.btn.smallbtn{padding:6px 9px;font-size:12px}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.field{display:flex;flex-direction:column;gap:6px;min-width:0}
-.field label{font-size:13px;color:#d4d4d4}
-input,select{
-  width:100%;min-width:0;padding:12px;
-  border:1px solid #3b3b3b;border-radius:9px;
-  background:#0c0c0c;color:var(--text);
-}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field label{font-size:13px;color:#d4d4d4}
+input,select{width:100%;min-width:0;padding:12px;border:1px solid #3b3b3b;border-radius:9px;background:#0c0c0c;color:var(--text)}
 input:focus,select:focus{outline:2px solid #8ea82e;border-color:transparent}
 input::placeholder{color:#737373}
-.checkrow{display:flex;gap:9px;align-items:center;margin:12px 0}
-.checkrow input{width:auto}
+.checkrow{display:flex;gap:9px;align-items:center;margin:12px 0}.checkrow input{width:auto}
 .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
 .notice{padding:12px;border-radius:9px;margin-top:12px;font-size:13px;display:none}
-.notice.show{display:block}
-.notice.error{background:#321919;color:#ffb5b5}
-.notice.ok{background:#162919;color:#b8f3bf}
-.notice.info{background:#22251a;color:#e7efba}
+.notice.show{display:block}.notice.error{background:#321919;color:#ffb5b5}.notice.ok{background:#162919;color:#b8f3bf}.notice.info{background:#22251a;color:#e7efba}
 .rule-summary{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
-.stat{background:#101010;border:1px solid var(--border);padding:10px 13px;border-radius:10px}
-.stat strong{font-size:20px;display:block}
-.searchbar{margin:14px 0}
-.table-wrap{overflow-x:auto;margin-top:12px}
+.stat{background:#101010;border:1px solid var(--border);padding:10px 13px;border-radius:10px}.stat strong{font-size:20px;display:block}
+.searchbar{margin:14px 0}.table-wrap{overflow-x:auto;margin-top:12px}
 table{width:100%;border-collapse:collapse;min-width:760px}
 th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--border);font-size:13px}
 th{color:var(--muted);font-weight:600}
 .pill{display:inline-block;padding:4px 8px;border-radius:30px;font-size:11px;background:#292929}
-.pill.on{background:#18301d;color:#b7efbd}
-.pill.off{background:#342020;color:#ffb6b6}
-.empty{text-align:center;padding:28px 10px;color:var(--muted)}
-.hidden{display:none!important}
+.pill.on{background:#18301d;color:#b7efbd}.pill.off{background:#342020;color:#ffb6b6}
+.empty{text-align:center;padding:28px 10px;color:var(--muted)}.hidden{display:none!important}
 .priority-list{margin:12px 0 0;padding-left:22px;color:#c8c8c8;font-size:13px}
 .priority-list li{margin:5px 0}
 footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
-@media(max-width:650px){
-  .grid{grid-template-columns:1fr}
-  .panel{padding:14px}
-  h1{font-size:22px}
-  header{padding:12px}
-}
+@media(max-width:650px){.grid{grid-template-columns:1fr}.panel{padding:14px}h1{font-size:22px}header{padding:12px}}
 </style>
 </head>
 <body>
 <header>
   <div class="head-inner">
-    <img class="logo"
-      src="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png"
-      alt="DV logo">
+    <img class="logo" src="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png" alt="DV logo">
     <div>
       <div class="brand">Delight Vendor Logs</div>
       <div class="subtitle">Admin · Price Override Manager</div>
@@ -108,7 +63,6 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
 <main>
   <h1>Price Overrides</h1>
   <p class="muted">Manage percentage markups independently for each provider.</p>
-
   <div id="notice" class="notice" role="status"></div>
 
   <section id="loginPanel" class="panel hidden">
@@ -124,9 +78,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
         <input id="password" type="password" autocomplete="current-password" placeholder="Password">
       </div>
     </div>
-    <div class="actions">
-      <button id="loginBtn" class="btn primary" type="button">Sign in</button>
-    </div>
+    <div class="actions"><button id="loginBtn" class="btn primary" type="button">Sign in</button></div>
   </section>
 
   <section id="appPanel" class="hidden">
@@ -139,23 +91,20 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
       <div class="rule-summary">
         <div>
           <h2 id="providerTitle">TextVerified Markups</h2>
-          <p class="muted small">Changes are saved to your existing markup rules table.</p>
+          <p class="muted small">Rules are saved to your existing markup rules table.</p>
         </div>
-        <div class="stat">
-          <span class="muted small">Rules for this provider</span>
-          <strong id="ruleCount">0</strong>
-        </div>
+        <div class="stat"><span class="muted small">Rules for this provider</span><strong id="ruleCount">0</strong></div>
       </div>
 
       <div class="notice info show">
-        <strong>Rule priority</strong>
+        <strong>Rule priority intended for pricing</strong>
         <ol class="priority-list">
           <li>Specific country + specific service</li>
           <li>Specific country + all services</li>
           <li>All countries + specific service</li>
           <li>All countries + all services (default)</li>
         </ol>
-        <p class="small">The most specific matching rule should be used by the purchase-pricing logic. This page stores rules; it does not itself change the customer checkout price.</p>
+        <p class="small">Saving a rule here does not by itself change checkout pricing. The provider pricing functions must also apply these rules.</p>
       </div>
 
       <form id="ruleForm">
@@ -163,31 +112,24 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
 
         <div class="grid" style="margin-top:17px">
           <div class="field">
-            <label for="countryKey">Country key / identifier</label>
-            <input id="countryKey" list="countrySuggestions"
-              placeholder="Search or enter a provider country key">
-            <datalist id="countrySuggestions"></datalist>
-            <span class="muted small">Use the exact country key expected by your provider integration.</span>
+            <label for="countrySelect">Country</label>
+            <select id="countrySelect">
+              <option value="">Loading countries…</option>
+            </select>
+            <span id="countryHelp" class="muted small">Choose a country or select All countries.</span>
           </div>
 
           <div class="field">
-            <label for="countryId">Numeric country ID (optional)</label>
-            <input id="countryId" type="number" min="1" step="1"
-              placeholder="Provider country ID, if applicable">
+            <label for="serviceSelect">Service</label>
+            <select id="serviceSelect">
+              <option value="">Loading services…</option>
+            </select>
+            <span id="serviceHelp" class="muted small">Choose a service or select All services.</span>
           </div>
 
           <div class="field">
-            <label for="serviceCode">Service code</label>
-            <input id="serviceCode" list="serviceSuggestions"
-              placeholder="Search or enter a service code">
-            <datalist id="serviceSuggestions"></datalist>
-            <span class="muted small">Use the exact service code expected by your provider integration.</span>
-          </div>
-
-          <div class="field">
-            <label for="markupPercent">Markup percentage</label>
-            <input id="markupPercent" type="number" min="0" max="100000"
-              step="0.01" required placeholder="e.g. 100">
+            <label for="markupPercent">Markup percentage (%)</label>
+            <input id="markupPercent" type="number" min="0" max="100000" step="0.01" required placeholder="e.g. 100">
           </div>
         </div>
 
@@ -195,26 +137,21 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
           <input id="allCountries" type="checkbox">
           <span>Apply to all countries</span>
         </label>
-
         <label class="checkrow">
           <input id="allServices" type="checkbox">
           <span>Apply to all services</span>
         </label>
-
         <label class="checkrow">
           <input id="active" type="checkbox" checked>
           <span>Rule is active</span>
         </label>
 
-        <p class="muted small">
-          An active rule can take priority over a more general rule.
-          Deactivating a rule lets the pricing logic fall back to another matching rule.
-        </p>
+        <p class="muted small">A 100% markup means a markup equal to the base price; it does not mean the final price is 100% of the base price. Actual checkout behavior depends on the provider pricing function.</p>
 
         <div class="actions">
           <button class="btn primary" id="saveBtn" type="submit">Save markup</button>
           <button class="btn" id="resetBtn" type="button">Clear form</button>
-          <button class="btn" id="refreshBtn" type="button">Refresh rules</button>
+          <button class="btn" id="refreshBtn" type="button">Refresh rules and options</button>
           <button class="btn" id="logoutBtn" type="button">Sign out</button>
         </div>
       </form>
@@ -222,23 +159,11 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
 
     <div class="panel">
       <h2>Saved rules</h2>
-      <p class="muted small">Search the rules already saved for the selected provider.</p>
-      <div class="searchbar">
-        <input id="ruleSearch" type="search"
-          placeholder="Search country key, country ID, service code or markup">
-      </div>
+      <p class="muted small">Search rules saved for the selected provider.</p>
+      <div class="searchbar"><input id="ruleSearch" type="search" placeholder="Search country, service, markup or status"></div>
       <div class="table-wrap">
         <table>
-          <thead>
-            <tr>
-              <th>Country</th>
-              <th>Service</th>
-              <th>Markup</th>
-              <th>Status</th>
-              <th>Updated</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Country</th><th>Service</th><th>Markup</th><th>Status</th><th>Updated</th><th>Actions</th></tr></thead>
           <tbody id="rulesBody"></tbody>
         </table>
       </div>
@@ -246,7 +171,6 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     </div>
   </section>
 </main>
-
 <footer>Delight Vendor Logs · Restricted admin page</footer>
 
 <script>
@@ -254,11 +178,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
   "use strict";
 
   const SUPABASE_URL = "https://hkfhehbhmucymusaytoe.supabase.co";
-
-  // Replace this placeholder with the EXISTING Supabase publishable/anon key.
-  // Never put a service-role key in browser HTML.
   const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
-
   const TABLE = "virtual_number_markup_rules";
   const $ = id => document.getElementById(id);
 
@@ -267,19 +187,20 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
   let isAdmin = false;
   let provider = "textverified";
   let rules = [];
+  let countries = [];
+  let services = [];
   let busy = false;
+  let catalogRequest = 0;
 
   function escapeHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, ch => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;",
-      '"': "&quot;", "'": "&#39;"
+      "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
     }[ch]));
   }
 
   function notice(message, type = "info") {
-    const el = $("notice");
-    el.textContent = message;
-    el.className = "notice show " + type;
+    $("notice").textContent = message;
+    $("notice").className = "notice show " + type;
   }
 
   function clearNotice() {
@@ -294,53 +215,111 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     $("refreshBtn").disabled = value;
   }
 
-  function normalized(value) {
+  function norm(value) {
     return String(value ?? "").trim().toLowerCase();
   }
 
+  function rpcIsAdmin(value) {
+    if (value === true || value === "true") return true;
+    if (Array.isArray(value)) return value.some(rpcIsAdmin);
+    if (value && typeof value === "object") {
+      if ("is_admin_user" in value) return rpcIsAdmin(value.is_admin_user);
+      if ("is_admin" in value) return rpcIsAdmin(value.is_admin);
+    }
+    return false;
+  }
+
   function isAllCountry(rule) {
-    return !rule.country_id &&
+    return rule.country_id == null &&
       (!rule.country_key || rule.country_key === "*");
   }
 
   function countryLabel(rule) {
     if (isAllCountry(rule)) return "All countries";
-    if (rule.country_key && rule.country_key !== "*") {
-      return rule.country_key +
-        (rule.country_id ? " (ID " + rule.country_id + ")" : "");
+    const key = rule.country_key && rule.country_key !== "*" ? rule.country_key : "";
+    if (key && rule.country_id != null && String(rule.country_id) !== String(key)) {
+      return key + " (ID " + rule.country_id + ")";
     }
-    return "Country ID " + rule.country_id;
+    return key || ("Country ID " + rule.country_id);
   }
 
   function serviceLabel(rule) {
     return rule.service_code || "All services";
   }
 
-  function ruleIdentityMatches(a, b) {
-    const aAllCountry = isAllCountry(a);
-    const bAllCountry = isAllCountry(b);
-    const countryMatches = aAllCountry && bAllCountry
-      ? true
-      : (
-          normalized(a.country_key) === normalized(b.country_key) &&
-          String(a.country_id ?? "") === String(b.country_id ?? "")
-        );
-
-    return countryMatches &&
-      normalized(a.service_code) === normalized(b.service_code);
+  function identityMatches(a, b) {
+    const allA = isAllCountry(a), allB = isAllCountry(b);
+    const countryMatch = allA && allB ? true :
+      norm(a.country_key) === norm(b.country_key) &&
+      String(a.country_id ?? "") === String(b.country_id ?? "");
+    return countryMatch && norm(a.service_code) === norm(b.service_code);
   }
 
-  function currentProviderRules() {
+  function currentRules() {
     return rules.filter(r => r.server === provider);
   }
 
+  function option(label, value) {
+    const o = document.createElement("option");
+    o.value = value;
+    o.textContent = label;
+    return o;
+  }
+
+  function countryValue(item) {
+    const keys = ["country_id","country_code","countryCode","iso","iso2","code"];
+    for (const key of keys) {
+      if (item?.[key] !== undefined && item[key] !== null && String(item[key]).trim()) {
+        return String(item[key]).trim();
+      }
+    }
+    return "";
+  }
+
+  function countryName(item) {
+    return item?.country_name || item?.name || item?.countryName ||
+      item?.label || countryValue(item) || "Unknown country";
+  }
+
+  function serviceValue(item) {
+    if (provider === "textverified") {
+      return String(item?.name || item?.service_name || item?.service || "").trim();
+    }
+    const keys = ["service_code","code","service_id","service","id"];
+    for (const key of keys) {
+      if (item?.[key] !== undefined && item[key] !== null && String(item[key]).trim()) {
+        return String(item[key]).trim();
+      }
+    }
+    return "";
+  }
+
+  function serviceName(item) {
+    return item?.service_name || item?.name || item?.description ||
+      serviceValue(item) || "Unknown service";
+  }
+
+  function normalizeList(data, key) {
+    if (Array.isArray(data?.[key])) return data[key];
+    if (Array.isArray(data?.data?.[key])) return data.data[key];
+    return [];
+  }
+
+  function assertFunctionResult(result, label) {
+    if (result.error) throw result.error;
+    const data = result.data;
+    if (!data) throw new Error(label + " returned an empty response.");
+    if (data.success === false) {
+      throw new Error(data.error || data.message || label + " failed.");
+    }
+    return data;
+  }
+
   async function verifyAdmin() {
-    const { data: sessionData, error: sessionError } =
-      await sb.auth.getSession();
-
+    const {data: sessionData, error: sessionError} = await sb.auth.getSession();
     if (sessionError) throw sessionError;
-    currentUser = sessionData.session?.user || null;
 
+    currentUser = sessionData.session?.user || null;
     if (!currentUser) {
       isAdmin = false;
       $("appPanel").classList.add("hidden");
@@ -348,10 +327,9 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
       return false;
     }
 
-    const { data, error } = await sb.rpc("is_admin_user");
+    const {data, error} = await sb.rpc("is_admin_user");
     if (error) throw error;
-
-    isAdmin = data === true;
+    isAdmin = rpcIsAdmin(data);
 
     if (!isAdmin) {
       $("appPanel").classList.add("hidden");
@@ -365,65 +343,146 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     return true;
   }
 
-  async function loadRules() {
-    clearNotice();
-    const { data, error } = await sb
-      .from(TABLE)
+  async function loadRules(showNotice = true) {
+    const {data, error} = await sb.from(TABLE)
       .select("id,server,country_id,country_key,service_code,markup_percent,is_active,created_at,updated_at")
-      .in("server", ["textverified", "virtualsms"])
-      .order("updated_at", { ascending: false });
+      .in("server", ["textverified","virtualsms"])
+      .order("updated_at", {ascending:false});
 
     if (error) throw error;
-
     rules = data || [];
-    refreshSuggestions();
     renderRules();
-    notice("Markup rules loaded.", "ok");
+    if (showNotice) notice("Saved markup rules loaded.", "ok");
   }
 
-  function refreshSuggestions() {
-    const providerRules = currentProviderRules();
-    const countryValues = new Set();
-    const serviceValues = new Set();
+  async function loadCatalogs() {
+    const request = ++catalogRequest;
+    $("countrySelect").replaceChildren(option("Loading countries…", ""));
+    $("serviceSelect").replaceChildren(option("Loading services…", ""));
+    $("countrySelect").disabled = true;
+    $("serviceSelect").disabled = true;
 
-    providerRules.forEach(r => {
-      if (r.country_key && r.country_key !== "*") {
-        countryValues.add(r.country_key);
+    try {
+      if (provider === "textverified") {
+        // The supplied TextVerified pricing function uses United States, ID 187.
+        countries = [{value:"US",name:"United States",country_id:187}];
+
+        const result = await sb.functions.invoke("text-verified-api", {
+          body: {action:"services"}
+        });
+        const data = assertFunctionResult(result, "TextVerified services");
+        services = normalizeList(data, "services");
+
+      } else {
+        // Use the real provider catalog; do not invent country or service choices.
+        const countryResult = await sb.functions.invoke("virtual-sms-api", {
+          body: {action:"countries"}
+        });
+        const countryData = assertFunctionResult(countryResult, "Virtual SMS countries");
+        countries = normalizeList(countryData, "countries")
+          .map(item => ({
+            value: countryValue(item),
+            name: countryName(item),
+            raw: item
+          }))
+          .filter(item => item.value);
+
+        const selectedCountry = $("allCountries").checked ? "" : $("countrySelect").value;
+        const serviceResult = await sb.functions.invoke("virtual-sms-api", {
+          body: selectedCountry
+            ? {action:"services", country:selectedCountry}
+            : {action:"services"}
+        });
+        const serviceData = assertFunctionResult(serviceResult, "Virtual SMS services");
+        services = normalizeList(serviceData, "services");
       }
-      if (r.country_id != null) countryValues.add(String(r.country_id));
-      if (r.service_code) serviceValues.add(r.service_code);
+
+      if (request !== catalogRequest) return;
+      renderCountryOptions();
+      renderServiceOptions();
+      syncScopeFields();
+
+    } catch (error) {
+      if (request !== catalogRequest) return;
+      console.error(error);
+      countries = provider === "textverified"
+        ? [{value:"US",name:"United States",country_id:187}]
+        : [];
+      services = [];
+      renderCountryOptions();
+      renderServiceOptions();
+      syncScopeFields();
+
+      notice(
+        "Could not load " + (provider === "textverified" ? "TextVerified" : "Virtual SMS") +
+        " options. Check that you are signed in and the provider Edge Function is deployed. " +
+        (error.message || ""),
+        "error"
+      );
+    } finally {
+      if (request === catalogRequest) {
+        $("countrySelect").disabled = false;
+        $("serviceSelect").disabled = false;
+      }
+    }
+  }
+
+  function renderCountryOptions(selectedValue) {
+    const select = $("countrySelect");
+    const previous = selectedValue ?? select.value;
+    select.replaceChildren(option("Choose a country…", ""));
+
+    if (provider === "virtualsms") {
+      select.appendChild(option("All countries", "__ALL__"));
+    }
+
+    countries.forEach(country => {
+      const value = country.value;
+      if (!value) return;
+      select.appendChild(option(country.name + " (" + value + ")", value));
     });
 
-    $("countrySuggestions").innerHTML = [...countryValues]
-      .sort((a,b) => a.localeCompare(b))
-      .map(v => `<option value="${escapeHTML(v)}"></option>`).join("");
+    if (provider === "textverified") {
+      select.value = "US";
+    } else if ([...select.options].some(o => o.value === previous)) {
+      select.value = previous;
+    }
+  }
 
-    $("serviceSuggestions").innerHTML = [...serviceValues]
-      .sort((a,b) => a.localeCompare(b))
-      .map(v => `<option value="${escapeHTML(v)}"></option>`).join("");
+  function renderServiceOptions(selectedValue) {
+    const select = $("serviceSelect");
+    const previous = selectedValue ?? select.value;
+    select.replaceChildren(option("Choose a service…", ""));
+    select.appendChild(option("All services", "__ALL__"));
+
+    const seen = new Set();
+    services.forEach(item => {
+      const value = serviceValue(item);
+      if (!value || seen.has(norm(value))) return;
+      seen.add(norm(value));
+      select.appendChild(option(serviceName(item) + " (" + value + ")", value));
+    });
+
+    if ([...select.options].some(o => o.value === previous)) {
+      select.value = previous;
+    }
   }
 
   function renderRules() {
-    const providerRules = currentProviderRules();
-    $("ruleCount").textContent = String(providerRules.length);
-    const q = normalized($("ruleSearch").value);
+    const list = currentRules();
+    $("ruleCount").textContent = String(list.length);
+    const q = norm($("ruleSearch").value);
 
-    const filtered = providerRules.filter(r => {
-      const haystack = [
-        countryLabel(r), r.country_key, r.country_id,
-        r.service_code, r.markup_percent, r.is_active ? "active" : "inactive"
-      ].join(" ").toLowerCase();
-      return haystack.includes(q);
-    });
+    const filtered = list.filter(r => [
+      countryLabel(r), r.country_key, r.country_id, r.service_code,
+      r.markup_percent, r.is_active ? "active" : "inactive"
+    ].join(" ").toLowerCase().includes(q));
 
     $("rulesBody").innerHTML = filtered.map(r => {
       const status = r.is_active
         ? '<span class="pill on">Active</span>'
         : '<span class="pill off">Inactive</span>';
-
-      const updated = r.updated_at
-        ? new Date(r.updated_at).toLocaleString()
-        : "—";
+      const updated = r.updated_at ? new Date(r.updated_at).toLocaleString() : "—";
 
       return `<tr>
         <td>${escapeHTML(countryLabel(r))}</td>
@@ -447,125 +506,144 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     $("ruleId").value = "";
     $("active").checked = true;
     $("saveBtn").textContent = "Save markup";
-    $("countryKey").disabled = false;
-    $("countryId").disabled = false;
-    $("serviceCode").disabled = false;
+    renderCountryOptions();
+    renderServiceOptions();
+    syncScopeFields();
   }
 
   function syncScopeFields() {
     const allCountries = $("allCountries").checked;
     const allServices = $("allServices").checked;
 
-    $("countryKey").disabled = allCountries;
-    $("countryId").disabled = allCountries;
-    $("serviceCode").disabled = allServices;
-
-    if (allCountries) {
-      $("countryKey").value = "";
-      $("countryId").value = "";
-    }
-    if (allServices) $("serviceCode").value = "";
+    $("countrySelect").disabled = allCountries || provider === "textverified";
+    $("serviceSelect").disabled = allServices;
+    $("countryHelp").textContent = provider === "textverified"
+      ? "TextVerified pricing is configured for the United States (ID 187)."
+      : "Choose a provider country, or select All countries.";
+    $("serviceHelp").textContent = "Choose a service, or select All services.";
   }
 
-  function editRule(id) {
-    const r = rules.find(item =>
-      Number(item.id) === Number(id) && item.server === provider
-    );
+  async function editRule(id) {
+    const r = rules.find(item => Number(item.id) === Number(id) && item.server === provider);
     if (!r) return;
 
-    resetForm();
     $("ruleId").value = String(r.id);
-    $("allCountries").checked = isAllCountry(r);
-    $("allServices").checked = !r.service_code;
-    $("countryKey").value = r.country_key === "*" ? "" : (r.country_key || "");
-    $("countryId").value = r.country_id ?? "";
-    $("serviceCode").value = r.service_code || "";
     $("markupPercent").value = r.markup_percent;
     $("active").checked = !!r.is_active;
+    $("allCountries").checked = isAllCountry(r);
+    $("allServices").checked = !r.service_code;
     $("saveBtn").textContent = "Update markup";
+
+    await loadCatalogs();
+
+    if (provider === "textverified") {
+      $("countrySelect").value = "US";
+    } else if (!isAllCountry(r)) {
+      const value = r.country_key || (r.country_id != null ? String(r.country_id) : "");
+      if ([...$("countrySelect").options].some(o => o.value === value)) {
+        $("countrySelect").value = value;
+      }
+    }
+
+    if (r.service_code) {
+      const match = [...$("serviceSelect").options].find(o => norm(o.value) === norm(r.service_code));
+      if (match) $("serviceSelect").value = match.value;
+      else {
+        notice("This saved service is not present in the provider's current service list. Refresh the provider catalog before editing it.", "error");
+      }
+    }
+
     syncScopeFields();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({top:0,behavior:"smooth"});
     notice("Editing rule #" + r.id + ".", "info");
+  }
+
+  function buildPayload() {
+    const allCountries = $("allCountries").checked;
+    const allServices = $("allServices").checked;
+    const countryValueSelected = $("countrySelect").value;
+    const serviceValueSelected = $("serviceSelect").value;
+    const markup = Number($("markupPercent").value);
+
+    if (!Number.isFinite(markup) || markup < 0 || markup > 100000) {
+      throw new Error("Enter a valid markup percentage between 0 and 100000.");
+    }
+
+    if (!allCountries && !countryValueSelected) {
+      throw new Error("Choose a country or select All countries.");
+    }
+
+    if (!allServices && !serviceValueSelected) {
+      throw new Error("Choose a service or select All services.");
+    }
+
+    let countryKey = null;
+    let countryId = null;
+
+    if (!allCountries) {
+      if (provider === "textverified") {
+        countryKey = "US";
+        countryId = 187;
+      } else {
+        countryKey = countryValueSelected;
+        if (/^\d+$/.test(countryValueSelected)) {
+          const n = Number(countryValueSelected);
+          if (Number.isSafeInteger(n)) countryId = n;
+        }
+      }
+    }
+
+    return {
+      server: provider,
+      country_key: countryKey,
+      country_id: countryId,
+      service_code: allServices ? null : serviceValueSelected,
+      markup_percent: markup,
+      is_active: $("active").checked,
+      updated_at: new Date().toISOString()
+    };
   }
 
   async function saveRule(event) {
     event.preventDefault();
     if (busy || !isAdmin) return;
 
-    const id = $("ruleId").value.trim();
-    const allCountries = $("allCountries").checked;
-    const allServices = $("allServices").checked;
-    const countryKeyInput = $("countryKey").value.trim();
-    const countryIdInput = $("countryId").value.trim();
-    const serviceCodeInput = $("serviceCode").value.trim();
-    const markup = Number($("markupPercent").value);
-
-    if (!Number.isFinite(markup) || markup < 0 || markup > 100000) {
-      notice("Enter a valid non-negative markup percentage.", "error");
-      return;
-    }
-
-    if (!allCountries && !countryKeyInput && !countryIdInput) {
-      notice("Enter a country key or numeric country ID, or select All countries.", "error");
-      return;
-    }
-
-    if (countryIdInput &&
-        (!Number.isSafeInteger(Number(countryIdInput)) || Number(countryIdInput) < 1)) {
-      notice("The country ID must be a positive whole number.", "error");
-      return;
-    }
-
-    const payload = {
-      server: provider,
-      country_key: allCountries ? "*" : (countryKeyInput || null),
-      country_id: allCountries || !countryIdInput ? null : Number(countryIdInput),
-      service_code: allServices ? null : (serviceCodeInput || null),
-      markup_percent: markup,
-      is_active: $("active").checked,
-      updated_at: new Date().toISOString()
-    };
-
-    if (!allServices && !serviceCodeInput) {
-      notice("Enter a service code or select All services.", "error");
-      return;
-    }
-
-    setBusy(true);
+    let payload;
     try {
-      const currentRules = currentProviderRules();
+      payload = buildPayload();
+    } catch (error) {
+      notice(error.message, "error");
+      return;
+    }
+
+    const id = $("ruleId").value.trim();
+    setBusy(true);
+
+    try {
+      const list = currentRules();
 
       if (id) {
-        const existing = rules.find(r => Number(r.id) === Number(id));
-        if (!existing || existing.server !== provider) {
-          throw new Error("The selected rule does not belong to this provider.");
+        const existing = rules.find(r => Number(r.id) === Number(id) && r.server === provider);
+        if (!existing) throw new Error("That rule does not belong to the selected provider.");
+
+        if (list.some(r => Number(r.id) !== Number(id) && identityMatches(r, payload))) {
+          throw new Error("A rule already exists for this country/service combination. Edit that rule instead.");
         }
 
-        const duplicate = currentRules.find(r =>
-          Number(r.id) !== Number(id) && ruleIdentityMatches(r, payload)
-        );
-        if (duplicate) {
-          throw new Error("Another rule already matches this country/service combination. Edit that rule instead.");
-        }
-
-        const { error } = await sb.from(TABLE)
-          .update(payload)
-          .eq("id", Number(id))
-          .eq("server", provider);
-
+        const {error} = await sb.from(TABLE).update(payload)
+          .eq("id", Number(id)).eq("server", provider);
         if (error) throw error;
       } else {
-        const duplicate = currentRules.find(r => ruleIdentityMatches(r, payload));
-        if (duplicate) {
-          throw new Error("This country/service rule already exists. Use Edit to change it.");
+        if (list.some(r => identityMatches(r, payload))) {
+          throw new Error("A rule already exists for this country/service combination. Use Edit to change it.");
         }
 
-        const { error } = await sb.from(TABLE).insert(payload);
+        const {error} = await sb.from(TABLE).insert(payload);
         if (error) throw error;
       }
 
       resetForm();
-      await loadRules();
+      await loadRules(false);
       notice(id ? "Markup updated successfully." : "Markup saved successfully.", "ok");
     } catch (error) {
       console.error(error);
@@ -577,23 +655,17 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
 
   async function toggleRule(id) {
     if (busy || !isAdmin) return;
-    const r = rules.find(item =>
-      Number(item.id) === Number(id) && item.server === provider
-    );
+    const r = rules.find(item => Number(item.id) === Number(id) && item.server === provider);
     if (!r) return;
 
     setBusy(true);
     try {
-      const { error } = await sb.from(TABLE)
-        .update({
-          is_active: !r.is_active,
-          updated_at: new Date().toISOString()
-        })
-        .eq("id", Number(id))
-        .eq("server", provider);
-
+      const {error} = await sb.from(TABLE).update({
+        is_active: !r.is_active,
+        updated_at: new Date().toISOString()
+      }).eq("id", Number(id)).eq("server", provider);
       if (error) throw error;
-      await loadRules();
+      await loadRules(false);
       notice("Rule status updated.", "ok");
     } catch (error) {
       console.error(error);
@@ -605,26 +677,19 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
 
   async function deleteRule(id) {
     if (busy || !isAdmin) return;
-    const r = rules.find(item =>
-      Number(item.id) === Number(id) && item.server === provider
-    );
+    const r = rules.find(item => Number(item.id) === Number(id) && item.server === provider);
     if (!r) return;
 
     const description = `${countryLabel(r)} / ${serviceLabel(r)} / ${r.markup_percent}%`;
-    if (!window.confirm(`Delete this markup rule?\n\n${description}\n\nThis cannot be undone.`)) {
-      return;
-    }
+    if (!window.confirm(`Delete this markup rule?\n\n${description}\n\nThis cannot be undone.`)) return;
 
     setBusy(true);
     try {
-      const { error } = await sb.from(TABLE)
-        .delete()
-        .eq("id", Number(id))
-        .eq("server", provider);
-
+      const {error} = await sb.from(TABLE).delete()
+        .eq("id", Number(id)).eq("server", provider);
       if (error) throw error;
       if (Number($("ruleId").value) === Number(id)) resetForm();
-      await loadRules();
+      await loadRules(false);
       notice("Markup rule deleted.", "ok");
     } catch (error) {
       console.error(error);
@@ -638,7 +703,6 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     if (busy) return;
     const email = $("email").value.trim();
     const password = $("password").value;
-
     if (!email || !password) {
       notice("Enter your admin email and password.", "error");
       return;
@@ -646,10 +710,12 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
 
     setBusy(true);
     try {
-      const { error } = await sb.auth.signInWithPassword({ email, password });
+      const {error} = await sb.auth.signInWithPassword({email,password});
       if (error) throw error;
-
-      if (await verifyAdmin()) await loadRules();
+      if (await verifyAdmin()) {
+        await loadRules(false);
+        await loadCatalogs();
+      }
     } catch (error) {
       console.error(error);
       notice(error.message || "Sign-in failed.", "error");
@@ -659,7 +725,8 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
   }
 
   async function signOut() {
-    await sb.auth.signOut();
+    const {error} = await sb.auth.signOut();
+    if (error) notice(error.message, "error");
     currentUser = null;
     isAdmin = false;
     $("appPanel").classList.add("hidden");
@@ -668,62 +735,62 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     notice("Signed out.", "ok");
   }
 
-  function selectProvider(nextProvider) {
+  async function selectProvider(nextProvider) {
+    if (nextProvider === provider) return;
     provider = nextProvider;
     document.querySelectorAll("[data-provider]").forEach(button => {
       button.classList.toggle("active", button.dataset.provider === provider);
     });
-    $("providerTitle").textContent =
-      provider === "textverified" ? "TextVerified Markups" : "Virtual SMS Markups";
+    $("providerTitle").textContent = provider === "textverified"
+      ? "TextVerified Markups" : "Virtual SMS Markups";
     resetForm();
-    refreshSuggestions();
     renderRules();
     clearNotice();
+    await loadCatalogs();
+  }
+
+  async function refreshAll() {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await loadRules(false);
+      await loadCatalogs();
+      if (!$("notice").classList.contains("show")) notice("Rules and provider options refreshed.", "ok");
+    } catch (error) {
+      notice(error.message || "Could not refresh the page data.", "error");
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function start() {
-    if (SUPABASE_PUBLISHABLE_KEY.startsWith("PASTE_")) {
-      notice("Setup required: paste your existing Supabase publishable/anon key into the SUPABASE_PUBLISHABLE_KEY constant in this HTML.", "error");
-      $("loginPanel").classList.remove("hidden");
-      return;
-    }
-
     if (!window.supabase?.createClient) {
       notice("Supabase library did not load. Refresh and try again.", "error");
       return;
     }
 
-    sb = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY,
-      {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true
-        }
-      }
-    );
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+      auth: {persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+    });
 
     $("loginBtn").addEventListener("click", signIn);
-    $("password").addEventListener("keydown", event => {
-      if (event.key === "Enter") signIn();
+    $("password").addEventListener("keydown", e => {
+      if (e.key === "Enter") signIn();
     });
 
     try {
-      if (await verifyAdmin()) await loadRules();
+      if (await verifyAdmin()) {
+        await loadRules(false);
+        await loadCatalogs();
+      }
     } catch (error) {
       console.error(error);
       $("appPanel").classList.add("hidden");
-      notice(
-        "Could not verify admin access. Check the is_admin_user() function, your sign-in session, and Supabase permissions. " +
-        (error.message || ""),
-        "error"
-      );
       $("loginPanel").classList.remove("hidden");
+      notice("Could not verify admin access or load rules. Check the is_admin_user() RPC and Supabase table permissions. " + (error.message || ""), "error");
     }
 
-    sb.auth.onAuthStateChange(async (_event, session) => {
+    sb.auth.onAuthStateChange((_event, session) => {
       currentUser = session?.user || null;
       if (!currentUser) {
         isAdmin = false;
@@ -738,17 +805,28 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     resetForm();
     clearNotice();
   });
-  $("refreshBtn").addEventListener("click", async () => {
-    try { await loadRules(); }
-    catch (error) { notice(error.message || "Could not refresh rules.", "error"); }
-  });
+  $("refreshBtn").addEventListener("click", refreshAll);
   $("logoutBtn").addEventListener("click", signOut);
   $("allCountries").addEventListener("change", syncScopeFields);
   $("allServices").addEventListener("change", syncScopeFields);
   $("ruleSearch").addEventListener("input", renderRules);
 
-  document.querySelectorAll("[data-provider]").forEach(button => {
-    button.addEventListener("click", () => selectProvider(button.dataset.provider));
+  $("countrySelect").addEventListener("change", async () => {
+    if (provider !== "virtualsms" || $("allCountries").checked) return;
+    const previousService = $("serviceSelect").value;
+    try {
+      const selectedCountry = $("countrySelect").value;
+      const result = await sb.functions.invoke("virtual-sms-api", {
+        body: selectedCountry
+          ? {action:"services",country:selectedCountry}
+          : {action:"services"}
+      });
+      const data = assertFunctionResult(result, "Virtual SMS services");
+      services = normalizeList(data, "services");
+      renderServiceOptions(previousService);
+    } catch (error) {
+      notice("Could not load services for that country. " + (error.message || ""), "error");
+    }
   });
 
   $("rulesBody").addEventListener("click", event => {
@@ -757,6 +835,10 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     if (button.dataset.edit) editRule(button.dataset.edit);
     if (button.dataset.toggle) toggleRule(button.dataset.toggle);
     if (button.dataset.delete) deleteRule(button.dataset.delete);
+  });
+
+  document.querySelectorAll("[data-provider]").forEach(button => {
+    button.addEventListener("click", () => selectProvider(button.dataset.provider));
   });
 
   start();
