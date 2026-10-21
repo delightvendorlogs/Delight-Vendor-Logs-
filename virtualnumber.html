@@ -18,8 +18,43 @@ button{cursor:pointer}
 button:disabled{opacity:.55;cursor:not-allowed}  
 .container{max-width:900px;margin:auto;padding:16px}  
 header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}  
-.brand{color:var(--gold-light);font-weight:900;font-size:20px}  
-.brand small{display:block;color:var(--muted);font-size:11px;font-weight:500;margin-top:4px}  
+  
+.brand{
+  color:var(--gold-light);
+  font-weight:900;
+  font-size:20px;
+  min-width:0;
+}
+
+.brand-identity{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+}
+
+.brand-identity span{
+  line-height:1.2;
+}
+
+.brand-logo{
+  width:42px;
+  height:42px;
+  object-fit:contain;
+  flex-shrink:0;
+  display:block;
+  border-radius:50%;
+}
+
+.brand small{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:500;
+  margin-top:4px;
+  margin-left:51px;
+}
+
 .wallet{border:1px solid var(--border);background:linear-gradient(135deg,#211c0d,#111);border-radius:14px;padding:12px 15px;min-width:125px;flex-shrink:0}  
 .wallet small{color:var(--muted);display:block;font-size:11px;margin-bottom:5px}  
 .wallet strong{color:var(--gold-light);font-size:17px}  
@@ -170,14 +205,31 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
 }  
 </style>  </head>  <body>  
 <div class="container">  
-<header>  
- <div class="brand">Delight Vendor Logs<small>Virtual Number Services</small></div>  
- <div class="wallet">  
-  <small>Wallet Balance</small>  
-  <strong id="walletBalance">Loading…</strong>  
-  <a href="wallet.html" class="fund-wallet-btn"><span>＋</span> Fund Wallet</a>  
- </div>  
-</header>  <a href="dashboard.html" class="back-dashboard-btn"><span>←</span> Back to Dashboard</a>
+ 
+<header>
+  <div class="brand">
+    <div class="brand-identity">
+      <img
+        src="/assets/dv-logo.png"
+        alt="Delight Vendor Logs logo"
+        class="brand-logo"
+        data-brand-logo
+      >
+      <span data-brand-name>Delight Vendor Logs</span>
+    </div>
+    <small>Virtual Number Services</small>
+  </div>
+
+  <div class="wallet">
+    <small>Wallet Balance</small>
+    <strong id="walletBalance">Loading…</strong>
+    <a href="wallet.html" class="fund-wallet-btn">
+      <span>＋</span> Fund Wallet
+    </a>
+  </div>
+</header>
+
+<a href="dashboard.html" class="back-dashboard-btn"><span>←</span> Back to Dashboard</a>
 
 <h1>Virtual Numbers</h1>  
 <p class="muted small">Choose a number service, search for a country or service, then manage your numbers below.</p>  
