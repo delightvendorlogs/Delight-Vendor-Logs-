@@ -7,8 +7,20 @@
 
 <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
+<meta name="theme-color" content="#f4f0e6">
+<meta name="description" content="Explore products and manage your wallet on Delight Vendor Logs.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Delight Vendor Logs">
+<meta property="og:description" content="Explore products and manage your Delight Vendor Logs account.">
+<meta property="og:image" content="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Delight Vendor Logs">
+<meta name="twitter:description" content="Explore products and manage your Delight Vendor Logs account.">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png">
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png">
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png">
 
 <title>Delight Vendor Logs</title>
 
@@ -92,9 +104,9 @@ header{
 
     justify-content:center;
 
-    font-size:25px;
+    overflow:hidden;
 
-    font-weight:900;
+    padding:4px;
 
     border:
         1px solid
@@ -103,6 +115,24 @@ header{
     box-shadow:
         0 5px 14px
         #00000020;
+}
+
+
+.logo img{
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    border-radius:11px;
+}
+
+.brand > div:last-child{
+    min-width:0;
+}
+
+.brand h1{
+    line-height:1.2;
+    overflow-wrap:anywhere;
 }
 
 .brand h1{
@@ -2072,6 +2102,12 @@ main{
     background:#25D366;
 }
 
+.contact-icons a.email-contact{
+    background:#171717;
+    color:#d4af37;
+    border:1px solid #d4af37;
+}
+
 
 /* =========================================================
    CONTACT SUPPORT MODAL
@@ -2218,6 +2254,12 @@ main{
 .whatsapp-option .contact-option-icon{
 
     background:#25D366;
+}
+
+.email-option .contact-option-icon{
+    background:#171717;
+    color:#d4af37;
+    border:1px solid #d4af37;
 }
 
 .contact-option strong{
@@ -2388,9 +2430,18 @@ main{
         height:48px;
     }
 
-    .brand h1{
+    .brand{
+        gap:9px;
+        min-width:0;
+    }
 
-        font-size:18px;
+    .brand h1{
+        font-size:16px;
+    }
+
+    .brand p{
+        font-size:11px;
+        line-height:1.3;
     }
 
     .wallet{
@@ -2715,10 +2766,10 @@ main{
 .community-popup{
     position:relative;
     width:100%;
-    max-width:520px;
-    max-height:calc(100vh - 36px);
+    max-width:400px;
+    max-height:calc(100vh - 32px);
     overflow-y:auto;
-    padding:28px 22px 24px;
+    padding:22px 18px 18px;
     border:1px solid #d4af3738;
     border-radius:22px;
     background:#121009;
@@ -2747,24 +2798,24 @@ main{
     display:flex;
     justify-content:center;
     align-items:center;
-    gap:14px;
-    margin:18px 0 26px;
+    gap:10px;
+    margin:12px 0 16px;
 }
 
 .community-popup-logo{
-    width:66px;
-    height:66px;
+    width:48px;
+    height:48px;
     display:flex;
     align-items:center;
     justify-content:center;
-    border-radius:19px;
+    border-radius:15px;
     color:#fff;
-    box-shadow:0 7px 18px #00000030;
+    box-shadow:0 5px 13px #00000030;
 }
 
 .community-popup-logo svg{
-    width:37px;
-    height:37px;
+    width:28px;
+    height:28px;
     fill:currentColor;
 }
 
@@ -2777,11 +2828,11 @@ main{
 }
 
 .community-popup h2{
-    margin:0 24px 25px;
+    margin:0 22px 16px;
     text-align:center;
     color:#fff;
-    font-size:clamp(23px,5vw,30px);
-    line-height:1.28;
+    font-size:clamp(19px,4.5vw,23px);
+    line-height:1.3;
     font-weight:900;
 }
 
@@ -2790,8 +2841,8 @@ main{
 }
 
 .community-popup-benefits{
-    margin:0 0 26px;
-    padding:17px 18px;
+    margin:0 0 16px;
+    padding:11px 13px;
     list-style:none;
     border:1px solid #d4af371b;
     border-radius:18px;
@@ -2801,11 +2852,11 @@ main{
 .community-popup-benefits li{
     display:flex;
     align-items:flex-start;
-    gap:12px;
-    margin:10px 0;
+    gap:9px;
+    margin:7px 0;
     color:#b9a779;
-    font-size:15px;
-    line-height:1.5;
+    font-size:13px;
+    line-height:1.4;
     font-weight:600;
 }
 
@@ -2819,17 +2870,17 @@ main{
 
 .community-popup-link{
     width:100%;
-    min-height:62px;
+    min-height:48px;
     display:flex;
     align-items:center;
     justify-content:center;
-    gap:12px;
-    padding:14px 12px;
-    margin-top:12px;
-    border-radius:15px;
+    gap:9px;
+    padding:10px 11px;
+    margin-top:9px;
+    border-radius:13px;
     text-align:center;
     text-decoration:none;
-    font-size:15px;
+    font-size:13px;
     font-weight:900;
     transition:transform .15s ease,filter .15s ease;
 }
@@ -2840,8 +2891,8 @@ main{
 }
 
 .community-popup-link svg{
-    width:25px;
-    height:25px;
+    width:20px;
+    height:20px;
     fill:currentColor;
     flex:0 0 auto;
 }
@@ -2860,29 +2911,38 @@ main{
 
 .community-popup-later{
     display:inline-block;
-    margin-top:22px;
+    margin-top:14px;
     padding:0;
     border:0;
     background:transparent;
     color:#8c8165;
-    font-size:15px;
+    font-size:13px;
     font-weight:600;
     text-align:left;
 }
 
 @media(max-width:380px){
     .community-popup{
-        padding:24px 16px 20px;
+        padding:20px 14px 16px;
+    }
+    .community-popup-logo{
+        width:43px;
+        height:43px;
+    }
+    .community-popup h2{
+        font-size:19px;
+        margin-bottom:13px;
     }
     .community-popup-benefits{
         padding:14px;
     }
     .community-popup-benefits li{
-        font-size:13px;
+        font-size:12px;
     }
     .community-popup-link{
-        font-size:13px;
-        gap:8px;
+        font-size:12px;
+        gap:7px;
+        min-height:44px;
     }
 }
 
@@ -2899,7 +2959,11 @@ main{
     <div class="brand">
 
         <div class="logo">
-            D
+            <img
+                src="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png"
+                alt="Delight Vendor Logs logo"
+                onerror="this.style.display='none';this.parentElement.textContent='DV';this.parentElement.style.fontSize='22px';this.parentElement.style.fontWeight='900';this.parentElement.style.color='#d4af37';"
+            >
         </div>
 
         <div>
@@ -4090,6 +4154,17 @@ main{
 
     </a>
 
+    <a
+        class="email-contact"
+        href="mailto:delightvendorlogs@gmail.com?subject=Delight%20Vendor%20Logs%20Support"
+        aria-label="Email Delight Vendor Logs support"
+        title="Email Support"
+    >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 5.5A2.5 2.5 0 0 1 5.5 3h13A2.5 2.5 0 0 1 21 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18.5v-13Zm2 .25v.4l7 5.1 7-5.1v-.4a.75.75 0 0 0-.75-.75h-12.5A.75.75 0 0 0 5 5.75Zm14 2.85-6.41 4.67a1 1 0 0 1-1.18 0L5 8.6v9.9c0 .41.34.75.75.75h12.5c.41 0 .75-.34.75-.75V8.6Z"/>
+        </svg>
+    </a>
+
 </div>
 
 
@@ -4188,6 +4263,17 @@ main{
 
             </span>
 
+        </a>
+
+        <a
+            class="contact-option email-option"
+            href="mailto:delightvendorlogs@gmail.com?subject=Delight%20Vendor%20Logs%20Support"
+        >
+            <span class="contact-option-icon" aria-hidden="true" style="font-size:25px;font-weight:800;">✉</span>
+            <span>
+                <strong>Contact Us by Email</strong>
+                <small>delightvendorlogs@gmail.com</small>
+            </span>
         </a>
 
     </div>
