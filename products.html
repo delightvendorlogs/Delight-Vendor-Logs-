@@ -3,29 +3,316 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#080808">
+<meta name="description" content="Explore and purchase services from Delight Vendor Logs.">
+
 <link rel="icon" type="image/png"
 href="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png">
 
 <link rel="apple-touch-icon"
 href="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png">
-  <title>Service - Delight Vendor Logs</title>
+
+<title>Service - Delight Vendor Logs</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root {
+  --dv-black: #080808;
+  --dv-surface: #111111;
+  --dv-surface-light: #171717;
+  --dv-gold: #d4af37;
+  --dv-gold-light: #f5d978;
+  --dv-gold-dark: #997515;
+  --dv-white: #f8f5eb;
+  --dv-muted: #aaa69a;
+  --dv-border: rgba(212,175,55,.23);
+  --dv-radius: 22px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--dv-black);
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--dv-white);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(212,175,55,.11), transparent 42%),
+    linear-gradient(180deg, #0c0c0c 0%, #080808 65%, #050505 100%);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+header {
+  position: relative;
+  width: 100%;
+  padding: 30px 18px 25px;
+  text-align: center;
+  border-bottom: 1px solid var(--dv-border);
+  background: rgba(8,8,8,.88);
+  overflow: hidden;
+}
+
+header::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -1px;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--dv-gold-light), transparent);
+}
+
+header h1 {
+  max-width: 900px;
+  margin: 0 auto;
+  color: var(--dv-gold-light);
+  font-size: clamp(1.5rem, 5vw, 2.2rem);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -.6px;
+  overflow-wrap: anywhere;
+  text-shadow: 0 0 25px rgba(212,175,55,.12);
+}
+
+main {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 28px 18px 45px;
+}
+
+.profile-card {
+  position: relative;
+  width: 100%;
+  padding: clamp(20px, 5vw, 34px);
+  overflow: hidden;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.025), transparent 42%),
+    var(--dv-surface);
+  border: 1px solid var(--dv-border);
+  border-radius: var(--dv-radius);
+  box-shadow:
+    0 20px 55px rgba(0,0,0,.45),
+    0 0 35px rgba(212,175,55,.035);
+}
+
+.profile-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--dv-gold), transparent);
+}
+
+#productImage {
+  display: block;
+  width: 100%;
+  max-width: 500px;
+  max-height: 350px;
+  object-fit: cover;
+  margin: 0 auto 25px;
+  border: 1px solid rgba(212,175,55,.3);
+  border-radius: 16px;
+  background: #0b0b0b;
+  box-shadow: 0 12px 30px rgba(0,0,0,.3);
+}
+
+#productDescription {
+  margin: 0 0 25px;
+  color: #c7c2b5;
+  font-size: 1rem;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+#productPrice {
+  margin: 0 0 24px;
+  padding: 19px 20px;
+  color: var(--dv-gold-light);
+  background: linear-gradient(115deg, rgba(212,175,55,.12), rgba(212,175,55,.035));
+  border: 1px solid rgba(212,175,55,.25);
+  border-radius: 15px;
+  font-size: clamp(1.65rem, 6vw, 2.35rem);
+  font-weight: 850;
+  line-height: 1.2;
+  letter-spacing: -.7px;
+  overflow-wrap: anywhere;
+  text-align: center;
+  text-shadow: 0 0 22px rgba(212,175,55,.12);
+}
+
+.profile-card > p:has(#productStatus) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 25px;
+  padding: 15px 16px;
+  color: var(--dv-muted);
+  background: var(--dv-surface-light);
+  border: 1px solid rgba(255,255,255,.065);
+  border-radius: 12px;
+  font-size: .94rem;
+}
+
+#productStatus {
+  color: var(--dv-gold-light);
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 54px;
+  padding: 15px 20px;
+  color: #080808;
+  background: linear-gradient(135deg, var(--dv-gold-light), var(--dv-gold) 55%, #b88b20);
+  border: 1px solid rgba(245,217,120,.7);
+  border-radius: 13px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: .2px;
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(212,175,55,.12);
+  transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+  box-shadow: 0 12px 28px rgba(212,175,55,.22);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--dv-gold-light);
+  outline-offset: 4px;
+}
+
+button:disabled {
+  color: #8d887b;
+  background: #24231f;
+  border-color: #38352b;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: .9;
+}
+
+#message {
+  margin: 18px 0 0;
+  color: var(--dv-gold-light);
+  font-size: .95rem;
+  font-weight: 600;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+main > br {
+  display: none;
+}
+
+main > button {
+  margin-top: 18px;
+  color: var(--dv-gold-light);
+  background: #141414;
+  border: 1px solid var(--dv-border);
+  box-shadow: none;
+}
+
+main > button:hover:not(:disabled) {
+  background: #1c1a14;
+  border-color: var(--dv-gold);
+  box-shadow: 0 8px 22px rgba(212,175,55,.08);
+}
+
+@media (max-width: 480px) {
+  header {
+    padding: 25px 16px 22px;
+  }
+
+  main {
+    padding: 22px 13px 32px;
+  }
+
+  .profile-card {
+    padding: 21px 17px;
+    border-radius: 18px;
+  }
+
+  #productImage {
+    max-height: 280px;
+    margin-bottom: 21px;
+  }
+
+  #productDescription {
+    font-size: .95rem;
+  }
+
+  #productPrice {
+    padding: 17px 12px;
+  }
+
+  button {
+    min-height: 52px;
+    padding: 14px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  button {
+    transition: none;
+  }
+}
+</style>
 </head>
+
 <body>
-<header><h1 id="productName">Loading...</h1></header>
+<header>
+  <h1 id="productName">Loading...</h1>
+</header>
+
 <main>
-<div class="profile-card">
-<img id="productImage" src="" alt="Service image" style="width:100%;max-width:500px;max-height:350px;object-fit:cover;border-radius:15px;margin-bottom:20px;display:none;">
-<p id="productDescription">Loading product...</p>
-<h2 id="productPrice">₦0.00</h2>
-<p>Status: <strong id="productStatus">Loading...</strong></p>
-<button id="buyButton" type="button" onclick="buyProduct()">Buy Now</button>
-<p id="message"></p>
-</div>
-<br>
-<button type="button" onclick="window.location.href='dashboard.html'">🏠 Back to Dashboard</button>
+  <div class="profile-card">
+    <img id="productImage" src="" alt="Service image" style="display:none;">
+    <p id="productDescription">Loading product...</p>
+    <h2 id="productPrice">₦0.00</h2>
+    <p>Status: <strong id="productStatus">Loading...</strong></p>
+    <button id="buyButton" type="button" onclick="buyProduct()">Buy Now</button>
+    <p id="message" aria-live="polite"></p>
+  </div>
+
+  <br>
+  <button type="button" onclick="window.location.href='dashboard.html'">🏠 Back to Dashboard</button>
 </main>
+
 <script>
 const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
 const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
