@@ -3,15 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Delight Vendor Logs — Your Digital Marketplace</title>
   <meta name="description" content="Why go far when you can get all in our site? Explore digital services, resources, numbers and more with Delight Vendor Logs — your digital marketplace.">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#050505">
   <link rel="canonical" href="https://delightvendorlog.com/">
 
-  <!-- Favicon: use the actual DV logo -->
-  <link rel="icon" type="image/png" sizes="any" href="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png?v=3">
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png?v=3">
   <link rel="shortcut icon" type="image/png" href="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png?v=3">
   <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png?v=3">
 
@@ -22,7 +20,6 @@
   <meta property="og:type" content="website">
   <meta property="og:locale" content="en_NG">
   <meta property="og:image" content="https://delightvendorlog.com/assets/share-banner.png">
-
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Delight Vendor Logs — Your Digital Marketplace">
   <meta name="twitter:description" content="Digital services, resources, numbers and more — all in one platform.">
@@ -42,739 +39,282 @@
       --radius: 18px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-      scroll-padding-top: 90px;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 90px; }
     body {
-      background: var(--bg);
-      color: var(--white);
+      background: var(--bg); color: var(--white);
       font-family: Arial, Helvetica, sans-serif;
-      line-height: 1.6;
-      overflow-x: hidden;
+      line-height: 1.6; overflow-x: hidden;
     }
-
-    body.popup-open {
-      overflow: hidden;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    button {
-      font: inherit;
-    }
-
-    .container {
-      width: min(1120px, 92%);
-      margin: 0 auto;
-    }
+    body.popup-open { overflow: hidden; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+    .container { width: min(1120px, 92%); margin: 0 auto; }
 
     .site-header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      position: sticky; top: 0; z-index: 100;
       background: rgba(5, 5, 5, .95);
       border-bottom: 1px solid var(--border);
       backdrop-filter: blur(14px);
     }
-
     .nav {
-      min-height: 76px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
+      min-height: 76px; display: flex; align-items: center;
+      justify-content: space-between; gap: 14px;
     }
-
     .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-      flex-shrink: 1;
+      display: flex; align-items: center; gap: 10px;
+      min-width: 0; flex-shrink: 1;
     }
-
-    /* Actual DV logo in the header */
     .logo-image {
-      width: 43px;
-      height: 43px;
-      display: block;
-      flex-shrink: 0;
-      object-fit: contain;
-      border-radius: 10px;
+      width: 43px; height: 43px; display: block; flex-shrink: 0;
+      object-fit: contain; border-radius: 10px;
     }
-
     .logo-text {
-      color: var(--gold-light);
-      font-size: 16px;
-      font-weight: 900;
-      line-height: 1.15;
-      letter-spacing: -.4px;
-      white-space: nowrap;
+      color: var(--gold-light); font-size: 16px; font-weight: 900;
+      line-height: 1.15; letter-spacing: -.4px; white-space: nowrap;
     }
-
     .logo-text span {
-      display: block;
-      color: var(--white);
-      font-size: 12px;
-      letter-spacing: 1.4px;
-      margin-top: 4px;
+      display: block; color: var(--white); font-size: 12px;
+      letter-spacing: 1.4px; margin-top: 4px;
     }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      flex-shrink: 0;
-    }
+    .nav-actions { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
 
     .btn {
-      min-height: 43px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 11px 18px;
-      border: 1px solid transparent;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 800;
-      font-size: 14px;
+      min-height: 43px; display: inline-flex; align-items: center;
+      justify-content: center; gap: 8px; padding: 11px 18px;
+      border: 1px solid transparent; border-radius: 10px;
+      cursor: pointer; font-weight: 800; font-size: 14px;
       transition: transform .2s ease, background .2s ease, border-color .2s ease;
     }
-
-    .btn:hover {
-      transform: translateY(-2px);
-    }
-
+    .btn:hover { transform: translateY(-2px); }
     .btn-gold {
       background: linear-gradient(135deg, var(--gold-light), var(--gold));
-      color: #080808;
-      box-shadow: 0 7px 24px rgba(212, 175, 55, .12);
+      color: #080808; box-shadow: 0 7px 24px rgba(212, 175, 55, .12);
     }
-
-    .btn-outline {
-      background: transparent;
-      border-color: var(--gold);
-      color: var(--gold-light);
-    }
-
-    .btn-outline:hover {
-      background: rgba(212, 175, 55, .1);
-    }
+    .btn-outline { background: transparent; border-color: var(--gold); color: var(--gold-light); }
+    .btn-outline:hover { background: rgba(212, 175, 55, .1); }
 
     .hero {
-      position: relative;
-      padding: 100px 0 88px;
-      overflow: hidden;
+      position: relative; padding: 82px 0 74px; overflow: hidden;
       background:
         radial-gradient(ellipse at 75% 20%, rgba(212, 175, 55, .12), transparent 40%),
         radial-gradient(ellipse at 10% 80%, rgba(156, 123, 22, .08), transparent 35%);
     }
-
     .hero::before {
-      content: "";
-      position: absolute;
-      width: 330px;
-      height: 330px;
-      border: 1px solid rgba(212, 175, 55, .12);
-      border-radius: 50%;
-      right: -130px;
-      top: 35px;
-      pointer-events: none;
+      content: ""; position: absolute; width: 330px; height: 330px;
+      border: 1px solid rgba(212, 175, 55, .12); border-radius: 50%;
+      right: -130px; top: 35px; pointer-events: none;
     }
-
-    .hero-content {
-      position: relative;
-      z-index: 1;
-      max-width: 780px;
+    .hero-layout {
+      position: relative; z-index: 1;
+      display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: center; gap: 32px;
     }
-
+    .hero-content { position: relative; z-index: 1; max-width: 100%; min-width: 0; }
     .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 13px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: rgba(212, 175, 55, .06);
-      color: var(--gold-light);
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 1.4px;
-      text-transform: uppercase;
+      display: inline-flex; align-items: center; gap: 8px; padding: 8px 13px;
+      border: 1px solid var(--border); border-radius: 999px;
+      background: rgba(212, 175, 55, .06); color: var(--gold-light);
+      font-size: 12px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase;
     }
-
     .eyebrow-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--gold);
+      width: 7px; height: 7px; border-radius: 50%; background: var(--gold);
       box-shadow: 0 0 12px var(--gold);
     }
-
     h1 {
-      margin: 25px 0 20px;
-      max-width: 760px;
-      font-size: clamp(38px, 7vw, 72px);
-      line-height: 1.08;
-      letter-spacing: -2.5px;
-      font-weight: 900;
+      margin: 25px 0 20px; max-width: 760px;
+      font-size: clamp(38px, 5.2vw, 64px); line-height: 1.08;
+      letter-spacing: -2.5px; font-weight: 900;
     }
-
-    h1 span {
-      color: var(--gold);
-    }
-
+    h1 span { color: var(--gold); }
     .hero-description {
-      max-width: 650px;
-      color: var(--muted);
-      font-size: clamp(15px, 2vw, 18px);
-      line-height: 1.85;
+      max-width: 650px; color: var(--muted);
+      font-size: clamp(15px, 1.6vw, 18px); line-height: 1.85;
+    }
+    .hero-buttons { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .hero-note { margin-top: 22px; color: #888; font-size: 12px; }
+    .hero-image-wrap { position: relative; z-index: 1; min-width: 0; }
+    .hero-image {
+      display: block; width: 100%; max-width: 560px; height: auto;
+      margin: 0 auto; object-fit: contain;
+      filter: drop-shadow(0 12px 35px rgba(212, 175, 55, .12));
     }
 
-    .hero-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 30px;
-    }
-
-    .hero-note {
-      margin-top: 22px;
-      color: #888;
-      font-size: 12px;
-    }
-
-    .section {
-      padding: 76px 0;
-    }
-
-    .section-heading {
-      max-width: 700px;
-      margin: 0 auto 38px;
-      text-align: center;
-    }
-
+    .section { padding: 76px 0; }
+    .section-heading { max-width: 700px; margin: 0 auto 38px; text-align: center; }
     .section-kicker {
-      color: var(--gold);
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: 2px;
-      text-transform: uppercase;
+      color: var(--gold); font-size: 12px; font-weight: 900;
+      letter-spacing: 2px; text-transform: uppercase;
     }
-
-    h2 {
-      margin: 10px 0 13px;
-      font-size: clamp(27px, 4vw, 42px);
-      line-height: 1.2;
-      letter-spacing: -.8px;
-    }
-
-    .section-heading p {
-      color: var(--muted);
-      font-size: 15px;
-    }
+    h2 { margin: 10px 0 13px; font-size: clamp(27px, 4vw, 42px); line-height: 1.2; letter-spacing: -.8px; }
+    .section-heading p { color: var(--muted); font-size: 15px; }
 
     .number-banner {
-      position: relative;
-      padding: 35px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-      overflow: hidden;
-      border: 1px solid rgba(212, 175, 55, .38);
-      border-radius: var(--radius);
+      position: relative; padding: 35px; display: flex; align-items: center;
+      justify-content: space-between; gap: 24px; overflow: hidden;
+      border: 1px solid rgba(212, 175, 55, .38); border-radius: var(--radius);
       background:
         radial-gradient(ellipse at 90% 50%, rgba(212, 175, 55, .15), transparent 45%),
         linear-gradient(135deg, #15130c, #0b0b0b);
     }
+    .number-banner h2 { font-size: clamp(24px, 4vw, 34px); margin-top: 0; }
+    .number-banner p { max-width: 580px; color: var(--muted); }
 
-    .number-banner h2 {
-      font-size: clamp(24px, 4vw, 34px);
-      margin-top: 0;
-    }
-
-    .number-banner p {
-      max-width: 580px;
-      color: var(--muted);
-    }
-
-    .categories {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 16px;
-    }
-
+    .categories { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
     .category-card {
-      position: relative;
-      min-height: 155px;
-      padding: 21px 16px;
-      border: 1px solid var(--border);
-      border-radius: 15px;
+      position: relative; min-height: 155px; padding: 21px 16px;
+      border: 1px solid var(--border); border-radius: 15px;
       background: linear-gradient(145deg, #151515, #0b0b0b);
       transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
     }
-
     .category-card:hover {
-      transform: translateY(-5px);
-      border-color: var(--gold);
+      transform: translateY(-5px); border-color: var(--gold);
       box-shadow: 0 12px 28px rgba(212, 175, 55, .08);
     }
-
     .category-icon {
-      width: 43px;
-      height: 43px;
-      display: grid;
-      place-items: center;
-      margin-bottom: 18px;
-      border-radius: 12px;
-      background: rgba(212, 175, 55, .1);
-      border: 1px solid rgba(212, 175, 55, .2);
+      width: 43px; height: 43px; display: grid; place-items: center;
+      margin-bottom: 18px; border-radius: 12px;
+      background: rgba(212, 175, 55, .1); border: 1px solid rgba(212, 175, 55, .2);
       font-size: 22px;
     }
-
-    .category-card h3 {
-      font-size: 14px;
-      line-height: 1.4;
-      color: #f5f5f5;
-    }
-
-    .category-card p {
-      margin-top: 7px;
-      color: #999;
-      font-size: 12px;
-      line-height: 1.5;
-    }
+    .category-card h3 { font-size: 14px; line-height: 1.4; color: #f5f5f5; }
+    .category-card p { margin-top: 7px; color: #999; font-size: 12px; line-height: 1.5; }
 
     .features {
       background: linear-gradient(180deg, #050505, #0b0b0b, #050505);
       border-top: 1px solid rgba(212, 175, 55, .1);
       border-bottom: 1px solid rgba(212, 175, 55, .1);
     }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .feature-card { padding: 27px 23px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+    .feature-card .category-icon { margin-bottom: 17px; }
+    .feature-card h3 { margin-bottom: 9px; font-size: 18px; }
+    .feature-card p { color: var(--muted); font-size: 14px; line-height: 1.8; }
 
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-    }
-
-    .feature-card {
-      padding: 27px 23px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--surface);
-    }
-
-    .feature-card .category-icon {
-      margin-bottom: 17px;
-    }
-
-    .feature-card h3 {
-      margin-bottom: 9px;
-      font-size: 18px;
-    }
-
-    .feature-card p {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.8;
-    }
-
-    .final-cta {
-      padding: 76px 0;
-      text-align: center;
-    }
-
+    .final-cta { padding: 76px 0; text-align: center; }
     .cta-panel {
-      padding: 45px 25px;
-      border: 1px solid rgba(212, 175, 55, .3);
+      padding: 45px 25px; border: 1px solid rgba(212, 175, 55, .3);
       border-radius: 22px;
-      background:
-        radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, .12), transparent 65%),
-        #0d0d0d;
+      background: radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, .12), transparent 65%), #0d0d0d;
     }
+    .cta-panel p { max-width: 580px; margin: 0 auto; color: var(--muted); }
+    .cta-panel .hero-buttons { justify-content: center; }
 
-    .cta-panel p {
-      max-width: 580px;
-      margin: 0 auto;
-      color: var(--muted);
+    .site-footer { padding: 36px 0 22px; border-top: 1px solid var(--border); background: #080808; }
+    .footer-main { display: flex; align-items: flex-start; justify-content: space-between; gap: 28px; padding-bottom: 26px; }
+    .footer-brand { max-width: 340px; }
+    .footer-brand-heading { display: flex; align-items: center; gap: 10px; }
+    .footer-brand-logo { width: 38px; height: 38px; display: block; object-fit: contain; flex-shrink: 0; }
+    .footer-brand strong { display: block; color: var(--gold-light); font-size: 18px; font-weight: 900; }
+    .footer-brand p { margin-top: 8px; color: #999; font-size: 13px; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; justify-content: flex-end; max-width: 560px; }
+    .footer-links a, .footer-links button {
+      color: #bdbdbd; border: 0; background: transparent; cursor: pointer;
+      font-size: 13px; transition: color .2s ease;
     }
-
-    .cta-panel .hero-buttons {
-      justify-content: center;
-    }
-
-    .site-footer {
-      padding: 36px 0 22px;
-      border-top: 1px solid var(--border);
-      background: #080808;
-    }
-
-    .footer-main {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 28px;
-      padding-bottom: 26px;
-    }
-
-    .footer-brand {
-      max-width: 340px;
-    }
-
-    /* Actual DV logo beside the footer brand name */
-    .footer-brand-heading {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .footer-brand-logo {
-      width: 38px;
-      height: 38px;
-      display: block;
-      object-fit: contain;
-      flex-shrink: 0;
-    }
-
-    .footer-brand strong {
-      display: block;
-      color: var(--gold-light);
-      font-size: 18px;
-      font-weight: 900;
-    }
-
-    .footer-brand p {
-      margin-top: 8px;
-      color: #999;
-      font-size: 13px;
-    }
-
-    .footer-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px 18px;
-      align-items: center;
-      justify-content: flex-end;
-      max-width: 560px;
-    }
-
-    .footer-links a,
-    .footer-links button {
-      color: #bdbdbd;
-      border: 0;
-      background: transparent;
-      cursor: pointer;
-      font-size: 13px;
-      transition: color .2s ease;
-    }
-
-    .footer-links a:hover,
-    .footer-links button:hover {
-      color: var(--gold-light);
-    }
-
+    .footer-links a:hover, .footer-links button:hover { color: var(--gold-light); }
     .footer-bottom {
-      padding-top: 18px;
-      border-top: 1px solid rgba(255, 255, 255, .08);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
-      flex-wrap: wrap;
-      color: #777;
-      font-size: 12px;
+      padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, .08);
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 15px; flex-wrap: wrap; color: #777; font-size: 12px;
     }
+    .watermark { color: #666; }
 
-    .watermark {
-      color: #666;
-    }
-
-    /* Contact support popup */
     .popup-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 1000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      background: rgba(0, 0, 0, .78);
-      backdrop-filter: blur(7px);
+      position: fixed; inset: 0; z-index: 1000; display: none;
+      align-items: center; justify-content: center; padding: 20px;
+      background: rgba(0, 0, 0, .78); backdrop-filter: blur(7px);
     }
-
-    .popup-overlay.active {
-      display: flex;
-    }
-
+    .popup-overlay.active { display: flex; }
     .support-popup {
-      position: relative;
-      width: min(440px, 100%);
-      padding: 30px 23px 24px;
-      border: 1px solid rgba(212, 175, 55, .45);
-      border-radius: 20px;
+      position: relative; width: min(440px, 100%); padding: 30px 23px 24px;
+      border: 1px solid rgba(212, 175, 55, .45); border-radius: 20px;
       background: linear-gradient(145deg, #171717, #090909);
-      box-shadow: 0 25px 90px rgba(0, 0, 0, .65);
-      animation: popupIn .2s ease-out;
+      box-shadow: 0 25px 90px rgba(0, 0, 0, .65); animation: popupIn .2s ease-out;
     }
-
     @keyframes popupIn {
-      from {
-        opacity: 0;
-        transform: translateY(12px) scale(.98);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
+      from { opacity: 0; transform: translateY(12px) scale(.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
-
     .popup-close {
-      position: absolute;
-      top: 12px;
-      right: 13px;
-      width: 35px;
-      height: 35px;
-      display: grid;
-      place-items: center;
-      border: 1px solid rgba(255, 255, 255, .12);
-      border-radius: 50%;
-      background: #222;
-      color: white;
-      cursor: pointer;
-      font-size: 21px;
+      position: absolute; top: 12px; right: 13px; width: 35px; height: 35px;
+      display: grid; place-items: center; border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 50%; background: #222; color: white; cursor: pointer; font-size: 21px;
     }
-
-    .popup-close:hover {
-      border-color: var(--gold);
-      color: var(--gold-light);
-    }
-
+    .popup-close:hover { border-color: var(--gold); color: var(--gold-light); }
     .popup-symbol {
-      width: 54px;
-      height: 54px;
-      display: grid;
-      place-items: center;
-      margin-bottom: 16px;
-      border-radius: 16px;
-      background: rgba(212, 175, 55, .12);
-      border: 1px solid var(--border);
-      font-size: 27px;
+      width: 54px; height: 54px; display: grid; place-items: center;
+      margin-bottom: 16px; border-radius: 16px;
+      background: rgba(212, 175, 55, .12); border: 1px solid var(--border); font-size: 27px;
     }
-
-    .support-popup h2 {
-      padding-right: 22px;
-      margin: 0 0 9px;
-      font-size: 25px;
-    }
-
-    .support-popup > p {
-      margin-bottom: 21px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
+    .support-popup h2 { padding-right: 22px; margin: 0 0 9px; font-size: 25px; }
+    .support-popup > p { margin-bottom: 21px; color: var(--muted); font-size: 14px; }
     .support-option {
-      display: flex;
-      align-items: center;
-      gap: 13px;
-      padding: 13px;
-      margin-top: 10px;
-      border: 1px solid rgba(255, 255, 255, .1);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, .025);
-      transition: border-color .2s ease, background .2s ease;
+      display: flex; align-items: center; gap: 13px; padding: 13px; margin-top: 10px;
+      border: 1px solid rgba(255, 255, 255, .1); border-radius: 12px;
+      background: rgba(255, 255, 255, .025); transition: border-color .2s ease, background .2s ease;
     }
-
-    .support-option:hover {
-      border-color: var(--gold);
-      background: rgba(212, 175, 55, .06);
-    }
-
+    .support-option:hover { border-color: var(--gold); background: rgba(212, 175, 55, .06); }
     .support-option-icon {
-      width: 42px;
-      height: 42px;
-      flex-shrink: 0;
-      display: grid;
-      place-items: center;
-      border-radius: 11px;
-      background: rgba(212, 175, 55, .1);
-      font-size: 21px;
+      width: 42px; height: 42px; flex-shrink: 0; display: grid; place-items: center;
+      border-radius: 11px; background: rgba(212, 175, 55, .1); font-size: 21px;
     }
-
-    .support-option strong {
-      display: block;
-      color: white;
-      font-size: 14px;
-    }
-
-    .support-option small {
-      display: block;
-      margin-top: 3px;
-      color: #aaa;
-      font-size: 12px;
-      overflow-wrap: anywhere;
-    }
-
+    .support-option strong { display: block; color: white; font-size: 14px; }
+    .support-option small { display: block; margin-top: 3px; color: #aaa; font-size: 12px; overflow-wrap: anywhere; }
     .popup-later {
-      width: 100%;
-      margin-top: 18px;
-      padding: 10px;
-      border: 0;
-      border-radius: 9px;
-      background: transparent;
-      color: #aaa;
-      cursor: pointer;
-      font-size: 13px;
+      width: 100%; margin-top: 18px; padding: 10px; border: 0; border-radius: 9px;
+      background: transparent; color: #aaa; cursor: pointer; font-size: 13px;
     }
-
-    .popup-later:hover {
-      color: var(--gold-light);
-    }
+    .popup-later:hover { color: var(--gold-light); }
 
     @media (max-width: 900px) {
-      .categories {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-
-      .feature-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+      .categories { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .hero-layout { gap: 22px; }
     }
-
+    @media (max-width: 768px) {
+      .hero { padding: 60px 0 48px; }
+      .hero-layout { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+      .hero-content { text-align: center; }
+      .hero-description { margin-left: auto; margin-right: auto; }
+      .hero-buttons { justify-content: center; }
+      .hero-note { margin-top: 18px; }
+      .hero-image { max-width: 440px; }
+    }
     @media (max-width: 600px) {
-      .nav {
-        min-height: 68px;
-        gap: 8px;
-      }
-
-      .brand {
-        gap: 7px;
-      }
-
-      .logo-image {
-        width: 35px;
-        height: 35px;
-        border-radius: 10px;
-      }
-
-      .logo-text {
-        font-size: clamp(10px, 3vw, 14px);
-        letter-spacing: -.5px;
-      }
-
-      .logo-text span {
-        font-size: 9px;
-        letter-spacing: .8px;
-        margin-top: 3px;
-      }
-
-      .nav-actions {
-        gap: 6px;
-      }
-
-      .nav-actions .btn {
-        min-height: 37px;
-        padding: 8px 10px;
-        font-size: 12px;
-        border-radius: 8px;
-      }
-
-      .hero {
-        padding: 74px 0 65px;
-      }
-
-      h1 {
-        letter-spacing: -1.5px;
-      }
-
-      .section {
-        padding: 58px 0;
-      }
-
-      .number-banner {
-        align-items: flex-start;
-        flex-direction: column;
-        padding: 25px 20px;
-      }
-
-      .categories {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 11px;
-      }
-
-      .category-card {
-        min-height: 145px;
-        padding: 16px 13px;
-      }
-
-      .category-icon {
-        width: 39px;
-        height: 39px;
-        margin-bottom: 13px;
-      }
-
-      .category-card h3 {
-        font-size: 13px;
-      }
-
-      .feature-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .footer-main {
-        flex-direction: column;
-      }
-
-      .footer-links {
-        justify-content: flex-start;
-        gap: 12px 16px;
-      }
-
-      .footer-bottom {
-        align-items: flex-start;
-        flex-direction: column;
-      }
+      .nav { min-height: 68px; gap: 8px; }
+      .brand { gap: 7px; }
+      .logo-image { width: 35px; height: 35px; border-radius: 10px; }
+      .logo-text { font-size: clamp(10px, 3vw, 14px); letter-spacing: -.5px; }
+      .logo-text span { font-size: 9px; letter-spacing: .8px; margin-top: 3px; }
+      .nav-actions { gap: 6px; }
+      .nav-actions .btn { min-height: 37px; padding: 8px 10px; font-size: 12px; border-radius: 8px; }
+      h1 { letter-spacing: -1.5px; }
+      .section { padding: 58px 0; }
+      .number-banner { align-items: flex-start; flex-direction: column; padding: 25px 20px; }
+      .categories { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+      .category-card { min-height: 145px; padding: 16px 13px; }
+      .category-icon { width: 39px; height: 39px; margin-bottom: 13px; }
+      .category-card h3 { font-size: 13px; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .footer-main { flex-direction: column; }
+      .footer-links { justify-content: flex-start; gap: 12px 16px; }
+      .footer-bottom { align-items: flex-start; flex-direction: column; }
     }
-
+    @media (max-width: 400px) {
+      .hero-image { max-width: 100%; }
+      .hero-buttons .btn { padding: 10px 13px; font-size: 13px; }
+    }
     @media (max-width: 360px) {
-      .logo-text {
-        font-size: 10px;
-      }
-
-      .logo-text span {
-        font-size: 8px;
-      }
-
-      .nav-actions .btn {
-        padding: 8px;
-        font-size: 11px;
-      }
-
-      .logo-image {
-        width: 31px;
-        height: 31px;
-      }
+      .logo-text { font-size: 10px; }
+      .logo-text span { font-size: 8px; }
+      .nav-actions .btn { padding: 8px; font-size: 11px; }
+      .logo-image { width: 31px; height: 31px; }
     }
-
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
-        scroll-behavior: auto !important;
-        animation-duration: .01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: .01ms !important;
+        scroll-behavior: auto !important; animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important; transition-duration: .01ms !important;
       }
     }
   </style>
@@ -784,19 +324,11 @@
   <header class="site-header">
     <div class="container nav">
       <a class="brand" href="/" aria-label="Delight Vendor Logs homepage">
-        <img
-          class="logo-image"
+        <img class="logo-image"
           src="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png"
-          alt="Delight Vendor Logs logo"
-          width="43"
-          height="43"
-        >
-        <div class="logo-text">
-          Delight
-          <span>VENDOR LOGS</span>
-        </div>
+          alt="Delight Vendor Logs logo" width="43" height="43">
+        <div class="logo-text">Delight<span>VENDOR LOGS</span></div>
       </a>
-
       <nav class="nav-actions" aria-label="Account navigation">
         <a class="btn btn-outline" href="login.html">Login</a>
         <a class="btn btn-gold" href="register.html">Create Account</a>
@@ -807,25 +339,25 @@
   <main>
     <section class="hero">
       <div class="container">
-        <div class="hero-content">
-          <div class="eyebrow">
-            <span class="eyebrow-dot"></span>
-            Your digital marketplace
+        <div class="hero-layout">
+          <div class="hero-content">
+            <div class="eyebrow"><span class="eyebrow-dot"></span>Your digital marketplace</div>
+            <h1>Everything you need.<br><span>One platform.</span></h1>
+            <p class="hero-description">
+              Why go far when you can get all in our site? Explore digital services,
+              resources, numbers and more with Delight Vendor Logs — your digital marketplace.
+            </p>
+            <div class="hero-buttons">
+              <a class="btn btn-gold" href="register.html">Get Started <span aria-hidden="true">→</span></a>
+              <a class="btn btn-outline" href="#categories">Explore Services</a>
+            </div>
+            <p class="hero-note">All is for educational purposes.</p>
           </div>
-
-          <h1>Everything you need.<br><span>One platform.</span></h1>
-
-          <p class="hero-description">
-            Why go far when you can get all in our site? Explore digital services,
-            resources, numbers and more with Delight Vendor Logs — your digital marketplace.
-          </p>
-
-          <div class="hero-buttons">
-            <a class="btn btn-gold" href="register.html">Get Started <span aria-hidden="true">→</span></a>
-            <a class="btn btn-outline" href="#categories">Explore Services</a>
+          <div class="hero-image-wrap">
+            <img class="hero-image" src="assets/hero-image.png"
+              alt="Digital marketplace illustration featuring virtual numbers, eSIM, streaming and VPN services"
+              width="1648" height="928" fetchpriority="high">
           </div>
-
-          <p class="hero-note">All is for educational purposes.</p>
         </div>
       </div>
     </section>
@@ -836,10 +368,7 @@
           <div>
             <div class="section-kicker">Explore more possibilities</div>
             <h2>Get All Country Numbers</h2>
-            <p>
-              Explore available country-number services and other digital resources
-              from your Delight Vendor Logs dashboard.
-            </p>
+            <p>Explore available country-number services and other digital resources from your Delight Vendor Logs dashboard.</p>
           </div>
           <a class="btn btn-gold" href="register.html">Get Started <span aria-hidden="true">→</span></a>
         </div>
@@ -851,72 +380,19 @@
         <div class="section-heading">
           <div class="section-kicker">Our marketplace</div>
           <h2>Explore Our Categories</h2>
-          <p>
-            Discover a range of digital services and resources gathered in one place.
-            Create an account to explore the available services.
-          </p>
+          <p>Discover a range of digital services and resources gathered in one place. Create an account to explore the available services.</p>
         </div>
-
         <div class="categories">
-          <article class="category-card">
-            <div class="category-icon" aria-hidden="true">🌐</div>
-            <h3>All Social Logs</h3>
-            <p>Explore social-related digital resources.</p>
-          </article>
-
-          <article class="category-card">
-            <div class="category-icon" aria-hidden="true">🖼️</div>
-            <h3>Working Pictures</h3>
-            <p>Browse available picture resources.</p>
-          </article>
-
-          <article class="category-card">
-            <div class="category-icon" aria-hidden="true">📁</div>
-            <h3>Formats</h3>
-            <p>Explore available digital formats.</p>
-          </article>
-
-          <article class="category-card">
-            <div class="category-icon" aria-hidden="true">🔗</div>
-            <h3>Working Links</h3>
-            <p>Find available links and resources.</p>
-          </article>
-
-          <article class="category-card">
-            <div class="category-icon" aria-hidden="true">✉️</div>
-            <h3>Gmail</h3>
-            <p>Explore available email-related services.</p>
-          </article>
-
-          <article class="category-card">
-            <div class="category-icon" aria-hidden="true">📱</div>
-            <h3>All Countries Number</h3>
-            <p>Explore numbers from supported countries.</p>
-          </article>
-
-          <article class="category-card">
-            <div class="category-icon" aria-hidden="true">🎬</div>
-            <h3>Streaming &amp; More</h3>
-            <p>Discover available streaming-related resources.</p>
-          </article>
-
-          <article class="category-card">
-            <div class="category-icon" aria-hidden="true">🌍</div>
-            <h3>ESIMS</h3>
-            <p>Explore available eSIM-related services.</p>
-          </article>
-
-          <article class="category-card">
-            <div class="category-icon" aria-hidden="true">🛡️</div>
-            <h3>VPN</h3>
-            <p>Browse available VPN-related services.</p>
-          </article>
-
-          <article class="category-card">
-            <div class="category-icon" aria-hidden="true">🎙️</div>
-            <h3>Voice Cloner / Fake Video Call</h3>
-            <p>Explore the available voice and video tools.</p>
-          </article>
+          <article class="category-card"><div class="category-icon" aria-hidden="true">🌐</div><h3>All Social Logs</h3><p>Explore social-related digital resources.</p></article>
+          <article class="category-card"><div class="category-icon" aria-hidden="true">🖼️</div><h3>Working Pictures</h3><p>Browse available picture resources.</p></article>
+          <article class="category-card"><div class="category-icon" aria-hidden="true">📁</div><h3>Formats</h3><p>Explore available digital formats.</p></article>
+          <article class="category-card"><div class="category-icon" aria-hidden="true">🔗</div><h3>Working Links</h3><p>Find available links and resources.</p></article>
+          <article class="category-card"><div class="category-icon" aria-hidden="true">✉️</div><h3>Gmail</h3><p>Explore available email-related services.</p></article>
+          <article class="category-card"><div class="category-icon" aria-hidden="true">📱</div><h3>All Countries Number</h3><p>Explore numbers from supported countries.</p></article>
+          <article class="category-card"><div class="category-icon" aria-hidden="true">🎬</div><h3>Streaming &amp; More</h3><p>Discover available streaming-related resources.</p></article>
+          <article class="category-card"><div class="category-icon" aria-hidden="true">🌍</div><h3>ESIMS</h3><p>Explore available eSIM-related services.</p></article>
+          <article class="category-card"><div class="category-icon" aria-hidden="true">🛡️</div><h3>VPN</h3><p>Browse available VPN-related services.</p></article>
+          <article class="category-card"><div class="category-icon" aria-hidden="true">🎙️</div><h3>Voice Cloner / Fake Video Call</h3><p>Explore the available voice and video tools.</p></article>
         </div>
       </div>
     </section>
@@ -926,35 +402,12 @@
         <div class="section-heading">
           <div class="section-kicker">Why Delight?</div>
           <h2>Your Marketplace, Made Simple</h2>
-          <p>
-            A convenient place to explore digital services and manage your activity.
-          </p>
+          <p>A convenient place to explore digital services and manage your activity.</p>
         </div>
-
         <div class="feature-grid">
-          <article class="feature-card">
-            <div class="category-icon" aria-hidden="true">✨</div>
-            <h3>Multiple Categories</h3>
-            <p>
-              Explore different digital-service categories from one marketplace.
-            </p>
-          </article>
-
-          <article class="feature-card">
-            <div class="category-icon" aria-hidden="true">👤</div>
-            <h3>Your Own Account</h3>
-            <p>
-              Create an account to access the dashboard and manage your activity.
-            </p>
-          </article>
-
-          <article class="feature-card">
-            <div class="category-icon" aria-hidden="true">💬</div>
-            <h3>Support Available</h3>
-            <p>
-              Contact our support channels when you need assistance with the platform.
-            </p>
-          </article>
+          <article class="feature-card"><div class="category-icon" aria-hidden="true">✨</div><h3>Multiple Categories</h3><p>Explore different digital-service categories from one marketplace.</p></article>
+          <article class="feature-card"><div class="category-icon" aria-hidden="true">👤</div><h3>Your Own Account</h3><p>Create an account to access the dashboard and manage your activity.</p></article>
+          <article class="feature-card"><div class="category-icon" aria-hidden="true">💬</div><h3>Support Available</h3><p>Contact our support channels when you need assistance with the platform.</p></article>
         </div>
       </div>
     </section>
@@ -964,10 +417,7 @@
         <div class="cta-panel">
           <div class="section-kicker">Join the marketplace</div>
           <h2>Ready to Get Started?</h2>
-          <p>
-            Create your Delight Vendor Logs account and explore the services available
-            on the platform.
-          </p>
+          <p>Create your Delight Vendor Logs account and explore the services available on the platform.</p>
           <div class="hero-buttons">
             <a class="btn btn-gold" href="register.html">Create Your Account <span aria-hidden="true">→</span></a>
             <a class="btn btn-outline" href="login.html">Login to Dashboard</a>
@@ -982,18 +432,13 @@
       <div class="footer-main">
         <div class="footer-brand">
           <div class="footer-brand-heading">
-            <img
-              class="footer-brand-logo"
+            <img class="footer-brand-logo"
               src="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png"
-              alt="Delight Vendor Logs logo"
-              width="38"
-              height="38"
-            >
+              alt="Delight Vendor Logs logo" width="38" height="38">
             <strong>Delight Vendor Logs</strong>
           </div>
           <p>Your digital marketplace. Why go far when you can get all in our site?</p>
         </div>
-
         <nav class="footer-links" aria-label="Footer navigation">
           <a href="about.html">About Us</a>
           <a href="terms.html">Terms &amp; Conditions</a>
@@ -1003,7 +448,6 @@
           <button type="button" id="openSupport">Contact Support</button>
         </nav>
       </div>
-
       <div class="footer-bottom">
         <p>© <span id="copyrightYear"></span> Delight Vendor Logs. All rights reserved.</p>
         <p class="watermark">All is for educational purposes.</p>
@@ -1011,59 +455,35 @@
     </div>
   </footer>
 
-  <div
-    class="popup-overlay"
-    id="supportPopup"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="supportTitle"
-    aria-hidden="true"
-  >
+  <div class="popup-overlay" id="supportPopup" role="dialog" aria-modal="true" aria-labelledby="supportTitle" aria-hidden="true">
     <div class="support-popup">
       <button class="popup-close" type="button" id="closeSupport" aria-label="Close support popup">×</button>
-
       <div class="popup-symbol" aria-hidden="true">💬</div>
       <h2 id="supportTitle">Contact Support</h2>
       <p>Need help with Delight Vendor Logs? Choose one of our support channels below.</p>
-
       <a class="support-option" href="https://wa.me/+2347015908401" target="_blank" rel="noopener noreferrer">
         <span class="support-option-icon" aria-hidden="true">📱</span>
-        <span>
-          <strong>WhatsApp Support</strong>
-          <small>Chat with our support team</small>
-        </span>
+        <span><strong>WhatsApp Support</strong><small>Chat with our support team</small></span>
       </a>
-
       <a class="support-option" href="https://t.me/DelightVendorLogsSupportBot" target="_blank" rel="noopener noreferrer">
         <span class="support-option-icon" aria-hidden="true">✈️</span>
-        <span>
-          <strong>Telegram Support Bot</strong>
-          <small>Get assistance through Telegram</small>
-        </span>
+        <span><strong>Telegram Support Bot</strong><small>Get assistance through Telegram</small></span>
       </a>
-
       <a class="support-option" href="mailto:delightvendorlogs@gmail.com">
         <span class="support-option-icon" aria-hidden="true">✉️</span>
-        <span>
-          <strong>Email Support</strong>
-          <small>delightvendorlogs@gmail.com</small>
-        </span>
+        <span><strong>Email Support</strong><small>delightvendorlogs@gmail.com</small></span>
       </a>
-
       <button class="popup-later" type="button" id="laterSupport">Maybe later</button>
     </div>
   </div>
 
   <script>
-    // Automatically update the copyright year.
     document.getElementById("copyrightYear").textContent = new Date().getFullYear();
 
-    // Contact Support popup controls.
     const supportPopup = document.getElementById("supportPopup");
     const openSupport = document.getElementById("openSupport");
     const closeSupport = document.getElementById("closeSupport");
     const laterSupport = document.getElementById("laterSupport");
-
     let previousFocusedElement = null;
 
     function showSupportPopup() {
@@ -1078,7 +498,6 @@
       supportPopup.classList.remove("active");
       supportPopup.setAttribute("aria-hidden", "true");
       document.body.classList.remove("popup-open");
-
       if (previousFocusedElement && typeof previousFocusedElement.focus === "function") {
         previousFocusedElement.focus();
       }
@@ -1087,17 +506,11 @@
     openSupport.addEventListener("click", showSupportPopup);
     closeSupport.addEventListener("click", hideSupportPopup);
     laterSupport.addEventListener("click", hideSupportPopup);
-
     supportPopup.addEventListener("click", function (event) {
-      if (event.target === supportPopup) {
-        hideSupportPopup();
-      }
+      if (event.target === supportPopup) hideSupportPopup();
     });
-
     document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape" && supportPopup.classList.contains("active")) {
-        hideSupportPopup();
-      }
+      if (event.key === "Escape" && supportPopup.classList.contains("active")) hideSupportPopup();
     });
   </script>
 </body>
