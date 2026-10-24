@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,11 +9,13 @@
     name="viewport"
     content="width=device-width,initial-scale=1.0"
 >
+
 <link rel="icon" type="image/png"
 href="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png">
 
 <link rel="apple-touch-icon"
 href="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png">
+
 <title>My Purchases - Delight Vendor Logs</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -348,7 +351,6 @@ main{
 
 <body>
 
-
 <header>
 
     <h1>
@@ -357,9 +359,7 @@ main{
 
 </header>
 
-
 <main>
-
 
 <div class="total-card">
 
@@ -376,11 +376,9 @@ main{
 
 </div>
 
-
 <h2 class="section-title">
     🛍️ My Purchases
 </h2>
-
 
 <div class="card">
 
@@ -394,7 +392,6 @@ main{
 
 </div>
 
-
 <div
     class="back"
     onclick="location.href='dashboard.html'"
@@ -402,9 +399,7 @@ main{
     🏠 Back to Dashboard
 </div>
 
-
 </main>
-
 
 <script>
 
@@ -423,6 +418,32 @@ supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
+
+
+// =====================================================
+// AUTOMATIC PROVIDER REFUND MARKERS
+// These orders are hidden from My Purchases.
+// Genuine customer cancellations remain visible.
+// =====================================================
+
+const AUTOMATIC_REFUND_MARKERS = [
+    "provider_insufficient_funds_refunded",
+    "virtualsms_insufficient_funds_refunded"
+];
+
+
+function isAutomaticProviderRefund(order){
+
+    const providerState =
+        String(order.provider_state || "")
+            .trim()
+            .toLowerCase();
+
+    return AUTOMATIC_REFUND_MARKERS.some(
+        marker => providerState.includes(marker)
+    );
+
+}
 
 
 // =====================================================
@@ -1063,6 +1084,8 @@ async function loadPurchases(){
 
         // =================================================
         // LOAD VIRTUAL NUMBER PURCHASES
+        // provider_state is required to identify
+        // automatic provider refunds.
         // =================================================
 
         const {
@@ -1090,6 +1113,7 @@ async function loadPurchases(){
                     "provider_cost_ngn",
                     "customer_price_ngn",
                     "status",
+                    "provider_state",
                     "otp_code",
                     "full_sms",
                     "purchased_at",
@@ -1200,13 +1224,25 @@ async function loadPurchases(){
 
 
         // =================================================
+        // FILTER AUTOMATIC PROVIDER REFUNDS
+        // before combining or rendering the cards.
+        // Genuine customer cancellations are not filtered.
+        // =================================================
+
+        const visibleVirtualData =
+            (virtualData || []).filter(
+                order => !isAutomaticProviderRefund(order)
+            );
+
+
+        // =================================================
         // COMBINE BOTH PURCHASE TYPES
         // =================================================
 
         const combined = [];
 
 
-        (virtualData || []).forEach(
+        visibleVirtualData.forEach(
             order => {
 
                 combined.push({
