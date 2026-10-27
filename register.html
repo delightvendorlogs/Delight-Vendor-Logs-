@@ -583,6 +583,14 @@ body::after {
 
   </section>
 
+  <div class="field">
+    <label for="referralCode">Referral Code <span style="color:#888;font-weight:400">(Optional)</span></label>
+    <div class="input-wrap">
+      <span class="input-icon">🎁</span>
+      <input id="referralCode" type="text" placeholder="Enter referral code if you have one" autocomplete="off" maxlength="40">
+    </div>
+  </div>
+
   <!-- ACCOUNT SECURITY -->
 
   <section class="section">
@@ -718,6 +726,9 @@ async function createAccount() {
   const password =
     document.getElementById("password").value;
 
+  const referralCode =
+    (document.getElementById("referralCode")?.value || "").trim().toUpperCase();
+
   const message =
     document.getElementById("message");
 
@@ -758,7 +769,8 @@ async function createAccount() {
           data: {
             name: fullName,
             first_name: firstName,
-            last_name: lastName
+            last_name: lastName,
+            referral_code: referralCode || null
           }
         }
       });
