@@ -17,3 +17,18 @@ input,select,textarea{background:#111!important;color:#f5f0df!important;border:1
 h1,h2,h3,h4{color:inherit}
 header,nav{max-width:100%}
 img[data-brand-logo]{object-fit:contain}
+
+/* Shared visual consistency for legacy page components */
+header{background:#0d0d0d!important;color:#f5f0df!important;border-color:#493b1c!important;box-shadow:0 6px 22px #0008}
+footer{background:#0d0d0d!important;color:#b8ad8d!important;border-color:#493b1c!important}
+.card,.panel,.item,.admin-tool,.stat,.category-tag,.cms-nav button,.info-box,.balance-card,.order-card,.transaction-item,.purchase-item,.product-item,.service-item{background:#121212!important;color:#f5f0df!important;border-color:#493b1c!important}
+.admin-welcome{background:linear-gradient(125deg,#161207,#090909 72%)!important;color:#f5f0df!important;border:1px solid #6f581e}
+.admin-welcome h2,.admin-tool strong,.stat strong,.card h2{color:#e4c45f!important}
+.admin-welcome p,.admin-welcome .welcome-hint,.small,.muted,.header-subtitle,.section-heading p,.admin-tool span{color:#b8ad8d!important}
+.tool-icon{background:#2b220d!important;color:#e4c45f!important}
+.tool-arrow{color:#d4af37!important}
+button,.btn,.button{background:#17130a;color:#f5f0df;border-color:#8b6d20}
+button.primary,.btn-primary,.create-btn{background:#d4af37!important;color:#080808!important;border-color:#d4af37!important}
+table{border-color:#493b1c}
+th{background:#201a0b!important;color:#e4c45f!important}
+td{color:#f5f0df;border-color:#493b1c!important}
