@@ -164,7 +164,39 @@
     }
 
     .actions {
-      margin-top: 20px;
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      padding: 14px;
+      border: 1px solid #332912;
+      border-radius: 16px;
+      background: #0b0b0b;
+    }
+    .actions button {
+      width: 100%;
+      min-height: 48px;
+      margin: 0 !important;
+      border-radius: 12px !important;
+      font-weight: 800;
+      transition: transform .15s ease, border-color .15s ease;
+    }
+    .actions button:active { transform: scale(.99); }
+    .actions button[onclick="logout()"] {
+      background: #211010 !important;
+      color: #ffb5b5 !important;
+      border: 1px solid #6b2929 !important;
+      box-shadow: none !important;
+    }
+    .actions button[onclick="window.location.href='dashboard.html'"] {
+      background: #d4af37 !important;
+      color: #111 !important;
+      border: 1px solid #d4af37 !important;
+      box-shadow: none !important;
+    }
+    header h1 { color:#d4af37; }
+    @media(min-width:560px){
+      .actions { grid-template-columns:1fr 1fr; }
     }
   </style>
 <link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css"></head>
