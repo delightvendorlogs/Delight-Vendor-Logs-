@@ -713,6 +713,9 @@ function showMessage(text, type = "") {
 
 /* CREATE ACCOUNT */
 
+// Fill the optional code when a user opens register.html?ref=CODE.
+(function(){const q=new URLSearchParams(location.search);const c=(q.get("ref")||q.get("referral_code")||"").trim().toUpperCase();const i=document.getElementById("referralCode");if(i&&c&&!i.value)i.value=c;})();
+
 async function createAccount() {
   const firstName =
     document.getElementById("firstName").value.trim();
