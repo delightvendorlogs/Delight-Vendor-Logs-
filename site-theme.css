@@ -1,0 +1,34 @@
+:root{color-scheme:dark;--dv-bg:#080808;--dv-panel:#121212;--dv-gold:#d4af37;--dv-gold-soft:#bda45a;--dv-text:#f5f0df;--dv-muted:#b8ad8d;--dv-line:#493b1c}
+html{background:var(--dv-bg);color:var(--dv-text)}
+body{background:var(--dv-bg)!important;color:var(--dv-text)!important;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{color:var(--dv-text)}
+button,a{ -webkit-tap-highlight-color:transparent}
+button{max-width:100%}
+input,select,textarea{max-width:100%;color:var(--dv-text)}
+a{color:var(--dv-gold)}
+img{max-width:100%}
+@media(max-width:600px){body{overflow-wrap:anywhere}main{width:100%;max-width:100%;padding-left:14px;padding-right:14px}header{gap:10px;flex-wrap:wrap}button,input,select,textarea{font-size:16px}table{display:block;max-width:100%;overflow-x:auto}section,article,.card,.panel,.container{max-width:100%}}
+@media(min-width:768px){main{margin-left:auto;margin-right:auto}}
+
+button,.btn,.button{border-radius:12px}
+button{cursor:pointer}
+input,select,textarea{background:#111!important;color:#f5f0df!important;border:1px solid #493b1c!important;border-radius:10px}
+.card,.panel,.product-card,.purchase-card,.transaction-card,.stat-card,.summary-card,.wallet-card,.admin-card,.service-card{background:#121212!important;color:#f5f0df!important;border-color:#493b1c!important}
+h1,h2,h3,h4{color:inherit}
+header,nav{max-width:100%}
+img[data-brand-logo]{object-fit:contain}
+
+/* Shared visual consistency for legacy page components */
+header{background:#0d0d0d!important;color:#f5f0df!important;border-color:#493b1c!important;box-shadow:0 6px 22px #0008}
+footer{background:#0d0d0d!important;color:#b8ad8d!important;border-color:#493b1c!important}
+.card,.panel,.item,.admin-tool,.stat,.category-tag,.cms-nav button,.info-box,.balance-card,.order-card,.transaction-item,.purchase-item,.product-item,.service-item{background:#121212!important;color:#f5f0df!important;border-color:#493b1c!important}
+.admin-welcome{background:linear-gradient(125deg,#161207,#090909 72%)!important;color:#f5f0df!important;border:1px solid #6f581e}
+.admin-welcome h2,.admin-tool strong,.stat strong,.card h2{color:#e4c45f!important}
+.admin-welcome p,.admin-welcome .welcome-hint,.small,.muted,.header-subtitle,.section-heading p,.admin-tool span{color:#b8ad8d!important}
+.tool-icon{background:#2b220d!important;color:#e4c45f!important}
+.tool-arrow{color:#d4af37!important}
+button,.btn,.button{background:#17130a;color:#f5f0df;border-color:#8b6d20}
+button.primary,.btn-primary,.create-btn{background:#d4af37!important;color:#080808!important;border-color:#d4af37!important}
+table{border-color:#493b1c}
+th{background:#201a0b!important;color:#e4c45f!important}
+td{color:#f5f0df;border-color:#493b1c!important}
