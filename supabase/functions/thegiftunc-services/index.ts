@@ -87,9 +87,12 @@ async function getCatalog() {
 }
 function fieldList(detail: any): any[] {
   const root = detail?.data ?? detail?.service ?? detail?.product ?? detail;
-  const candidates = [root?.formFields, root?.form_fields, root?.fields, root?.orderFields, root?.order_fields, root?.requiredFields, root?.required_fields, root?.inputs, root?.customFields, root?.custom_fields, root?.metadata?.formFields, root?.metadata?.fields];
+  const candidates = [root?.formFields, root?.form_fields, root?.formSchema, root?.form_schema, root?.orderDataFields, root?.order_data_fields, root?.inputFields, root?.input_fields, root?.fields, root?.orderFields, root?.order_fields, root?.requiredFields, root?.required_fields, root?.inputs, root?.customFields, root?.custom_fields, root?.form?.fields, root?.form?.inputs, root?.metadata?.formFields, root?.metadata?.fields];
   let source: any[] = [];
-  for (const c of candidates) { if (Array.isArray(c)) { source = c; break; } }
+  for (const c of candidates) {
+    if (Array.isArray(c)) { source = c; break; }
+    if (c && typeof c === "object") { source = Object.entries(c).map(([key, value]) => value && typeof value === "object" ? { key, ...value } : { key, label: key, type: "text", required: true }); break; }
+  }
   const fields = source.map((f: any, i: number) => {
     if (typeof f === "string") return { key: f, name: f, label: f, required: true, type: "text" };
     const key = String(f?.key ?? f?.name ?? f?.field ?? f?.fieldName ?? f?.field_name ?? f?.id ?? f?.label ?? ("field_" + i));
