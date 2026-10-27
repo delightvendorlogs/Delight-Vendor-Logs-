@@ -5225,6 +5225,12 @@ async function loadCategories(){
 
 
     renderCategories();
+
+    const requestedCategory = new URLSearchParams(location.search).get("category");
+    if(requestedCategory && categories.some(item => item.name === requestedCategory)){
+        selectCategory(requestedCategory);
+        history.replaceState({}, "", location.pathname);
+    }
 }
 
 
