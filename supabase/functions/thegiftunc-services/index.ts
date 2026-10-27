@@ -31,7 +31,7 @@ function costOf(x: any) {
   return Number.isFinite(n) && n >= 0 ? n : 0;
 }
 async function supplier(path: string, method = "GET", payload?: unknown) {
-  if (!EMAIL || !PASSWORD) console.error("Service supplier credentials are not configured."); throw new Error("Service catalog temporarily unavailable.");
+  if (!EMAIL || !PASSWORD) { console.error("Service supplier credentials are not configured."); throw new Error("Service catalog temporarily unavailable."); }
   const login = await fetch(BASE + "/auth/login", {
     method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({ email: EMAIL, password: PASSWORD }),
