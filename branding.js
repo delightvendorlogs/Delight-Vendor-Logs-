@@ -12,7 +12,7 @@
     document.querySelectorAll("h1,h2,.brand-name").forEach(function(el){
       const label=(el.textContent||"").trim();
       if(!/^(Delight Vendor Logs|Delight Vendor Logs\s*[—-].*)$/i.test(label)) return;
-      if(el.querySelector("img[data-auto-brand-logo]")) return;
+      if(el.querySelector("img")) return;
       const img=document.createElement("img");img.src=logoPath;img.alt="";img.setAttribute("data-auto-brand-logo","true");
       img.style.cssText="width:1.45em;height:1.45em;object-fit:contain;vertical-align:middle;margin-right:.45em;display:inline-block";
       el.insertBefore(img,el.firstChild);
