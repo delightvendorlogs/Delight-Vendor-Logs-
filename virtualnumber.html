@@ -970,9 +970,23 @@ async function loadOrders(){
     providerState===marker || providerState.includes(marker)
    );
 
-   // Hide only these automatic provider-insufficient-funds refunds.
-   // Genuine cancelled or refunded number orders remain visible.
-   return !isAutomaticProviderRefund;
+   // A real purchased number must have provider confirmation (provider order ID
+   // or phone number). Keep the database row for audit/refund history, but do
+   // not show an unconfirmed reservation as a customer's number order.
+   const hasProviderOrder=Boolean(
+    o.provider_order_id ||
+    o.provider_order ||
+    o.numpool_order_id ||
+    o.number ||
+    o.otp_code
+   );
+   const status=String(o.status||"").trim().toLowerCase();
+   const isUnconfirmedAttempt=!hasProviderOrder &&
+    (["waiting","pending","cancelled","canceled","failed","refunded"].includes(status));
+
+   // Hide failed/automatically refunded provider attempts and reservations
+   // where no number/order was ever confirmed. Do not delete audit records.
+   return !isAutomaticProviderRefund && !isUnconfirmedAttempt;
   });
 
   renderOrders();
