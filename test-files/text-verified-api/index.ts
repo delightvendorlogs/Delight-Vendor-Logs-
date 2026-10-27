@@ -1056,12 +1056,12 @@ function extractTextVerifiedOtp(result: any, sms: any): string {
       item?.body,
       item?.message,
     );
-    const match = content.match(/\\b(\\d{4,8})\\b/);
+    const match = content.match(/\b(\d{4,8})\b/);
     if (match) return match[1];
   }
 
   if (typeof sms === "string") {
-    const match = sms.match(/\\b(\\d{4,8})\\b/);
+    const match = sms.match(/\b(\d{4,8})\b/);
     if (match) return match[1];
   }
 
