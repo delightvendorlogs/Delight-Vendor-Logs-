@@ -18,5 +18,13 @@
       el.insertBefore(img,el.firstChild);
     });
   }
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",applyBranding);else applyBranding();
+
+  function setupNotificationBadge(){
+    const bell=document.querySelector(".notification-btn");
+    if(!bell||!window.supabase||bell.querySelector(".notification-badge"))return;
+    const badge=document.createElement("span");badge.className="notification-badge";badge.style.cssText="position:absolute;top:-7px;right:-7px;min-width:20px;height:20px;padding:0 5px;display:none;align-items:center;justify-content:center;border-radius:12px;background:#e53935;color:#fff;border:2px solid #080808;font:800 11px Arial";bell.style.position="relative";bell.appendChild(badge);
+    const sb=window.supabase.createClient("https://hkfhehbhmucymusaytoe.supabase.co","sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_");
+    sb.auth.getSession().then(async s=>{if(!s.data.session)return;const r=await sb.functions.invoke("delight-notifications",{body:{action:"list"}});if(r.error||!r.data||r.data.error)return;const count=(r.data.notifications||[]).filter(n=>!n.read_at).length;badge.textContent=count>99?"99+":String(count);badge.style.display=count?"flex":"none";bell.setAttribute("aria-label",count+" unread notifications");}).catch(()=>{});
+  }
+  if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",applyBranding);document.addEventListener("DOMContentLoaded",setupNotificationBadge);}else{applyBranding();setupNotificationBadge();}
 })();
