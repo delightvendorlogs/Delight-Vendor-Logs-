@@ -1034,6 +1034,7 @@ function extractTextVerifiedOtp(result: any, sms: any): string {
 
   const candidates: any[] = [
     ...(Array.isArray(sms) ? sms : []),
+    ...(sms && typeof sms === "object" && !Array.isArray(sms) ? [sms] : []),
     ...(Array.isArray(result?.messages) ? result.messages : []),
     ...(Array.isArray(result?.data?.messages) ? result.data.messages : []),
     ...(Array.isArray(result?.sms) ? result.sms : []),
@@ -1134,6 +1135,7 @@ async function actionStatus(orderId: string, userId: string) {
     result?.status,
     result?.state,
     result?.data?.status,
+    result?.verification?.status,
   ).toLowerCase();
 
   const updates: Record<string, unknown> = {
