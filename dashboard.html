@@ -9,18 +9,18 @@
     name="viewport"
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
-<meta name="theme-color" content="#f4f0e6">
+<meta name="theme-color" content="#080808">
 <meta name="description" content="Explore products and manage your wallet on Delight Vendor Logs.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Delight Vendor Logs">
 <meta property="og:description" content="Explore products and manage your Delight Vendor Logs account.">
-<meta property="og:image" content="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png">
+<meta property="og:image" content="assets/dv-logo.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Delight Vendor Logs">
 <meta name="twitter:description" content="Explore products and manage your Delight Vendor Logs account.">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png">
-<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png">
-<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png">
+<meta name="twitter:image" content="assets/dv-logo.png">
+<link rel="icon" type="image/png" href="assets/dv-logo.png">
+<link rel="apple-touch-icon" href="assets/dv-logo.png">
 
 <title>Delight Vendor Logs</title>
 
@@ -44,8 +44,8 @@ body{
         Helvetica,
         sans-serif;
 
-    background:#f4f0e6;
-    color:#171717;
+    background:#080808;
+    color:#f5f0df;
 }
 
 button,
@@ -2948,7 +2948,22 @@ main{
 
 </style>
 
-</head>
+<link rel="stylesheet" href="site-theme.css">
+<style>
+body{background:#080808;color:#f5f0df}
+header{gap:10px}.brand{order:0;flex:1}
+.menu-btn{order:-2;flex:0 0 44px;background:#111;color:#d4af37;border:1px solid #8b6d20}
+.brand h1{color:#f5f0df}.brand p{color:#b8ad8d}
+.notification-btn{order:2;flex:0 0 42px;width:42px;height:42px;border-radius:14px;border:1px solid #8b6d20;background:#111;color:#d4af37;font-size:18px}
+.wallet{background:#111;color:#f5f0df;border:1px solid #8b6d20}.section-head h2{color:#f5f0df}
+.cat{background:#111;color:#f5f0df;border-color:#493b1c}.cat-name{color:#f5f0df}
+#menu{background:#0d0d0d;color:#f5f0df;border-color:#8b6d20}.menu-item{color:#f5f0df;border-bottom-color:#28220f}
+.all-services-banner{display:flex;align-items:center;gap:12px;width:100%;margin:2px 0 22px;padding:16px;border:1px solid #d4af37;border-radius:18px;background:linear-gradient(115deg,#19150a,#101010);color:#f5f0df;text-align:left}
+.all-services-icon{display:grid;place-items:center;flex:0 0 46px;height:46px;border-radius:13px;background:#2b220d;font-size:22px}
+.all-services-copy{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}.all-services-copy strong{font-size:14px;line-height:1.4}.all-services-copy small{font-size:12px;line-height:1.5;color:#c0b58f}.all-services-arrow{font-size:23px;color:#d4af37}
+.more-category-link{display:grid;grid-template-columns:32px 1fr 20px;align-items:center;gap:10px;text-align:left;width:100%;min-height:46px;padding:10px 12px;border-radius:12px;border:1px solid #493b1c;background:#111;color:#f5f0df;font:inherit}.more-category-link span:last-child{color:#d4af37;text-align:right}.more-category-link span:first-child{text-align:center;font-size:18px}
+@media(max-width:420px){header{padding-left:12px;padding-right:12px}.logo{width:42px;height:42px}.menu-btn{flex-basis:39px;width:39px;height:39px}.notification-btn{flex-basis:38px;width:38px;height:38px}.brand{gap:8px}.brand h1{font-size:15px}.brand p{font-size:10px}.all-services-banner{padding:12px 10px;gap:8px}.all-services-copy strong{font-size:12px}.all-services-copy small{font-size:10px}}
+</style></head>
 
 
 <body>
@@ -2960,7 +2975,7 @@ main{
 
         <div class="logo">
             <img
-                src="https://raw.githubusercontent.com/delightvendorlogs/Delight-Vendor-Logs-/main/assets/dv-logo.png"
+                src="assets/dv-logo.png"
                 alt="Delight Vendor Logs logo"
                 onerror="this.style.display='none';this.parentElement.textContent='DV';this.parentElement.style.fontSize='22px';this.parentElement.style.fontWeight='900';this.parentElement.style.color='#d4af37';"
             >
@@ -2981,13 +2996,8 @@ main{
     </div>
 
 
-    <button
-        class="menu-btn"
-        type="button"
-        onclick="openMenu()"
-    >
-        ☰
-    </button>
+    <button class="menu-btn" type="button" aria-label="Open menu" onclick="openMenu()">☰</button>
+    <button class="notification-btn" type="button" aria-label="Notifications" onclick="location.href='notification.html'">🔔</button>
 
 </header>
 
@@ -3137,6 +3147,11 @@ main{
              SPECIAL SERVICE CARDS
         ====================================================== -->
 
+        <button class="all-services-banner" type="button" onclick="location.href='services.html'">
+          <span class="all-services-icon">🛍️</span>
+          <span class="all-services-copy"><strong>Get All Social Logs, eSIM, Testing Apps &amp; Streaming</strong><small>Explore social logs, eSIM, testing apps, streaming and more in one place.</small></span>
+          <span class="all-services-arrow">→</span>
+        </button>
         <section class="special-services">
 
 
@@ -4358,6 +4373,9 @@ main{
     </div>
 
 
+    <div class="menu-item" onclick="location.href='services.html'">🧰 All Services</div>
+    <div class="menu-item" onclick="location.href='refer.html'">🎁 Refer &amp; Earn</div>
+    <div class="menu-item" onclick="location.href='notification.html'">🔔 Notifications</div>
     <div
         class="menu-item"
         onclick="openContactSupport()"
@@ -6540,6 +6558,19 @@ document.addEventListener("visibilitychange", () => {
 
 </script>
 
-</body>
+<script>
+function renderCategories(){
+ const grid=document.getElementById("categoryGrid"); if(!grid)return; grid.innerHTML="";
+ function makeButton(c){const b=document.createElement("button");b.type="button";b.className="cat";b.onclick=()=>selectCategory(c.name);const i=document.createElement("div");i.className="cat-icon";i.textContent=existingIcons[c.name]||c.icon||"📁";const n=document.createElement("div");n.className="cat-name";n.textContent=c.name;b.append(i,n);return b;}
+ categories.slice(0,4).forEach(c=>grid.appendChild(makeButton(c)));
+ const more=document.createElement("button");more.type="button";more.className="cat";more.innerHTML='<div class="cat-icon">＋</div><div class="cat-name">More</div>';
+ const list=document.createElement("div");list.style.cssText="display:none;grid-column:1/-1;flex-direction:column;gap:8px;margin-top:10px";
+ const service=document.createElement("button");service.type="button";service.className="more-category-link";service.innerHTML="<span>🧰</span><span>Service</span><span>→</span>";service.onclick=()=>location.href="services.html";list.appendChild(service);
+ categories.forEach(c=>{const b=document.createElement("button");b.type="button";b.className="more-category-link";b.innerHTML="<span>"+escapeHTML(existingIcons[c.name]||c.icon||"📁")+"</span><span>"+escapeHTML(c.name)+"</span><span>→</span>";b.onclick=()=>selectCategory(c.name);list.appendChild(b)});
+ more.onclick=()=>{const open=list.style.display!=="flex";list.style.display=open?"flex":"none";more.lastElementChild.textContent=open?"Less":"More";more.setAttribute("aria-expanded",String(open))};
+ grid.appendChild(more);grid.appendChild(list);
+}
+document.addEventListener("DOMContentLoaded",()=>{loadCategories();});
+</script></body>
 
 </html>
