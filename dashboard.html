@@ -10,6 +10,8 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 <meta name="theme-color" content="#080808">
+<script>try{if(sessionStorage.getItem("dvOpenedFromCategories")==="1"||new URLSearchParams(location.search).has("category"))document.documentElement.classList.add("dv-skip-community-popup")}catch(e){}</script>
+<style>html.dv-skip-community-popup #communityPopupOverlay{display:none!important}</style>
 <meta name="description" content="Explore products and manage your wallet on Delight Vendor Logs.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Delight Vendor Logs">
@@ -6476,9 +6478,13 @@ function closeCommunityPopup(){
 
 async function startDashboard(){
     const requestedCategory = new URLSearchParams(location.search).get("category");
-    if(requestedCategory){
+    const openedFromCategories = sessionStorage.getItem("dvOpenedFromCategories")==="1";
+    if(requestedCategory || openedFromCategories){
         const popup=document.getElementById("communityPopupOverlay");
-        if(popup)popup.style.display="none";
+        if(popup){
+            popup.style.display="none";
+            popup.setAttribute("aria-hidden","true");
+        }
     }
     updateGreeting();
 
@@ -6502,7 +6508,7 @@ startDashboard();
 
 setInterval(() => {
     loadCategories();
-}, 5000);
+}, 60000);
 
 document.addEventListener("visibilitychange", () => {
     if (!document.hidden) {
