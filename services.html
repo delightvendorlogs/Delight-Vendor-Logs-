@@ -19,7 +19,15 @@
     href="style.css"
   >
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">function goBackFromServices(){
+  if(sessionStorage.getItem("dvOpenedFromCategories")==="1"){
+    sessionStorage.removeItem("dvOpenedFromCategories");
+    location.href="categories.html";
+  }else{
+    location.href="dashboard.html";
+  }
+}
+</script>
 
 <link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css"></head>
 
@@ -33,7 +41,7 @@
 
   <button
     type="button"
-    onclick="window.location.href='dashboard.html'"
+    onclick="goBackFromServices()"
   >
     ←
   </button>
