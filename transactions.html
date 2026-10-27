@@ -159,6 +159,8 @@
       cursor: pointer;
     }
   .top-dashboard-back-wrap{max-width:1120px;margin:0 auto;padding:14px 20px 0}.top-dashboard-back{display:inline-flex;align-items:center;padding:10px 14px;border:1px solid #493b1c;border-radius:12px;background:#121212;color:#d4af37;text-decoration:none;font-weight:700}@media(max-width:600px){.top-dashboard-back-wrap{padding:12px 14px 0}}
+
+.transaction-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0}.transaction-stat{min-width:0;text-align:left;padding:14px 12px;border:1px solid #493b1c;border-radius:14px;background:linear-gradient(145deg,#17140b,#101010);color:#f5f0df;cursor:pointer}.transaction-stat strong{display:block;font-size:24px;color:#d4af37;margin-top:7px}.transaction-stat span{font-size:12px;color:#b8ad8d}.transaction-stat.active{border-color:#d4af37;box-shadow:0 0 0 1px #d4af3740 inset}.transaction-stat:focus-visible{outline:2px solid #d4af37;outline-offset:2px}@media(max-width:420px){.transaction-stats{gap:6px}.transaction-stat{padding:11px 8px}.transaction-stat strong{font-size:20px}.transaction-stat span{font-size:11px}}
 </style>
 <link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css"></head>
 
@@ -176,6 +178,8 @@
     <p class="balance-label">Your Balance</p>
     <p id="walletBalance">Loading...</p>
   </div>
+
+  <div id="transactionStats" class="transaction-stats" aria-label="Transaction status filters"></div>
 
   <button class="refresh" onclick="loadTransactions()">
     Refresh Transactions
@@ -322,6 +326,29 @@
     }
 
 
+    const bucketFor = tx => {
+      const s=String(tx.status||"completed").toLowerCase().trim();
+      if(["completed","complete","success","successful","approved","received"].includes(s))return "completed";
+      if(["pending","processing","in_progress","in progress","queued"].includes(s))return "pending";
+      if(["rejected","failed","cancelled","canceled","declined"].includes(s))return "rejected";
+      return "other";
+    };
+    const txStats=document.getElementById("transactionStats");
+    const counts={completed:0,pending:0,rejected:0};
+    (data||[]).forEach(tx=>{const b=bucketFor(tx);if(counts[b]!==undefined)counts[b]++});
+    let activeTransactionFilter="all";
+    function applyTransactionFilter(){
+      document.querySelectorAll("#transactions .transaction").forEach(el=>{
+        el.style.display=activeTransactionFilter==="all"||el.dataset.bucket===activeTransactionFilter?"":"none";
+      });
+      txStats.querySelectorAll(".transaction-stat").forEach(el=>el.classList.toggle("active",el.dataset.filter===activeTransactionFilter));
+    }
+    txStats.innerHTML=[
+      {key:"completed",label:"Completed",count:counts.completed},
+      {key:"pending",label:"Pending",count:counts.pending},
+      {key:"rejected",label:"Cancelled / Failed",count:counts.rejected}
+    ].map(s=>'<button type="button" class="transaction-stat" data-filter="'+s.key+'"><span>'+s.label+'</span><strong>'+s.count+'</strong></button>').join("");
+    txStats.querySelectorAll(".transaction-stat").forEach(el=>el.addEventListener("click",()=>{activeTransactionFilter=el.dataset.filter;applyTransactionFilter()}));
     if (
       !data ||
       data.length === 0
@@ -427,6 +454,7 @@
 
         item.className =
           "transaction";
+        item.dataset.bucket = bucketFor(transaction);
 
 
         item.innerHTML = `
@@ -482,6 +510,7 @@
         container.appendChild(
           item
         );
+        applyTransactionFilter();
 
       }
     );
