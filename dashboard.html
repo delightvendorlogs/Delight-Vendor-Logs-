@@ -684,21 +684,11 @@ main{
 ========================================================= */
 
 .categories{
-
-    background:#fffdf7;
-
-    border:
-        1px solid
-        #d8c99e;
-
-    border-radius:21px;
-
+    background:#111;
+    border:1px solid #3a2e13;
+    border-radius:18px;
     overflow:hidden;
-
-    box-shadow:
-        0 3px 12px
-        #00000008;
-
+    box-shadow:0 8px 24px #00000030;
     margin-bottom:25px;
 }
 
@@ -711,22 +701,12 @@ main{
 }
 
 .cat{
-
     min-height:102px;
-
     border:0;
-
-    border-right:
-        1px solid
-        #e9dfc4;
-
-    border-bottom:
-        1px solid
-        #e9dfc4;
-
-    background:#fffdf7;
-
-    color:#2e2a22;
+    border-right:1px solid #302710;
+    border-bottom:1px solid #302710;
+    background:#111;
+    color:#f5f0df;
 
     display:flex;
 
@@ -802,17 +782,15 @@ main{
 }
 
 .cat-name{
-
     text-align:center;
-
     font-size:11.5px;
-
     line-height:1.25;
-
     font-weight:bold;
-
-    color:#29251e;
+    color:#f5f0df;
 }
+.categories .cat:hover{background:#1b180f}
+.categories .cat:focus-visible{outline:2px solid #d4af37;outline-offset:-3px}
+.categories .cat:last-child{border-bottom:0}
 
 
 /* =========================================================
@@ -4328,6 +4306,7 @@ header{gap:10px}.brand{order:0;flex:1}
     <div class="menu-item" onclick="location.href='services.html'">🧰 All Services</div>
     <div class="menu-item" onclick="location.href='refer.html'">🎁 Refer &amp; Earn</div>
     <div class="menu-item" onclick="location.href='notification.html'">🔔 Notifications</div>
+    <div class="menu-item menu-logout" onclick="logoutFromDashboard()">🚪 Sign out</div>
     <div
         class="menu-item"
         onclick="openContactSupport()"
@@ -4559,6 +4538,15 @@ function closeMenu(){
         .classList.remove("open");
 }
 
+
+async function logoutFromDashboard(){
+    closeMenu();
+    if(!confirm("Are you sure you want to sign out?"))return;
+    const {error}=await supabaseClient.auth.signOut();
+    if(error){alert("Unable to sign out right now. Please try again.");return;}
+    sessionStorage.removeItem("dvOpenedFromCategories");
+    location.href="login.html";
+}
 
 /* =========================================================
    CONTACT SUPPORT
@@ -5685,7 +5673,11 @@ function selectCategory(
 ========================================================= */
 
 function backHome(){
-
+    if(sessionStorage.getItem("dvOpenedFromCategories")==="1"){
+        sessionStorage.removeItem("dvOpenedFromCategories");
+        location.href="categories.html";
+        return;
+    }
     selectedCategory =
         "Home";
 
@@ -6483,7 +6475,11 @@ function closeCommunityPopup(){
 ========================================================= */
 
 async function startDashboard(){
-
+    const requestedCategory = new URLSearchParams(location.search).get("category");
+    if(requestedCategory){
+        const popup=document.getElementById("communityPopupOverlay");
+        if(popup)popup.style.display="none";
+    }
     updateGreeting();
 
     loadCategories();
