@@ -113,7 +113,7 @@ async function loadServices() {
 
       .from("Product")
 
-      .select("*")
+      .select("id,name,price,description,image_url,status")
 
       .order("id", {
         ascending: false
