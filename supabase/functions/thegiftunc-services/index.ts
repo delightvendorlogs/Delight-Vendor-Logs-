@@ -31,20 +31,20 @@ function costOf(x: any) {
   return Number.isFinite(n) && n >= 0 ? n : 0;
 }
 async function supplier(path: string, method = "GET", payload?: unknown) {
-  if (!EMAIL || !PASSWORD) throw new Error("TheGiftUnc login secrets are missing in Supabase.");
+  if (!EMAIL || !PASSWORD) console.error("Service supplier credentials are not configured."); throw new Error("Service catalog temporarily unavailable.");
   const login = await fetch(BASE + "/auth/login", {
     method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({ email: EMAIL, password: PASSWORD }),
   });
   const auth = await login.json().catch(() => ({}));
   const token = auth?.access_token ?? auth?.data?.access_token ?? auth?.token;
-  if (!login.ok || !token) throw new Error("TheGiftUnc login failed. Check the saved supplier credentials.");
+  if (!login.ok || !token) { console.error("Service supplier authentication failed. HTTP status:", login.status); throw new Error("Service catalog temporarily unavailable."); }
   const response = await fetch(BASE + path, {
     method, headers: { "Content-Type": "application/json", Accept: "application/json", Authorization: "Bearer " + token },
     ...(payload === undefined ? {} : { body: JSON.stringify(payload) }),
   });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(String(data?.message ?? data?.error ?? data?.detail ?? "The provider rejected the request."));
+  if (!response.ok) { console.error("Service supplier request failed. HTTP status:", response.status, "Path:", path); throw new Error("Service request temporarily unavailable."); }
   return data;
 }
 async function getCatalog() {
@@ -146,7 +146,7 @@ Deno.serve(async (req: Request) => {
       if (!Number.isFinite(charge) || charge <= 0) return failure("This service has an invalid selling price. Contact support.");
       const reference = "social-log-" + crypto.randomUUID();
       const { data: debit, error: debitError } = await userClient.rpc("social_log_debit", {
-        p_user_id: user.id, p_amount: charge, p_reference: reference, p_description: "TheGiftUnc service: " + service.name,
+        p_user_id: user.id, p_amount: charge, p_reference: reference, p_description: "Service order: " + service.name,
       });
       if (debitError) throw debitError;
       if (!debit?.ok) return failure("Insufficient funds. Shortfall: " + Number(debit?.shortfall ?? charge), 402, { shortfall: Number(debit?.shortfall ?? charge), balance: Number(debit?.balance ?? 0) });
@@ -156,8 +156,8 @@ Deno.serve(async (req: Request) => {
         if (body.order_data && typeof body.order_data === "object") payload.orderData = body.order_data;
         result = await supplier("/service/purchase", "POST", payload);
       } catch (e) {
-        await db.rpc("social_log_refund", { p_user_id: user.id, p_amount: charge, p_reference: reference + "-refund", p_description: "TheGiftUnc order failed; wallet refund for " + service.name });
-        return failure("The provider could not accept the order. Your wallet has been refunded. " + (e instanceof Error ? e.message : ""), 502);
+        await db.rpc("social_log_refund", { p_user_id: user.id, p_amount: charge, p_reference: reference + "-refund", p_description: "Service order failed; wallet refund for " + service.name });
+        console.error("Service order request failed:", e instanceof Error ? e.message : "Unknown error"); return failure("We could not complete this order. Your wallet has been refunded. Please try again later.", 502);
       }
       const providerOrderId = String(result?.order?.id ?? result?.data?.order?.id ?? result?.orderId ?? result?.id ?? "");
       const state = String(result?.status ?? result?.data?.status ?? result?.order?.status ?? "pending").toLowerCase();
@@ -176,6 +176,6 @@ Deno.serve(async (req: Request) => {
     }
     return failure("Unknown action.");
   } catch (e) {
-    return failure(e instanceof Error ? e.message : "Unexpected service error.", 500);
+    console.error("Services function request failed:", e instanceof Error ? e.message : "Unknown error"); return failure("Something went wrong. Please try again shortly or contact support.", 500);
   }
 });
