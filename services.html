@@ -19,15 +19,7 @@
     href="style.css"
   >
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">function goBackFromServices(){
-  if(sessionStorage.getItem("dvOpenedFromCategories")==="1"){
-    sessionStorage.removeItem("dvOpenedFromCategories");
-    location.href="categories.html";
-  }else{
-    location.href="dashboard.html";
-  }
-}
-</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css"></head>
 
@@ -633,6 +625,15 @@ function escapeJS(
 }
 
 
+
+function goBackFromServices(){
+  if(sessionStorage.getItem("dvOpenedFromCategories")==="1"){
+    sessionStorage.removeItem("dvOpenedFromCategories");
+    location.href="categories.html";
+  }else{
+    location.href="dashboard.html";
+  }
+}
 
 /* ========================================
    START
