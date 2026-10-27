@@ -2946,6 +2946,7 @@ main{
     }
 }
 
+.support-message-button{position:fixed;right:18px;bottom:18px;z-index:250;width:56px;height:56px;border-radius:50%;border:1px solid #d4af37;background:#d4af37;color:#080808;font-size:25px;font-weight:800;box-shadow:0 8px 24px #0009;display:grid;place-items:center}.support-message-button:active{transform:scale(.96)}.contact-box{background:#121212!important;color:#f5f0df!important}.contact-box-head h3{color:#f5f0df!important}.contact-option{color:#f5f0df!important;border-color:#493b1c!important}
 </style>
 
 <link rel="stylesheet" href="site-theme.css">
@@ -4132,56 +4133,7 @@ header{gap:10px}.brand{order:0;flex:1}
 
 <!-- CONTACT ICONS -->
 
-<div class="contact-icons">
-
-    <a
-        class="telegram"
-        href="https://t.me/DelightVendorLogsSupportBot"
-        target="_blank"
-        rel="noopener"
-        aria-label="Contact us on Telegram"
-    >
-
-        <svg
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-        >
-            <path d="M21.8 3.3 18.7 20c-.2 1.2-.9 1.5-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.3-8.4c.4-.4-.1-.6-.6-.2L6.1 13.7l-4.9-1.5c-1.1-.3-1.1-1.1.2-1.6L20.5 3c.9-.3 1.7.2 1.3.3Z"/>
-        </svg>
-
-    </a>
-
-
-    <a
-        class="whatsapp"
-        href="https://wa.me/2347015908401"
-        target="_blank"
-        rel="noopener"
-        aria-label="Contact us on WhatsApp"
-    >
-
-        <svg
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-        >
-            <path d="M12 2a9.8 9.8 0 0 0-8.5 14.7L2 22l5.5-1.4A9.8 9.8 0 1 0 12 2Zm0 17.8c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.3.9.9-3.2-.2-.3A7.9 7.9 0 1 1 12 19.8Zm4.3-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6.1-.2.2-.6.8-.7 1-.1.2-.3.2-.5.1-1.3-.6-2.3-1.2-3.2-2.4-.2-.3-.4-.6-.6-.9-.1-.2 0-.3.1-.4.1-.1.2-.3.3-.4.1-.2.1-.2.2-.4.1-.2 0-.3 0-.4-.1-.1-.6-1.4-.8-1.9-1-.5-.4-.4-.4-.6-.4h-.5c-.2 0-.4.1-.5.3-.2.2-.8.8-.8 2 0 1.2.8 2.3 3.9 3.5 2.3 1 2.3.7 2.7.7.4 0 1.4-.6 1.6-1.2.2-.6.2-1.1.1-1.2-.1-.1-.3-.2-.5-.3Z"/>
-        </svg>
-
-    </a>
-
-    <a
-        class="email-contact"
-        href="mailto:delightvendorlogs@gmail.com?subject=Delight%20Vendor%20Logs%20Support"
-        aria-label="Email Delight Vendor Logs support"
-        title="Email Support"
-    >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M3 5.5A2.5 2.5 0 0 1 5.5 3h13A2.5 2.5 0 0 1 21 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18.5v-13Zm2 .25v.4l7 5.1 7-5.1v-.4a.75.75 0 0 0-.75-.75h-12.5A.75.75 0 0 0 5 5.75Zm14 2.85-6.41 4.67a1 1 0 0 1-1.18 0L5 8.6v9.9c0 .41.34.75.75.75h12.5c.41 0 .75-.34.75-.75V8.6Z"/>
-        </svg>
-    </a>
-
-</div>
-
+<button type="button" class="support-message-button" onclick="openContactSupport()" aria-label="Contact support" title="Contact support">✉</button>
 
 <!-- CONTACT SUPPORT MODAL -->
 
@@ -6560,17 +6512,11 @@ document.addEventListener("visibilitychange", () => {
 
 <script>
 function renderCategories(){
- const grid=document.getElementById("categoryGrid"); if(!grid)return; grid.innerHTML="";
+ const grid=document.getElementById("categoryGrid");if(!grid)return;grid.innerHTML="";
  function makeButton(c){const b=document.createElement("button");b.type="button";b.className="cat";b.onclick=()=>selectCategory(c.name);const i=document.createElement("div");i.className="cat-icon";i.textContent=existingIcons[c.name]||c.icon||"📁";const n=document.createElement("div");n.className="cat-name";n.textContent=c.name;b.append(i,n);return b;}
  categories.slice(0,4).forEach(c=>grid.appendChild(makeButton(c)));
- const more=document.createElement("button");more.type="button";more.className="cat";more.innerHTML='<div class="cat-icon">＋</div><div class="cat-name">More</div>';
- const list=document.createElement("div");list.style.cssText="display:none;grid-column:1/-1;flex-direction:column;gap:8px;margin-top:10px";
- const service=document.createElement("button");service.type="button";service.className="more-category-link";service.innerHTML="<span>🧰</span><span>Service</span><span>→</span>";service.onclick=()=>location.href="services.html";list.appendChild(service);
- categories.forEach(c=>{const b=document.createElement("button");b.type="button";b.className="more-category-link";b.innerHTML="<span>"+escapeHTML(existingIcons[c.name]||c.icon||"📁")+"</span><span>"+escapeHTML(c.name)+"</span><span>→</span>";b.onclick=()=>selectCategory(c.name);list.appendChild(b)});
- more.onclick=()=>{const open=list.style.display!=="flex";list.style.display=open?"flex":"none";more.lastElementChild.textContent=open?"Less":"More";more.setAttribute("aria-expanded",String(open))};
- grid.appendChild(more);grid.appendChild(list);
+ const more=document.createElement("button");more.type="button";more.className="cat";more.innerHTML='<div class="cat-icon">＋</div><div class="cat-name">More categories</div>';more.onclick=()=>location.href="categories.html";grid.appendChild(more);
 }
-document.addEventListener("DOMContentLoaded",()=>{loadCategories();});
 </script><script src="branding.js"></script></body>
 
 </html>
