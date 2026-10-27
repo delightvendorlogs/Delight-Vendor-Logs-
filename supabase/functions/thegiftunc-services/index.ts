@@ -27,7 +27,7 @@ function categoryOf(x: any) {
   return { id: String(c?.id ?? x?.categoryId ?? x?.category_id ?? "other"), name: String(c?.name ?? x?.categoryName ?? x?.category_name ?? "Other") };
 }
 function costOf(x: any) {
-  const n = Number(x?.price ?? x?.amount ?? x?.cost ?? x?.rate ?? x?.selling_price ?? 0);
+  const n = Number(x?.price ?? x?.amount ?? x?.cost ?? x?.rate ?? x?.selling_price ?? x?.basePrice ?? x?.sellingPrice ?? 0);
   return Number.isFinite(n) && n >= 0 ? n : 0;
 }
 async function supplier(path: string, method = "GET", payload?: unknown) {
@@ -47,9 +47,18 @@ async function supplier(path: string, method = "GET", payload?: unknown) {
   if (!response.ok) { console.error("Service supplier request failed. HTTP status:", response.status, "Path:", path); throw new Error("Service request temporarily unavailable."); }
   return data;
 }
+async function publicCatalog(path: string) {
+  const response = await fetch(BASE + path, { headers: { Accept: "application/json" } });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    console.error("Public service catalog request failed. HTTP status:", response.status, "Path:", path);
+    throw new Error("Service catalog temporarily unavailable.");
+  }
+  return data;
+}
 async function getCatalog() {
   const [categoryResult, serviceResult, savedCats, savedServices] = await Promise.all([
-    supplier("/service/categories"), supplier("/service/list"),
+    publicCatalog("/service/categories"), publicCatalog("/service/list"),
     db.from("social_log_category_pricing").select("*"),
     db.from("social_log_service_pricing").select("*"),
   ]);
@@ -61,7 +70,9 @@ async function getCatalog() {
     return { id, name: String(x?.name ?? x?.category_name ?? x?.title ?? "Category"), markup_percent: Number(catCfg.get(id)?.markup_percent ?? 50) };
   });
   const services = arr(serviceResult).map((x: any) => {
-    const id = idOf(x), cat = categoryOf(x), provider_price = costOf(x), cfg = serviceCfg.get(id);
+    const id = idOf(x), rawCat = categoryOf(x), provider_price = costOf(x), cfg = serviceCfg.get(id);
+    const matchedCategory = categories.find((c: any) => c.id === rawCat.id || c.name.toLowerCase() === rawCat.name.toLowerCase());
+    const cat = { id: matchedCategory?.id ?? rawCat.id, name: rawCat.name || matchedCategory?.name || "Other" };
     if (!categories.some((c: any) => c.id === cat.id)) categories.push({ id: cat.id, name: cat.name, markup_percent: Number(catCfg.get(cat.id)?.markup_percent ?? 50) });
     const calculated = Math.round(provider_price * (1 + Number(catCfg.get(cat.id)?.markup_percent ?? 50) / 100) * 100) / 100;
     return {
