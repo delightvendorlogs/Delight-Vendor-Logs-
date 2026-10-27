@@ -85,6 +85,30 @@ async function getCatalog() {
   }).filter((x: any) => x.id && x.is_active);
   return { categories, services, catCfg, serviceCfg };
 }
+function fieldList(detail: any): any[] {
+  const root = detail?.data ?? detail?.service ?? detail?.product ?? detail;
+  const candidates = [root?.formFields, root?.form_fields, root?.fields, root?.orderFields, root?.order_fields, root?.requiredFields, root?.required_fields, root?.inputs, root?.customFields, root?.custom_fields, root?.metadata?.formFields, root?.metadata?.fields];
+  let source: any[] = [];
+  for (const c of candidates) { if (Array.isArray(c)) { source = c; break; } }
+  const fields = source.map((f: any, i: number) => {
+    if (typeof f === "string") return { key: f, name: f, label: f, required: true, type: "text" };
+    const key = String(f?.key ?? f?.name ?? f?.field ?? f?.fieldName ?? f?.field_name ?? f?.id ?? f?.label ?? ("field_" + i));
+    const label = String(f?.label ?? f?.title ?? f?.displayName ?? f?.display_name ?? f?.name ?? key);
+    let options = f?.options ?? f?.choices ?? f?.values ?? f?.enum ?? [];
+    if (!Array.isArray(options) && options && typeof options === "object") options = Object.entries(options).map(([value, label]) => ({ value, label }));
+    return { key, name: key, label, required: f?.required !== false && f?.optional !== true, type: String(f?.type ?? f?.inputType ?? f?.input_type ?? "text").toLowerCase(), placeholder: String(f?.placeholder ?? ""), description: String(f?.description ?? f?.helpText ?? f?.help_text ?? ""), options: Array.isArray(options) ? options : [] };
+  });
+  const productType = String(root?.productType ?? root?.product_type ?? root?.type ?? "").toUpperCase();
+  if (!fields.length && (productType.includes("REQUIRES_ADDRESS") || root?.requiresAddress === true || root?.requires_address === true)) {
+    return [
+      { key: "fullName", label: "Full name", required: true, type: "text" },
+      { key: "phone", label: "Phone number", required: true, type: "tel" },
+      { key: "state", label: "State", required: true, type: "text" },
+      { key: "branch", label: "Branch or delivery address", required: true, type: "text" }
+    ];
+  }
+  return fields;
+}
 async function authUser(req: Request) {
   const token = req.headers.get("Authorization")?.replace(/^Bearer\s+/i, "");
   if (!token) throw new Error("Please log in to continue.");
@@ -145,6 +169,13 @@ Deno.serve(async (req: Request) => {
         if (error) throw error;
       }
       return reply({ ok: true });
+    }
+    if (action === "service_details") {
+      const serviceId = String(body.service_id ?? "");
+      if (!serviceId) return failure("Choose a service first.");
+      const detail = await publicCatalog("/service/" + encodeURIComponent(serviceId));
+      const root = (detail as any)?.data ?? (detail as any)?.service ?? (detail as any)?.product ?? detail;
+      return reply({ fields: fieldList(root), service_type: String(root?.productType ?? root?.product_type ?? root?.type ?? "") });
     }
     if (action === "purchase") {
       const serviceId = String(body.service_id ?? "");
