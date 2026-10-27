@@ -1048,6 +1048,16 @@ function durationSeconds(o){
  return null;
 }
 
+function cancelHoldSeconds(o){
+ const provider=orderProvider(o);
+ const country=String(o.country_name||"").toLowerCase();
+ const countryCode=String(o.country_key||o.country_code||"").toLowerCase();
+ const isUSA=country.includes("united states")||country==="usa"||countryCode==="us"||String(o.country_id||"")==="187";
+ if(provider!=="textverified"||!isUSA)return 0;
+ const created=new Date(o.purchased_at||o.created_at||0).getTime();
+ if(!Number.isFinite(created)||created<=0)return 0;
+ return Math.max(0,120-Math.floor((Date.now()-created)/1000));
+}
 function countdownText(seconds){
  const s=Math.max(0,seconds|0),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),r=s%60;
  return h>0?[h,m,r].map(n=>String(n).padStart(2,"0")).join(":"):[m,r].map(n=>String(n).padStart(2,"0")).join(":");
@@ -1072,6 +1082,7 @@ function renderOrders(){
   const cancelled=status==="cancelled";
   const failed=status==="failed";
   const refunded=isRefunded(o,status);
+  const hold=cancelHoldSeconds(o);
   const left=durationSeconds(o);
 
   const headline=pending?(number?"Number Reserved":"Purchase Pending"):
@@ -1096,13 +1107,13 @@ function renderOrders(){
 
   if(pending){
    html+=`<div class="timer-area">
-    <div class="timer-label">${left===null?"Expiry information":"Time remaining"}</div>
-    <div class="timer-value ${left===0?"timer-expired":""}" data-countdown="${escapeHTML(o.id)}">${left===null?"—":countdownText(left)}</div>
-    <div class="timer-note">${left===null?"Waiting for provider expiry information":"Countdown updates automatically"}</div>
+    <div class="timer-label">${hold>0?"Cancellation available in":left===null?"Expiry information":"Time remaining"}</div>
+    <div class="timer-value ${(hold>0?hold:left)===0?"timer-expired":""}" data-countdown="${escapeHTML(o.id)}">${hold>0?countdownText(hold):left===null?"—":countdownText(left)}</div>
+    <div class="timer-note">${hold>0?"TextVerified USA orders cannot be cancelled during the first 2 minutes after purchase":left===null?"Waiting for provider expiry information":"Countdown updates automatically"}</div>
    </div>
    <div class="order-actions">
     <button class="btn btn-black" onclick="checkOrder(${id})">◉ &nbsp; Check Code</button>
-    <button class="btn btn-danger" onclick="cancelOrder(${id})">⊗ &nbsp; Cancel Order</button>
+    <button class="btn btn-danger" ${hold>0?"disabled":""} onclick="cancelOrder(${id})">${hold>0?"Cancel Locked":"⊗ &nbsp; Cancel Order"}</button>
    </div>`;
   }
 
@@ -1138,7 +1149,14 @@ function updateCountdowns(){
   const id=el.getAttribute("data-countdown");
   const o=allOrders.find(x=>String(x.id)===String(id));
   if(!o)return;
-  const seconds=durationSeconds(o);
+  const hold=cancelHoldSeconds(o);
+  const seconds=hold>0?hold:durationSeconds(o);
+  const label=el.closest(".timer-area")?.querySelector(".timer-label");
+  const note=el.closest(".timer-area")?.querySelector(".timer-note");
+  const cancelButton=el.closest(".order-card")?.querySelector(".btn-danger");
+  if(label)label.textContent=hold>0?"Cancellation available in":seconds===null?"Expiry information":"Time remaining";
+  if(note)note.textContent=hold>0?"TextVerified USA orders cannot be cancelled during the first 2 minutes after purchase":seconds===null?"Waiting for provider expiry information":"Countdown updates automatically";
+  if(cancelButton){cancelButton.disabled=hold>0;cancelButton.textContent=hold>0?"Cancel Locked":"⊗  Cancel Order";}
   if(seconds===null){
    el.textContent="—";
    el.classList.remove("timer-expired");
@@ -1227,6 +1245,8 @@ function cancelOrder(id){
   showMessage("ordersMessage","Only pending orders can be cancelled.","error");
   return;
  }
+ const hold=cancelHoldSeconds(o);
+ if(hold>0){showMessage("ordersMessage","Cancellation is locked for the first 2 minutes after purchase. Try again in "+countdownText(hold)+".","error");return;}
  if(!orderProvider(o)){
   showMessage("ordersMessage","The saved order does not identify a supported provider. Contact support before trying to cancel it.","error");
   return;
@@ -1278,6 +1298,8 @@ async function confirmCancelOrder(){
   showMessage("ordersMessage","This order is no longer pending. Refresh the order list.","info");
   return;
  }
+ const hold=cancelHoldSeconds(o);
+ if(hold>0){closeCancelPopup();showMessage("ordersMessage","Cancellation is locked for the first 2 minutes after purchase. Try again in "+countdownText(hold)+".","error");return;}
  const provider=orderProvider(o);
  if(!provider){
   $("cancelPopupStatus").textContent="Provider could not be identified. No cancellation request was sent.";
