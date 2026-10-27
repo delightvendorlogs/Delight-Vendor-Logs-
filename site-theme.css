@@ -9,3 +9,11 @@ a{color:var(--dv-gold)}
 img{max-width:100%}
 @media(max-width:600px){body{overflow-wrap:anywhere}main{width:100%;max-width:100%;padding-left:14px;padding-right:14px}header{gap:10px;flex-wrap:wrap}button,input,select,textarea{font-size:16px}table{display:block;max-width:100%;overflow-x:auto}section,article,.card,.panel,.container{max-width:100%}}
 @media(min-width:768px){main{margin-left:auto;margin-right:auto}}
+
+button,.btn,.button{border-radius:12px}
+button{cursor:pointer}
+input,select,textarea{background:#111!important;color:#f5f0df!important;border:1px solid #493b1c!important;border-radius:10px}
+.card,.panel,.product-card,.purchase-card,.transaction-card,.stat-card,.summary-card,.wallet-card,.admin-card,.service-card{background:#121212!important;color:#f5f0df!important;border-color:#493b1c!important}
+h1,h2,h3,h4{color:inherit}
+header,nav{max-width:100%}
+img[data-brand-logo]{object-fit:contain}
