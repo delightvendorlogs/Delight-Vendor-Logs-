@@ -11,7 +11,19 @@
 >
 <meta name="theme-color" content="#080808">
 <script>try{if(sessionStorage.getItem("dvOpenedFromCategories")==="1"||new URLSearchParams(location.search).has("category"))document.documentElement.classList.add("dv-skip-community-popup")}catch(e){}</script>
-<style>html.dv-skip-community-popup #communityPopupOverlay{display:none!important}</style>
+<style>html.dv-skip-community-popup #communityPopupOverlay{display:none!important}
+/* Branded sign-out confirmation and error dialog */
+.dv-dialog-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:99999;align-items:center;justify-content:center;padding:20px}
+.dv-dialog-overlay.open{display:flex}
+.dv-dialog{width:min(100%,390px);background:#111;border:1px solid #8c6c25;border-radius:18px;padding:22px;box-shadow:0 18px 60px #000;color:#f7f0dc}
+.dv-dialog-brand{display:flex;align-items:center;gap:10px;font-weight:800;margin-bottom:14px}
+.dv-dialog-brand img{width:34px;height:34px;object-fit:contain}
+.dv-dialog h3{margin:0 0 9px;color:#e5bd51;font-size:20px}
+.dv-dialog p{margin:0;line-height:1.5;color:#ded6c3}
+.dv-dialog-actions{display:flex;gap:10px;margin-top:20px}
+.dv-dialog-actions button{flex:1;padding:12px;border-radius:10px;border:1px solid #514326;background:#211d15;color:#f7f0dc;font-weight:700}
+.dv-dialog-actions button.primary{background:#e5bd51;color:#171208;border-color:#e5bd51}
+</style>
 <meta name="description" content="Explore products and manage your wallet on Delight Vendor Logs.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Delight Vendor Logs">
@@ -4360,6 +4372,14 @@ header{gap:10px}.brand{order:0;flex:1}
 
 
 
+<div id="dvLogoutModal" class="dv-dialog-overlay" role="dialog" aria-modal="true" aria-labelledby="dvDialogTitle" onclick="dashboardDialogBackdrop(event)">
+  <div class="dv-dialog">
+    <div class="dv-dialog-brand"><img src="assets/dv-logo.png" alt="DV logo"><span>Delight Vendor Logs</span></div>
+    <h3 id="dvDialogTitle">Sign out?</h3><p id="dvDialogMessage">Are you sure you want to sign out of your account?</p>
+    <div class="dv-dialog-actions"><button type="button" id="dvDialogCancel">Cancel</button><button type="button" class="primary" id="dvDialogConfirm">Sign out</button></div>
+  </div>
+</div>
+
 <!-- =====================================================
      DELIGHT VENDOR LOGS COMMUNITY POPUP
 ====================================================== -->
@@ -4570,14 +4590,26 @@ function closeMenu(){
 }
 
 
-async function logoutFromDashboard(){
-    closeMenu();
-    if(!confirm("Are you sure you want to sign out?"))return;
-    const {error}=await supabaseClient.auth.signOut();
-    if(error){alert("Unable to sign out right now. Please try again.");return;}
-    sessionStorage.removeItem("dvOpenedFromCategories");
-    location.href="login.html";
+let dashboardDialogMode="confirm";
+function openDashboardDialog(title,message,mode="confirm"){
+    dashboardDialogMode=mode;
+    document.getElementById("dvDialogTitle").textContent=title;
+    document.getElementById("dvDialogMessage").textContent=message;
+    document.getElementById("dvDialogCancel").style.display=mode==="confirm"?"":"none";
+    document.getElementById("dvDialogConfirm").textContent=mode==="confirm"?"Sign out":"OK";
+    document.getElementById("dvLogoutModal").classList.add("open");
 }
+function closeDashboardDialog(){document.getElementById("dvLogoutModal").classList.remove("open");}
+function dashboardDialogBackdrop(event){if(event&&event.target===document.getElementById("dvLogoutModal"))closeDashboardDialog();}
+async function logoutFromDashboard(){closeMenu();openDashboardDialog("Sign out?","Are you sure you want to sign out of your account?","confirm");}
+document.getElementById("dvDialogCancel").addEventListener("click",closeDashboardDialog);
+document.getElementById("dvDialogConfirm").addEventListener("click",async()=>{
+    if(dashboardDialogMode!=="confirm"){closeDashboardDialog();return;}
+    const button=document.getElementById("dvDialogConfirm");button.disabled=true;button.textContent="Signing out…";
+    try{const {error}=await supabaseClient.auth.signOut();if(error)throw error;sessionStorage.removeItem("dvOpenedFromCategories");location.href="login.html";}
+    catch(error){openDashboardDialog("Could not sign out","We could not sign you out right now. Please try again.","error");}
+    finally{button.disabled=false;if(dashboardDialogMode==="confirm")button.textContent="Sign out";}
+});
 
 /* =========================================================
    CONTACT SUPPORT
