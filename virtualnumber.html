@@ -375,7 +375,8 @@ let flow="none",chosenProvider=null,selectedCountry=null,selectedService=null,se
 let visibleServices=[],filteredServices=[],countryList=[],allOrders=[];
 let poller=null,countdownTimer=null,countryLoading=false;
 let currentSection=null,optionsCache=[],initGeneration=0,servicesGeneration=0;
-let cancellationOrderId=null,cancellationBusy=false;
+let cancellationOrderId=null,cancellationBusy=false,refreshingOrders=false;
+const statusRefreshTimes=new Map();
 
 function escapeHTML(v){
  return String(v??"").replace(/[&<>"']/g,c=>({
@@ -599,7 +600,7 @@ async function init(){
    return;
   }
   clearMessages();
-  await Promise.allSettled([refreshWallet(),loadOrders()]);
+  await refreshOrders();
   if(generation!==initGeneration)return;
   setSection(null);
   setActiveTab("");
@@ -926,7 +927,39 @@ function goBack(){
 }
 
 async function refreshOrders(){
- await Promise.allSettled([loadOrders(),refreshWallet()]);
+ if(!currentUser||refreshingOrders)return;
+ const userId=currentUser.id;
+ refreshingOrders=true;
+ try{
+  // First render the latest saved order list and wallet balance.
+  await Promise.allSettled([loadOrders(),refreshWallet()]);
+  if(currentUser?.id!==userId)return;
+
+  // Ask the correct provider for fresh status on pending real orders.
+  // The provider action saves any received OTP/SMS into Supabase.
+  // Limit each pass to five orders and rotate fairly to avoid hammering providers.
+  const candidates=allOrders
+   .filter(o=>{
+    const status=normalizeStatus(o);
+    return !getCode(o) &&
+     status==="waiting" &&
+     Boolean(providerOrderId(o)) &&
+     Boolean(orderProvider(o));
+   })
+   .sort((a,b)=>(statusRefreshTimes.get(String(a.id))||0)-(statusRefreshTimes.get(String(b.id))||0))
+   .slice(0,5);
+
+  await Promise.allSettled(candidates.map(async o=>{
+   statusRefreshTimes.set(String(o.id),Date.now());
+   return invoke(orderProvider(o),"status",orderActionPayload(o));
+  }));
+
+  // Fetch from Supabase again after provider checks so new OTPs are displayed.
+  if(currentUser?.id!==userId)return;
+  await Promise.allSettled([loadOrders(),refreshWallet()]);
+ }finally{
+  refreshingOrders=false;
+ }
 }
 
 
