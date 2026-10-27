@@ -6486,6 +6486,22 @@ async function startDashboard(){
             popup.setAttribute("aria-hidden","true");
         }
     }
+
+    /* Open the requested category view immediately instead of flashing Home first. */
+    if(requestedCategory){
+        selectedCategory = requestedCategory;
+        const homeView = document.getElementById("homeView");
+        const servicesView = document.getElementById("servicesView");
+        const categoryTitle = document.getElementById("categoryTitle");
+        const categoryDescription = document.getElementById("categoryDescription");
+        const serviceSearch = document.getElementById("serviceSearch");
+        if(homeView) homeView.style.display = "none";
+        if(servicesView) servicesView.classList.add("active");
+        if(categoryTitle) categoryTitle.textContent = requestedCategory;
+        if(categoryDescription) categoryDescription.textContent = "Services available under " + requestedCategory + ".";
+        if(serviceSearch) serviceSearch.value = "";
+    }
+
     updateGreeting();
 
     loadCategories();
