@@ -473,6 +473,43 @@ main{
 }
 
 
+/* Compact wallet balance card, especially on phones */
+.wallet{
+    padding:16px 18px !important;
+    border-radius:17px !important;
+    margin-bottom:16px !important;
+}
+.balance-row{
+    margin:9px 0 13px !important;
+    gap:9px !important;
+}
+#walletBalance{
+    font-size:clamp(23px,5.8vw,30px) !important;
+}
+.eye{
+    width:34px !important;
+    height:34px !important;
+    flex:0 0 34px !important;
+}
+.wallet-actions{
+    display:block !important;
+}
+.wallet-action.fund{
+    width:100% !important;
+    height:42px !important;
+    border-radius:11px !important;
+    font-size:14px !important;
+}
+@media(max-width:600px){
+    .wallet{
+        padding:13px 15px !important;
+        margin-bottom:13px !important;
+    }
+    .wallet-label{font-size:11px !important}
+    #walletBalance{font-size:24px !important}
+    .wallet-action.fund{height:40px !important}
+}
+
 /* =========================================================
    GET ALL COUNTRY NUMBERS BANNER
 ========================================================= */
@@ -3041,14 +3078,6 @@ header{gap:10px}.brand{order:0;flex:1}
                     ＋ Fund Wallet
                 </button>
 
-
-                <button
-                    class="wallet-action history"
-                    type="button"
-                    onclick="location.href='transactions.html'"
-                >
-                    ↶ History
-                </button>
 
             </div>
 
