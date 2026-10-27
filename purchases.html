@@ -344,6 +344,8 @@ main{
 }
 
 .top-dashboard-back-wrap{max-width:1120px;margin:0 auto;padding:14px 20px 0}.top-dashboard-back{display:inline-flex;align-items:center;padding:10px 14px;border:1px solid #493b1c;border-radius:12px;background:#121212;color:#d4af37;text-decoration:none;font-weight:700}@media(max-width:600px){.top-dashboard-back-wrap{padding:12px 14px 0}}
+
+.purchase-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 18px}.purchase-stat{min-width:0;text-align:left;padding:14px 12px;border:1px solid #493b1c;border-radius:14px;background:linear-gradient(145deg,#17140b,#101010);color:#f5f0df;cursor:pointer}.purchase-stat strong{display:block;font-size:24px;color:#d4af37;margin-top:7px}.purchase-stat span{font-size:12px;color:#b8ad8d}.purchase-stat.active{border-color:#d4af37;box-shadow:0 0 0 1px #d4af3740 inset}@media(max-width:420px){.purchase-stats{gap:6px}.purchase-stat{padding:11px 8px}.purchase-stat strong{font-size:20px}.purchase-stat span{font-size:11px}}
 </style>
 
 <link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css"></head>
@@ -376,6 +378,8 @@ main{
     </div>
 
 </div>
+
+<div id="purchaseStats" class="purchase-stats" aria-label="Purchase status filters"></div>
 
 <h2 class="section-title">
     🛍️ My Purchases
@@ -1298,9 +1302,40 @@ async function loadPurchases(){
         );
 
 
+        function purchaseBucket(item){
+            const raw=String(item.data.status||"").toLowerCase().trim();
+            if(item.type==="virtual"){
+                if(["received","completed","complete","success","successful"].includes(raw))return "completed";
+                if(["cancelled","canceled","refunded","expired"].includes(raw))return "cancelled";
+                return "pending";
+            }
+            if(["completed","complete","success","successful","approved"].includes(raw))return "completed";
+            if(["cancelled","canceled","refunded","rejected","failed","declined"].includes(raw))return "cancelled";
+            return "pending";
+        }
+        function renderPurchaseStats(items){
+            const el=document.getElementById("purchaseStats");
+            if(!el)return;
+            const counts={completed:0,pending:0,cancelled:0};
+            (items||[]).forEach(item=>counts[purchaseBucket(item)]++);
+            el.innerHTML=[
+                {key:"completed",label:"Completed orders",count:counts.completed},
+                {key:"pending",label:"Pending orders",count:counts.pending},
+                {key:"cancelled",label:"Cancelled orders",count:counts.cancelled}
+            ].map(s=>'<button type="button" class="purchase-stat" data-filter="'+s.key+'"><span>'+s.label+'</span><strong>'+s.count+'</strong></button>').join("");
+            const apply=filter=>{
+                el.querySelectorAll(".purchase-stat").forEach(b=>b.classList.toggle("active",b.dataset.filter===filter));
+                document.querySelectorAll("#allPurchases [data-purchase-status]").forEach(card=>card.style.display=filter==="all"||card.dataset.purchaseStatus===filter?"":"none");
+            };
+            const all=document.createElement("button");all.type="button";all.className="purchase-stat active";all.dataset.filter="all";all.innerHTML="<span>All orders</span><strong>"+(items||[]).length+"</strong>";el.prepend(all);
+            el.querySelectorAll(".purchase-stat").forEach(b=>b.addEventListener("click",()=>apply(b.dataset.filter)));
+        }
+
         // =================================================
         // EMPTY
         // =================================================
+
+        renderPurchaseStats(combined);
 
         if(combined.length === 0){
 
@@ -1376,11 +1411,9 @@ async function loadPurchases(){
                     }
 
 
-                    container.appendChild(
-                        createVirtualNumberCard(
-                            order
-                        )
-                    );
+                    const virtualCard=createVirtualNumberCard(order);
+                    virtualCard.dataset.purchaseStatus=purchaseBucket(item);
+                    container.appendChild(virtualCard);
 
                 }else{
 
@@ -1413,11 +1446,9 @@ async function loadPurchases(){
                     }
 
 
-                    container.appendChild(
-                        createNormalPurchaseCard(
-                            purchase
-                        )
-                    );
+                    const normalCard=createNormalPurchaseCard(purchase);
+                    normalCard.dataset.purchaseStatus=purchaseBucket(item);
+                    container.appendChild(normalCard);
 
                 }
 
