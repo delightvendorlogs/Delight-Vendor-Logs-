@@ -1060,8 +1060,28 @@ function orderDate(o){
  return Number.isNaN(x.getTime())?"Date unavailable":x.toLocaleString();
 }
 function getOrderNumber(o){return o.number??o.phone_number??o.phone??o.phoneNumber??"";}
-function getCode(o){return o.otp_code??o.code??o.sms_code??o.verification_code??"";}
 function getSms(o){return o.full_sms??o.sms_text??o.message??"";}
+
+/* Some VirtualSMS orders save the received SMS body before the separate
+   otp_code field is populated. Recover the code from the SMS text for display
+   and copying, without changing the order's verification status. */
+function extractCodeFromSms(value){
+ const text=typeof value==="string"?value:JSON.stringify(value??"");
+ if(!text)return "";
+ const patterns=[
+  /(?:verification\s+code|sms\s+code|security\s+code|one[-\s]?time\s+(?:password|code)|otp|pin|code)\s*(?:is|:|=|-)?\s*["']?(\d{4,8})\b/i,
+  /(?:code|otp|pin)[^\d]{0,20}(\d{4,8})\b/i
+ ];
+ for(const pattern of patterns){
+  const match=text.match(pattern);
+  if(match)return match[1];
+ }
+ return "";
+}
+function getCode(o){
+ const saved=o?.otp_code??o?.code??o?.sms_code??o?.verification_code??"";
+ return String(saved||"").trim()||extractCodeFromSms(getSms(o||{}));
+}
 function getPrice(o){
  const n=Number(o.customer_price_ngn??o.price_ngn??o.price??0);
  return Number.isFinite(n)?n:0;
