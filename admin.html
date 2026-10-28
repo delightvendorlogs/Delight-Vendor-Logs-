@@ -639,6 +639,14 @@ summary{
     }
 
 }
+
+.admin-menu-wrap{position:relative;display:flex;align-items:center;gap:8px}
+.admin-menu-button{width:42px;height:40px;padding:0;border-radius:10px;background:#ffffff12;color:#fff;border:1px solid #ffffff20;font-size:22px;line-height:1}
+.admin-menu{display:none;position:absolute;right:0;top:48px;z-index:200;min-width:235px;max-height:75vh;overflow:auto;background:#081326;border:1px solid #31517c;border-radius:12px;padding:7px;box-shadow:0 14px 35px #0006}
+.admin-menu.open{display:block}
+.admin-menu a{display:block;padding:11px 12px;color:#f4f7fc;text-decoration:none;border-radius:8px;font-size:13px}
+.admin-menu a:hover{background:#17345d}
+.admin-menu .menu-label{padding:8px 12px 4px;color:#91b9f2;font-size:10px;font-weight:800;letter-spacing:1px}
 </style>
 <link rel="stylesheet" href="site-theme.css"><link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css"></head>
 
@@ -654,13 +662,33 @@ summary{
         </div>
     </div>
 
+    <div class="admin-menu-wrap">
     <button
         type="button"
         onclick="refreshEverything()"
         title="Refresh Everything"
-    >
-        🔄
-    </button>
+        aria-label="Refresh everything"
+    >🔄</button>
+    <button type="button" id="adminMenuButton" class="admin-menu-button" aria-label="Open admin pages menu" aria-expanded="false">☰</button>
+    <nav id="adminMenu" class="admin-menu" aria-label="Admin pages">
+      <div class="menu-label">ADMIN PAGES</div>
+      <a href="admin.html">Main Admin Dashboard</a>
+      <a href="view-user.html">View Users</a>
+      <a href="override-price.html">Virtual Numbers Markup</a>
+      <a href="sociallogs-admin.html">Service Category Markup & Prices</a>
+      <a href="sociallogs.html">Services Marketplace</a>
+      <a href="boosting-admin.html">Boosting Markup</a>
+      <a href="gmail-admin.html">Gmail Admin</a>
+      <a href="admin-refer.html">Referral Management</a>
+      <a href="admin_wallet.html">Wallet Management</a>
+      <a href="admin-notification.html">Notifications</a>
+      <a href="admin_wallet.html">Add / Deduct Balance</a>
+      <a href="transactions.html">Transactions</a>
+      <a href="wallet.html">Customer Wallet</a>
+      <a href="dashboard.html">Customer Dashboard</a>
+      <a href="login.html">Sign out / Login</a>
+    </nav>
+    </div>
 
 </header>
 
@@ -5618,5 +5646,13 @@ startAdmin();
 
 </script>
 
-<script src="branding.js"></script></body>
+<script src="branding.js"></script><script>
+(function(){
+ const b=document.getElementById("adminMenuButton"),m=document.getElementById("adminMenu");
+ if(!b||!m)return;
+ b.addEventListener("click",function(e){e.stopPropagation();const open=m.classList.toggle("open");b.setAttribute("aria-expanded",String(open));});
+ document.addEventListener("click",function(e){if(!m.contains(e.target)&&!b.contains(e.target)){m.classList.remove("open");b.setAttribute("aria-expanded","false");}});
+})();
+</script>
+</body>
 </html>
