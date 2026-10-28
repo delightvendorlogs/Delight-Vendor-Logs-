@@ -221,6 +221,10 @@ Deno.serve(async (req: Request) => {
     }
     return failure("Unknown action.");
   } catch (e) {
-    console.error("Services function request failed:", e instanceof Error ? e.message : "Unknown error"); return failure("Something went wrong. Please try again shortly or contact support.", 500);
+    const message = e instanceof Error ? e.message : "Unknown error";
+    console.error("Services function request failed:", message);
+    if (message === "Admin access required.") return failure("Admin access required. Please sign in with the Delight Vendor Logs admin account.", 403);
+    if (message === "Please log in to continue." || message === "Your session expired. Please log in again.") return failure(message, 401);
+    return failure("Something went wrong. Please try again shortly or contact support.", 500);
   }
 });
