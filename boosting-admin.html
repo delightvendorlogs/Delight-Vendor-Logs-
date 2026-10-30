@@ -235,6 +235,11 @@
       gap: 12px;
     }
 
+    .service-search { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center; margin:4px 0 15px; }
+    .service-search input { min-width:0; }
+    .search-count { color:#666; font-size:12px; white-space:nowrap; }
+    @media (max-width:520px) { .service-search { grid-template-columns:1fr; } }
+
     .service-item {
       border: 1px solid #ddd;
       border-radius: 12px;
@@ -635,6 +640,11 @@
 
         </div>
 
+        <div class="service-search">
+          <input type="search" id="serviceSearch" placeholder="Search service name, platform or provider ID..." autocomplete="off" aria-label="Search boosting services">
+          <span class="search-count" id="serviceSearchCount">Showing all services</span>
+        </div>
+
         <div id="servicesContainer">
           <div class="loading">
             Loading boosting services...
@@ -686,6 +696,8 @@
     // =====================================================
 
     document.addEventListener("DOMContentLoaded", async () => {
+      const searchInput = document.getElementById("serviceSearch");
+      if (searchInput) searchInput.addEventListener("input", renderServices);
       await checkAdminAccess();
     });
 
@@ -1186,22 +1198,33 @@
           "servicesContainer"
         );
 
+      const searchInput = document.getElementById("serviceSearch");
+      const query = (searchInput ? searchInput.value : "").trim().toLowerCase();
+      const filteredServices = boostingServices.filter(service => {
+        const searchable = [
+          service.service_name, service.platform, service.provider_service_id,
+          service.service_type, service.is_active ? "active enabled" : "disabled inactive"
+        ].join(" ").toLowerCase();
+        return searchable.includes(query);
+      });
+
+      const count = document.getElementById("serviceSearchCount");
+      if (count) count.textContent = query
+        ? "Showing " + filteredServices.length + " of " + boostingServices.length + " services"
+        : "Showing all " + boostingServices.length + " services";
+
       if (!boostingServices.length) {
+        container.innerHTML = '<div class="empty">No boosting services found.<br><br>Use the boosting API service sync to load services from the provider.</div>';
+        return;
+      }
 
-        container.innerHTML = `
-          <div class="empty">
-            No boosting services found.
-            <br><br>
-            Use the boosting API service sync to load
-            services from the provider.
-          </div>
-        `;
-
+      if (!filteredServices.length) {
+        container.innerHTML = '<div class="empty">No services match “' + escapeHtml(query) + '”.<br><br>Try another service name, platform or provider ID.</div>';
         return;
       }
 
       container.innerHTML =
-        boostingServices
+        filteredServices
           .map(service => {
 
             const providerPrice =
@@ -1394,7 +1417,7 @@
           })
           .join("");
 
-      boostingServices.forEach(service => {
+      filteredServices.forEach(service => {
 
         const checkbox =
           document.getElementById(
