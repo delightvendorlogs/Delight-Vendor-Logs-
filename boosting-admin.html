@@ -620,6 +620,13 @@
           <div class="top-actions">
             <button
               class="secondary-btn"
+              id="syncServicesBtn"
+              onclick="syncSizzleServices()"
+            >
+              ⇅ Sync Sizzle Social Services
+            </button>
+            <button
+              class="secondary-btn"
               onclick="loadAll()"
             >
               ↻ Refresh
@@ -1024,6 +1031,54 @@
 
       }
 
+    }
+
+
+    // =====================================================
+    // SYNC LIVE SIZZLE SOCIAL SERVICES
+    // =====================================================
+
+    async function syncSizzleServices() {
+      const button = document.getElementById("syncServicesBtn");
+      const original = button ? button.textContent : "";
+      try {
+        hideMessages();
+        if (button) {
+          button.disabled = true;
+          button.textContent = "Syncing Sizzle Social...";
+        }
+        const { data: sessionData, error: sessionError } =
+          await supabaseClient.auth.getSession();
+        if (sessionError) throw sessionError;
+        const token = sessionData?.session?.access_token;
+        if (!token) throw new Error("Your admin session has expired. Please log in again.");
+        const response = await fetch(
+          SUPABASE_URL + "/functions/v1/boosting-api/sync",
+          {
+            method: "GET",
+            headers: {
+              "Authorization": "Bearer " + token,
+              "apikey": SUPABASE_ANON_KEY
+            }
+          }
+        );
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || result.success === false) {
+          throw new Error(result.error || result.message || "Sizzle Social service sync failed.");
+        }
+        await loadServices();
+        showSuccess("Sizzle Social services synced. " +
+          (result.synced ?? result.count ?? result.imported ?? "Latest") +
+          " services available for pricing.");
+      } catch (error) {
+        console.error("Sizzle Social sync failed:", error);
+        showError(error.message || "Unable to sync Sizzle Social services.");
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.textContent = original || "⇅ Sync Sizzle Social Services";
+        }
+      }
     }
 
 
