@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#050b18"><title>TheGiftUNC Token Manager — Delight Vendor Logs</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>
+*{box-sizing:border-box}body{margin:0;background:#eef3fa;color:#101828;font:15px system-ui,Arial,sans-serif}.top{background:linear-gradient(135deg,#03060d,#0b3d91);color:#fff;padding:20px}.top h1{margin:0;font-size:21px}.top p{margin:6px 0 0;color:#d5e2f7;font-size:13px}.wrap{max-width:680px;margin:28px auto;padding:0 15px}.card{background:#fff;border:1px solid #dbe3ef;border-radius:16px;padding:22px;box-shadow:0 8px 25px #07152d12}.card h2{margin:0 0 8px}.muted{color:#667085;font-size:13px;line-height:1.6}label{display:block;font-weight:700;margin:18px 0 7px}textarea{width:100%;min-height:150px;padding:13px;border:1px solid #cbd5e1;border-radius:10px;font:13px ui-monospace,monospace;resize:vertical}button{border:0;border-radius:10px;background:#0b3d91;color:white;padding:12px 16px;font-weight:800;cursor:pointer;width:100%;margin-top:12px}button:disabled{opacity:.6}.status{margin-top:14px;padding:12px;border-radius:10px;display:none;white-space:pre-wrap}.ok{display:block;background:#e9f8ef;color:#146c38}.err{display:block;background:#fff0f0;color:#a52222}.warn{background:#fff8e6;border:1px solid #f2d58b;border-radius:10px;padding:12px;margin-top:14px;font-size:13px;line-height:1.5}.back{display:inline-block;color:#fff;margin-top:12px;font-size:13px}
+</style></head><body><header class="top"><h1>🔐 TheGiftUNC Token Manager</h1><p>Delight Vendor Logs · Private admin tool</p><a class="back" href="admin.html">← Back to Admin</a></header><main class="wrap"><section class="card"><h2>Update provider JWT</h2><p class="muted">Paste the latest JWT you obtained from TheGiftUNC. It will be saved securely on the server and used automatically by the existing service. The token itself is never displayed again after saving.</p><label for="token">New JWT token</label><textarea id="token" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste the new JWT token here"></textarea><button id="save">Save token securely</button><div id="status" class="status" role="status"></div><div class="warn"><strong>Important:</strong> This page does not generate a new TheGiftUNC token. You still obtain it from TheGiftUNC, but you no longer need to open Supabase to update it. Never share this token with anyone.</div></section></main><script>
+const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
+const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const statusBox=document.getElementById("status"),saveBtn=document.getElementById("save"),tokenBox=document.getElementById("token");
+function show(message,ok){statusBox.textContent=message;statusBox.className="status "+(ok?"ok":"err")}
+saveBtn.addEventListener("click",async()=>{
+ const token=tokenBox.value.trim();
+ if(token.length<20){show("Paste the full JWT token first.",false);return}
+ saveBtn.disabled=true;saveBtn.textContent="Saving securely…";statusBox.className="status";
+ try{
+  const {data:{session},error:sessionError}=await sb.auth.getSession();
+  if(sessionError||!session){show("Your admin session is missing or expired. Sign in to the website first, then reopen this page.",false);return}
+  const res=await fetch(SUPABASE_URL+"/functions/v1/thegiftunc-services",{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_KEY,"Authorization":"Bearer "+session.access_token},body:JSON.stringify({action:"admin_update_token",token})});
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok||data.error||data.ok!==true){show(data.error||"Could not save the token. Please try again.",false);return}
+  tokenBox.value="";
+  show("Token saved successfully. TheGiftUNC service will use this token automatically.",true);
+ }catch(e){show("Connection failed. Check your internet and try again.",false)}
+ finally{saveBtn.disabled=false;saveBtn.textContent="Save token securely"}
+});
+</script></body></html>
