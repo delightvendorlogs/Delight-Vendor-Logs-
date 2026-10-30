@@ -15,7 +15,7 @@ body{margin:0;background:#090909;color:#f5f0df;font-family:Arial,sans-serif}.bac
 const client=window.supabase.createClient("https://hkfhehbhmucymusaytoe.supabase.co","sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_");
 const $=id=>document.getElementById(id);
 function appendLinkedText(el,text){
- const re = new RegExp("https?://[^\\s<>]+", "gi"); let last=0,match;
+ const re = /https?:\/\/[^\s<>"']+/gi; let last=0,match;
  while((match=re.exec(text))){el.append(document.createTextNode(text.slice(last,match.index)));
   let url=match[0].replace(/[),.!?;:]+$/,""); const trailing=match[0].slice(url.length);
   try{const parsed=new URL(url);if(parsed.protocol==="http:"||parsed.protocol==="https:"){const a=document.createElement("a");a.href=parsed.href;a.textContent="Click here";a.target="_blank";a.rel="noopener noreferrer";el.append(a);el.append(document.createTextNode(trailing));}else el.append(document.createTextNode(match[0]));}catch{el.append(document.createTextNode(match[0]));}
