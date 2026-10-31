@@ -1136,7 +1136,7 @@ function renderOrders(){
   const code=String(getCode(o)||"");
   const sms=String(getSms(o)||"");
   const price=getPrice(o);
-  const service=String(o.service_name||o.service_code||"Virtual Number");
+  const service=String(o.service_name||o.service_code||"Virtual Number").replace(/\b(?:text\s*verified|textverified|virtual\s*sms|virtualsms|bashua\s*sms|bashua)\b/gi,"").trim()||"Virtual Number";
   const country=String(o.country_name||o.country_code||"Unknown country");
   const pending=status==="waiting";
   const received=status==="received";
@@ -1172,7 +1172,7 @@ function renderOrders(){
    html+=`<div class="timer-area">
     <div class="timer-label">${left===null?"Expiry information":"Time remaining"}</div>
     <div class="timer-value ${left===0?"timer-expired":""}" data-countdown="${escapeHTML(o.id)}">${left===null?"—":countdownText(left)}</div>
-    <div class="timer-note">${hold>0?"Bashua SMS cancellation unlocks in "+countdownText(hold):left===null?"Waiting for the exact expiry time from the provider":"Countdown uses the provider expiry time"}</div>
+    <div class="timer-note">${hold>0?"Cancellation unlocks in "+countdownText(hold):left===null?"Waiting for the exact expiry time from the provider":"Countdown uses the provider expiry time"}</div>
    </div>
    <div class="order-actions">
     <button class="btn btn-black" onclick="checkOrder(${id})">◉ &nbsp; Check Code</button>
