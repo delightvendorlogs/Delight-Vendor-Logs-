@@ -829,8 +829,7 @@ function createVirtualNumberCard(order){
 
             📱
             ${esc(
-                order.service_name ||
-                "Virtual Number"
+                String(order.service_name || "Virtual Number").replace(/\b(?:text\s*verified|textverified|virtual\s*sms|virtualsms|bashua\s*sms|bashua)\b/gi,"").trim() || "Virtual Number"
             )}
 
             -
