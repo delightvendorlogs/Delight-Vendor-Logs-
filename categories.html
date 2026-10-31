@@ -10,4 +10,6 @@ function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&l
 async function load(){const box=document.getElementById("categoryList");const {data,error}=await client.from("service_categories").select("id,name,slug,icon,display_order,is_active").eq("is_active",true).order("display_order",{ascending:true});if(error){console.error(error);box.innerHTML='<div class="state">Could not load categories. Please return to the dashboard and try again.</div>';return}const rows=[{name:"Service",icon:"🧰",desc:"Browse all available services",href:"sociallogs.html"},...(data||[]).map(c=>({name:c.name,icon:c.icon||icons[c.name]||"📁",desc:"Open "+c.name+" products",href:"dashboard.html?category="+encodeURIComponent(c.name)}))];box.innerHTML=rows.map(c=>'<a class="category-row" href="'+c.href+'"><span class="category-icon">'+esc(c.icon)+'</span><span><span class="category-name">'+esc(c.name)+'</span><small class="category-desc">'+esc(c.desc)+'</small></span><span class="arrow">›</span></a>').join("")}
 document.addEventListener('click',function(e){const a=e.target.closest('a.category-row');if(!a)return;sessionStorage.setItem('dvOpenedFromCategories','1');});
 load();
-</script><script src="branding.js"></script></body></html>
+</script><script src="branding.js"></script>
+<script src="assets/site-announcement.js" defer></script>
+</body></html>
