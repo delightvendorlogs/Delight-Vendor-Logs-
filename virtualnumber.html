@@ -1236,7 +1236,7 @@ function updateCountdowns(){
     el.textContent="00:00";
     if(!expiryChecks.has(String(id)) && normalizeStatus(o)==="waiting"){
       expiryChecks.add(String(id));
-      checkOrder(Number(id)).finally(()=>expiryChecks.delete(String(id)));
+      checkOrder(Number(id));
     }
   }else el.classList.remove("timer-expired");
  });
