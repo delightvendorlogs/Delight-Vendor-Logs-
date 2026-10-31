@@ -21,4 +21,6 @@ document.querySelectorAll("[data-filter]").forEach(b=>b.addEventListener("click"
 $("markAll").onclick=async()=>{if(!all.some(n=>!n.read_at)){note("All notifications are already read.","info");return}const b=$("markAll");b.disabled=true;try{await api({action:"mark-read",all:true});all.forEach(n=>{if(!n.read_at)n.read_at=new Date().toISOString()});updateCount();render();note("All notifications marked as read.","ok")}catch(e){note(e.message,"error")}finally{b.disabled=false}};
 await load();setInterval(load,60000);
 })();
-</script><script src="branding.js"></script></body></html>
+</script><script src="branding.js"></script>
+<script src="assets/site-announcement.js" defer></script>
+</body></html>
