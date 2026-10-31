@@ -1297,6 +1297,7 @@ async function checkOrder(id){
   if(status==="received")showMessage("ordersMessage","Verification code received. Check the order card.","success");
   else if(status==="cancelled")showMessage("ordersMessage","The saved order status now confirms cancellation.","success");
   else if(status==="refunded")showMessage("ordersMessage","The saved order status confirms a refund.","success");
+  else if(status==="expired")showMessage("ordersMessage","Number timed out. The automatic wallet refund is confirmed on the order card.","success");
   else if(status==="failed")showMessage("ordersMessage","The saved order status is failed. Check the refund status shown on the order.","info");
   else showMessage("ordersMessage","Status check completed. The saved order is still pending; no cancellation or refund has been confirmed.","info");
  }catch(e){
