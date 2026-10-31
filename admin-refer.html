@@ -4,7 +4,7 @@ async function enableAdminPush(){
  if(!("serviceWorker" in navigator)||!("PushManager" in window)||!("Notification" in window)){s.textContent="Push alerts are not supported by this browser. Use Chrome on Android.";return}
  b.disabled=true;s.textContent="Setting up alerts…";
  try{
-  const permission=await Notification.requestPermission();if(permission!=="granted"){s.textContent="Notifications are blocked. Allow them in your browser settings and try again.";return}
+  const permission=await Notification.requestPermission();if(permission!=="granted"){s.textContent=permission==="denied"?"Chrome has blocked notifications for this site. Open the site controls beside the address bar → Permissions → Notifications → Allow, then refresh.": "Chrome has not recorded your choice yet. Check for a “Get notifications?” prompt or notification message near the address bar, choose Allow, then tap this button again.";return}
   const cfg=await sb.functions.invoke("delight-notifications",{body:{action:"config"}});if(cfg.error||cfg.data?.error)throw new Error(cfg.data?.error||cfg.error.message);
   if(!cfg.data?.vapidPublicKey)throw new Error("Push keys are not configured on the server.");
   const reg=await navigator.serviceWorker.register("sw.js");await navigator.serviceWorker.ready;
