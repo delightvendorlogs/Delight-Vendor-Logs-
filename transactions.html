@@ -532,6 +532,11 @@
     return String(value)
 
       .replace(
+        /\b(?:text\s*verified|textverified|virtual\s*sms|virtualsms|bashua\s*sms|bashua)\b/gi,
+        ""
+      )
+
+      .replace(
         /\bgrizzly\s*sms\b/gi,
         ""
       )
