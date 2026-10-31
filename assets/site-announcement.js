@@ -6,8 +6,6 @@
 
   const SUPABASE_URL = "https://hkfhehbhmucymusaytoe.supabase.co";
   const SUPABASE_KEY = "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
-  if (!window.supabase?.createClient) return;
-  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   const style = document.createElement("style");
   style.textContent = `
@@ -44,6 +42,17 @@
 
   async function load() {
     try {
+      if (!window.supabase?.createClient) {
+        await new Promise((resolve, reject) => {
+          const loader = document.createElement("script");
+          loader.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+          loader.onload = resolve;
+          loader.onerror = () => reject(new Error("Could not load the announcement service"));
+          document.head.appendChild(loader);
+        });
+      }
+      if (!window.supabase?.createClient) throw new Error("Announcement service is unavailable");
+      const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
       const { data, error } = await db.from("site_announcement").select("message,enabled").eq("id", true).maybeSingle();
       if (error) throw error;
       const row = Array.isArray(data) ? data[0] : data;
