@@ -1174,7 +1174,7 @@ function renderOrders(){
    html+=`<div class="timer-area">
     <div class="timer-label">${hold>0?"Cancellation available in":left===null?"Expiry information":"Time remaining"}</div>
     <div class="timer-value ${(hold>0?hold:left)===0?"timer-expired":""}" data-countdown="${escapeHTML(o.id)}">${hold>0?countdownText(hold):left===null?"—":countdownText(left)}</div>
-    <div class="timer-note">${hold>0?"TextVerified USA orders cannot be cancelled during the first 2 minutes after purchase":left===null?"Waiting for provider expiry information":"Countdown updates automatically"}</div>
+    <div class="timer-note">${hold>0?"This number cannot be cancelled during the first 2 minutes after purchase":left===null?"Waiting for provider expiry information":"Countdown updates automatically"}</div>
    </div>
    <div class="order-actions">
     <button class="btn btn-black" onclick="checkOrder(${id})">◉ &nbsp; Check Code</button>
@@ -1220,7 +1220,7 @@ function updateCountdowns(){
   const note=el.closest(".timer-area")?.querySelector(".timer-note");
   const cancelButton=el.closest(".order-card")?.querySelector(".btn-danger");
   if(label)label.textContent=hold>0?"Cancellation available in":seconds===null?"Expiry information":"Time remaining";
-  if(note)note.textContent=hold>0?"TextVerified USA orders cannot be cancelled during the first 2 minutes after purchase":seconds===null?"Waiting for provider expiry information":"Countdown updates automatically";
+  if(note)note.textContent=hold>0?"This number cannot be cancelled during the first 2 minutes after purchase":seconds===null?"Waiting for provider expiry information":"Countdown updates automatically";
   if(cancelButton){cancelButton.disabled=hold>0;cancelButton.textContent=hold>0?"Cancel Locked":"⊗  Cancel Order";}
   if(seconds===null){
    el.textContent="—";
