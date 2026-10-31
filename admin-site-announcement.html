@@ -17,10 +17,10 @@ body{margin:0;background:#090909;color:#f5f0df;font-family:Arial,sans-serif}.bac
 <section class="panel">
 <p class="eyebrow">ADMIN AREA</p>
 <h1>Scrolling Site Announcement</h1>
-<p class="muted">Write a message that scrolls across the top of the site. It appears on all normal site pages except the homepage, login, register and forgot-password pages. Links remain visible as their full URL and can be opened.</p>
+<p class="muted">Write a message that scrolls across the top of the site. It appears on all normal site pages except the homepage, login, register and forgot-password pages. Links are shown as “Click here” and open the actual destination when tapped.</p>
 <label class="field" for="message">Announcement message</label>
 <textarea id="message" maxlength="2000" placeholder="Type your announcement here. You can include links such as https://example.com"></textarea>
-<p class="hint">Line breaks are preserved. Any http:// or https:// link becomes clickable. Maximum 2,000 characters.</p>
+<p class="hint">Line breaks are preserved. Any http:// or https:// link is displayed as “Click here” and remains clickable. Maximum 2,000 characters.</p>
 <label class="field">Preview</label>
 <div id="preview" class="preview">Your announcement preview will appear here.</div>
 <label class="toggle"><input id="enabled" type="checkbox"><span>Show announcement across the website</span></label>
@@ -38,7 +38,7 @@ function preview(){
  if(!text){box.textContent="Your announcement preview will appear here.";return;}
  const re=/https?:\/\/[^\s<>"']+/gi;let last=0,m;
  while((m=re.exec(text))){box.append(document.createTextNode(text.slice(last,m.index)));let url=m[0],tail="";while(/[),.!?;:]+$/.test(url)){tail=url.slice(-1)+tail;url=url.slice(0,-1);}
- try{const parsed=new URL(url);if(!/^https?:$/.test(parsed.protocol))throw 0;const a=document.createElement("a");a.href=parsed.href;a.textContent=url;a.target="_blank";a.rel="noopener noreferrer";box.append(a);}catch(_){box.append(document.createTextNode(url));}
+ try{const parsed=new URL(url);if(!/^https?:$/.test(parsed.protocol))throw 0;const a=document.createElement("a");a.href=parsed.href;a.textContent="Click here";a.target="_blank";a.rel="noopener noreferrer";box.append(a);}catch(_){box.append(document.createTextNode(url));}
  box.append(document.createTextNode(tail));last=m.index+m[0].length;}
  box.append(document.createTextNode(text.slice(last)));
 }
