@@ -980,10 +980,9 @@ async function loadOrders(){
   if(currentUser?.id!==userId)return;
 
   /*
-   * Hide ONLY automatic refunds caused by insufficient provider funds.
-   *
-   * These are failed purchase attempts, not real purchased numbers.
-   * Keep the database records for auditing and refund history.
+   * Failed attempts caused by insufficient upstream funds are removed
+   * server-side together with their temporary order and wallet ledger rows.
+   * This filter also hides any older failed-attempt records that remain.
    *
    * Do not hide ordinary cancelled orders or refunds for real numbers.
    */
