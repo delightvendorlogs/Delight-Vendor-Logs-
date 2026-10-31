@@ -48,13 +48,13 @@ async function requireAdmin(){
  if(e||!data)throw Error("Administrator access is required.");return user;
 }
 async function load(){
- try{await requireAdmin();const {data,error}=await db.rpc("get_site_announcement");if(error)throw error;const row=Array.isArray(data)?data[0]:data;if(row){$("message").value=row.message||"";$("enabled").checked=!!row.enabled;}preview();}
+ try{await requireAdmin();const {data,error}=await db.from("site_announcement").select("message,enabled").eq("id",true).maybeSingle();if(error)throw error;const row=Array.isArray(data)?data[0]:data;if(row){$("message").value=row.message||"";$("enabled").checked=!!row.enabled;}preview();}
  catch(e){$("status").textContent=e.message||String(e);$("save").disabled=true;}
 }
 $("message").addEventListener("input",preview);
 $("save").addEventListener("click",async()=>{
  const btn=$("save");btn.disabled=true;$("status").textContent="Saving…";
- try{await requireAdmin();const {error}=await db.rpc("save_site_announcement",{p_message:$("message").value,p_enabled:$("enabled").checked});if(error)throw error;$("status").textContent="Announcement saved successfully.";}
+ try{const user=await requireAdmin();const {error}=await db.from("site_announcement").update({message:$("message").value,enabled:$("enabled").checked,updated_at:new Date().toISOString(),updated_by:user.id}).eq("id",true);if(error)throw error;$("status").textContent="Announcement saved successfully.";}
  catch(e){$("status").textContent="Could not save: "+(e.message||String(e));}
  finally{btn.disabled=false;}
 });
