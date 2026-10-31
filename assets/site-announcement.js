@@ -44,7 +44,7 @@
 
   async function load() {
     try {
-      const { data, error } = await db.rpc("get_site_announcement");
+      const { data, error } = await db.from("site_announcement").select("message,enabled").eq("id", true).maybeSingle();
       if (error) throw error;
       const row = Array.isArray(data) ? data[0] : data;
       if (!row?.enabled || !String(row.message || "").trim()) return;
