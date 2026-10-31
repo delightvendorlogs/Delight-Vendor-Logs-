@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080808">
+<title>Scrolling Site Announcement — Delight Vendor Logs</title>
+<link rel="icon" type="image/png" href="assets/dv-logo.png">
+<link rel="stylesheet" href="site-theme.css">
+<style>
+body{margin:0;background:#090909;color:#f5f0df;font-family:Arial,sans-serif}.back{display:inline-block;margin:16px;color:#d4af37;text-decoration:none}.wrap{max-width:850px;margin:18px auto;padding:0 16px 40px}.panel{background:#121212;border:1px solid #493b1c;border-radius:16px;padding:20px;margin-bottom:16px}.eyebrow{color:#d4af37;font-weight:800;letter-spacing:.12em;font-size:12px}.field{display:block;margin:14px 0 6px;font-weight:700}textarea{width:100%;box-sizing:border-box;background:#090909;color:#fff;border:1px solid #51452b;border-radius:10px;padding:12px;font:inherit;min-height:145px;resize:vertical;line-height:1.6}.hint,.muted{color:#b8ad8d;font-size:13px;line-height:1.6}.preview{overflow:hidden;background:#090909;border:1px solid #665323;border-radius:10px;padding:12px;color:#f5d979;font-weight:700;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6}.preview a{color:#79baff;text-decoration:underline}.toggle{display:flex;align-items:center;gap:10px;margin-top:16px}.toggle input{width:19px;height:19px;accent-color:#d4af37}.btn{background:#d4af37;color:#090909;border:0;border-radius:9px;padding:12px 18px;font-weight:800;margin-top:16px}.status{margin-top:12px;line-height:1.5;overflow-wrap:anywhere}.small{font-size:12px;color:#a99d7c}
+</style>
+</head>
+<body>
+<a class="back" href="admin.html">← Back to Admin</a>
+<main class="wrap">
+<section class="panel">
+<p class="eyebrow">ADMIN AREA</p>
+<h1>Scrolling Site Announcement</h1>
+<p class="muted">Write a message that scrolls across the top of the site. It appears on all normal site pages except the homepage, login, register and forgot-password pages. Links remain visible as their full URL and can be opened.</p>
+<label class="field" for="message">Announcement message</label>
+<textarea id="message" maxlength="2000" placeholder="Type your announcement here. You can include links such as https://example.com"></textarea>
+<p class="hint">Line breaks are preserved. Any http:// or https:// link becomes clickable. Maximum 2,000 characters.</p>
+<label class="field">Preview</label>
+<div id="preview" class="preview">Your announcement preview will appear here.</div>
+<label class="toggle"><input id="enabled" type="checkbox"><span>Show announcement across the website</span></label>
+<button id="save" class="btn" type="button">Save announcement</button>
+<div id="status" class="status" role="status" aria-live="polite"></div>
+<p class="small">Turning this off hides the message without deleting it.</p>
+</section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const db=window.supabase.createClient("https://hkfhehbhmucymusaytoe.supabase.co","sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_");
+const $=id=>document.getElementById(id);
+function preview(){
+ const box=$("preview");box.replaceChildren();const text=$("message").value;
+ if(!text){box.textContent="Your announcement preview will appear here.";return;}
+ const re=/https?:\/\/[^\s<>"']+/gi;let last=0,m;
+ while((m=re.exec(text))){box.append(document.createTextNode(text.slice(last,m.index)));let url=m[0],tail="";while(/[),.!?;:]+$/.test(url)){tail=url.slice(-1)+tail;url=url.slice(0,-1);}
+ try{const parsed=new URL(url);if(!/^https?:$/.test(parsed.protocol))throw 0;const a=document.createElement("a");a.href=parsed.href;a.textContent=url;a.target="_blank";a.rel="noopener noreferrer";box.append(a);}catch(_){box.append(document.createTextNode(url));}
+ box.append(document.createTextNode(tail));last=m.index+m[0].length;}
+ box.append(document.createTextNode(text.slice(last)));
+}
+async function requireAdmin(){
+ const {data:{user},error}=await db.auth.getUser();if(error||!user)throw Error("Please sign in again.");
+ const {data,error:e}=await db.from("admin_users").select("user_id").eq("user_id",user.id).maybeSingle();
+ if(e||!data)throw Error("Administrator access is required.");return user;
+}
+async function load(){
+ try{await requireAdmin();const {data,error}=await db.rpc("get_site_announcement");if(error)throw error;const row=Array.isArray(data)?data[0]:data;if(row){$("message").value=row.message||"";$("enabled").checked=!!row.enabled;}preview();}
+ catch(e){$("status").textContent=e.message||String(e);$("save").disabled=true;}
+}
+$("message").addEventListener("input",preview);
+$("save").addEventListener("click",async()=>{
+ const btn=$("save");btn.disabled=true;$("status").textContent="Saving…";
+ try{await requireAdmin();const {error}=await db.rpc("save_site_announcement",{p_message:$("message").value,p_enabled:$("enabled").checked});if(error)throw error;$("status").textContent="Announcement saved successfully.";}
+ catch(e){$("status").textContent="Could not save: "+(e.message||String(e));}
+ finally{btn.disabled=false;}
+});
+load();
+</script>
+<script src="branding.js"></script>
+<script src="assets/site-announcement.js" defer></script>
+</body></html>
