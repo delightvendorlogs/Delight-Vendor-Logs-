@@ -122,7 +122,7 @@ p{line-height:1.5}
 .badge{display:inline-block;padding:7px 10px;border-radius:30px;font-size:11px;font-weight:800;white-space:nowrap;background:#3b3014;color:#f5d97b}
 .badge.waiting{background:#3b3014;color:#f5d97b}
 .badge.received{background:#123923;color:#83edac}
-.badge.cancelled,.badge.failed{background:#3b1b1b;color:#ffaaaa}
+.badge.cancelled,.badge.failed,.badge.expired{background:#3b1b1b;color:#ffaaaa}
 .badge.refunded{background:#172c42;color:#a7d3ff}
 .number-box{background:#1b1b1b;border:1px solid #252525;border-radius:15px;padding:14px;margin:15px 0}
 .number-label{font-size:11px;letter-spacing:.4px;color:var(--muted);margin-bottom:9px}
@@ -1044,11 +1044,12 @@ function normalizeStatus(o){
  if(["received","completed","complete","success","successful","verification_successful","sms_received"].includes(s))return "received";
  if(["refunded","refund_completed","cancelled_refunded","canceled_refunded","refunded_cancelled","refunded_canceled"].includes(s))return "refunded";
  if(["cancelled","canceled","order_cancelled","order_canceled"].includes(s))return "cancelled";
+ if(["expired","timed_out","timeout"].includes(s))return "expired";
  if(["failed","error"].includes(s))return "failed";
  return "waiting";
 }
 function statusLabel(s){
- return({waiting:"Pending",received:"Verification Successful",cancelled:"Order Cancelled",failed:"Failed",refunded:"Refunded"})[s]||s;
+ return({waiting:"Pending",received:"Verification Successful",cancelled:"Order Cancelled",failed:"Failed",expired:"Number Timed Out",refunded:"Refunded"})[s]||s;
 }
 function orderDate(o){
  const d=o.created_at||o.purchased_at;
@@ -1113,11 +1114,7 @@ function durationSeconds(o){
 }
 
 function cancelHoldSeconds(o){
- const provider=orderProvider(o);
- const country=String(o.country_name||"").toLowerCase();
- const countryCode=String(o.country_key||o.country_code||"").toLowerCase();
- const isUSA=country.includes("united states")||country==="usa"||countryCode==="us"||String(o.country_id||"")==="187";
- if(provider!=="textverified"||!isUSA)return 0;
+ if(orderProvider(o)!=="virtualsms")return 0;
  const created=new Date(o.purchased_at||o.created_at||0).getTime();
  if(!Number.isFinite(created)||created<=0)return 0;
  return Math.max(0,120-Math.floor((Date.now()-created)/1000));
@@ -1145,16 +1142,18 @@ function renderOrders(){
   const received=status==="received";
   const cancelled=status==="cancelled";
   const failed=status==="failed";
+  const expired=status==="expired";
   const refunded=isRefunded(o,status);
   const hold=cancelHoldSeconds(o);
   const left=durationSeconds(o);
 
   const headline=pending?(number?"Number Reserved":"Purchase Pending"):
    received?"Verification Successful":
-   cancelled?"Order Cancelled":failed?"Order Failed":"Refunded";
+   cancelled?"Order Cancelled":expired?"Number Timed Out":failed?"Order Failed":"Refunded";
   const subtitle=pending?(number?"Waiting for verification code":"Waiting for provider confirmation"):
    received?"SMS received for this number":
    cancelled?"This number order has ended":
+   expired?"The provider verification time ended and the refund was processed":
    failed?"This number order failed":"Your refund has been recorded";
 
   let html=`<article class="order-card" data-order-id="${escapeHTML(o.id)}">
@@ -1171,9 +1170,9 @@ function renderOrders(){
 
   if(pending){
    html+=`<div class="timer-area">
-    <div class="timer-label">${hold>0?"Cancellation available in":left===null?"Expiry information":"Time remaining"}</div>
-    <div class="timer-value ${(hold>0?hold:left)===0?"timer-expired":""}" data-countdown="${escapeHTML(o.id)}">${hold>0?countdownText(hold):left===null?"—":countdownText(left)}</div>
-    <div class="timer-note">${hold>0?"This number cannot be cancelled during the first 2 minutes after purchase":left===null?"Waiting for provider expiry information":"Countdown updates automatically"}</div>
+    <div class="timer-label">${left===null?"Expiry information":"Time remaining"}</div>
+    <div class="timer-value ${left===0?"timer-expired":""}" data-countdown="${escapeHTML(o.id)}">${left===null?"—":countdownText(left)}</div>
+    <div class="timer-note">${hold>0?"Bashua SMS cancellation unlocks in "+countdownText(hold):left===null?"Waiting for the exact expiry time from the provider":"Countdown uses the provider expiry time"}</div>
    </div>
    <div class="order-actions">
     <button class="btn btn-black" onclick="checkOrder(${id})">◉ &nbsp; Check Code</button>
@@ -1190,14 +1189,14 @@ function renderOrders(){
    </div>`;
   }
 
-  if(cancelled||failed||refunded){
+  if(cancelled||failed||expired||refunded){
    html+=`<hr class="order-divider">
     <div class="detail-row"><span>Purchase price</span><strong>${escapeHTML(money(price))}</strong></div>
     <div class="detail-row"><span>Refund status</span><strong class="${refunded?"refund-good":""}">${escapeHTML(refundLabel(o,status))}</strong></div>
     <p class="order-footnote">The refund amount and status reflect the recorded transaction. “Refunded” appears only after confirmation.</p>`;
   }
 
-  if(!pending&&!received&&!cancelled&&!failed&&!refunded){
+  if(!pending&&!received&&!cancelled&&!failed&&!expired&&!refunded){
    html+=`<div class="detail-row"><span>Purchase price</span><strong>${escapeHTML(money(price))}</strong></div>`;
   }
   html+=`<div class="order-line"><strong>Order date:</strong> ${escapeHTML(orderDate(o))}</div>`;
@@ -1213,27 +1212,35 @@ function updateCountdowns(){
   const id=el.getAttribute("data-countdown");
   const o=allOrders.find(x=>String(x.id)===String(id));
   if(!o)return;
+  const left=durationSeconds(o);
   const hold=cancelHoldSeconds(o);
-  const seconds=hold>0?hold:durationSeconds(o);
   const label=el.closest(".timer-area")?.querySelector(".timer-label");
   const note=el.closest(".timer-area")?.querySelector(".timer-note");
   const cancelButton=el.closest(".order-card")?.querySelector(".btn-danger");
-  if(label)label.textContent=hold>0?"Cancellation available in":seconds===null?"Expiry information":"Time remaining";
-  if(note)note.textContent=hold>0?"This number cannot be cancelled during the first 2 minutes after purchase":seconds===null?"Waiting for provider expiry information":"Countdown updates automatically";
-  if(cancelButton){cancelButton.disabled=hold>0;cancelButton.textContent=hold>0?"Cancel Locked":"⊗  Cancel Order";}
-  if(seconds===null){
-   el.textContent="—";
-   el.classList.remove("timer-expired");
-   return;
+  if(label)label.textContent=left===null?"Expiry information":"Time remaining";
+  if(note)note.textContent=hold>0
+    ?"Bashua SMS cancellation unlocks in "+countdownText(hold)
+    :left===null?"Waiting for the exact expiry time from the provider":"Countdown uses the provider expiry time";
+  if(cancelButton){
+    cancelButton.disabled=hold>0;
+    cancelButton.textContent=hold>0?"Cancel Locked":"⊗  Cancel Order";
   }
-  el.textContent=countdownText(seconds);
-  if(seconds<=0){
-   el.classList.add("timer-expired");
-   el.textContent="00:00";
+  if(left===null){
+    el.textContent="—";
+    el.classList.remove("timer-expired");
+    return;
+  }
+  el.textContent=countdownText(left);
+  if(left<=0){
+    el.classList.add("timer-expired");
+    el.textContent="00:00";
+    if(!expiryChecks.has(String(id)) && normalizeStatus(o)==="waiting"){
+      expiryChecks.add(String(id));
+      checkOrder(Number(id)).finally(()=>expiryChecks.delete(String(id)));
+    }
   }else el.classList.remove("timer-expired");
  });
 }
-
 async function copyOrderCode(id){
  const o=allOrders.find(x=>Number(x.id)===Number(id));
  const code=getCode(o||{});
@@ -1310,7 +1317,7 @@ function cancelOrder(id){
   return;
  }
  const hold=cancelHoldSeconds(o);
- if(hold>0){showMessage("ordersMessage","Cancellation is locked for the first 2 minutes after purchase. Try again in "+countdownText(hold)+".","error");return;}
+ if(hold>0){showMessage("ordersMessage","Bashua SMS cancellation is locked for the first 2 minutes after purchase. Try again in "+countdownText(hold)+".","error");return;}
  if(!orderProvider(o)){
   showMessage("ordersMessage","The saved order does not identify a supported provider. Contact support before trying to cancel it.","error");
   return;
@@ -1363,7 +1370,7 @@ async function confirmCancelOrder(){
   return;
  }
  const hold=cancelHoldSeconds(o);
- if(hold>0){closeCancelPopup();showMessage("ordersMessage","Cancellation is locked for the first 2 minutes after purchase. Try again in "+countdownText(hold)+".","error");return;}
+ if(hold>0){closeCancelPopup();showMessage("ordersMessage","Bashua SMS cancellation is locked for the first 2 minutes after purchase. Try again in "+countdownText(hold)+".","error");return;}
  const provider=orderProvider(o);
  if(!provider){
   $("cancelPopupStatus").textContent="Provider could not be identified. No cancellation request was sent.";
