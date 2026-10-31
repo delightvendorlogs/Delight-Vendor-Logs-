@@ -30,7 +30,7 @@
         const parsed = new URL(url);
         if (parsed.protocol === "http:" || parsed.protocol === "https:") {
           const a = document.createElement("a");
-          a.href = parsed.href; a.textContent = url; a.target = "_blank"; a.rel = "noopener noreferrer";
+          a.href = parsed.href; a.textContent = "Click here"; a.target = "_blank"; a.rel = "noopener noreferrer";
           container.append(a);
         } else container.append(document.createTextNode(url));
       } catch (_) { container.append(document.createTextNode(url)); }
