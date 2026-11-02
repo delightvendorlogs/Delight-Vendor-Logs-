@@ -25,18 +25,21 @@ jobs:
           key = "sb_publishable_8uj618f_n35zeF3Fcyt5VA_xLHHOkNv" if is_edit else "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_"
           old_key = "delightvendoredit-auth" if is_edit else "dv-auth"
           guard = f"""(function(){{'use strict';var root=document.documentElement;root.style.visibility='hidden';var base=new URL('./',location.href);function login(){{var target=location.pathname+location.search+location.hash;location.replace(new URL('login.html?redirect='+encodeURIComponent(target),base).href)}}function sdk(){{if(window.supabase&&window.supabase.createClient)return Promise.resolve();return new Promise(function(ok,no){{var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';s.onload=ok;s.onerror=no;document.head.appendChild(s)}})}}(async function(){{try{{try{{var k='sb-{project}-auth-token';if(!localStorage.getItem(k)&&localStorage.getItem('{old_key}'))localStorage.setItem(k,localStorage.getItem('{old_key}'))}}catch(_){{}}await sdk();var c=window.supabase.createClient('{url}','{key}',{{auth:{{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}}});var r=await c.auth.getUser();if(r.error||!r.data||!r.data.user){{login();return}}root.style.visibility='';c.auth.onAuthStateChange(function(e,s){{if(e==='SIGNED_OUT'||!s)login()}})}}catch(e){{login()}}}})()}})();"""
-          refresh = """(function(){'use strict';var dirty=false,busy=false,initial='';document.addEventListener('input',function(e){if(e.target&&(/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)||e.target.isContentEditable))dirty=true},true);document.addEventListener('change',function(e){if(e.target&&(/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)||e.target.isContentEditable))dirty=true},true);async function snap(){try{var r=await fetch(location.pathname+'?__site_update='+Date.now(),{cache:'no-store',credentials:'same-origin'});return r.ok?await r.text():''}catch(_){return ''}}snap().then(function(x){initial=x});setInterval(async function(){if(busy||dirty||document.hidden)return;busy=true;try{var x=await snap();if(initial&&x&&x!==initial){location.reload();return}}finally{busy=false}},5000)})();"""
           Path("auth-guard.js").write_text(guard, encoding="utf-8")
-          if not Path("site-update-check.js").exists(): Path("site-update-check.js").write_text(refresh, encoding="utf-8")
+          Path("site-update-check.js").unlink(missing_ok=True)
           public = {"login.html", "register.html", "forgot-password.html"}
           count = 0
           for p in repo.rglob("*.html"):
               if any(part.startswith(".") for part in p.parts) or p.name.lower() in public:
                   continue
               src = p.read_text(encoding="utf-8")
+              cleaned = src.replace('<script src="site-update-check.js"></script>', '')
               if "auth-guard.js" in src:
+                  if cleaned != src:
+                      p.write_text(cleaned, encoding="utf-8")
                   continue
-              inject = '<script>document.documentElement.style.visibility="hidden";</script><script src="auth-guard.js"></script><script src="site-update-check.js"></script><style>.dve-banner-dots,#dvBannerDots{display:none!important}</style>'
+              src = cleaned
+              inject = '<script>document.documentElement.style.visibility="hidden";</script><script src="auth-guard.js"></script><style>.dve-banner-dots,#dvBannerDots{display:none!important}</style>'
               m = re.search(r'<head\b[^>]*>', src, re.I)
               if m:
                   src = src[:m.end()] + '\n' + inject + src[m.end():]
