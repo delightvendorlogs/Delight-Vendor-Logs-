@@ -622,10 +622,11 @@ async function actionStatus(orderId: string, userId: string) {
     return response({ success: true, order: data, expired: state === "expired", cancelled: state === "cancelled", refunded: true });
   }
 
+  const safeProviderState = state === "received" && !code ? "waiting" : (state || "waiting");
   const { data, error } = await supabase
     .from("virtual_number_orders")
     .update({
-      provider_state: state || "waiting",
+      provider_state: safeProviderState,
       provider_expires_at: expiresAt,
       updated_at: now,
     })
