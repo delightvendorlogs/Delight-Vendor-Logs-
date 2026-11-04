@@ -966,8 +966,8 @@ async function refreshFetchSmsOrders(){
    .order("created_at",{ascending:true})
    .limit(10);
   if(error)throw error;
-  if(currentUser?.id!==userId)return;
-  await Promise.allSettled((data||[]).map(o=>
+  if(currentUser?.id!==userId || !data?.length)return;
+  await Promise.allSettled(data.map(o=>
    invoke("fetchsms","status",orderActionPayload(o))
   ));
   if(currentUser?.id===userId){
