@@ -897,7 +897,7 @@ async function purchaseNumber(){
  const button=$("confirmPurchaseBtn");
  button.disabled=true;
  button.textContent="Processing…";
- showMessage("confirmMessage","Submitting your purchase request…","info");
+ showMessage("confirmMessage","Looking for an available number… Please keep this page open. Your order status will appear below as soon as the request is confirmed.","info");
  try{
   const code=serviceCode(selectedService);
   const option=getOptionPayload(selectedOption);
@@ -913,6 +913,7 @@ async function purchaseNumber(){
   showGlobal("Purchase request submitted. Check My Number Orders for its current status.","success");
  }catch(e){
   console.error("Purchase failed:",e);
+  await Promise.allSettled([refreshWallet(),loadOrders()]);
   showMessage("confirmMessage",formatError(e,"The purchase could not be completed. Please try again."),"error");
  }finally{
   button.disabled=false;
@@ -1015,7 +1016,7 @@ async function loadOrders(){
    );
    const status=String(o.status||"").trim().toLowerCase();
    const isUnconfirmedAttempt=!hasProviderOrder &&
-    (["waiting","pending","cancelled","canceled","failed","refunded"].includes(status));
+    (["cancelled","canceled","failed","refunded"].includes(status));
 
    // Hide failed/automatically refunded provider attempts and reservations
    // where no number/order was ever confirmed. Do not delete audit records.
@@ -1168,10 +1169,11 @@ function renderOrders(){
   const hold=cancelHoldSeconds(o);
   const left=durationSeconds(o);
 
-  const headline=pending?(number?"Number Reserved":"Purchase Pending"):
+  const searching=pending&&!number&&!providerOrderId(o);
+  const headline=pending?(number?"Number Reserved":searching?"Looking for available number":"Number request pending"):
    received?"Verification Successful":
    cancelled?"Order Cancelled":expired?"Number Timed Out":failed?"Order Failed":"Refunded";
-  const subtitle=pending?(number?"Waiting for verification code":"Waiting for provider confirmation"):
+  const subtitle=pending?(number?"Waiting for verification code":searching?"We are checking availability. Your order will update here.":"Waiting for number confirmation"):
    received?(code?"SMS received for this number":"Verification completed. Retrieving the code…"):
    cancelled?"This number order has ended":
    expired?"The provider verification time ended and the refund was processed":
@@ -1185,19 +1187,19 @@ function renderOrders(){
    <div class="order-service">${escapeHTML(service)} · ${escapeHTML(country)}</div>
    <div class="number-box">
     <div class="number-label">${pending?"YOUR PHONE NUMBER":"PHONE NUMBER"}</div>
-    <div class="${pending?"number-big":"number-small"}">${escapeHTML(number||"Waiting for provider number")}</div>
+    <div class="${pending?"number-big":"number-small"}">${escapeHTML(number||(searching?"Searching for an available number…":"Waiting for number confirmation"))}</div>
     <div class="number-meta"><span>${escapeHTML(service)} · ${escapeHTML(country)}</span><span>Order #${escapeHTML(o.id)}</span></div>
    </div>`;
 
   if(pending){
    html+=`<div class="timer-area">
-    <div class="timer-label">${left===null?"Expiry information":"Time remaining"}</div>
-    <div class="timer-value ${left===0?"timer-expired":""}" data-countdown="${escapeHTML(o.id)}">${left===null?"—":countdownText(left)}</div>
-    <div class="timer-note">${hold>0?"Cancellation unlocks in "+countdownText(hold):left===null?"Waiting for the exact expiry time from the provider":"Countdown uses the provider expiry time"}</div>
+    <div class="timer-label">${searching?"Search status":left===null?"Expiry information":"Time remaining"}</div>
+    <div class="timer-value ${left===0?"timer-expired":""}" data-countdown="${escapeHTML(o.id)}">${searching?"Searching…":left===null?"—":countdownText(left)}</div>
+    <div class="timer-note">${hold>0?"Cancellation unlocks in "+countdownText(hold):searching?"You can cancel this request if no number has been assigned.":left===null?"Waiting for the exact expiry time":"Countdown uses the confirmed expiry time"}</div>
    </div>
    <div class="order-actions">
     <button class="btn btn-black" onclick="checkOrder(${id})">◉ &nbsp; Check Code</button>
-    <button class="btn btn-danger" ${hold>0?"disabled":""} onclick="cancelOrder(${id})">${hold>0?"Cancel Locked":"⊗ &nbsp; Cancel Order"}</button>
+    <button class="btn btn-danger" ${hold>0?"disabled":""} onclick="cancelOrder(${id})">${hold>0?"Cancel Locked":searching?"⊗ &nbsp; Cancel Request":"⊗ &nbsp; Cancel Order"}</button>
    </div>`;
   }
 
