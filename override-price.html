@@ -117,6 +117,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     <div class="tabs">
       <button class="tab active" data-provider="textverified" type="button">TextVerified</button>
       <button class="tab" data-provider="virtualsms" type="button">Virtual SMS</button>
+      <button class="tab" data-provider="fetchsms" type="button">Fetch SMS</button>
     </div>
 
     <div class="panel">
@@ -201,6 +202,25 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
       </div>
       <div id="emptyRules" class="empty hidden">No markup rules found for this provider.</div>
     </div>
+
+    <div class="panel" id="fixedOverridePanel">
+      <div class="rule-summary"><div><h2>Fixed selling-price overrides</h2>
+        <p class="muted small">Set a final NGN selling price for one service. An active fixed price takes priority over percentage markup.</p></div></div>
+      <p class="notice info show" id="fixedOverrideHelp">Select a service above and enter its final selling price in naira.</p>
+      <div class="grid" style="margin-top:14px"><div class="field">
+        <label for="customPriceNGN">Fixed selling price (NGN)</label>
+        <input id="customPriceNGN" type="number" min="1" step="1" placeholder="e.g. 2500">
+      </div></div>
+      <div class="actions">
+        <button class="btn primary" id="saveOverrideBtn" type="button">Save fixed price override</button>
+        <button class="btn" id="clearOverrideBtn" type="button">Clear price</button>
+      </div>
+      <div class="table-wrap"><table style="min-width:620px">
+        <thead><tr><th>Country</th><th>Service</th><th>Fixed price</th><th>Status</th><th>Updated</th><th>Actions</th></tr></thead>
+        <tbody id="fixedOverridesBody"></tbody>
+      </table></div>
+      <div id="emptyFixedOverrides" class="empty hidden">No fixed selling-price overrides for this provider.</div>
+    </div>
   </section>
 </main>
 <footer>Delight Vendor Logs · Restricted admin page</footer>
@@ -219,6 +239,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
   let isAdmin = false;
   let provider = "textverified";
   let rules = [];
+  let fixedOverrides = [];
   let countries = [];
   let services = [];
   let busy = false;
@@ -245,6 +266,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
   function setBusy(value) {
     busy = value;
     $("saveBtn").disabled = value;
+    $("saveOverrideBtn").disabled = value;
     $("loginBtn").disabled = value;
     $("refreshBtn").disabled = value;
   }
@@ -442,7 +464,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
   async function loadRules(showNotice = true) {
     const {data, error} = await sb.from(TABLE)
       .select("id,server,country_id,country_key,service_code,markup_percent,is_active,created_at,updated_at")
-      .in("server", ["textverified","virtualsms"])
+      .in("server", ["textverified","virtualsms","fetchsms"])
       .order("updated_at", {ascending:false});
 
     if (error) throw error;
@@ -468,6 +490,13 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
           body: {action:"services"}
         });
         const data = assertFunctionResult(result, "TextVerified services");
+        services = normalizeList(data, "services");
+      } else if (provider === "fetchsms") {
+        countries = [{value:"US",name:"United States",country_id:187}];
+        const result = await sb.functions.invoke("fetch-sms-api", {
+          body: {action:"services"}
+        });
+        const data = assertFunctionResult(result, "Fetch SMS services");
         services = normalizeList(data, "services");
       } else {
         const countryResult = await sb.functions.invoke("virtual-sms-api", {
@@ -500,12 +529,13 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
       renderServiceOptions();
       initSearchableDropdowns();
       syncScopeFields();
+      await loadFixedOverrides();
 
     } catch (error) {
       if (request !== catalogRequest) return;
       console.error(error);
 
-      countries = provider === "textverified"
+      countries = (provider === "textverified" || provider === "fetchsms")
         ? [{value:"US",name:"United States",country_id:187}]
         : [];
       services = [];
@@ -552,7 +582,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
       select.appendChild(option(country.name + " (" + value + ")", value));
     });
 
-    if (provider === "textverified") {
+    if (provider === "textverified" || provider === "fetchsms") {
       select.value = "US";
     } else if ([...select.options].some(o => o.value === previous)) {
       select.value = previous;
@@ -636,11 +666,11 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     const allCountries = $("allCountries").checked;
     const allServices = $("allServices").checked;
 
-    $("countrySelect").disabled = allCountries || provider === "textverified";
+    $("countrySelect").disabled = allCountries || provider === "textverified" || provider === "fetchsms";
     $("serviceSelect").disabled = allServices;
 
     if (countryChoices) {
-      if (allCountries || provider === "textverified") countryChoices.disable();
+      if (allCountries || provider === "textverified" || provider === "fetchsms") countryChoices.disable();
       else countryChoices.enable();
     }
 
@@ -649,9 +679,13 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
       else serviceChoices.enable();
     }
 
-    $("countryHelp").textContent = provider === "textverified"
-      ? "TextVerified pricing is configured for the United States (ID 187)."
+    $("countryHelp").textContent = (provider === "textverified" || provider === "fetchsms")
+      ? (provider === "fetchsms" ? "Fetch SMS pricing is configured for the United States (ID 187)." : "TextVerified pricing is configured for the United States (ID 187).")
       : "Type to search countries, or select All countries.";
+    $("fixedOverridePanel").classList.toggle("hidden", provider === "virtualsms");
+    $("fixedOverrideHelp").textContent = provider === "fetchsms"
+      ? "Fetch SMS fixed prices apply only to United States services. Select a service above and enter the final selling price in naira."
+      : "Select a US service above and enter its final selling price in naira. An active fixed price takes priority over markup.";
 
     $("serviceHelp").textContent = "Type to search services, or select All services.";
   }
@@ -669,7 +703,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
 
     await loadCatalogs();
 
-    if (provider === "textverified") {
+    if (provider === "textverified" || provider === "fetchsms") {
       setDropdownValue("country", "US");
     } else if (!isAllCountry(r)) {
       const value = r.country_key || (r.country_id != null ? String(r.country_id) : "");
@@ -717,7 +751,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     let countryId = null;
 
     if (!allCountries) {
-      if (provider === "textverified") {
+      if (provider === "textverified" || provider === "fetchsms") {
         countryKey = "US";
         countryId = 187;
       } else {
@@ -839,6 +873,120 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     }
   }
 
+
+  async function loadFixedOverrides() {
+    if (provider !== "textverified" && provider !== "fetchsms") {
+      fixedOverrides = [];
+      renderFixedOverrides();
+      return;
+    }
+    const {data, error} = await sb.from("virtual_number_price_overrides")
+      .select("id,provider,country_id,service_code,custom_price_ngn,is_active,updated_at")
+      .eq("provider", provider).eq("country_id", 187)
+      .order("updated_at", {ascending:false});
+    if (error) throw error;
+    fixedOverrides = data || [];
+    renderFixedOverrides();
+  }
+
+  function renderFixedOverrides() {
+    const panel = $("fixedOverridePanel");
+    if (provider === "virtualsms") { panel.classList.add("hidden"); return; }
+    panel.classList.remove("hidden");
+    const list = fixedOverrides.filter(item => item.provider === provider);
+    $("fixedOverridesBody").innerHTML = list.map(item => {
+      const service = services.find(x => norm(serviceValue(x)) === norm(item.service_code));
+      const label = service ? serviceName(service) : item.service_code;
+      const status = item.is_active ? '<span class="pill on">Active</span>' : '<span class="pill off">Inactive</span>';
+      return "<tr><td>United States</td><td>" + escapeHTML(label) + " (" + escapeHTML(item.service_code) + ")</td>" +
+        "<td>₦" + escapeHTML(Number(item.custom_price_ngn).toLocaleString("en-NG")) + "</td>" +
+        "<td>" + status + "</td><td>" + escapeHTML(item.updated_at ? new Date(item.updated_at).toLocaleString() : "—") + "</td>" +
+        '<td><button class="btn smallbtn" data-price-edit="' + Number(item.id) + '" type="button">Edit</button> ' +
+        '<button class="btn smallbtn" data-price-toggle="' + Number(item.id) + '" type="button">' + (item.is_active ? "Deactivate" : "Activate") + '</button> ' +
+        '<button class="btn danger smallbtn" data-price-delete="' + Number(item.id) + '" type="button">Delete</button></td></tr>';
+    }).join("");
+    $("emptyFixedOverrides").classList.toggle("hidden", list.length !== 0);
+  }
+
+  async function saveFixedOverride() {
+    if (busy || !isAdmin) return;
+    if (provider !== "textverified" && provider !== "fetchsms") {
+      notice("Fixed price overrides are available only for the US providers.", "error"); return;
+    }
+    const service = $("serviceSelect").value;
+    const price = Number($("customPriceNGN").value);
+    if (!service || service === "__ALL__") {
+      notice("Choose one service in the form above before saving a fixed price.", "error"); return;
+    }
+    if (!Number.isFinite(price) || price <= 0) {
+      notice("Enter a valid fixed selling price greater than zero.", "error"); return;
+    }
+    setBusy(true);
+    try {
+      const payload = {
+        provider, country_id:187, service_code:service,
+        custom_price_ngn:price, is_active:true,
+        updated_at:new Date().toISOString()
+      };
+      const {error} = await sb.from("virtual_number_price_overrides")
+        .upsert(payload, {onConflict:"provider,country_id,service_code"});
+      if (error) throw error;
+      $("customPriceNGN").value = "";
+      await loadFixedOverrides();
+      notice("Fixed selling-price override saved. It now takes priority over markup for this service.", "ok");
+    } catch (error) {
+      console.error(error);
+      notice(error.message || "Could not save the fixed selling-price override.", "error");
+    } finally { setBusy(false); }
+  }
+
+  async function editFixedOverride(id) {
+    const item = fixedOverrides.find(x => Number(x.id) === Number(id) && x.provider === provider);
+    if (!item) return;
+    $("customPriceNGN").value = item.custom_price_ngn;
+    const match = [...$("serviceSelect").options].find(o => norm(o.value) === norm(item.service_code));
+    if (match) setDropdownValue("service", match.value);
+    else notice("This service is not in the current provider catalog. Refresh the catalog before editing it.", "error");
+    window.scrollTo({top:0,behavior:"smooth"});
+    notice("Editing fixed price override for " + item.service_code + ".", "info");
+  }
+
+  async function toggleFixedOverride(id) {
+    if (busy || !isAdmin) return;
+    const item = fixedOverrides.find(x => Number(x.id) === Number(id) && x.provider === provider);
+    if (!item) return;
+    setBusy(true);
+    try {
+      const {error} = await sb.from("virtual_number_price_overrides")
+        .update({is_active:!item.is_active,updated_at:new Date().toISOString()})
+        .eq("id",Number(id)).eq("provider",provider);
+      if (error) throw error;
+      await loadFixedOverrides();
+      notice("Fixed price override status updated.", "ok");
+    } catch (error) {
+      console.error(error);
+      notice(error.message || "Could not update the fixed price override.", "error");
+    } finally { setBusy(false); }
+  }
+
+  async function deleteFixedOverride(id) {
+    if (busy || !isAdmin) return;
+    const item = fixedOverrides.find(x => Number(x.id) === Number(id) && x.provider === provider);
+    if (!item) return;
+    if (!window.confirm("Delete the fixed selling-price override for " + item.service_code + "?")) return;
+    setBusy(true);
+    try {
+      const {error} = await sb.from("virtual_number_price_overrides")
+        .delete().eq("id",Number(id)).eq("provider",provider);
+      if (error) throw error;
+      await loadFixedOverrides();
+      notice("Fixed price override deleted. Markup pricing will be used again.", "ok");
+    } catch (error) {
+      console.error(error);
+      notice(error.message || "Could not delete the fixed price override.", "error");
+    } finally { setBusy(false); }
+  }
+
   async function signIn() {
     if (busy) return;
 
@@ -889,7 +1037,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     });
 
     $("providerTitle").textContent = provider === "textverified"
-      ? "TextVerified Markups" : "Virtual SMS Markups";
+      ? "TextVerified Markups" : provider === "fetchsms" ? "Fetch SMS Markups" : "Virtual SMS Markups";
 
     resetForm();
     renderRules();
@@ -904,6 +1052,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     try {
       await loadRules(false);
       await loadCatalogs();
+      await loadFixedOverrides();
 
       if (!$("notice").classList.contains("show")) {
         notice("Rules and provider options refreshed.", "ok");
@@ -971,6 +1120,15 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
   });
 
   $("refreshBtn").addEventListener("click", refreshAll);
+  $("saveOverrideBtn").addEventListener("click", saveFixedOverride);
+  $("clearOverrideBtn").addEventListener("click", () => $("customPriceNGN").value = "");
+  $("fixedOverridesBody").addEventListener("click", event => {
+    const button = event.target.closest("button");
+    if (!button) return;
+    if (button.dataset.priceEdit) editFixedOverride(button.dataset.priceEdit);
+    if (button.dataset.priceToggle) toggleFixedOverride(button.dataset.priceToggle);
+    if (button.dataset.priceDelete) deleteFixedOverride(button.dataset.priceDelete);
+  });
   $("logoutBtn").addEventListener("click", signOut);
   $("allCountries").addEventListener("change", syncScopeFields);
   $("allServices").addEventListener("change", syncScopeFields);
