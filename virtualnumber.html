@@ -1138,8 +1138,8 @@ function renderOrders(){
   const price=getPrice(o);
   const service=String(o.service_name||o.service_code||"Virtual Number").replace(/\b(?:text\s*verified|textverified|virtual\s*sms|virtualsms|bashua\s*sms|bashua)\b/gi,"").trim()||"Virtual Number";
   const country=String(o.country_name||o.country_code||"Unknown country");
-  const pending=status==="waiting";
-  const received=status==="received";
+  const pending=status==="waiting"||(status==="received"&&!code);
+  const received=status==="received"&&Boolean(code);
   const cancelled=status==="cancelled";
   const failed=status==="failed";
   const expired=status==="expired";
@@ -1183,7 +1183,7 @@ function renderOrders(){
   if(received){
    html+=`<div class="sms-box">
     <div class="sms-heading">VERIFICATION CODE</div>
-    <div class="sms-code">${escapeHTML(code||"Code unavailable")}</div>
+    <div class="sms-code">${escapeHTML(code||"Waiting for verification code")}</div>
     ${code?`<button class="copy-button" onclick="copyOrderCode(${id})">▢ &nbsp; Copy Code</button>`:""}
     ${sms?`<hr><div class="order-line">${escapeHTML(sms)}</div>`:""}
    </div>`;
