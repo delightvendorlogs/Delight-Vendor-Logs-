@@ -592,6 +592,23 @@ async function copyContent(
 // VIRTUAL STATUS BADGE
 // =====================================================
 
+function cleanVirtualCustomerText(value){
+    return String(value ?? "").replace(/\b(?:varsha\s*sms|varsha|text\s*verified|textverified|text\s*provider|virtual\s*sms|virtualsms|bashua\s*sms|bashua|grizzly\s*sms|grizzlysms|grizzly|smsbower|5sim)\b/gi, "").replace(/\s{2,}/g, " ").trim();
+}
+function extractVirtualOtp(value){
+    const text = cleanVirtualCustomerText(value).replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n))).replace(/&#39;|&apos;/gi, "'");
+    const patterns = [/(?:verification|security|sms|login|whatsapp)?\s*(?:code|otp|pin)\s*(?:is|:|=|-)?\s*["']?(\d{3,4}(?:[\s-]\d{3,4})?)/i, /(?:code|otp|pin)[^\d]{0,28}(\d{3,4}(?:[\s-]\d{3,4})?)/i];
+    for(const pattern of patterns){const match=text.match(pattern);const digits=String(match?.[1]||"").replace(/\D/g,"");if(/^\d{4,8}$/.test(digits))return digits;}
+    return "";
+}
+function cleanVirtualSms(value){
+    const raw=String(value||"").trim(); if(!raw)return "";
+    try{const parsed=JSON.parse(raw);const hasLink=Array.isArray(parsed)?parsed.some(x=>x&&typeof x==="object"&&(x.href||x.url)):parsed&&typeof parsed==="object"&&(parsed.href||parsed.url);if(hasLink)return "";
+        if(Array.isArray(parsed))return parsed.map(x=>cleanVirtualSms(x?.content||x?.text||x?.body||x?.message||"")).filter(Boolean).join("\n");
+        if(parsed&&typeof parsed==="object")return cleanVirtualSms(parsed.content||parsed.text||parsed.body||parsed.message||"");
+    }catch{}
+    return String(raw).replace(/&#(\d+);/g,(_,n)=>String.fromCodePoint(Number(n))).replace(/&#39;|&apos;/gi,"'");
+}
 function virtualStatusBadge(status){
 
     const value =
@@ -615,7 +632,7 @@ function virtualStatusBadge(status){
 
         return `
             <span class="badge badge-received">
-                ✅ Completed
+                ✅ Verification Successful
             </span>
         `;
 
@@ -648,22 +665,17 @@ function virtualStatusBadge(status){
 
 function createVirtualNumberCard(order){
 
-    const status =
-        String(order.status || "")
-        .toLowerCase()
-        .trim();
+    const providerState = String(order.provider_state || "").toLowerCase().replace(/[\s_-]/g, "");
+    const rawStatus = String(order.status || "").toLowerCase().trim();
+    const status = ["verificationcompleted","received","completed","complete","success","successful","verified","smsreceived","finished"].includes(providerState) ? "received" : rawStatus;
 
 
     const number =
         String(order.number || "");
 
 
-    const otp =
-        String(order.otp_code || "");
-
-
-    const sms =
-        String(order.full_sms || "");
+    const sms = cleanVirtualSms(order.full_sms || "");
+    const otp = String(order.otp_code || extractVirtualOtp(sms));
 
 
     const purchaseDate =
@@ -706,7 +718,7 @@ function createVirtualNumberCard(order){
 
         `;
 
-    }else if(status === "waiting"){
+    }else if(status === "waiting" || (status === "received" && !otp)){
 
         otpSection = `
 
@@ -717,7 +729,7 @@ function createVirtualNumberCard(order){
                 </div>
 
                 <strong>
-                    Waiting...
+                    ${status === "received" ? "Retrieving verification code…" : "Waiting…"}
                 </strong>
 
             </div>
@@ -829,7 +841,7 @@ function createVirtualNumberCard(order){
 
             📱
             ${esc(
-                String(order.service_name || "Virtual Number").replace(/\b(?:text\s*verified|textverified|virtual\s*sms|virtualsms|bashua\s*sms|bashua)\b/gi,"").trim() || "Virtual Number"
+                cleanVirtualCustomerText(order.service_name || "Virtual Number") || "Virtual Number"
             )}
 
             -
