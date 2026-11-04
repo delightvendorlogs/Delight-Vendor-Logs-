@@ -223,6 +223,7 @@ async function getQuote(service: string) {
     success: true,
     service,
     service_name: str(serviceRow?.name, serviceRow?.slug, service),
+    label: "USA number",
     country: "United States",
     country_id: COUNTRY_ID,
     provider_price: providerPrice,
