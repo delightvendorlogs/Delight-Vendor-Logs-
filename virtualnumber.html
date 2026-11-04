@@ -1058,7 +1058,21 @@ function orderDate(o){
  return Number.isNaN(x.getTime())?"Date unavailable":x.toLocaleString();
 }
 function getOrderNumber(o){return o.number??o.phone_number??o.phone??o.phoneNumber??"";}
-function getSms(o){return o.full_sms??o.sms_text??o.message??"";}
+function getSms(o){
+ const value=o.full_sms??o.sms_text??o.message??"";
+ if(typeof value!=="string")return "";
+ const trimmed=value.trim();
+ if(trimmed.startsWith("{")||trimmed.startsWith("[")){
+  try{
+   const parsed=JSON.parse(trimmed);
+   const hasProviderLink=Array.isArray(parsed)
+    ?parsed.some(x=>x&&typeof x==="object"&&(x.href||x.url))
+    :parsed&&typeof parsed==="object"&&(parsed.href||parsed.url);
+   if(hasProviderLink)return "";
+  }catch{}
+ }
+ return value;
+}
 
 /* Some VirtualSMS orders save the received SMS body before the separate
    otp_code field is populated. Recover the code from the SMS text for display
