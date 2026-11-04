@@ -373,7 +373,7 @@ const $=id=>document.getElementById(id);
 let session=null,currentUser=null,walletBalance=0;
 let flow="none",chosenProvider=null,selectedCountry=null,selectedService=null,selectedOption=null;
 let visibleServices=[],filteredServices=[],countryList=[],allOrders=[];
-let poller=null,countdownTimer=null,countryLoading=false;
+let poller=null,fetchSmsPoller=null,fetchSmsRefreshing=false,countdownTimer=null,countryLoading=false;
 let currentSection=null,optionsCache=[],initGeneration=0,servicesGeneration=0;
 let cancellationOrderId=null,cancellationBusy=false,refreshingOrders=false;
 const statusRefreshTimes=new Map();
@@ -609,6 +609,8 @@ async function init(){
   setActiveTab("");
   if(poller)clearInterval(poller);
   poller=setInterval(()=>{if(currentUser)refreshOrders();},30000);
+  if(fetchSmsPoller)clearInterval(fetchSmsPoller);
+  fetchSmsPoller=setInterval(()=>{if(currentUser)refreshFetchSmsOrders();},5000);
  }catch(e){
   console.error("Page initialization failed:",e);
   if(generation!==initGeneration)return;
@@ -950,6 +952,34 @@ function goBack(){
  else setSection(null);
 }
 
+async function refreshFetchSmsOrders(){
+ if(!currentUser||fetchSmsRefreshing)return;
+ const userId=currentUser.id;
+ fetchSmsRefreshing=true;
+ try{
+  const {data,error}=await sb.from("virtual_number_orders")
+   .select("*")
+   .eq("user_id",userId)
+   .eq("provider_key","fetchsms")
+   .eq("status","waiting")
+   .not("provider_order_id","is",null)
+   .order("created_at",{ascending:true})
+   .limit(10);
+  if(error)throw error;
+  if(currentUser?.id!==userId)return;
+  await Promise.allSettled((data||[]).map(o=>
+   invoke("fetchsms","status",orderActionPayload(o))
+  ));
+  if(currentUser?.id===userId){
+   await Promise.allSettled([loadOrders(),refreshWallet()]);
+  }
+ }catch(e){
+  console.warn("Fetch SMS automatic status refresh failed:",e);
+ }finally{
+  fetchSmsRefreshing=false;
+ }
+}
+
 async function refreshOrders(){
  if(!currentUser||refreshingOrders)return;
  const userId=currentUser.id;
@@ -965,7 +995,8 @@ async function refreshOrders(){
   const candidates=allOrders
    .filter(o=>{
     const status=normalizeStatus(o);
-    return !getCode(o) &&
+    return orderProvider(o)!=="fetchsms" &&
+     !getCode(o) &&
      (status==="waiting" || status==="received") &&
      Boolean(providerOrderId(o)) &&
      Boolean(orderProvider(o));
