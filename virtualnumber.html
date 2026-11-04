@@ -1040,6 +1040,9 @@ async function loadOrders(){
 
 
 function normalizeStatus(o){
+ // A saved OTP is the strongest source of truth; never let a stale provider
+ // status turn a successful verification back into Pending.
+ if(getCode(o)||o.code_received_at)return "received";
  const s=String(o.status||o.provider_state||"waiting").toLowerCase().trim();
  if(["received","completed","complete","success","successful","verification_successful","sms_received"].includes(s))return "received";
  if(["refunded","refund_completed","cancelled_refunded","canceled_refunded","refunded_cancelled","refunded_canceled"].includes(s))return "refunded";
@@ -1327,8 +1330,8 @@ function cancelOrder(id){
   showMessage("ordersMessage","Order not found. Refresh the list and try again.","error");
   return;
  }
- if(normalizeStatus(o)!=="waiting"){
-  showMessage("ordersMessage","Only pending orders can be cancelled.","error");
+ if(normalizeStatus(o)!=="waiting"&&!(normalizeStatus(o)==="received"&&!getCode(o)&&!o.code_received_at)){
+  showMessage("ordersMessage","A verification that has received its code cannot be cancelled.","error");
   return;
  }
  const hold=cancelHoldSeconds(o);
@@ -1379,9 +1382,9 @@ async function confirmCancelOrder(){
   showMessage("ordersMessage","Order not found. Refresh the list and try again.","error");
   return;
  }
- if(normalizeStatus(o)!=="waiting"){
+ if(normalizeStatus(o)!=="waiting"&&!(normalizeStatus(o)==="received"&&!getCode(o)&&!o.code_received_at)){
   closeCancelPopup();
-  showMessage("ordersMessage","This order is no longer pending. Refresh the order list.","info");
+  showMessage("ordersMessage","A verification that has received its code cannot be cancelled.","info");
   return;
  }
  const hold=cancelHoldSeconds(o);
