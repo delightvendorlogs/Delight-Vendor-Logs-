@@ -552,7 +552,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
       syncScopeFields();
 
       notice(
-        "Could not load " + (provider === "textverified" ? "TextVerified" : "Virtual SMS") +
+        "Could not load " + (provider === "textverified" ? "TextVerified" : provider === "fetchsms" ? "Fetch SMS" : "Virtual SMS") +
         " options. Check your sign-in, internet connection, and provider Edge Function. " +
         (error.message || ""),
         "error"
@@ -875,7 +875,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
 
 
   async function loadFixedOverrides() {
-    if (provider !== "textverified" && provider !== "fetchsms") {
+    if (provider !== "fetchsms") {
       fixedOverrides = [];
       renderFixedOverrides();
       return;
@@ -891,7 +891,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
 
   function renderFixedOverrides() {
     const panel = $("fixedOverridePanel");
-    if (provider === "virtualsms") { panel.classList.add("hidden"); return; }
+    if (provider !== "fetchsms") { panel.classList.add("hidden"); return; }
     panel.classList.remove("hidden");
     const list = fixedOverrides.filter(item => item.provider === provider);
     $("fixedOverridesBody").innerHTML = list.map(item => {
@@ -910,8 +910,8 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
 
   async function saveFixedOverride() {
     if (busy || !isAdmin) return;
-    if (provider !== "textverified" && provider !== "fetchsms") {
-      notice("Fixed price overrides are available only for the US providers.", "error"); return;
+    if (provider !== "fetchsms") {
+      notice("Fixed price overrides are available only for Fetch SMS USA services.", "error"); return;
     }
     const service = $("serviceSelect").value;
     const price = Number($("customPriceNGN").value);
@@ -1052,7 +1052,6 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     try {
       await loadRules(false);
       await loadCatalogs();
-      await loadFixedOverrides();
 
       if (!$("notice").classList.contains("show")) {
         notice("Rules and provider options refreshed.", "ok");
