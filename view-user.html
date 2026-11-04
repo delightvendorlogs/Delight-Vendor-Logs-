@@ -180,7 +180,31 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 800px;
+      min-width: 760px;
+    }
+
+    .table-wrap { overflow-x: auto; }
+    .virtual-field { font-size: 15px; line-height: 1.55; }
+    .virtual-field small { font-size: 13px; font-weight: 700; color: #555; }
+    .virtual-title { font-size: 18px; }
+    td { line-height: 1.55; }
+    th { font-size: 14px; }
+    .status { font-size: 13px; }
+    .detail-line { display:block; margin-top:5px; }
+
+    @media (max-width: 640px) {
+      .table-wrap { overflow: visible; }
+      table { min-width: 0; display: block; }
+      thead { display: none; }
+      tbody { display: block; }
+      tbody tr { display: block; background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; margin: 0 0 12px; padding: 7px 12px; }
+      tbody td { display: grid; grid-template-columns: minmax(100px, 34%) minmax(0, 1fr); gap: 10px; padding: 9px 2px; font-size: 15px; overflow-wrap: anywhere; }
+      tbody td::before { content: attr(data-label); font-weight: 800; color: #555; }
+      tbody td[colspan] { display: block; }
+      tbody td[colspan]::before { content: none; }
+      .container { padding-bottom: 30px; }
+      .card { padding: 14px; }
+      .virtual-field { font-size: 15px; }
     }
 
     th,
@@ -594,6 +618,7 @@
   let selectedUserId = null;
   let allUsers = [];
   let currentTab = "virtual";
+  let virtualOrdersCache = [];
 
 
   /*
@@ -1051,16 +1076,14 @@
 
   async function loadAllCustomerData() {
 
+    // Load the source virtual orders first so transaction rows can be
+    // matched by their exact VNUM-order reference, never by amount.
+    await loadVirtualOrders();
+
     await Promise.all([
-
-      loadVirtualOrders(),
-
       loadTransactions(),
-
       loadPurchases(),
-
       loadPending()
-
     ]);
 
   }
@@ -1135,6 +1158,7 @@
           )
       );
 
+    virtualOrdersCache = orders;
 
     if (
       orders.length === 0
@@ -1605,161 +1629,63 @@
 
   async function loadTransactions() {
 
-    const body =
-      document.getElementById(
-        "transactionsBody"
-      );
+    const body = document.getElementById("transactionsBody");
+    body.innerHTML = '<tr><td colspan="5">Loading transactions...</td></tr>';
 
-
-    body.innerHTML = `
-
-      <tr>
-        <td colspan="5">
-          Loading...
-        </td>
-      </tr>
-
-    `;
-
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-
-        .from("transactions")
-
-        .select(
-          "id,user_id,type,amount,status,description,created_at"
-        )
-
-        .eq(
-          "user_id",
-          selectedUserId
-        )
-
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
-        );
-
+    const { data, error } = await supabaseClient
+      .from("transactions")
+      .select("id,user_id,type,amount,status,description,reference,created_at")
+      .eq("user_id", selectedUserId)
+      .order("created_at", { ascending: false });
 
     if (error) {
-
-      body.innerHTML = `
-
-        <tr>
-
-          <td
-            colspan="5"
-            class="danger"
-          >
-
-            ${escapeHtml(
-              error.message
-            )}
-
-          </td>
-
-        </tr>
-
-      `;
-
+      body.innerHTML = `<tr><td colspan="5" class="danger">${escapeHtml(error.message)}</td></tr>`;
       return;
-
     }
 
-
-    if (
-      !data ||
-      data.length === 0
-    ) {
-
-      body.innerHTML = `
-
-        <tr>
-
-          <td
-            colspan="5"
-            class="empty"
-          >
-
-            No transactions found.
-
-          </td>
-
-        </tr>
-
-      `;
-
+    if (!data || !data.length) {
+      body.innerHTML = '<tr><td colspan="5" class="empty">No transactions found.</td></tr>';
       return;
-
     }
 
+    const virtualByReference = new Map(
+      virtualOrdersCache.map(order => ["VNUM-" + String(order.id), order])
+    );
 
-    body.innerHTML =
-      data.map(
-        item => `
+    body.innerHTML = data.map(item => {
+      const virtualOrder = item.reference
+        ? virtualByReference.get(String(item.reference))
+        : null;
 
-          <tr>
+      let displayStatus = item.status || "—";
+      if (virtualOrder) {
+        const orderStatus = String(virtualOrder.status || "").toLowerCase();
+        if (orderStatus === "cancelled") displayStatus = "cancelled";
+        else if (orderStatus === "received") displayStatus = "received";
+        else if (orderStatus === "waiting" || orderStatus === "pending") displayStatus = "pending";
+      }
 
-            <td>
-              ${formatDate(
-                item.created_at
-              )}
-            </td>
+      const description = virtualOrder
+        ? [
+            "Service: " + (virtualOrder.service_name || virtualOrder.service_code || "Virtual Number"),
+            "Country: " + (virtualOrder.country_name || "—"),
+            "Number: " + (virtualOrder.number || "—"),
+            "Customer price: ₦" + Number(virtualOrder.customer_price_ngn || 0).toLocaleString("en-NG", {minimumFractionDigits:2, maximumFractionDigits:2}),
+            "Provider price: ₦" + Number(virtualOrder.provider_cost_ngn || 0).toLocaleString("en-NG", {minimumFractionDigits:2, maximumFractionDigits:2}),
+            "Code: " + (virtualOrder.otp_code || "Not received")
+          ].join("<br>")
+        : escapeHtml(item.description || "—");
 
-
-            <td>
-              ${escapeHtml(
-                item.type ||
-                "—"
-              )}
-            </td>
-
-
-            <td>
-              ₦${Number(
-                item.amount ||
-                0
-              ).toLocaleString()}
-            </td>
-
-
-            <td>
-
-              <span
-                class="status ${getStatusClass(
-                  item.status
-                )}"
-              >
-
-                ${escapeHtml(
-                  item.status ||
-                  "—"
-                )}
-
-              </span>
-
-            </td>
-
-
-            <td>
-
-              ${escapeHtml(
-                item.description ||
-                "—"
-              )}
-
-            </td>
-
-          </tr>
-
-        `
-      ).join("");
+      return `
+        <tr>
+          <td data-label="Date">${formatDate(item.created_at)}</td>
+          <td data-label="Type">${escapeHtml(virtualOrder ? "Virtual Number Purchase" : (item.type || "—"))}</td>
+          <td data-label="Amount">₦${Math.abs(Number(item.amount || 0)).toLocaleString("en-NG", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+          <td data-label="Status"><span class="status ${getStatusClass(displayStatus)}">${escapeHtml(displayStatus)}</span></td>
+          <td data-label="Details" style="max-width:360px;word-break:break-word;">${description}</td>
+        </tr>
+      `;
+    }).join("");
 
   }
 
@@ -1772,571 +1698,90 @@
 
   async function loadPurchases() {
 
-    const body =
-      document.getElementById(
-        "purchasesBody"
-      );
-
-
-    body.innerHTML = `
-
-      <tr>
-
-        <td colspan="5">
-          Loading...
-        </td>
-
-      </tr>
-
-    `;
-
+    const body = document.getElementById("purchasesBody");
+    body.innerHTML = '<tr><td colspan="5">Loading purchases...</td></tr>';
 
     try {
+      const { data: normalData, error: normalError } = await supabaseClient
+        .from("purchases")
+        .select("id,product_id,product_name,amount,content,status,created_at")
+        .eq("user_id", selectedUserId);
 
-      /*
-      ==========================================
-      NORMAL PURCHASES
-      ==========================================
-      */
+      if (normalError) throw normalError;
 
-      const {
-        data: normalData,
-        error: normalError
-      } =
-        await supabaseClient
+      const { data: virtualAll, error: virtualError } = await supabaseClient
+        .rpc("admin_list_virtual_number_orders");
 
-          .from("purchases")
+      if (virtualError) throw virtualError;
 
-          .select(
-            "id,product_id,product_name,amount,content,status,created_at"
-          )
-
-          .eq(
-            "user_id",
-            selectedUserId
-          );
-
-
-      if (normalError) {
-        throw normalError;
-      }
-
-
-      /*
-      ==========================================
-      VIRTUAL NUMBER PURCHASES
-      ==========================================
-      */
-
-      const {
-        data: virtualAll,
-        error: virtualError
-      } =
-        await supabaseClient.rpc(
-          "admin_list_virtual_number_orders"
-        );
-
-
-      if (virtualError) {
-        throw virtualError;
-      }
-
-
-      const virtualData =
-        (virtualAll || []).filter(
-          order =>
-            String(
-              order.user_id
-            ) ===
-            String(
-              selectedUserId
-            )
-        );
-
-
-      /*
-      ==========================================
-      COMBINE BOTH PURCHASE TYPES
-      ==========================================
-      */
-
-      const combined = [];
-
-
-      /*
-      NORMAL
-      */
-
-      (normalData || []).forEach(
-        purchase => {
-
-          combined.push({
-
-            type: "normal",
-
-            date:
-              purchase.created_at,
-
-            data:
-              purchase
-
-          });
-
-        }
+      const virtualData = (virtualAll || []).filter(order =>
+        String(order.user_id) === String(selectedUserId)
       );
 
-
-      /*
-      VIRTUAL
-      */
-
-      virtualData.forEach(
-        order => {
-
-          combined.push({
-
-            type: "virtual",
-
-            date:
-              order.purchased_at ||
-              order.created_at,
-
-            data:
-              order
-
-          });
-
-        }
-      );
-
-
-      /*
-      ==========================================
-      NEWEST FIRST
-      ==========================================
-      */
-
-      combined.sort(
-        function(a, b) {
-
-          return (
-            new Date(
-              b.date || 0
-            ).getTime()
-            -
-            new Date(
-              a.date || 0
-            ).getTime()
-          );
-
-        }
-      );
-
-
-      /*
-      ==========================================
-      TOTAL SPENT
-      ==========================================
-      */
+      const combined = [
+        ...(normalData || []).map(purchase => ({ type: "normal", date: purchase.created_at, data: purchase })),
+        ...virtualData.map(order => ({ type: "virtual", date: order.purchased_at || order.created_at, data: order }))
+      ].sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
 
       let totalSpent = 0;
-
-
-      combined.forEach(
-        item => {
-
-          if (
-            item.type === "virtual"
-          ) {
-
-            const order =
-              item.data;
-
-
-            const status =
-              String(
-                order.status || ""
-              )
-              .toLowerCase()
-              .trim();
-
-
-            /*
-            Same logic as customer
-            My Purchases page:
-            only received virtual
-            numbers count as spent.
-            */
-
-            if (
-              status === "received"
-            ) {
-
-              totalSpent +=
-                Number(
-                  order.customer_price_ngn ||
-                  0
-                );
-
-            }
-
-          }
-
-          else {
-
-            const purchase =
-              item.data;
-
-
-            const status =
-              String(
-                purchase.status || ""
-              )
-              .toLowerCase()
-              .trim();
-
-
-            /*
-            Same logic as customer
-            My Purchases page:
-            only completed normal
-            purchases count as spent.
-            */
-
-            if (
-              status === "completed"
-            ) {
-
-              totalSpent +=
-                Number(
-                  purchase.amount ||
-                  0
-                );
-
-            }
-
-          }
-
+      combined.forEach(item => {
+        const status = String(item.data.status || "").toLowerCase().trim();
+        if (item.type === "virtual" && status === "received") {
+          totalSpent += Number(item.data.customer_price_ngn || 0);
+        } else if (item.type === "normal" && status === "completed") {
+          totalSpent += Number(item.data.amount || 0);
         }
-      );
+      });
 
+      document.getElementById("totalSpent").textContent =
+        "₦" + totalSpent.toLocaleString("en-NG", {minimumFractionDigits:2, maximumFractionDigits:2});
 
-      document
-        .getElementById(
-          "totalSpent"
-        )
-        .textContent =
-        "₦" +
-        Number(
-          totalSpent
-        ).toLocaleString(
-          "en-NG",
-          {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }
-        );
-
-
-      /*
-      ==========================================
-      EMPTY
-      ==========================================
-      */
-
-      if (
-        combined.length === 0
-      ) {
-
-        body.innerHTML = `
-
-          <tr>
-
-            <td
-              colspan="5"
-              class="empty"
-            >
-
-              No purchases found.
-
-            </td>
-
-          </tr>
-
-        `;
-
+      if (!combined.length) {
+        body.innerHTML = '<tr><td colspan="5" class="empty">No purchases found.</td></tr>';
         return;
-
       }
 
-
-      /*
-      ==========================================
-      RENDER COMBINED PURCHASES
-      ==========================================
-      */
-
-      body.innerHTML =
-        combined.map(
-          item => {
-
-            /*
-            ======================================
-            VIRTUAL NUMBER PURCHASE
-            ======================================
-            */
-
-            if (
-              item.type === "virtual"
-            ) {
-
-              const order =
-                item.data;
-
-
-              const status =
-                String(
-                  order.status ||
-                  "unknown"
-                )
-                .toLowerCase()
-                .trim();
-
-
-              const statusClass =
-                getStatusClass(
-                  status
-                );
-
-
-              const price =
-                Number(
-                  order.customer_price_ngn ||
-                  0
-                );
-
-
-              const purchaseName =
-                (
-                  order.service_name ||
-                  order.service_code ||
-                  "Virtual Number"
-                ) +
-                (
-                  order.country_name
-                    ? " - " +
-                      order.country_name
-                    : ""
-                );
-
-
-              return `
-
-                <tr>
-
-                  <td>
-
-                    ${formatDate(
-                      order.purchased_at ||
-                      order.created_at
-                    )}
-
-                  </td>
-
-
-                  <td>
-
-                    📱
-                    ${escapeHtml(
-                      purchaseName
-                    )}
-
-                  </td>
-
-
-                  <td>
-
-                    ₦${price.toLocaleString()}
-
-                  </td>
-
-
-                  <td>
-
-                    <span
-                      class="status ${statusClass}"
-                    >
-
-                      ${escapeHtml(
-                        order.status ||
-                        "—"
-                      )}
-
-                    </span>
-
-                  </td>
-
-
-                  <td
-                    style="
-                      max-width:300px;
-                      word-break:break-word;
-                    "
-                  >
-
-                    <strong>
-                      Virtual Number
-                    </strong>
-
-                    <br>
-
-                    Country:
-                    ${escapeHtml(
-                      order.country_name ||
-                      "—"
-                    )}
-
-                    <br>
-
-                    Number:
-                    ${escapeHtml(
-                      order.number ||
-                      "—"
-                    )}
-
-                    ${
-                      order.otp_code
-                        ? `
-                          <br>
-                          OTP:
-                          ${escapeHtml(
-                            order.otp_code
-                          )}
-                        `
-                        : ""
-                    }
-
-                  </td>
-
-                </tr>
-
-              `;
-
-            }
-
-
-            /*
-            ======================================
-            NORMAL PURCHASE
-            ======================================
-            */
-
-            const purchase =
-              item.data;
-
-
-            return `
-
-              <tr>
-
-                <td>
-
-                  ${formatDate(
-                    purchase.created_at
-                  )}
-
-                </td>
-
-
-                <td>
-
-                  ${escapeHtml(
-                    purchase.product_name ||
-                    "—"
-                  )}
-
-                </td>
-
-
-                <td>
-
-                  ₦${Number(
-                    purchase.amount ||
-                    0
-                  ).toLocaleString()}
-
-                </td>
-
-
-                <td>
-
-                  <span
-                    class="status ${getStatusClass(
-                      purchase.status
-                    )}"
-                  >
-
-                    ${escapeHtml(
-                      purchase.status ||
-                      "—"
-                    )}
-
-                  </span>
-
-                </td>
-
-
-                <td
-                  style="
-                    max-width:300px;
-                    word-break:break-word;
-                  "
-                >
-
-                  ${escapeHtml(
-                    purchase.content ||
-                    "—"
-                  )}
-
-                </td>
-
-              </tr>
-
-            `;
-
-          }
-        ).join("");
-
-    }
-
-    catch (error) {
-
-      console.error(
-        "Purchase loading error:",
-        error
-      );
-
-
-      body.innerHTML = `
-
-        <tr>
-
-          <td
-            colspan="5"
-            class="danger"
-          >
-
-            ${escapeHtml(
-              error.message ||
-              "Unable to load purchases."
-            )}
-
-          </td>
-
-        </tr>
-
-      `;
-
+      body.innerHTML = combined.map(item => {
+        if (item.type === "virtual") {
+          const order = item.data;
+          const status = String(order.status || "unknown").toLowerCase();
+          const service = order.service_name || order.service_code || "Virtual Number";
+          const customerPrice = Number(order.customer_price_ngn || 0);
+          const providerPrice = Number(order.provider_cost_ngn || 0);
+          const details = [
+            "<strong>Country:</strong> " + escapeHtml(order.country_name || "—"),
+            "<strong>Number:</strong> " + escapeHtml(order.number || "—"),
+            "<strong>Customer price:</strong> ₦" + customerPrice.toLocaleString("en-NG", {minimumFractionDigits:2, maximumFractionDigits:2}),
+            "<strong>Provider price:</strong> ₦" + providerPrice.toLocaleString("en-NG", {minimumFractionDigits:2, maximumFractionDigits:2}),
+            "<strong>Verification code:</strong> " + escapeHtml(order.otp_code || "Not received")
+          ].join("<br>");
+
+          return `
+            <tr>
+              <td data-label="Date">${formatDate(order.purchased_at || order.created_at)}</td>
+              <td data-label="Purchase">📱 ${escapeHtml(service)}</td>
+              <td data-label="Customer price">₦${customerPrice.toLocaleString("en-NG", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+              <td data-label="Status"><span class="status ${getStatusClass(status)}">${escapeHtml(status)}</span></td>
+              <td data-label="Details" style="max-width:360px;word-break:break-word;">${details}</td>
+            </tr>
+          `;
+        }
+
+        const purchase = item.data;
+        return `
+          <tr>
+            <td data-label="Date">${formatDate(purchase.created_at)}</td>
+            <td data-label="Purchase">${escapeHtml(purchase.product_name || "—")}</td>
+            <td data-label="Amount">₦${Number(purchase.amount || 0).toLocaleString("en-NG", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+            <td data-label="Status"><span class="status ${getStatusClass(purchase.status)}">${escapeHtml(purchase.status || "—")}</span></td>
+            <td data-label="Details" style="max-width:360px;word-break:break-word;">${escapeHtml(purchase.content || "—")}</td>
+          </tr>
+        `;
+      }).join("");
+
+    } catch (error) {
+      console.error("Purchase loading error:", error);
+      body.innerHTML = `<tr><td colspan="5" class="danger">${escapeHtml(error.message || "Unable to load purchases.")}</td></tr>`;
     }
 
   }
@@ -2350,153 +1795,33 @@
 
   async function loadPending() {
 
-    const body =
-      document.getElementById(
-        "pendingBody"
-      );
+    const body = document.getElementById("pendingBody");
+    body.innerHTML = '<tr><td colspan="4">Loading pending orders...</td></tr>';
 
-
-    body.innerHTML = `
-
-      <tr>
-
-        <td colspan="4">
-          Loading...
-        </td>
-
-      </tr>
-
-    `;
-
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-
-        .from("pending_orders")
-
-        .select(
-          "id,product_id,product_name,amount,status,created_at"
-        )
-
-        .eq(
-          "user_id",
-          selectedUserId
-        )
-
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
-        );
-
+    const { data, error } = await supabaseClient
+      .from("pending_orders")
+      .select("id,product_id,product_name,amount,status,created_at")
+      .eq("user_id", selectedUserId)
+      .order("created_at", { ascending: false });
 
     if (error) {
-
-      body.innerHTML = `
-
-        <tr>
-
-          <td
-            colspan="4"
-            class="danger"
-          >
-
-            ${escapeHtml(
-              error.message
-            )}
-
-          </td>
-
-        </tr>
-
-      `;
-
+      body.innerHTML = `<tr><td colspan="4" class="danger">${escapeHtml(error.message)}</td></tr>`;
       return;
-
     }
 
-
-    if (
-      !data ||
-      data.length === 0
-    ) {
-
-      body.innerHTML = `
-
-        <tr>
-
-          <td
-            colspan="4"
-            class="empty"
-          >
-
-            No pending orders found.
-
-          </td>
-
-        </tr>
-
-      `;
-
+    if (!data || !data.length) {
+      body.innerHTML = '<tr><td colspan="4" class="empty">No pending orders found.</td></tr>';
       return;
-
     }
 
-
-    body.innerHTML =
-      data.map(
-        item => `
-
-          <tr>
-
-            <td>
-              ${formatDate(
-                item.created_at
-              )}
-            </td>
-
-
-            <td>
-              ${escapeHtml(
-                item.product_name ||
-                "—"
-              )}
-            </td>
-
-
-            <td>
-              ₦${Number(
-                item.amount ||
-                0
-              ).toLocaleString()}
-            </td>
-
-
-            <td>
-
-              <span
-                class="status ${getStatusClass(
-                  item.status
-                )}"
-              >
-
-                ${escapeHtml(
-                  item.status ||
-                  "—"
-                )}
-
-              </span>
-
-            </td>
-
-          </tr>
-
-        `
-      ).join("");
+    body.innerHTML = data.map(item => `
+      <tr>
+        <td data-label="Date">${formatDate(item.created_at)}</td>
+        <td data-label="Product">${escapeHtml(item.product_name || "—")}</td>
+        <td data-label="Amount">₦${Number(item.amount || 0).toLocaleString("en-NG", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+        <td data-label="Status"><span class="status ${getStatusClass(item.status)}">${escapeHtml(item.status || "—")}</span></td>
+      </tr>
+    `).join("");
 
   }
 
