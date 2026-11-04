@@ -485,8 +485,7 @@
 
           <div class="status">
             ${escapeHTML(
-              transaction.status ||
-              "completed"
+              removeProviderNames(transaction.status || "completed")
             )}
           </div>
 
@@ -532,7 +531,7 @@
     return String(value)
 
       .replace(
-        /\b(?:text\s*verified|textverified|virtual\s*sms|virtualsms|bashua\s*sms|bashua)\b/gi,
+        /\b(?:varsha\s*sms|varsha|text\s*verified|textverified|text\s*provider|virtual\s*sms|virtualsms|bashua\s*sms|bashua)\b/gi,
         ""
       )
 
