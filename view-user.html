@@ -147,8 +147,10 @@
 
     .info-box small {
       display: block;
-      color: #777;
-      margin-bottom: 5px;
+      color: #555;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 6px;
     }
 
     .balance {
@@ -1097,6 +1099,8 @@
 
   async function loadVirtualOrders() {
 
+    virtualOrdersCache = [];
+
     const box =
       document.getElementById(
         "virtualOrders"
@@ -1326,7 +1330,7 @@
                 ? escapeHtml(
                     order.otp_code
                   )
-                : "Not received"
+                : (status === "received" ? "Missing from saved record" : "Awaiting code")
             }
 
           </div>
@@ -1667,12 +1671,12 @@
 
       const description = virtualOrder
         ? [
-            "Service: " + (virtualOrder.service_name || virtualOrder.service_code || "Virtual Number"),
+            "Service: " + escapeHtml(virtualOrder.service_name || virtualOrder.service_code || "Virtual Number"),
             "Country: " + (virtualOrder.country_name || "—"),
             "Number: " + (virtualOrder.number || "—"),
             "Customer price: ₦" + Number(virtualOrder.customer_price_ngn || 0).toLocaleString("en-NG", {minimumFractionDigits:2, maximumFractionDigits:2}),
             "Provider price: ₦" + Number(virtualOrder.provider_cost_ngn || 0).toLocaleString("en-NG", {minimumFractionDigits:2, maximumFractionDigits:2}),
-            "Code: " + (virtualOrder.otp_code || "Not received")
+            "Code: " + (virtualOrder.otp_code ? escapeHtml(virtualOrder.otp_code) : (String(virtualOrder.status || "").toLowerCase() === "received" ? "Missing from saved record" : "Awaiting code"))
           ].join("<br>")
         : escapeHtml(item.description || "—");
 
@@ -1753,7 +1757,7 @@
             "<strong>Number:</strong> " + escapeHtml(order.number || "—"),
             "<strong>Customer price:</strong> ₦" + customerPrice.toLocaleString("en-NG", {minimumFractionDigits:2, maximumFractionDigits:2}),
             "<strong>Provider price:</strong> ₦" + providerPrice.toLocaleString("en-NG", {minimumFractionDigits:2, maximumFractionDigits:2}),
-            "<strong>Verification code:</strong> " + escapeHtml(order.otp_code || "Not received")
+            "<strong>Verification code:</strong> " + escapeHtml(order.otp_code || (String(order.status || "").toLowerCase() === "received" ? "Missing from saved record" : "Awaiting code"))
           ].join("<br>");
 
           return `
