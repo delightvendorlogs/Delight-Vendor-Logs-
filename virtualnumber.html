@@ -940,7 +940,7 @@ async function refreshOrders(){
    .filter(o=>{
     const status=normalizeStatus(o);
     return !getCode(o) &&
-     status==="waiting" &&
+     (status==="waiting" || status==="received") &&
      Boolean(providerOrderId(o)) &&
      Boolean(orderProvider(o));
    })
