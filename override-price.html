@@ -666,6 +666,8 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     const allCountries = $("allCountries").checked;
     const allServices = $("allServices").checked;
 
+    $("allCountries").disabled = provider === "fetchsms";
+    if (provider === "fetchsms") $("allCountries").checked = false;
     $("countrySelect").disabled = allCountries || provider === "textverified" || provider === "fetchsms";
     $("serviceSelect").disabled = allServices;
 
@@ -915,8 +917,8 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     }
     const service = $("serviceSelect").value;
     const price = Number($("customPriceNGN").value);
-    if (!service || service === "__ALL__") {
-      notice("Choose one service in the form above before saving a fixed price.", "error"); return;
+    if ($("allServices").checked || !service || service === "__ALL__") {
+      notice("Choose one specific service in the form above before saving a fixed price.", "error"); return;
     }
     if (!Number.isFinite(price) || price <= 0) {
       notice("Enter a valid fixed selling price greater than zero.", "error"); return;
