@@ -363,7 +363,8 @@ const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
 const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 const FUNCTIONS={
  textverified:SUPABASE_URL+"/functions/v1/text-verified-api",
- virtualsms:SUPABASE_URL+"/functions/v1/virtual-sms-api"
+ virtualsms:SUPABASE_URL+"/functions/v1/virtual-sms-api",
+ fetchsms:SUPABASE_URL+"/functions/v1/fetch-sms-api"
 };
 
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -673,7 +674,18 @@ async function loadCountries(){
  countryLoading=true;
  try{
   const response=await invoke("virtualsms","countries",{});
-  countryList=normalizeCountries(response);
+  const normalized=normalizeCountries(response);
+  const isUnitedStates=c=>{
+   const name=String(c?.name||"").trim().toLowerCase();
+   const code=String(c?.code||"").trim().toUpperCase();
+   return code==="US" || name==="usa" || name==="united states" ||
+    name==="united states of america";
+  };
+  countryList=normalized
+   .filter(c=>!isUnitedStates(c))
+   .map(c=>({...c,_provider:"virtualsms"}));
+  countryList.push({name:"United States",code:"US",id:187,_provider:"fetchsms",_original:null});
+  countryList.sort((a,b)=>a.name.localeCompare(b.name));
   if(!countryList.length){
    $("countryMenu").innerHTML='<div class="picker-placeholder">No countries are available.</div><button class="btn btn-dark full" onclick="retryCountries()">Retry</button>';
    showMessage("allMessage","Countries could not be loaded. Please retry.","error");
@@ -732,6 +744,8 @@ function renderCountries(list){
 async function selectCountry(index){
  if(index<0||index>=countryList.length)return;
  selectedCountry=countryList[index];
+ chosenProvider=selectedCountry._provider==="fetchsms" ||
+  String(selectedCountry.code||"").toUpperCase()==="US" ? "fetchsms" : "virtualsms";
  if(!selectedCountry.code&&selectedCountry.id==null){
   showMessage("allMessage","This country is not available right now. Please choose another country.","error");
   return;
@@ -772,10 +786,15 @@ async function loadServices(){
  try{
   const payload=provider==="textverified"
    ?{numberType:"mobile",reservationType:"verification"}
-   :{country:selectedCountry?.code,countryId:selectedCountry?.id};
+   :provider==="fetchsms"
+    ?{country:"US",countryId:187}
+    :{country:selectedCountry?.code,countryId:selectedCountry?.id};
   const response=await invoke(provider,"services",payload);
   if(provider!==chosenProvider||generation!==servicesGeneration)return;
   visibleServices=normalizeServices(response);
+  if(provider==="fetchsms"){
+   visibleServices=visibleServices.filter(s=>Number(s.short_available??s._original?.short_available??0)>0);
+  }
   if(!visibleServices.length){
    menu.innerHTML='<div class="picker-placeholder">No services are available.</div><button class="btn btn-dark full" onclick="loadServices()">Retry</button>';
    showMessage(provider==="textverified"?"usaMessage":"allMessage","No services were returned. Please retry later.","error");
@@ -799,7 +818,7 @@ async function loadServices(){
 }
 
 function filterServices(which){
- const provider=which==="usa"?"textverified":"virtualsms";
+ const provider=which==="usa"?"textverified":chosenProvider==="fetchsms"?"fetchsms":"virtualsms";
  if(chosenProvider!==provider)return;
  const q=$(which==="usa"?"usaServiceSearch":"allServiceSearch").value.trim().toLowerCase();
  filteredServices=visibleServices.filter(s=>
@@ -844,7 +863,9 @@ async function selectService(index){
   const code=serviceCode(selectedService);
   const payload=chosenProvider==="textverified"
    ?{service:code,serviceCode:code,numberType:"mobile",reservationType:"verification"}
-   :{service:code,serviceCode:code,country:selectedCountry.code,countryCode:selectedCountry.code,countryId:selectedCountry.id};
+   :chosenProvider==="fetchsms"
+    ?{service:code,serviceCode:code,country:"US",countryCode:"US",countryId:187}
+    :{service:code,serviceCode:code,country:selectedCountry.code,countryCode:selectedCountry.code,countryId:selectedCountry.id};
   const response=await invoke(chosenProvider,"price",payload);
   optionsCache=getList(response);
   if(!optionsCache.length&&(response?.price!==undefined||response?.data?.price!==undefined||response?.price_ngn!==undefined))optionsCache=[response];
@@ -993,7 +1014,8 @@ async function loadOrders(){
    */
   const automaticRefundMarkers = [
    "provider_insufficient_funds_refunded",
-   "virtualsms_insufficient_funds_refunded"
+   "virtualsms_insufficient_funds_refunded",
+   "fetchsms_purchase_failed_refunded"
   ];
 
   allOrders=(data||[]).filter(o=>{
@@ -1048,6 +1070,8 @@ function normalizeStatus(o){
  // A saved OTP or a completed provider verification is authoritative.
  if(getCode(o)||o.code_received_at)return "received";
  const providerState=String(o.provider_state||"").toLowerCase().replace(/[\s_-]/g,"");
+ const providerKey=String(o.provider_key||o.provider||"").toLowerCase();
+ if(providerKey==="fetchsms"&&["expired","timeout","timedout"].includes(providerState))return "expired";
  if(["verificationcompleted","received","completed","complete","success","successful","verified","smsreceived","finished"].includes(providerState))return "received";
  const s=String(o.status||o.provider_state||"waiting").toLowerCase().trim();
  if(["received","completed","complete","success","successful","verification_successful","sms_received"].includes(s))return "received";
@@ -1224,7 +1248,9 @@ function renderOrders(){
    html+=`<div class="detail-row"><span>Purchase price</span><strong>${escapeHTML(money(price))}</strong></div>`;
   }
   html+=`<div class="order-line"><strong>Order date:</strong> ${escapeHTML(orderDate(o))}</div>`;
-  html+=`<div class="order-actions"><button class="btn btn-black" onclick="checkOrder(${id})">Refresh Status</button></div>`;
+  if(!(received&&orderProvider(o)==="fetchsms")){
+   html+=`<div class="order-actions"><button class="btn btn-black" onclick="checkOrder(${id})">Refresh Status</button></div>`;
+  }
   html+=`</article>`;
   return html;
  }).join("");
@@ -1291,6 +1317,7 @@ function orderProvider(o){
  const p=String(o.provider_key||o.provider||"").toLowerCase().replace(/[_\s]/g,"-");
  if(p.includes("textverified")||p.includes("text-verified"))return "textverified";
  if(p.includes("virtualsms")||p.includes("virtual-sms"))return "virtualsms";
+ if(p.includes("fetchsms")||p.includes("fetch-sms"))return "fetchsms";
  return null;
 }
 function providerOrderId(o){
