@@ -533,9 +533,12 @@ function servicePrice(o){
  const n=Number(v);
  return Number.isFinite(n)?n:null;
 }
+function cleanCustomerLabel(value){
+ return String(value??"").replace(/\b(?:varsha\s*sms|varsha|text\s*verified|textverified|text\s*provider|virtual\s*sms|virtualsms|bashua\s*sms|bashua|grizzly\s*sms|grizzlysms|grizzly|smsbower|5sim)\b/gi,"").replace(/[|·•:–—-]{2,}/g," ").replace(/\s{2,}/g," ").trim();
+}
 function optionLabel(o){
- if(typeof o==="string"||typeof o==="number")return String(o);
- return String(o?.label??o?.name??o?.server_name??o?.serverName??o?.title??o?.server??"Available option");
+ if(typeof o==="string"||typeof o==="number")return cleanCustomerLabel(o);
+ return cleanCustomerLabel(o?.label??o?.name??o?.server_name??o?.serverName??o?.title??o?.server??"Available option")||"Available option";
 }
 function getOptionPayload(o){return o&&typeof o==="object"?o:{server:o};}
 
@@ -1040,9 +1043,10 @@ async function loadOrders(){
 
 
 function normalizeStatus(o){
- // A saved OTP is the strongest source of truth; never let a stale provider
- // status turn a successful verification back into Pending.
+ // A saved OTP or a completed provider verification is authoritative.
  if(getCode(o)||o.code_received_at)return "received";
+ const providerState=String(o.provider_state||"").toLowerCase().replace(/[\s_-]/g,"");
+ if(["verificationcompleted","received","completed","complete","success","successful","verified","smsreceived","finished"].includes(providerState))return "received";
  const s=String(o.status||o.provider_state||"waiting").toLowerCase().trim();
  if(["received","completed","complete","success","successful","verification_successful","sms_received"].includes(s))return "received";
  if(["refunded","refund_completed","cancelled_refunded","canceled_refunded","refunded_cancelled","refunded_canceled"].includes(s))return "refunded";
@@ -1153,10 +1157,10 @@ function renderOrders(){
   const code=String(getCode(o)||"");
   const sms=String(getSms(o)||"");
   const price=getPrice(o);
-  const service=String(o.service_name||o.service_code||"Virtual Number").replace(/\b(?:text\s*verified|textverified|virtual\s*sms|virtualsms|bashua\s*sms|bashua)\b/gi,"").trim()||"Virtual Number";
+  const service=cleanCustomerLabel(o.service_name||o.service_code||"Virtual Number")||"Virtual Number";
   const country=String(o.country_name||o.country_code||"Unknown country");
-  const pending=status==="waiting"||(status==="received"&&!code);
-  const received=status==="received"&&Boolean(code);
+  const pending=status==="waiting";
+  const received=status==="received";
   const cancelled=status==="cancelled";
   const failed=status==="failed";
   const expired=status==="expired";
@@ -1168,7 +1172,7 @@ function renderOrders(){
    received?"Verification Successful":
    cancelled?"Order Cancelled":expired?"Number Timed Out":failed?"Order Failed":"Refunded";
   const subtitle=pending?(number?"Waiting for verification code":"Waiting for provider confirmation"):
-   received?"SMS received for this number":
+   received?(code?"SMS received for this number":"Verification completed. Retrieving the code…"):
    cancelled?"This number order has ended":
    expired?"The provider verification time ended and the refund was processed":
    failed?"This number order failed":"Your refund has been recorded";
@@ -1200,7 +1204,7 @@ function renderOrders(){
   if(received){
    html+=`<div class="sms-box">
     <div class="sms-heading">VERIFICATION CODE</div>
-    <div class="sms-code">${escapeHTML(code||"Waiting for verification code")}</div>
+    <div class="sms-code">${escapeHTML(code||"Retrieving verification code…")}</div>
     ${code?`<button class="copy-button" onclick="copyOrderCode(${id})">▢ &nbsp; Copy Code</button>`:""}
     ${sms?`<hr><div class="order-line">${escapeHTML(sms)}</div>`:""}
    </div>`;
@@ -1236,7 +1240,7 @@ function updateCountdowns(){
   const cancelButton=el.closest(".order-card")?.querySelector(".btn-danger");
   if(label)label.textContent=left===null?"Expiry information":"Time remaining";
   if(note)note.textContent=hold>0
-    ?"Bashua SMS cancellation unlocks in "+countdownText(hold)
+    ?"Cancellation unlocks in "+countdownText(hold)
     :left===null?"Waiting for the exact expiry time from the provider":"Countdown uses the provider expiry time";
   if(cancelButton){
     cancelButton.disabled=hold>0;
@@ -1261,7 +1265,7 @@ function updateCountdowns(){
 async function copyOrderCode(id){
  const o=allOrders.find(x=>Number(x.id)===Number(id));
  const code=getCode(o||{});
- if(!code){showMessage("ordersMessage","No verification code is available to copy yet.","error");return;}
+ if(!code){showMessage("ordersMessage","The verification code is still being retrieved. Please refresh shortly.","error");return;}
  try{
   await navigator.clipboard.writeText(String(code));
   showMessage("ordersMessage","Verification code copied.","success");
