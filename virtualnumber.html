@@ -435,7 +435,7 @@ function formatError(error,fallback){
  }
  const safeFallback=fallback||"The request could not be completed. Please try again.";
  if(!raw)return safeFallback;
- if(/provider|virtualsms|textverified|numpool|api key|api_key|internal server|stack trace|exception|sql|postgres|supabase/.test(m))return safeFallback;
+ if(/provider|varsha|text\s*verified|textverified|text\s*provider|virtual\s*sms|virtualsms|numpool|api key|api_key|internal server|stack trace|exception|sql|postgres|supabase/.test(m))return safeFallback;
  if(raw.length>140||/[{}[\]]/.test(raw))return safeFallback;
  return raw;
 }
@@ -816,7 +816,7 @@ function renderServices(which){
  }
  menu.innerHTML=filteredServices.map(s=>{
   const i=visibleServices.indexOf(s);
-  return `<button type="button" class="service-button" onclick="selectService(${i})"><strong>${escapeHTML(s.name)}</strong></button>`;
+  return `<button type="button" class="service-button" onclick="selectService(${i})"><strong>${escapeHTML(cleanCustomerLabel(s.name)||"Available service")}</strong></button>`;
  }).join("");
 }
 
@@ -826,15 +826,15 @@ async function selectService(index){
  selectedOption=null;
  closePickers();
  if(chosenProvider==="textverified"){
-  $("usaServiceSearch").value=selectedService.name;
-  $("usaSelected").textContent="Selected: "+selectedService.name;
+  $("usaServiceSearch").value=cleanCustomerLabel(selectedService.name);
+  $("usaSelected").textContent="Selected: "+cleanCustomerLabel(selectedService.name);
   $("usaSelected").style.display="block";
  }else{
-  $("allServiceSearch").value=selectedService.name;
-  $("allSelected").textContent="Selected: "+selectedService.name;
+  $("allServiceSearch").value=cleanCustomerLabel(selectedService.name);
+  $("allSelected").textContent="Selected: "+cleanCustomerLabel(selectedService.name);
   $("allSelected").style.display="block";
  }
- $("optionsTitle").textContent=selectedService.name;
+ $("optionsTitle").textContent=cleanCustomerLabel(selectedService.name)||"Available service";
  $("optionsSubtitle").textContent=(selectedCountry?selectedCountry.name+" · ":"United States · ")+"Choose an available option.";
  $("optionsList").innerHTML='<div class="loading">Loading prices and availability…</div>';
  showMessage("optionsMessage","");
