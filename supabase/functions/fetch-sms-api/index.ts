@@ -133,7 +133,7 @@ async function listServicesRaw(): Promise<any[]> {
 
 async function listServices() {
   const rows = await listServicesRaw();
-  return rows.map((item: any) => ({
+  return rows.filter((item: any) => Number(item?.id) !== 1).map((item: any) => ({
     id: num(item?.id),
     code: String(item?.id ?? ""),
     service_code: String(item?.id ?? ""),
@@ -194,7 +194,9 @@ async function getFixedPriceOverride(service: string): Promise<number | null> {
 }
 
 async function getQuote(service: string) {
-  if (!/^\d+$/.test(service)) throw new Error("Select a valid Fetch SMS service.");
+  if (!/^\d+$/.test(service) || Number(service) === 1) {
+    throw new Error("Select a valid short-term Fetch SMS service. Long-term rentals are not part of this USA verification flow.");
+  }
 
   const [quote, catalog, fx, markup, fixedPrice] = await Promise.all([
     providerRequest(
