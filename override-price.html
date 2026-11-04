@@ -772,7 +772,9 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
       country_id: countryId,
       service_code: allServices ? null : serviceValueSelected,
       markup_percent: markup,
-      is_active: $("active").checked,
+      // Fetch SMS All Services is the provider-wide fallback rule. Keep it active
+      // when saved so every service without a specific rule receives this markup.
+      is_active: provider === "fetchsms" && allServices ? true : $("active").checked,
       updated_at: new Date().toISOString()
     };
   }
