@@ -682,7 +682,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:12px}
     $("countryHelp").textContent = (provider === "textverified" || provider === "fetchsms")
       ? (provider === "fetchsms" ? "Fetch SMS pricing is configured for the United States (ID 187)." : "TextVerified pricing is configured for the United States (ID 187).")
       : "Type to search countries, or select All countries.";
-    $("fixedOverridePanel").classList.toggle("hidden", provider === "virtualsms");
+    $("fixedOverridePanel").classList.toggle("hidden", provider !== "fetchsms");
     $("fixedOverrideHelp").textContent = provider === "fetchsms"
       ? "Fetch SMS fixed prices apply only to United States services. Select a service above and enter the final selling price in naira."
       : "Select a US service above and enter its final selling price in naira. An active fixed price takes priority over markup.";
