@@ -117,7 +117,7 @@ function render(){
  }
  $("metrics").innerHTML=m.join("");$("tools").innerHTML=t.join("");applyToolSearch();
 }
-function tool(title,desc,url){const safe=s=>String(s).replace(/[&<>"\']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\\"":"&quot;","\'":"&#39;"}[c]));return '<a class="tool" data-search="'+safe(title+" "+desc).toLowerCase()+'" href="'+safe(url)+'"><b>'+safe(title)+' →</b><span>'+safe(desc)+'</span></a>'}
+function tool(title,desc,url){const search=(title+" "+desc).toLowerCase().replace(/&/g,"&amp;").replace(/"/g,"&quot;");return '<a class="tool" data-search="'+search+'" href="'+url+'"><b>'+title+' →</b><span>'+desc+'</span></a>'}
 function applyToolSearch(){const q=($("toolSearch")?.value||"").trim().toLowerCase();let shown=0;document.querySelectorAll("#tools .tool").forEach(el=>{const match=!q||(el.dataset.search||"").includes(q);el.classList.toggle("hidden",!match);if(match)shown++});$("toolSearchEmpty").classList.toggle("hidden",shown>0)}
 async function showDashboard(){
  $("loginPanel").classList.add("hidden");$("dashboard").classList.remove("hidden");$("logout").classList.remove("hidden");
