@@ -4234,14 +4234,6 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
 
     <div
         class="menu-item"
-        onclick="location.href='loyalty.html'"
-    >
-        ⭐ My Rewards
-    </div>
-
-
-    <div
-        class="menu-item"
         onclick="location.href='pending.html'"
     >
         ⏳ Pending Orders
@@ -6553,34 +6545,6 @@ main{max-width:1160px!important;margin:0 auto!important;padding:20px clamp(14px,
 }
 @media(max-width:370px){.dv-feature-link{gap:8px!important;padding:11px!important}.dv-feature-copy strong{font-size:14px!important}.dv-feature-copy small{font-size:10.5px!important}}
 </style>
-<script>
-(async()=>{
- try{
-  const {data:{user},error:authError}=await supabaseClient.auth.getUser();
-  if(authError||!user)return;
-  const {data:dueReminders,error}=await supabaseClient.from("purchase_review_reminders")
-   .select("purchase_id,remind_after")
-   .eq("user_id",user.id)
-   .is("dismissed_at",null)
-   .lte("remind_after",new Date().toISOString())
-   .order("remind_after",{ascending:true})
-   .limit(10);
-  if(error||!dueReminders?.length)return;
-  for(const reminder of dueReminders){
-   const [purchaseResult,reviewResult]=await Promise.all([
-    supabaseClient.from("purchases").select("id").eq("id",reminder.purchase_id).eq("user_id",user.id).eq("status","completed").maybeSingle(),
-    supabaseClient.from("purchase_reviews").select("id").eq("user_id",user.id).eq("purchase_id",reminder.purchase_id).maybeSingle()
-   ]);
-   if(purchaseResult.error||reviewResult.error)continue;
-   if(purchaseResult.data&&!reviewResult.data){
-    const delay=3000+Math.floor(Math.random()*2001);
-    setTimeout(()=>{location.href="purchase-protection.html?purchase="+encodeURIComponent(reminder.purchase_id)+"&auto=1"},delay);
-    return;
-   }
-  }
- }catch(error){console.warn("Review reminder check skipped:",error)}
-})();
-</script>
 </body>
 
 </html>
