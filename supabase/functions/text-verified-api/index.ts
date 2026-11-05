@@ -822,13 +822,21 @@ function outOfStockMessage(serviceName: string): string {
 }
 
 function isExplicitOutOfStock(error: any): boolean {
+  const extracted = extractProviderErrorMessage(error?.data).toLowerCase().trim();
   const text = [
     error?.message,
     error?.providerMessage,
-    extractProviderErrorMessage(error?.data),
+    extracted,
     error?.data,
   ].map((v) => typeof v === "string" ? v : JSON.stringify(v ?? "")).join(" ").toLowerCase();
-  return /out of stock|no available numbers?|no numbers? available|no phone numbers? available|inventory unavailable|no inventory|no number available|number availability exhausted|no stock available/.test(text);
+  const status = Number(error?.status ?? 0);
+  // The provider uses an "Unavailable" error for an empty number pool.
+  // Restrict this short generic code to client-error responses so a 503
+  // gateway outage is never mislabeled as service stock.
+  const unavailableCode = status >= 400 && status < 500 &&
+    /^(unavailable|no[_\s-]*numbers?|out[_\s-]*of[_\s-]*stock|inventory[_\s-]*unavailable)$/.test(extracted.replace(/\s+/g, " "));
+  return unavailableCode ||
+    /out of stock|no available numbers?|no numbers? available|no phone numbers? available|inventory unavailable|no inventory|no number available|number availability exhausted|no stock available/.test(text);
 }
 
 /* =========================================================
