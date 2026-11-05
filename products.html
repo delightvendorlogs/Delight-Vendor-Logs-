@@ -302,7 +302,7 @@ main > button:hover:not(:disabled) {
 
 <body class="dv-product-page">
 <header class="dv-page-header">
-  <a class="dv-back-link" href="dashboard.html" aria-label="Back to dashboard">← Dashboard</a>
+  <a class="dv-back-link" href="dashboard.html" aria-label="Back to service list">← Back to services</a>
   <div class="dv-page-heading"><span>DELIGHT VENDOR LOGS</span><h1 id="productName">Loading...</h1><p>Review the service details before you continue.</p></div>
   <span class="dv-header-mark">DV</span>
 </header>
@@ -325,6 +325,14 @@ const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
 const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const productId=new URLSearchParams(window.location.search).get("id");
+const requestedReturnUrl=new URLSearchParams(window.location.search).get("return");
+const safeReturnUrl=requestedReturnUrl&&/^dashboard\.html\?category=/.test(requestedReturnUrl)
+  ? requestedReturnUrl
+  : "dashboard.html";
+document.querySelectorAll(".dv-back-link,.dv-secondary-link").forEach(link=>{
+  link.href=safeReturnUrl;
+});
+
 
 async function loadProduct(){
 const name=document.getElementById("productName");
