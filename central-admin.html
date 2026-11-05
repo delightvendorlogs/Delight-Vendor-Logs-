@@ -135,8 +135,8 @@ function render(){
  $("tools").innerHTML=t.join("");
  applyToolSearch();
 }
-function tool(title,desc,url){const search=(title+" "+desc).toLowerCase().replace(/&/g,"&amp;").replace(/"/g,"&quot;");return '<a class="tool" data-search="'+search+'" href="'+url+'"><b>'+title+' →</b><span>'+desc+'</span></a>'}
-function applyToolSearch(){const q=($("toolSearch")?.value||"").trim().toLowerCase();let shown=0;document.querySelectorAll("#tools .tool").forEach(el=>{const match=!q||(el.dataset.search||"").includes(q);el.classList.toggle("hidden",!match);if(match)shown++});$("toolSearchEmpty").classList.toggle("hidden",shown>0)}
+function tool(title,desc,url){const scope=title.startsWith("DV ·")?"dv":title.startsWith("DVE ·")?"dve":"central";const search=(title+" "+desc).toLowerCase().replace(/&/g,"&amp;").replace(/"/g,"&quot;");return '<a class="tool" data-platform="'+scope+'" data-search="'+search+'" href="'+url+'"><b>'+title+' →</b><span>'+desc+'</span></a>'}
+function applyToolSearch(){const q=($("toolSearch")?.value||"").trim().toLowerCase();let shown=0;document.querySelectorAll("#tools .tool").forEach(el=>{const platformMatch=active==="all"||el.dataset.platform===active;const searchMatch=!q||(el.dataset.search||"").includes(q);const match=platformMatch&&searchMatch;el.classList.toggle("hidden",!match);if(match)shown++});$("toolSearchEmpty").classList.toggle("hidden",shown>0)}
 async function showDashboard(){
  $("loginPanel").classList.add("hidden");$("dashboard").classList.remove("hidden");$("logout").classList.remove("hidden");
  try{await refreshCounts()}catch(e){$("metrics").innerHTML='<div class="status error" style="grid-column:1/-1">Some dashboard counts could not load: '+String(e.message||e).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))+'</div>';say("Admin access is verified, but one or more data queries need attention.",true)}
