@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import webpush from "npm:web-push@3.6.7";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -126,7 +127,7 @@ Deno.serve(async (req: Request) => {
   }
 
   const telegramToken = Deno.env.get("TELEGRAM_BOT_TOKEN") || "";
-  const telegramChat = Deno.env.get("TELEGRAM_CHAT_ID") || "8164254194";
+  const telegramChat = Deno.env.get("TELEGRAM_CHAT_ID") || "";
   let telegramSent = false;
   let telegramError = "";
   if (telegramToken && telegramChat) {
@@ -151,5 +152,57 @@ Deno.serve(async (req: Request) => {
     telegramError = "Telegram bot token or admin chat ID is missing.";
   }
 
-  return reply({ ok: true, adminOnline: false, botReplied, alertSent: emailSent || telegramSent, emailSent, telegramSent, emailError, telegramError });
+
+  // Browser alerts are restricted to registered administrator accounts only.
+  let pushSent = 0;
+  let pushFailed = 0;
+  let pushError = "";
+  const adminRows = await db.from("admin_users").select("user_id");
+  if (adminRows.error) {
+    pushError = "Could not load administrator recipients.";
+    console.error("Admin recipient lookup failed:", adminRows.error.message);
+  } else {
+    const adminIds = [...new Set((adminRows.data || []).map((row: any) => row.user_id).filter(Boolean))];
+    if (adminIds.length) {
+      const vapidResult = await db.rpc("get_dv_vapid_credentials");
+      const publicKey = Deno.env.get("VAPID_PUBLIC_KEY") || vapidResult.data?.publicKey || "";
+      const privateKey = Deno.env.get("VAPID_PRIVATE_KEY") || vapidResult.data?.privateKey || "";
+      if (vapidResult.error) console.error("VAPID credentials unavailable:", vapidResult.error.message);
+      if (publicKey && privateKey) {
+        try {
+          webpush.setVapidDetails(Deno.env.get("VAPID_SUBJECT") || "mailto:delightvendorlogs@gmail.com", publicKey, privateKey);
+          const subscriptions = await db.from("notification_push_subscriptions")
+            .select("id,user_id,subscription")
+            .in("user_id", adminIds);
+          if (subscriptions.error) throw subscriptions.error;
+          for (const sub of (subscriptions.data || []) as any[]) {
+            try {
+              await webpush.sendNotification(sub.subscription, JSON.stringify({
+                title: "New customer message — Delight Vendor Logs",
+                body: preview.slice(0, 180),
+                icon: "/assets/dv-logo.png",
+                badge: "/assets/dv-logo.png",
+                data: { url: adminUrl },
+              }));
+              pushSent++;
+            } catch (error: any) {
+              pushFailed++;
+              if (error?.statusCode === 404 || error?.statusCode === 410) {
+                await db.from("notification_push_subscriptions").delete().eq("id", sub.id);
+              } else {
+                console.error("Admin chat push failed:", error?.statusCode || error?.message || error);
+              }
+            }
+          }
+        } catch (error) {
+          pushError = "Browser push could not be sent.";
+          console.error("Admin chat push setup failed:", error);
+        }
+      } else {
+        pushError = "VAPID credentials are not configured.";
+      }
+    }
+  }
+
+  return reply({ ok: true, adminOnline: false, botReplied, alertSent: emailSent || telegramSent || pushSent > 0, emailSent, telegramSent, pushSent, pushFailed, emailError, telegramError, pushError });
 });
