@@ -1,4 +1,27 @@
-<head><script>document.documentElement.style.visibility="hidden";</script><script src="auth-guard.js"></script><style>.dve-banner-dots,#dvBannerDots{display:none!important}</style></head><!DOCTYPE html>
+<head><script>document.documentElement.style.visibility="hidden";</script><script src="auth-guard.js"></script><style>.dve-banner-dots,#dvBannerDots{display:none!important}</style><style id="dv-marketplace-refresh">
+:root{color-scheme:dark;--gold:#d8b44b}
+html,body{min-height:100%;background:#08090c!important;color:#f6f1e4!important}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif!important;background:radial-gradient(ellipse at 50% -15%,#29200d 0,#0b0c10 44%,#08090c 100%)!important}
+header{max-width:1160px;margin:0 auto;padding:26px 24px 16px!important;text-align:left!important;background:transparent!important;border-bottom:1px solid #d8b44b25!important}
+header h1{color:#f6edda!important;font-size:clamp(23px,3vw,31px)!important;font-weight:850!important}
+main{max-width:1160px!important;padding:16px 24px 60px!important}
+.top-dashboard-back-wrap{max-width:none!important;padding:0 0 20px!important}
+.top-dashboard-back{background:#15161b!important;border-color:#514321!important;color:#e9c96e!important}
+.card{padding:22px!important;border:1px solid #3a321f!important;border-radius:19px!important;background:linear-gradient(145deg,#15161b,#101116)!important;box-shadow:0 15px 40px #0006!important}
+.balance-label{color:#b6ad9c!important;font-weight:700!important}
+#walletBalance{color:#f0ce70!important;font-size:clamp(28px,4vw,38px)!important;font-weight:900!important}
+.transaction-stats{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important}
+.transaction-stat{padding:16px!important;border:1px solid #40351f!important;border-radius:15px!important;background:#14151a!important}
+.transaction-stat span{color:#bdb39d!important}.transaction-stat strong{color:#e8c45d!important;font-size:25px!important}
+.transaction-stat.active{border-color:#c9a344!important;background:#211b0e!important}
+.refresh{min-height:48px!important;border-radius:12px!important;background:linear-gradient(135deg,#f1d47a,#c79a31)!important;color:#171208!important;font-weight:850!important}
+.transaction{padding:18px!important;border:1px solid #37301f!important;border-radius:16px!important;background:#17181d!important}
+.transaction-type{color:#f5e9cb!important;font-weight:800!important}.positive{color:#5bd49a!important}.negative{color:#f18b83!important}
+.status{display:inline-flex!important;margin-top:12px!important;padding:5px 9px!important;border:1px solid #59451e!important;border-radius:99px!important;background:#d8b44b12!important;color:#e9c96e!important;font-size:11px!important}
+.description{color:#b7b0a2!important;line-height:1.55!important}.date{color:#817b70!important}
+@media(max-width:650px){header{padding:18px 16px 12px!important}main{padding:13px 14px 40px!important}.card{padding:16px!important}.transaction-stats{gap:7px!important}.transaction-stat{padding:12px 9px!important}.transaction-stat strong{font-size:21px!important}.transaction{padding:14px!important}}
+</style>
+</head><!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
