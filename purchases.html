@@ -1543,6 +1543,30 @@ async function loadPurchases(){
 
 loadPurchases();
 
+async function maybeShowPurchaseReviewPrompt(){
+ const params=new URLSearchParams(location.search);
+ const justPurchased=params.get("review")==="1";
+ if(justPurchased)history.replaceState(null,"",location.pathname);
+ try{
+  const {data:{user},error:authError}=await supabaseClient.auth.getUser();
+  if(authError||!user)return;
+  const {data:latest,error}=await supabaseClient.from("purchases").select("id,created_at").eq("user_id",user.id).eq("status","completed").order("created_at",{ascending:false}).limit(1).maybeSingle();
+  if(error||!latest)return;
+  const [reviewResult,reminderResult]=await Promise.all([
+   supabaseClient.from("purchase_reviews").select("id").eq("user_id",user.id).eq("purchase_id",latest.id).maybeSingle(),
+   supabaseClient.from("purchase_review_reminders").select("remind_after,dismissed_at").eq("user_id",user.id).eq("purchase_id",latest.id).maybeSingle()
+  ]);
+  if(reviewResult.error||reminderResult.error||reviewResult.data)return;
+  const reminder=reminderResult.data;
+  if(reminder?.dismissed_at)return;
+  const reminderIsDue=!!reminder&&new Date(reminder.remind_after)<=new Date();
+  if(!justPurchased&&!reminderIsDue)return;
+  const delay=3000+Math.floor(Math.random()*2001);
+  setTimeout(()=>{location.href="purchase-protection.html?purchase="+encodeURIComponent(latest.id)+"&auto=1"},delay);
+ }catch(error){console.warn("Review prompt check skipped:",error)}
+}
+maybeShowPurchaseReviewPrompt();
+
 </script>
 
 <script src="branding.js"></script>
