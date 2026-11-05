@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#080808"><meta name="robots" content="noindex,nofollow">
+<title>Live Chat Inbox — Delight Vendor Logs</title><link rel="icon" href="assets/dv-logo.png">
+<style>
+:root{color-scheme:dark;--bg:#080808;--panel:#111;--gold:#d4af37;--text:#f5f0df;--muted:#aaa18a;--line:#40351f}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px Arial,sans-serif}a{color:var(--gold);text-decoration:none}.top{height:62px;padding:0 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:#0b0b0b}.brand{display:flex;align-items:center;gap:9px;font-weight:800;color:var(--text)}.brand img{width:32px;height:32px;object-fit:contain}.wrap{max-width:1200px;margin:22px auto;padding:0 14px 35px}.heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.heading h1{color:var(--gold);margin:0 0 5px;font-size:25px}.heading p{margin:0;color:var(--muted);font-size:12px}.status{padding:10px 12px;color:#e9cd80;font-size:12px}.layout{display:grid;grid-template-columns:340px minmax(0,1fr);gap:14px;min-height:680px}.panel{border:1px solid var(--line);border-radius:15px;background:#111;overflow:hidden}.side-head,.chat-head{padding:15px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}.chat-list{padding:8px;max-height:610px;overflow:auto}.chat-item{width:100%;padding:12px;text-align:left;color:var(--text);background:transparent;border:1px solid transparent;border-radius:10px;margin-bottom:5px;cursor:pointer}.chat-item.active,.chat-item:hover{background:#211b0d;border-color:#57451e}.chat-item b{display:block;margin-bottom:5px}.chat-item span{display:block;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}.chat-area{display:flex;flex-direction:column;min-height:680px}.chat-head{min-height:68px}.messages{flex:1;max-height:530px;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:11px;background:#0e0e0d}.empty{margin:auto;padding:25px;text-align:center;color:var(--muted);line-height:1.6}.bubble{max-width:min(80%,560px);align-self:flex-start;padding:10px 12px;border-radius:14px;background:#222;border:1px solid #393328;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}.bubble.customer{align-self:flex-end;background:#302612;border-color:#6d5420}.bubble.bot{background:#171717;border-color:#4a3a1b}.bubble img{display:block;max-width:100%;max-height:330px;border-radius:9px;margin-top:7px}.bubble small{display:block;color:#b8ad8d;font-size:10px;margin-top:5px}.composer{padding:13px;border-top:1px solid var(--line);display:flex;align-items:flex-end;gap:8px}.composer textarea{flex:1;min-width:0;min-height:44px;max-height:120px;resize:vertical;background:#090909;border:1px solid #514321;border-radius:10px;color:white;padding:12px;font:14px Arial}.btn,.attach{border:1px solid #705a22;border-radius:10px;padding:11px 14px;cursor:pointer;font-weight:800}.btn{background:linear-gradient(135deg,#e4bf56,#b58a27);color:#151006}.attach{width:44px;height:44px;background:#1a170f;color:var(--gold);font-size:20px}.btn:disabled{opacity:.5}.muted{color:var(--muted);font-size:12px}.file-name{padding:0 14px 8px;color:var(--muted);font-size:11px}
+@media(max-width:780px){.layout{grid-template-columns:1fr;min-height:0}.side-panel{min-height:180px}.chat-list{max-height:210px}.chat-area{min-height:65vh}.messages{max-height:none}.heading{align-items:flex-start}.bubble{max-width:90%}}
+</style>
+</head>
+<body>
+<header class="top"><a class="brand" href="admin.html"><img src="assets/dv-logo.png" alt="Logo">Delight Vendor Logs · Admin</a><a href="admin.html">← Main admin</a></header>
+<main class="wrap">
+<div class="heading"><div><h1>Live Chat Inbox</h1><p>Customer conversations and replies, all in one place.</p></div><span class="muted" id="onlineState">Connecting…</span></div>
+<div id="status" class="status">Checking administrator access…</div>
+<div class="layout">
+<aside class="panel side-panel"><div class="side-head"><b>Recent conversations</b><span class="muted" id="chatCount">0</span></div><div class="chat-list" id="chatList"><div class="empty">Loading conversations…</div></div></aside>
+<section class="panel chat-area"><div class="chat-head"><div><b id="chatTitle">Select a conversation</b><div class="muted" id="chatSubtitle">Customer details will appear here.</div></div><span class="muted">Live inbox</span></div>
+<div class="messages" id="messages"><div class="empty">Open a conversation to read and reply.</div></div>
+<div class="file-name" id="fileName"></div>
+<form class="composer" id="composer"><input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp,image/gif" hidden><button class="attach" type="button" id="attachBtn" aria-label="Attach image">＋</button><textarea id="messageInput" maxlength="4000" placeholder="Write a reply…" disabled></textarea><button class="btn" id="sendBtn" type="submit" disabled>Send</button></form>
+</section>
+</div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(()=>{"use strict";
+const URL="https://hkfhehbhmucymusaytoe.supabase.co",KEY="sb_publishable_8uj618f_n35zeF3Fcyt5VA_xLHHOkNv",BUCKET="support-chat-images",$=id=>document.getElementById(id),db=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+let user=null,active=null,channel=null,conversations=[],profiles={};
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const time=v=>new Date(v).toLocaleString([], {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
+function status(t){$("status").textContent=t}
+function composer(on){$("messageInput").disabled=!on;$("sendBtn").disabled=!on;$("attachBtn").disabled=!on}
+async function loadConversations(){
+ const {data,error}=await db.from("support_chat_conversations").select("id,customer_user_id,created_at,last_message_at,last_message_preview").order("last_message_at",{ascending:false}).limit(100);if(error)throw error;
+ conversations=data||[];const ids=[...new Set(conversations.map(c=>c.customer_user_id))];
+ if(ids.length){const p=await db.from("profiles").select("id,full_name,email").in("id",ids);if(!p.error)profiles=Object.fromEntries((p.data||[]).map(x=>[x.id,x]))}
+ renderList();
+}
+function renderList(){
+ $("chatCount").textContent=String(conversations.length);
+ if(!conversations.length){$("chatList").innerHTML='<div class="empty">No customer conversations yet.</div>';return}
+ $("chatList").innerHTML=conversations.map(c=>{const p=profiles[c.customer_user_id]||{},name=p.full_name||p.email||"Customer";return '<button class="chat-item '+(active?.id===c.id?'active':'')+'" data-id="'+esc(c.id)+'"><b>'+esc(name)+'</b><span>'+esc(p.email||"")+'</span><span>'+esc(c.last_message_preview||"Conversation started")+'</span><span>'+time(c.last_message_at)+'</span></button>'}).join("");
+ $("chatList").querySelectorAll("[data-id]").forEach(b=>b.addEventListener("click",()=>openChat(b.dataset.id)));
+}
+async function signedImage(path){if(!path)return null;const {data,error}=await db.storage.from(BUCKET).createSignedUrl(path,3600);if(error)return null;return data.signedUrl}
+async function loadMessages(){
+ if(!active)return;const {data,error}=await db.from("support_chat_messages").select("id,sender_user_id,sender_role,message_text,image_path,created_at").eq("conversation_id",active.id).order("created_at",{ascending:false}).limit(500);if(error)throw error;
+ const rows=(data||[]).reverse(),images=await Promise.all(rows.map(m=>m.image_path?signedImage(m.image_path):null));
+ $("messages").innerHTML=rows.length?rows.map((m,i)=>'<article class="bubble '+(m.sender_role==='customer'?'customer':m.sender_role==='bot'?'bot':'')+'">'+(m.message_text?esc(m.message_text):'')+(images[i]?'<img src="'+esc(images[i])+'" alt="Customer image attachment" loading="lazy">':'')+'<small>'+(m.sender_role==='customer'?'Customer':m.sender_role==='bot'?'Automatic reply':'You')+' · '+time(m.created_at)+'</small></article>').join(""):'<div class="empty">This conversation is ready for your reply.</div>';
+ $("messages").scrollTop=$("messages").scrollHeight;
+}
+async function openChat(id){
+ active=conversations.find(c=>c.id===id)||{id};const p=profiles[active.customer_user_id]||{};$("chatTitle").textContent=p.full_name||p.email||"Customer";$("chatSubtitle").textContent=p.email||"Customer conversation";composer(true);renderList();
+ if(channel){await db.removeChannel(channel);channel=null}await loadMessages();
+ channel=db.channel("admin-chat-"+id).on("postgres_changes",{event:"INSERT",schema:"public",table:"support_chat_messages",filter:"conversation_id=eq."+id},async()=>{try{await loadMessages();await loadConversations()}catch(e){console.warn(e.message)}}).subscribe();
+}
+$("attachBtn").addEventListener("click",()=>$("imageInput").click());
+$("imageInput").addEventListener("change",()=>{$("fileName").textContent=$("imageInput").files[0]?"Image selected: "+$("imageInput").files[0].name:""});
+$("composer").addEventListener("submit",async e=>{
+ e.preventDefault();if(!active)return;const message=$("messageInput").value.trim(),file=$("imageInput").files[0];if(!message&&!file)return;
+ if(file&&(!/^image\/(jpeg|png|webp|gif)$/.test(file.type)||file.size>5*1024*1024)){status("Choose a JPG, PNG, WEBP or GIF image up to 5 MB.");return}
+ $("sendBtn").disabled=true;status("Sending reply…");
+ try{let image_path=null;if(file){const ext=({"image/jpeg":"jpg","image/png":"png","image/webp":"webp","image/gif":"gif"})[file.type],path=active.id+"/"+user.id+"/"+crypto.randomUUID()+"."+ext;const up=await db.storage.from(BUCKET).upload(path,file,{contentType:file.type,upsert:false,cacheControl:"3600"});if(up.error)throw up.error;image_path=path}
+ const {error}=await db.from("support_chat_messages").insert({conversation_id:active.id,sender_user_id:user.id,sender_role:"admin",message_text:message||null,image_path});if(error)throw error;
+ $("messageInput").value="";$("imageInput").value="";$("fileName").textContent="";await loadMessages();await loadConversations();status("Reply sent.");
+ }catch(e){status("Reply could not be sent. Please check your connection and try again.")}finally{$("sendBtn").disabled=false}
+});
+$("messageInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("composer").requestSubmit()}});
+(async()=>{
+ try{const {data,error}=await db.auth.getSession();if(error)throw error;user=data.session?.user;if(!user){location.replace("login.html?redirect=admin-live-chat.html");return}
+ const {data:ok,error:ae}=await db.rpc("is_admin");if(ae)throw ae;if(!ok){status("Administrator access is required.");return}
+ const touch=async()=>{const r=await db.from("support_chat_settings").update({admin_last_seen_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq("id",true);if(r.error)console.warn("Presence update failed:",r.error.message)};
+ await touch();setInterval(touch,30000);$("onlineState").textContent="Admin presence active";await loadConversations();status("Live chat inbox connected.");
+ db.channel("admin-chat-inbox").on("postgres_changes",{event:"*",schema:"public",table:"support_chat_conversations"},()=>loadConversations().catch(e=>console.warn(e.message))).subscribe();
+ if(conversations.length)await openChat(conversations[0].id);
+ }catch(e){status("Could not load the live chat inbox. Please refresh and try again.")}
+})();
+})();
+</script>
+</body></html>
