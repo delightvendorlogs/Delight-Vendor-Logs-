@@ -26,7 +26,7 @@ function render(){
  else actions='<div class="row"><button class="btn primary" data-review="'+p.id+'">Rate this purchase</button>'+(rem?'<span class="tag">Reminder due</span>':'')+'</div>';
  if(ticket)actions+='<div class="panel"><span class="tag">Report '+esc(ticket.status)+'</span><p class="muted">'+esc(ticket.customer_message)+'</p>'+(ticket.admin_response?'<p><b>Support response:</b> '+esc(ticket.admin_response)+'</p>':'<p class="muted">Our team is reviewing your report.</p>')+'</div>';
  else actions+='<div style="margin-top:10px"><button class="btn" data-ticket="'+p.id+'">Report a problem</button></div>';
- return '<article class="purchase"><h3>'+esc(p.product_name)+'</h3><div class="muted">Purchase #'+p.id+' · ₦'+Number(p.amount).toLocaleString("en-NG",{minimumFractionDigits:2})+' · '+new Date(p.created_at).toLocaleDateString()+'</div>'+actions+'</article>'
+ return '<article class="purchase" id="purchase-'+esc(p.id)+'"><h3>'+esc(p.product_name)+'</h3><div class="muted">Purchase #'+p.id+' · ₦'+Number(p.amount).toLocaleString("en-NG",{minimumFractionDigits:2})+' · '+new Date(p.created_at).toLocaleDateString()+'</div>'+actions+'</article>'
  }).join("");
  root.querySelectorAll("[data-review]").forEach(b=>b.onclick=()=>reviewOpen(purchases.find(p=>String(p.id)===b.dataset.review)));
  root.querySelectorAll("[data-ticket]").forEach(b=>b.onclick=()=>ticketOpen(purchases.find(p=>String(p.id)===b.dataset.ticket)));
@@ -40,7 +40,7 @@ async function load(){const {data:{user},error}=await db.auth.getUser();if(error
  ]);
  const errorFound=[p.error,r.error,m.error,t.error].find(Boolean);if(errorFound)throw errorFound;
  purchases=p.data||[];reviews=r.data||[];reminders=m.data||[];tickets=t.data||[];render();$("notice").textContent=purchases.length+" completed purchase(s) found.";
- const due=purchases.find(x=>!reviews.some(y=>y.purchase_id===x.id)&&(!reminders.some(y=>y.purchase_id===x.id)||new Date(reminders.find(y=>y.purchase_id===x.id).remind_after)<=new Date()));
+ const requested=new URLSearchParams(location.search).get("purchase");const requestedPurchase=purchases.find(x=>String(x.id)===requested);if(requestedPurchase){const target=document.getElementById("purchase-"+requestedPurchase.id);if(target)target.scrollIntoView({behavior:"smooth",block:"center"});}const due=(requestedPurchase&&!reviews.some(y=>String(y.purchase_id)===String(requestedPurchase.id))&&(!reminders.some(y=>String(y.purchase_id)===String(requestedPurchase.id))||new Date(reminders.find(y=>String(y.purchase_id)===String(requestedPurchase.id)).remind_after)<=new Date()))?requestedPurchase:purchases.find(x=>!reviews.some(y=>String(y.purchase_id)===String(x.id))&&(!reminders.some(y=>String(y.purchase_id)===String(x.id))||new Date(reminders.find(y=>String(y.purchase_id)===String(x.id)).remind_after)<=new Date()));
  if(due)setTimeout(()=>reviewOpen(due),450);
 }
 $("submitReview").onclick=async()=>{if(!current)return;const b=$("submitReview");b.disabled=true;try{const {data,error}=await db.rpc("dv_submit_purchase_review",{p_purchase_id:current.id,p_rating:rating,p_review_text:$("reviewText").value});if(error)throw error;if(!data?.ok)throw new Error("Review could not be submitted.");msg("reviewMsg","Review submitted. It will appear after admin approval.");close("reviewModal");await load()}catch(e){msg("reviewMsg",e.message||"Could not submit review.",true)}finally{b.disabled=false}};
