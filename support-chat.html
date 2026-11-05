@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#080808">
+<title>Live Chat — Delight Vendor Logs</title><link rel="icon" href="assets/dv-logo.png">
+<style>
+:root{color-scheme:dark;--bg:#080808;--panel:#111;--panel2:#171717;--gold:#d4af37;--text:#f5f0df;--muted:#aaa18a;--line:#40351f}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top right,#211a0b 0,transparent 38%),var(--bg);color:var(--text);font:14px Arial,sans-serif;min-height:100vh}a{color:var(--gold);text-decoration:none}
+.top{height:64px;padding:0 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:#0b0b0b}.brand{display:flex;align-items:center;gap:9px;font-weight:800;color:var(--text)}.brand img{width:32px;height:32px;object-fit:contain}
+.wrap{max-width:1100px;margin:24px auto;padding:0 14px 30px}.heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.heading h1{font-size:25px;color:var(--gold);margin:0 0 5px}.heading p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+.btn{border:1px solid #705a22;background:linear-gradient(135deg,#e4bf56,#b58a27);color:#151006;font-weight:800;padding:11px 14px;border-radius:10px;cursor:pointer}.btn:disabled{opacity:.55;cursor:not-allowed}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:14px;min-height:620px}.panel{background:rgba(17,17,17,.96);border:1px solid var(--line);border-radius:16px;overflow:hidden}.side-head,.chat-head{padding:15px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}.side-head strong,.chat-head strong{font-size:15px}.muted{color:var(--muted);font-size:12px}.chat-list{padding:8px;max-height:560px;overflow:auto}.chat-item{width:100%;display:block;text-align:left;border:1px solid transparent;background:transparent;color:var(--text);padding:12px;border-radius:11px;margin-bottom:5px;cursor:pointer}.chat-item.active,.chat-item:hover{background:#211b0d;border-color:#57451e}.chat-item b{display:block;font-size:13px;margin-bottom:5px}.chat-item span{display:block;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chat-area{display:flex;flex-direction:column;min-height:620px}.chat-head{min-height:65px}.messages{padding:18px;flex:1;overflow:auto;max-height:480px;display:flex;flex-direction:column;gap:11px;background:linear-gradient(180deg,#0d0d0d,#10100e)}.empty{margin:auto;text-align:center;color:var(--muted);padding:24px;line-height:1.6}.bubble{max-width:min(78%,520px);padding:10px 12px;border-radius:14px;background:#222;border:1px solid #393328;align-self:flex-start;overflow-wrap:anywhere;white-space:pre-wrap;line-height:1.5}.bubble.mine{align-self:flex-end;background:#302612;border-color:#6d5420}.bubble.bot{background:#171717;border-color:#4a3a1b}.bubble img{display:block;max-width:100%;max-height:300px;border-radius:9px;margin-top:7px}.bubble small{display:block;color:#b8ad8d;font-size:10px;margin-top:5px}.composer{padding:13px;border-top:1px solid var(--line);display:flex;align-items:flex-end;gap:8px;background:#111}.composer textarea{resize:none;flex:1;min-width:0;max-height:120px;min-height:44px;padding:12px;border-radius:10px;border:1px solid #514321;background:#090909;color:white;font:14px Arial;outline:none}.attach{width:44px;height:44px;border:1px solid #514321;border-radius:10px;background:#1a170f;color:var(--gold);font-size:20px;cursor:pointer}.file-name{padding:0 14px 8px;color:var(--muted);font-size:11px}.hidden{display:none!important}.status{padding:10px 13px;color:#e9cd80;font-size:12px}.chat-mobile-back{display:none}
+@media(max-width:760px){.wrap{margin:16px auto}.heading{align-items:flex-start}.heading h1{font-size:22px}.layout{grid-template-columns:1fr;min-height:70vh}.side-panel{min-height:180px}.chat-list{max-height:200px}.chat-area{min-height:65vh}.messages{max-height:none}.layout.chat-open .side-panel{display:none}.chat-mobile-back{display:inline-flex;border:0;background:transparent;color:var(--gold);font-size:13px;cursor:pointer;padding:4px}.bubble{max-width:88%}}
+@media(max-width:420px){.heading{display:block}.heading .btn{margin-top:12px}.top{padding:0 11px}.brand{font-size:13px}}
+</style>
+</head>
+<body>
+<header class="top"><a class="brand" href="dashboard.html"><img src="assets/dv-logo.png" alt="Delight Vendor Logs logo">Delight Vendor Logs</a><a href="dashboard.html">← Dashboard</a></header>
+<main class="wrap">
+<div class="heading"><div><h1>Live Chat</h1><p>Message our team directly. Your conversations stay here when you leave and come back.</p></div><button class="btn" id="newChat">＋ New chat</button></div>
+<div id="status" class="status">Connecting to your support chat…</div>
+<div class="layout" id="layout">
+<aside class="panel side-panel"><div class="side-head"><strong>Your conversations</strong><span class="muted" id="chatCount">0</span></div><div class="chat-list" id="chatList"><div class="empty">Your recent conversations will appear here.</div></div></aside>
+<section class="panel chat-area">
+<div class="chat-head"><div><button class="chat-mobile-back" id="backToChats">← Chats</button><strong id="chatTitle">Select a conversation</strong><div class="muted" id="chatSubtitle">Start a new chat or open a previous one.</div></div><span class="muted">Delight Vendor Logs Support</span></div>
+<div class="messages" id="messages"><div class="empty">Choose a conversation or start a new chat. You can send text and screenshots.</div></div>
+<div class="file-name" id="fileName"></div>
+<form class="composer" id="composer">
+<input id="imageInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden>
+<button class="attach" type="button" id="attachBtn" title="Attach image" aria-label="Attach image">＋</button>
+<textarea id="messageInput" rows="1" maxlength="4000" placeholder="Write a message…" disabled></textarea>
+<button class="btn" type="submit" id="sendBtn" disabled>Send</button>
+</form>
+</section>
+</div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(()=>{"use strict";
+const URL="https://hkfhehbhmucymusaytoe.supabase.co",KEY="sb_publishable_8uj618f_n35zeF3Fcyt5VA_xLHHOkNv",BUCKET="support-chat-images";
+const $=id=>document.getElementById(id),db=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+let user=null,active=null,channel=null,chats=[],presenceTimer=null;
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const time=v=>new Date(v).toLocaleString([], {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
+function status(t){$("status").textContent=t}
+async function refreshSupportPresence(){
+ try{
+  const {data,error}=await db.from("support_chat_settings").select("admin_last_seen_at,away_after_minutes").eq("id",true).maybeSingle();
+  if(error)throw error;
+  const seen=data?.admin_last_seen_at?new Date(data.admin_last_seen_at).getTime():0;
+  const online=!!seen&&seen>Date.now()-Math.max(1,Number(data?.away_after_minutes)||2)*60000;
+  $("chatSubtitle").textContent=online?"Support is online · We're here to help":"Our team is away · Leave a message and we'll reply here";
+ }catch(_){$("chatSubtitle").textContent="Message our support team here";}
+}
+function setComposer(on){$("messageInput").disabled=!on;$("sendBtn").disabled=!on;$("attachBtn").disabled=!on}
+function renderChats(){
+ $("chatCount").textContent=String(chats.length);
+ if(!chats.length){$("chatList").innerHTML='<div class="empty">No conversations yet. Tap “New chat” to message us.</div>';return}
+ $("chatList").innerHTML=chats.map(c=>'<button class="chat-item '+(active?.id===c.id?'active':'')+'" data-id="'+esc(c.id)+'"><b>Delight Vendor Logs Support</b><span>'+esc(c.last_message_preview||"Conversation started")+'</span><span>'+time(c.last_message_at)+'</span></button>').join("");
+ $("chatList").querySelectorAll("[data-id]").forEach(b=>b.addEventListener("click",()=>openChat(b.dataset.id)));
+}
+async function loadChats(){
+ const {data,error}=await db.from("support_chat_conversations").select("id,created_at,last_message_at,last_message_preview").eq("customer_user_id",user.id).order("last_message_at",{ascending:false}).limit(50);
+ if(error)throw error;chats=data||[];renderChats();
+}
+async function signedImage(path){
+ if(!path)return null;const {data,error}=await db.storage.from(BUCKET).createSignedUrl(path,3600);if(error){console.warn("Image link unavailable",error.message);return null}return data.signedUrl;
+}
+async function loadMessages(){
+ if(!active)return;
+ const {data,error}=await db.from("support_chat_messages").select("id,sender_user_id,sender_role,message_text,image_path,created_at").eq("conversation_id",active.id).order("created_at",{ascending:false}).limit(300);
+ if(error)throw error;
+ const rows=(data||[]).reverse(),images=await Promise.all(rows.map(m=>m.image_path?signedImage(m.image_path):null));
+ $("messages").innerHTML=rows.length?rows.map((m,i)=>{
+  const mine=m.sender_role==="customer"&&m.sender_user_id===user.id,bot=m.sender_role==="bot";
+  return '<article class="bubble '+(mine?'mine':bot?'bot':'')+'">'+(m.message_text?esc(m.message_text):'')+(images[i]?'<img src="'+esc(images[i])+'" alt="Image attachment" loading="lazy">':'')+'<small>'+(bot?'Delight Vendor Logs':mine?'You':'Support')+' · '+time(m.created_at)+'</small></article>';
+ }).join(""):'<div class="empty">This conversation is ready. Send us a message to begin.</div>';
+ $("messages").scrollTop=$("messages").scrollHeight;
+}
+async function openChat(id){
+ active=chats.find(c=>c.id===id)||{id};$("layout").classList.add("chat-open");$("chatTitle").textContent="Delight Vendor Logs Support";$("chatSubtitle").textContent="Your conversation";setComposer(true);renderChats();
+ if(channel){await db.removeChannel(channel);channel=null}
+ await loadMessages();
+ channel=db.channel("customer-chat-"+id).on("postgres_changes",{event:"INSERT",schema:"public",table:"support_chat_messages",filter:"conversation_id=eq."+id},async()=>{try{await loadMessages();await loadChats()}catch(e){console.warn(e.message)}}).subscribe();
+}
+async function createChat(){
+ const {data,error}=await db.from("support_chat_conversations").insert({customer_user_id:user.id}).select("id,created_at,last_message_at,last_message_preview").single();
+ if(error)throw error;chats=[data,...chats];active=data;renderChats();await openChat(data.id);status("Your chat is ready. Send us a message anytime.");
+}
+$("newChat").addEventListener("click",async()=>{try{status("Starting a new chat…");await createChat()}catch(e){status("We couldn’t start your chat. Please try again in a moment.")}});
+$("backToChats").addEventListener("click",()=>$("layout").classList.remove("chat-open"));
+$("attachBtn").addEventListener("click",()=>$("imageInput").click());
+$("imageInput").addEventListener("change",()=>{$("fileName").textContent=$("imageInput").files[0]?"Image selected: "+$("imageInput").files[0].name:""});
+$("composer").addEventListener("submit",async e=>{
+ e.preventDefault();if(!active)return;
+ const message=$("messageInput").value.trim(),file=$("imageInput").files[0];if(!message&&!file)return;
+ if(file&&(!/^image\/(jpeg|png|webp|gif)$/.test(file.type)||file.size>5*1024*1024)){status("Choose a JPG, PNG, WEBP or GIF image up to 5 MB.");return}
+ $("sendBtn").disabled=true;status("Sending…");
+ try{
+  let image_path=null;
+  if(file){const ext=({ "image/jpeg":"jpg","image/png":"png","image/webp":"webp","image/gif":"gif"})[file.type],path=active.id+"/"+user.id+"/"+crypto.randomUUID()+"."+ext;
+   const up=await db.storage.from(BUCKET).upload(path,file,{contentType:file.type,upsert:false,cacheControl:"3600"});if(up.error)throw up.error;image_path=path}
+  const {data:sent,error}=await db.from("support_chat_messages").insert({conversation_id:active.id,sender_user_id:user.id,sender_role:"customer",message_text:message||null,image_path}).select("id").single();
+  if(error)throw error;$("messageInput").value="";$("imageInput").value="";$("fileName").textContent="";
+  await loadMessages();await loadChats();status("Message sent.");
+  const alertResult=await db.functions.invoke("support-chat-alerts",{body:{conversationId:active.id,messageId:sent.id}});
+  if(alertResult.error)console.warn("Support alert could not be delivered:",alertResult.error.message);
+  await loadMessages();await refreshSupportPresence();
+ }catch(e){status("Your message couldn’t be sent. Please check your connection and try again.")}finally{$("sendBtn").disabled=false}
+});
+$("messageInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("composer").requestSubmit()}});
+(async()=>{
+ try{const {data,error}=await db.auth.getSession();if(error)throw error;user=data.session?.user;if(!user){location.replace("login.html?redirect=support-chat.html");return}
+ await loadChats();await refreshSupportPresence();presenceTimer=setInterval(refreshSupportPresence,30000);status("You're connected to live chat.");
+ if(chats.length)await openChat(chats[0].id);else setComposer(false);
+ db.channel("customer-chat-list-"+user.id).on("postgres_changes",{event:"*",schema:"public",table:"support_chat_conversations",filter:"customer_user_id=eq."+user.id},()=>loadChats().catch(e=>console.warn(e.message))).subscribe();
+ }catch(e){status("We couldn’t connect to support right now. Please refresh and try again.")}
+})();
+})();
+</script>
+</body></html>
