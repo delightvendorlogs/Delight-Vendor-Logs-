@@ -38,6 +38,8 @@ label{display:block;color:var(--muted);font-size:12px;margin:12px 0 6px}input{wi
 <button class="active" data-workspace="overview">Admin Overview</button>
 <button data-workspace="support">Central Support Inbox</button>
 <button data-workspace="notifications">Central Notifications</button>
+<button data-workspace="analytics">Business Analytics</button>
+<button data-workspace="automation">Chat Automation</button>
 </div>
 <div id="overviewPanel">
 <div class="bar"><div><b id="activeTitle">Combined overview</b><div class="muted" id="activeDescription">Live counts from the two separate platforms.</div></div><span class="pill">Admin access verified</span></div>
@@ -149,7 +151,7 @@ $("loginForm").addEventListener("submit",async e=>{
 $("logout").addEventListener("click",async()=>{await Promise.allSettled([dv.auth.signOut(),dve.auth.signOut()]);location.reload()});
 document.querySelectorAll("[data-platform]").forEach(b=>b.addEventListener("click",()=>{active=b.dataset.platform;document.querySelectorAll("[data-platform]").forEach(x=>x.classList.toggle("active",x===b));render()}));
 $("toolSearch").addEventListener("input",applyToolSearch);
-const workspaceUrls={overview:"",support:"central-support.html",notifications:"central-notifications.html"};
+const workspaceUrls={overview:"",support:"central-support.html",notifications:"central-notifications.html",analytics:"central-analytics.html",automation:"central-chat-automation.html"};
 document.querySelectorAll("[data-workspace]").forEach(b=>b.addEventListener("click",()=>{
  const mode=b.dataset.workspace;
  document.querySelectorAll("[data-workspace]").forEach(x=>x.classList.toggle("active",x===b));
@@ -157,7 +159,7 @@ document.querySelectorAll("[data-workspace]").forEach(b=>b.addEventListener("cli
  $("workspacePanel").classList.toggle("hidden",mode==="overview");
  if(mode!=="overview"){
   const url=workspaceUrls[mode];
-  $("workspaceTitle").textContent=mode==="support"?"Central Support Inbox — both websites":"Central Notifications — both websites";
+  $("workspaceTitle").textContent=({support:"Central Support Inbox — both websites",notifications:"Central Notifications — both websites",analytics:"Business Analytics — both websites",automation:"Chat Automation — both websites"})[mode]||"Central Admin Workspace";
   $("workspaceOpen").href=url;
   if($("workspaceFrame").getAttribute("src")!==url)$("workspaceFrame").src=url;
  }
