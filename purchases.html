@@ -1,17 +1,4 @@
-<head><script>document.documentElement.style.visibility="hidden";</script><script src="auth-guard.js"></script><style>.dve-banner-dots,#dvBannerDots{display:none!important}</style><style id="dv-marketplace-refresh">
-html,body{background:#08090c!important;color:#f6f1e4!important}body{font-family:Inter,system-ui,sans-serif!important;background:radial-gradient(ellipse at top,#29200d,#08090c 65%)!important}
-header{max-width:1160px;margin:auto;padding:24px!important;text-align:left!important;background:transparent!important;border-bottom:1px solid #5a4722!important}header h1{color:#f6edda!important;font-size:clamp(23px,3vw,31px)!important;font-weight:850!important}
-main{max-width:1160px!important;margin:auto!important;padding:16px 24px 55px!important}.top-dashboard-back-wrap{max-width:none!important;padding:0 0 20px!important}.top-dashboard-back{background:#15161b!important;border-color:#514321!important;color:#e9c96e!important}
-.total-card{padding:25px!important;border-radius:21px!important;border:1px solid #8a6c2c!important;background:linear-gradient(120deg,#1b170d,#111318 65%,#20190b)!important;box-shadow:0 18px 44px #0007!important}.total-title{color:#c8bea8!important}.total-amount{color:#f0ce70!important;font-size:clamp(30px,5vw,42px)!important;font-weight:900!important}
-.purchase-stats{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important;margin:20px 0 28px!important}.purchase-stat{padding:15px!important;border:1px solid #3e341f!important;border-radius:15px!important;background:#131419!important;color:#c8c0af!important;text-align:left!important}.purchase-stat strong{display:block!important;margin-top:8px!important;color:#e6c35e!important;font-size:24px!important}.purchase-stat.active{border-color:#c9a344!important;background:#211b0e!important}
-.section-title{color:#f4e9ce!important;font-size:20px!important}.card{padding:17px!important;border:1px solid #302a1d!important;border-radius:20px!important;background:#101116!important;box-shadow:0 15px 40px #0006!important}
-#allPurchases{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}#allPurchases>.empty,#allPurchases>.loading,#allPurchases>.error{grid-column:1/-1!important}
-#allPurchases .purchase-card,#allPurchases .purchase-item,#allPurchases .virtual-card{background:#17181d!important;border:1px solid #39311f!important;border-radius:16px!important;padding:17px!important;color:#f4efdf!important}
-#allPurchases .name{color:#f5e9ca!important;font-weight:800!important}#allPurchases .amount{color:#e6c15c!important;font-weight:900!important}#allPurchases .content,#allPurchases .date{color:#aaa394!important;line-height:1.55!important}
-#allPurchases .otp-box,#allPurchases .number-box,#allPurchases .sms-box{background:#0c0d11!important;border:1px solid #4a3a1b!important;border-radius:12px!important;color:#f3df9b!important}
-.back{max-width:260px!important;margin:22px auto 0!important;background:#17181d!important;border:1px solid #514321!important;color:#e8c76b!important}
-@media(max-width:760px){main{padding:13px 14px 40px!important}.purchase-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}.purchase-stat{padding:12px!important}#allPurchases{grid-template-columns:1fr!important}.card{padding:12px!important}.total-card{padding:20px!important}}
-</style></head>
+<head><script>document.documentElement.style.visibility="hidden";</script><script src="auth-guard.js"></script><style>.dve-banner-dots,#dvBannerDots{display:none!important}</style></head>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -361,17 +348,18 @@ main{
 .purchase-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 18px}.purchase-stat{min-width:0;text-align:left;padding:14px 12px;border:1px solid #493b1c;border-radius:14px;background:linear-gradient(145deg,#17140b,#101010);color:#f5f0df;cursor:pointer}.purchase-stat strong{display:block;font-size:24px;color:#d4af37;margin-top:7px}.purchase-stat span{font-size:12px;color:#b8ad8d}.purchase-stat.active{border-color:#d4af37;box-shadow:0 0 0 1px #d4af3740 inset}@media(max-width:420px){.purchase-stats{gap:6px}.purchase-stat{padding:11px 8px}.purchase-stat strong{font-size:20px}.purchase-stat span{font-size:11px}}
 </style>
 
-<link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css"></head>
+<link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css"><style id="dv-premium-purchases">
+:root{color-scheme:dark;--gold:#e5bd52}html,body{min-height:100%;background:#090a0d!important;color:#f7f1e4!important}body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;background:radial-gradient(ellipse at 50% -10%,#30230c,transparent 40%),#090a0d!important}
+.dv-list-header{max-width:1180px;margin:auto;padding:26px clamp(15px,4vw,38px) 20px!important;display:flex;align-items:center;justify-content:space-between;gap:16px;text-align:left!important;background:transparent!important;border-bottom:1px solid #57451f!important}.dv-list-header span,.dv-list-section-head>div>span{font-size:10px;letter-spacing:1.4px;color:#d8b75e;font-weight:850}.dv-list-header h1{margin:7px 0 5px;color:#fff1d0;font-size:clamp(25px,4vw,34px);font-weight:900}.dv-list-header p{margin:0;color:#aaa18f;font-size:13px}.dv-list-header>a{padding:11px 14px;border:1px solid #4a3b1e;border-radius:12px;color:#edcb6d;text-decoration:none;background:#15161b;font-size:13px;font-weight:750}
+main{max-width:1180px!important;padding:20px clamp(14px,4vw,38px) 60px!important}.total-card{padding:21px 24px!important;border:1px solid #8a6b2b!important;border-radius:21px!important;background:linear-gradient(120deg,#28200e,#17181d 70%)!important;box-shadow:0 16px 40px #0007!important;text-align:left!important}.total-title{color:#bdb18e!important;font-size:12px!important;letter-spacing:.7px}.total-amount{font-size:clamp(28px,4vw,38px)!important;color:#f0cf70!important}.dv-list-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:26px 0 13px}.dv-list-section-head h2{margin:6px 0 0;color:#f5eacb;font-size:21px}.dv-live-label{font-size:10px;color:#8bd7a5;background:#102016;border:1px solid #244a31;border-radius:99px;padding:7px 10px;white-space:nowrap}
+.purchase-stats{gap:11px!important;margin:18px 0!important}.purchase-stat{border:1px solid #40351f!important;border-radius:16px!important;background:linear-gradient(145deg,#1a1b20,#111216)!important}.purchase-stat.active{border-color:#d8b34c!important;background:#241d0e!important}.purchase-stat strong{color:#edc961!important}.card{padding:18px!important;border:1px solid #332d20!important;border-radius:21px!important;background:linear-gradient(145deg,#17181d,#101116)!important;box-shadow:0 16px 40px #0006!important}
+.purchase,.virtual-number-card{padding:18px!important;border:1px solid #383020!important;border-radius:17px!important;background:linear-gradient(145deg,#1b1c21,#111216)!important}.name,.virtual-title{color:#fff1d0!important}.amount,.number-box strong,.otp-box strong{color:#edc961!important}.content,.number-box,.otp-box,.sms-box{background:#0d0f13!important;border:1px solid #2e2a21!important;border-radius:12px!important}.back{border:0!important;background:linear-gradient(120deg,#f1d47a,#c79a31)!important;color:#171208!important}
+@media(max-width:600px){.dv-list-header{padding:17px 14px!important;align-items:flex-start}.dv-list-header p{font-size:11px}.dv-list-header>a{padding:9px 10px;font-size:11px;white-space:nowrap}main{padding:14px 13px 42px!important}.total-card{padding:17px!important}.dv-list-section-head h2{font-size:18px}.purchase-stats{gap:7px!important}.purchase-stat{padding:11px 8px!important}.card{padding:12px!important}.purchase,.virtual-number-card{padding:13px!important}}
+</style></head>
 
 <body>
 
-<header>
-
-    <h1>
-        My Purchases
-    </h1>
-
-</header>
+<header class="dv-list-header"><div><span>ACCOUNT ACTIVITY</span><h1>My Purchases</h1><p>Track your orders, virtual numbers and delivery status.</p></div><a href="dashboard.html">← Dashboard</a></header>
 
 <main>
 <div class="top-dashboard-back-wrap"><a class="top-dashboard-back" href="dashboard.html">← Back to Dashboard</a></div>
@@ -394,9 +382,7 @@ main{
 
 <div id="purchaseStats" class="purchase-stats" aria-label="Purchase status filters"></div>
 
-<h2 class="section-title">
-    🛍️ My Purchases
-</h2>
+<div class="dv-list-section-head"><div><span>YOUR ORDER HISTORY</span><h2 class="section-title">Purchases &amp; Orders</h2></div><span class="dv-live-label">● LIVE ACCOUNT</span></div>
 
 <div class="card">
 
