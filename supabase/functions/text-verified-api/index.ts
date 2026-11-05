@@ -140,6 +140,37 @@ function isInsufficientProviderBalance(error: any): boolean {
   );
 }
 
+function sanitizeProviderErrorText(value: unknown): string {
+  return String(value ?? "")
+    .replace(/Bearer\s+\S+/gi, "Bearer [REDACTED]")
+    .replace(/(?:api[_ -]?key|token|password)\s*[:=]\s*\S+/gi, "[REDACTED]")
+    .replace(/\+?\d[\d\s().-]{7,}\d/g, "[REDACTED NUMBER]")
+    .replace(/\s{2,}/g, " ")
+    .slice(0, 240);
+}
+
+function extractProviderErrorMessage(data: any): string {
+  const found: string[] = [];
+  const seen = new Set<object>();
+  const preferred = /^(message|detail|error|title|description|reason|code)$/i;
+  function walk(value: any, depth = 0, key = ""): void {
+    if (depth > 5 || value == null) return;
+    if (typeof value === "string" || typeof value === "number") {
+      if (preferred.test(key) && String(value).trim()) found.push(sanitizeProviderErrorText(value));
+      return;
+    }
+    if (typeof value !== "object" || seen.has(value)) return;
+    seen.add(value);
+    if (Array.isArray(value)) {
+      for (const item of value) walk(item, depth + 1, key);
+      return;
+    }
+    for (const [childKey, child] of Object.entries(value)) walk(child, depth + 1, childKey);
+  }
+  walk(data);
+  return [...new Set(found)].filter(Boolean).join("; ").slice(0, 300);
+}
+
 function logSafeError(stage: string, error: unknown) {
   const e = error as any;
   let message = str(e?.message, "Unknown error");
@@ -155,17 +186,7 @@ function logSafeError(stage: string, error: unknown) {
 
   // Log only a small allowlist of provider error fields. Never log the
   // raw response body because it may contain phone numbers or account data.
-  const providerData = e?.data && typeof e.data === "object" ? e.data : {};
-  const providerErrorSummary: Record<string, string> = {};
-  for (const key of ["code", "error", "message", "detail", "title", "type"]) {
-    const value = providerData[key];
-    if (typeof value !== "string" || !value.trim()) continue;
-    providerErrorSummary[key] = value
-      .replace(/Bearer\\s+\\S+/gi, "Bearer [REDACTED]")
-      .replace(/(?:api[_ -]?key|token|password)\\s*[:=]\\s*\\S+/gi, "[REDACTED]")
-      .replace(/\\+?\\d[\\d\\s().-]{7,}\\d/g, "[REDACTED NUMBER]")
-      .slice(0, 240);
-  }
+  const providerErrorSummary = extractProviderErrorMessage(e?.data);
 
   console.error(`[${stage}]`, {
     status: Number(e?.status) || null,
@@ -309,15 +330,13 @@ async function tvRequest(
   const providerError = {
     status: result.status,
     data,
-    message: str(data?.message, data?.error, data?.detail),
+    message: extractProviderErrorMessage(data),
   };
 
   if (!result.ok) {
     const error = new Error(
       str(
-        data?.message,
-        data?.error,
-        data?.detail,
+        extractProviderErrorMessage(data),
         `TextVerified request failed (${result.status}).`,
       ),
     );
@@ -327,6 +346,7 @@ async function tvRequest(
       data,
       provider: "textverified",
       path,
+      providerMessage: extractProviderErrorMessage(data),
     });
 
     throw error;
