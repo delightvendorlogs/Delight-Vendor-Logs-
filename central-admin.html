@@ -34,11 +34,21 @@ label{display:block;color:var(--muted);font-size:12px;margin:12px 0 6px}input{wi
 <section id="loginPanel" class="login"><h2 style="margin:0 0 5px">Administrator sign in</h2><p class="muted">Use the administrator email and password that work on both websites.</p>
 <form id="loginForm"><label for="email">Admin email</label><input id="email" type="email" autocomplete="username" required value="delightvendorlogs@gmail.com"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required><button id="loginBtn" class="btn" style="width:100%;margin-top:16px" type="submit">Sign in to both platforms</button></form><div id="loginStatus" class="status">Your access is checked independently against both admin systems.</div></section>
 <section id="dashboard" class="hidden">
+<div class="switcher" id="workspaceNav" aria-label="Admin workspace">
+<button class="active" data-workspace="overview">Admin Overview</button>
+<button data-workspace="support">Central Support Inbox</button>
+<button data-workspace="notifications">Central Notifications</button>
+</div>
+<div id="overviewPanel">
 <div class="bar"><div><b id="activeTitle">Combined overview</b><div class="muted" id="activeDescription">Live counts from the two separate platforms.</div></div><span class="pill">Admin access verified</span></div>
 <div class="switcher"><button class="active" data-platform="all">Combined Overview</button><button data-platform="dv">Delight Vendor Logs</button><button data-platform="dve">DelightVendorEdit</button></div>
 <div id="metrics" class="grid"></div>
 <div class="section"><h2>Quick management</h2><div id="tools" class="tools"></div></div>
 <div class="foot">Counts are read live from each platform after administrator verification. No wallet, payment, purchase or payout action is performed from this overview. Use the platform's existing admin tools for those operations.</div>
+<section id="workspacePanel" class="hidden" style="margin-top:14px">
+<div class="bar"><b id="workspaceTitle">Central Support Inbox</b><a class="btn ghost" id="workspaceOpen" href="central-support.html" target="_blank" rel="noopener">Open separately ↗</a></div>
+<iframe id="workspaceFrame" title="Central admin workspace" src="about:blank" loading="lazy" style="width:100%;height:78vh;min-height:620px;border:1px solid var(--line);border-radius:14px;background:#101010"></iframe>
+</section>
 </section>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -49,7 +59,7 @@ const DVE_URL="https://genlmqzkjouinofkitqt.supabase.co",DVE_KEY="sb_publishable
 const dv=supabase.createClient(DV_URL,DV_KEY,{auth:{persistSession:true,storageKey:"delight-central-dv"}});
 const dve=supabase.createClient(DVE_URL,DVE_KEY,{auth:{persistSession:true,storageKey:"delight-central-dve"}});
 const $=id=>document.getElementById(id);let active="all",verified=false,counts={dv:{},dve:{}};
-const dveBase="https://delightvendorlogs.github.io/DelightVendorEdit/";
+const dveBase="https://delightvendorlogs.com/";
 function say(t,bad=false){$("loginStatus").textContent=t;$("loginStatus").className="status"+(bad?" error":"")}
 async function verify(db){const {data:{user},error}=await db.auth.getUser();if(error||!user)return false;const r=await db.rpc("is_admin");return !r.error&&r.data===true}
 async function signIn(db,email,password){const {data,error}=await db.auth.signInWithPassword({email,password});if(error)throw error;const a=await db.rpc("is_admin");if(a.error||a.data!==true){await db.auth.signOut();throw new Error("This account does not have administrator access on one of the platforms.")}return data.user}
@@ -69,7 +79,7 @@ function render(){
  if(active==="all"){
   $("activeTitle").textContent="Combined business overview";$("activeDescription").textContent="A combined view of both businesses. Their financial records remain separate.";
   m=[card(counts.dv.customers,"DV customers"),card(counts.dv.purchases,"DV purchases"),card(counts.dv.pending,"DV pending orders"),card(counts.dv.chats,"DV support conversations"),card(counts.dve.users,"DVE users"),card(counts.dve.sellers,"Approved sellers"),card(counts.dve.applications,"Seller applications pending"),card(counts.dve.payouts,"Seller payouts pending")];
-  t=[tool("Delight Vendor Logs admin","Open the original DV administration area","admin.html"),tool("DelightVendorEdit admin","Open DVE marketplace administration",dveBase+"admin.html"),tool("Central Support Inbox","Reply to chats from both websites","central-support.html"),tool("Central Notifications","View notification activity from both websites","central-notifications.html"),tool("DV Live Chat","Open customer support inbox","admin-live-chat.html"),tool("DVE Live Chat","Open DVE customer support inbox",dveBase+"admin-live-chat.html"),tool("DV Notifications","Manage customer notifications","admin-notification.html"),tool("DVE Seller Control","Review sellers, orders and payouts",dveBase+"admin-seller.html")];
+  t=[tool("Delight Vendor Logs admin","Open the original DV administration area","admin.html"),tool("DelightVendorEdit admin","Open DVE marketplace administration on delightvendorlogs.com",dveBase+"admin.html"),tool("Central Support Inbox","Reply to chats from both websites","central-support.html"),tool("Central Notifications","View notification activity from both websites","central-notifications.html"),tool("DV Live Chat","Open customer support inbox","admin-live-chat.html"),tool("DVE Live Chat","Open DVE customer support inbox",dveBase+"admin-live-chat.html"),tool("DV Notifications","Manage customer notifications","admin-notification.html"),tool("DVE Seller Control","Review sellers, orders and payouts",dveBase+"admin-seller.html")];
  }else if(active==="dv"){
   $("activeTitle").textContent="Delight Vendor Logs";$("activeDescription").textContent="Original digital marketplace, wallet and virtual-number operations.";
   m=[card(counts.dv.customers,"Customers"),card(counts.dv.purchases,"Purchases"),card(counts.dv.pending,"Pending orders"),card(counts.dv.transactions,"Transactions"),card(counts.dv.chats,"Support conversations")];
@@ -95,6 +105,19 @@ $("loginForm").addEventListener("submit",async e=>{
 });
 $("logout").addEventListener("click",async()=>{await Promise.allSettled([dv.auth.signOut(),dve.auth.signOut()]);location.reload()});
 document.querySelectorAll("[data-platform]").forEach(b=>b.addEventListener("click",()=>{active=b.dataset.platform;document.querySelectorAll("[data-platform]").forEach(x=>x.classList.toggle("active",x===b));render()}));
+const workspaceUrls={overview:"",support:"central-support.html",notifications:"central-notifications.html"};
+document.querySelectorAll("[data-workspace]").forEach(b=>b.addEventListener("click",()=>{
+ const mode=b.dataset.workspace;
+ document.querySelectorAll("[data-workspace]").forEach(x=>x.classList.toggle("active",x===b));
+ $("overviewPanel").classList.toggle("hidden",mode!=="overview");
+ $("workspacePanel").classList.toggle("hidden",mode==="overview");
+ if(mode!=="overview"){
+  const url=workspaceUrls[mode];
+  $("workspaceTitle").textContent=mode==="support"?"Central Support Inbox — both websites":"Central Notifications — both websites";
+  $("workspaceOpen").href=url;
+  if($("workspaceFrame").getAttribute("src")!==url)$("workspaceFrame").src=url;
+ }
+}));
 (async()=>{try{const [a,b]=await Promise.all([verify(dv),verify(dve)]);if(a&&b){verified=true;await showDashboard()}else if(a||b){say("A session exists on only one platform. Sign in again so both administrator accounts are verified.")}}catch(e){say("Please sign in to continue.")}})();
 })();
 </script>
