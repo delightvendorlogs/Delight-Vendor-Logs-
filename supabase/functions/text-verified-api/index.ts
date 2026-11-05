@@ -868,13 +868,34 @@ async function actionBuy(body: any, userId: string, req: Request) {
     });
   } catch (error) {
     logSafeError("textverified-availability-request", error);
+    const providerStatus = Number((error as any)?.status ?? 0);
+    const providerMessage = str(
+      (error as any)?.providerMessage,
+      (error as any)?.message,
+      extractProviderErrorMessage((error as any)?.data),
+    ).toLowerCase();
+
+    // A low provider credit balance is an account-funding issue, not stock.
+    // Do not tell customers the service is out of stock in this case.
     if (isInsufficientProviderBalance(error)) {
+      return fail("This service is temporarily unavailable. Please contact support.", 503, {
+        error_code: "PROVIDER_INSUFFICIENT_FUNDS",
+      });
+    }
+
+    // Only report stock when the provider explicitly signals unavailable inventory.
+    if (
+      providerStatus === 404 ||
+      providerStatus === 409 ||
+      /out of stock|no available number|no number available|inventory unavailable|no inventory/.test(providerMessage)
+    ) {
       return fail("Out of Stock. This option has no available number right now. Please try again later.", 409, {
         error_code: "NUMBER_OUT_OF_STOCK",
       });
     }
-    return fail("Out of Stock. This option has no available number right now. Please try again later.", 503, {
-      error_code: "NUMBER_AVAILABILITY_UNAVAILABLE",
+
+    return fail("The number request could not be completed. No money was deducted. Please try again later.", 503, {
+      error_code: "NUMBER_REQUEST_FAILED",
     });
   }
 
@@ -995,8 +1016,8 @@ async function actionBuy(body: any, userId: string, req: Request) {
       }, refund.confirmed ? 502 : 202);
     }
     if (isInsufficientProviderBalance(error)) {
-      return fail("Out of Stock. This option has no available number right now. Please try again later.", 409, {
-        error_code: "NUMBER_OUT_OF_STOCK",
+      return fail("This service is temporarily unavailable. Please contact support.", 503, {
+        error_code: "PROVIDER_INSUFFICIENT_FUNDS",
       });
     }
     return fail("The number could not be secured. No money was deducted. Please try again later.", 503, {
