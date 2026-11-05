@@ -411,7 +411,7 @@ console.log("Purchase result:",order);
 if(order&&order.status==="completed"){
 message.textContent="✅ Purchase successful!";
 button.textContent="Purchase Complete";
-setTimeout(()=>window.location.href="purchases.html",1200);
+setTimeout(()=>window.location.href="purchases.html?review=1",1200);
 return;
 }
 if(order&&order.status==="pending"){
