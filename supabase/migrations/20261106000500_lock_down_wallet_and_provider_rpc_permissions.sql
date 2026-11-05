@@ -1,0 +1,52 @@
+-- Restrict customer RPCs to authenticated sessions and keep trusted server workflows.
+REVOKE EXECUTE ON FUNCTION public.buy_gmail(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.buy_gmail(uuid) TO authenticated, service_role;
+REVOKE EXECUTE ON FUNCTION public.buy_product(bigint) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.buy_product(bigint) TO authenticated, service_role;
+REVOKE EXECUTE ON FUNCTION public.create_ai_purchase(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.create_ai_purchase(uuid) TO authenticated, service_role;
+REVOKE EXECUTE ON FUNCTION public.create_ai_purchase(uuid,jsonb) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.create_ai_purchase(uuid,jsonb) TO authenticated, service_role;
+REVOKE EXECUTE ON FUNCTION public.ensure_my_wallet() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.ensure_my_wallet() TO authenticated, service_role;
+REVOKE EXECUTE ON FUNCTION public.finalize_youngpg_purchase(text,text,text,numeric,numeric,text,text,jsonb,integer) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.finalize_youngpg_purchase(text,text,text,numeric,numeric,text,text,jsonb,integer) TO authenticated, service_role;
+REVOKE EXECUTE ON FUNCTION public.get_my_wallet() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.get_my_wallet() TO authenticated, service_role;
+REVOKE EXECUTE ON FUNCTION public.refund_virtual_number(bigint) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.refund_virtual_number(bigint) TO authenticated, service_role;
+REVOKE EXECUTE ON FUNCTION public.refund_virtual_number(bigint,text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.refund_virtual_number(bigint,text) TO authenticated, service_role;
+REVOKE EXECUTE ON FUNCTION public.remove_youngpg_price_override(text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.remove_youngpg_price_override(text) TO authenticated, service_role;
+REVOKE EXECUTE ON FUNCTION public.reserve_fivesim_virtual_number(text,text,text,text,text,text,numeric,numeric,numeric,numeric) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.reserve_fivesim_virtual_number(text,text,text,text,text,text,numeric,numeric,numeric,numeric) TO authenticated, service_role;
+REVOKE EXECUTE ON FUNCTION public.reserve_virtual_number(text,text,bigint,text,text,text,numeric,numeric,numeric,numeric) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.reserve_virtual_number(text,text,bigint,text,text,text,numeric,numeric,numeric,numeric) TO authenticated, service_role;
+REVOKE EXECUTE ON FUNCTION public.set_youngpg_price_override(text,numeric,text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.set_youngpg_price_override(text,numeric,text) TO authenticated, service_role;
+REVOKE EXECUTE ON FUNCTION public.cancel_pending_order(bigint) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.cancel_pending_order(bigint) TO authenticated, service_role;
+REVOKE EXECUTE ON FUNCTION public.set_watermark(text,boolean) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.set_watermark(text,boolean) TO authenticated, service_role;
+
+-- Wallet mutation, provider reservation, refund and fulfilment functions do not
+-- authenticate a browser user internally. They are server-side only.
+REVOKE EXECUTE ON FUNCTION public.cancel_and_refund_virtual_number_order(bigint,uuid) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.cancel_and_refund_virtual_number_order(bigint,uuid) TO service_role;
+REVOKE EXECUTE ON FUNCTION public.cancel_virtual_number_and_refund(bigint,uuid) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.cancel_virtual_number_and_refund(bigint,uuid) TO service_role;
+REVOKE EXECUTE ON FUNCTION public.credit_wallet_from_zevpay(uuid,bigint,text) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.credit_wallet_from_zevpay(uuid,bigint,text) TO service_role;
+REVOKE EXECUTE ON FUNCTION public.credit_wallet_from_zevpay(uuid,numeric,text) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.credit_wallet_from_zevpay(uuid,numeric,text) TO service_role;
+REVOKE EXECUTE ON FUNCTION public.debit_wallet(uuid,numeric) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.debit_wallet(uuid,numeric) TO service_role;
+REVOKE EXECUTE ON FUNCTION public.deliver_order(bigint) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.deliver_order(bigint) TO service_role;
+REVOKE EXECUTE ON FUNCTION public.refund_virtual_number_order(bigint) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.refund_virtual_number_order(bigint) TO service_role;
+REVOKE EXECUTE ON FUNCTION public.refund_wallet(uuid,numeric) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.refund_wallet(uuid,numeric) TO service_role;
+REVOKE EXECUTE ON FUNCTION public.reserve_grizzly_virtual_number(uuid,numeric,text,text,text,text,text) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.reserve_grizzly_virtual_number(uuid,numeric,text,text,text,text,text) TO service_role;
