@@ -689,7 +689,9 @@ async function loginUser(event) {
             );
 
             setTimeout(function() {
-                window.location.href = "dashboard.html";
+                const requestedPage = new URLSearchParams(window.location.search).get("redirect");
+                const allowedPages = ["support-chat.html", "admin-live-chat.html"];
+                window.location.href = allowedPages.includes(requestedPage) ? requestedPage : "dashboard.html";
             }, 500);
 
         } else {
