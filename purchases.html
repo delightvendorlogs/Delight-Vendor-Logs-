@@ -1065,6 +1065,11 @@ function createNormalPurchaseCard(purchase){
         }
 
 
+        ${status === "completed" ? `
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+              <a href="purchase-protection.html?purchase=${encodeURIComponent(purchase.id)}" style="display:inline-block;background:#d4af37;color:#080808;padding:10px 13px;border-radius:8px;text-decoration:none;font-weight:800">⭐ Rate / Report Purchase</a>
+            </div>
+        ` : ""}
         <div class="date">
 
             ${esc(date)}
