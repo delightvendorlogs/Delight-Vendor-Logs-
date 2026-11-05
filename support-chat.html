@@ -37,7 +37,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (()=>{"use strict";
-const URL="https://hkfhehbhmucymusaytoe.supabase.co",KEY="sb_publishable_8uj618f_n35zeF3Fcyt5VA_xLHHOkNv",BUCKET="support-chat-images";
+const URL="https://hkfhehbhmucymusaytoe.supabase.co",KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_",BUCKET="support-chat-images";
 const $=id=>document.getElementById(id),db=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true}});
 let user=null,active=null,channel=null,chats=[],presenceTimer=null;
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
