@@ -57,7 +57,7 @@ async function count(db,table,filters=[]){let q=db.from(table).select("*",{count
 async function refreshCounts(){
  const [dvRows,dveRows]=await Promise.all([
   Promise.all([count(dv,"profiles"),count(dv,"purchases"),count(dv,"pending_orders",[["eq",["status","pending"]]]),count(dv,"transactions"),count(dv,"support_chat_conversations")]),
-  Promise.all([count(dve,"profiles"),count(dve,"seller_profiles"),count(dve,"seller_applications",[["eq",["application_status","pending"]]]),count(dve,"orders"),count(dve,"seller_payouts",[["eq",["status","pending"]]]),count(dve,"support_chat_conversations")])
+  Promise.all([count(dve,"profiles"),count(dve,"seller_profiles",[["eq",["seller_status","approved"]]]),count(dve,"seller_applications",[["eq",["application_status","pending"]]]),count(dve,"orders"),count(dve,"seller_payouts",[["eq",["status","pending"]]]),count(dve,"support_chat_conversations")])
  ]);
  counts.dv={customers:dvRows[0],purchases:dvRows[1],pending:dvRows[2],transactions:dvRows[3],chats:dvRows[4]};
  counts.dve={users:dveRows[0],sellers:dveRows[1],applications: dveRows[2],orders:dveRows[3],payouts:dveRows[4],chats:dveRows[5]};
@@ -77,7 +77,7 @@ function render(){
  }else{
   $("activeTitle").textContent="DelightVendorEdit";$("activeDescription").textContent="Seller marketplace, buyer orders, payouts and referrals.";
   m=[card(counts.dve.users,"Users"),card(counts.dve.sellers,"Approved sellers"),card(counts.dve.applications,"Pending seller applications"),card(counts.dve.orders,"Orders"),card(counts.dve.payouts,"Pending payouts"),card(counts.dve.chats,"Support conversations")];
-  t=[tool("Main admin","Existing DVE admin dashboard",dveBase+"admin.html"),tool("Seller control","Applications, listings, orders and payouts",dveBase+"admin-seller.html"),tool("Seller reviews","Moderate seller and website reviews",dveBase+"admin-reviews.html"),tool("Live Chat inbox","Customer conversations and replies",dveBase+"admin-live-chat.html"),tool("Referral admin","Referral rewards and withdrawals",dveBase+"admin-referrals.html"),tool("User management","Inspect user accounts and wallets",dveBase+"admin-view-user.html")];
+  t=[tool("Main admin","Existing DVE admin dashboard",dveBase+"admin.html"),tool("Seller control","Applications, listings, orders and payouts",dveBase+"admin-seller.html"),tool("Seller verification","Assign Verified, Trusted and Top Seller badges",dveBase+"admin-seller-verification.html"),tool("Seller reviews","Moderate seller and website reviews",dveBase+"admin-reviews.html"),tool("Live Chat inbox","Customer conversations and replies",dveBase+"admin-live-chat.html"),tool("Referral admin","Referral rewards and withdrawals",dveBase+"admin-referrals.html"),tool("User management","Inspect user accounts and wallets",dveBase+"admin-view-user.html")];
  }
  $("metrics").innerHTML=m.join("");$("tools").innerHTML=t.join("");
 }
