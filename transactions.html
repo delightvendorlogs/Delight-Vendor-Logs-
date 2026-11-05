@@ -168,7 +168,35 @@
 .dv-list-header{max-width:1180px;margin:auto;padding:26px clamp(15px,4vw,38px) 20px!important;display:flex;align-items:center;justify-content:space-between;gap:16px;text-align:left!important;background:transparent!important;border-bottom:1px solid #57451f!important}.dv-list-header span{font-size:10px;letter-spacing:1.4px;color:#d8b75e;font-weight:850}.dv-list-header h1{margin:7px 0 5px;color:#fff1d0;font-size:clamp(25px,4vw,34px);font-weight:900}.dv-list-header p{margin:0;color:#aaa18f;font-size:13px}.dv-list-header>a{padding:11px 14px;border:1px solid #4a3b1e;border-radius:12px;color:#edcb6d;text-decoration:none;background:#15161b;font-size:13px;font-weight:750}
 main{max-width:1180px!important;padding:20px clamp(14px,4vw,38px) 60px!important}.card{padding:20px!important;border:1px solid #332d20!important;border-radius:21px!important;background:linear-gradient(145deg,#17181d,#101116)!important;box-shadow:0 16px 40px #0006!important}.balance-label{color:#bdb18e!important;font-size:12px!important;letter-spacing:.7px;font-weight:800!important}#walletBalance{color:#f0cf70!important;font-size:clamp(28px,4vw,38px)!important}.transaction-stats{gap:11px!important;margin:18px 0!important}.transaction-stat{border:1px solid #40351f!important;border-radius:16px!important;background:linear-gradient(145deg,#1a1b20,#111216)!important}.transaction-stat.active{border-color:#d8b34c!important;background:#241d0e!important}.transaction-stat strong{color:#edc961!important}.dv-refresh-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:20px 0 12px;color:#bdb18e;font-size:13px;font-weight:700}.refresh{width:auto!important;min-width:125px;min-height:42px!important;margin:0!important;padding:10px 15px!important;border-radius:12px!important;background:linear-gradient(120deg,#f1d47a,#c79a31)!important;color:#171208!important;font-weight:850!important}.transaction{padding:18px!important;border:1px solid #383020!important;border-radius:17px!important;background:linear-gradient(145deg,#1b1c21,#111216)!important}.transaction-type{color:#fff1d0!important}.description{color:#b9b1a1!important;line-height:1.6!important}.date{color:#817b70!important}.status{border-radius:99px!important;padding:6px 10px!important;background:#241d0e!important;border:1px solid #57451f!important;color:#edc961!important}
 @media(max-width:600px){.dv-list-header{padding:17px 14px!important;align-items:flex-start}.dv-list-header p{font-size:11px}.dv-list-header>a{padding:9px 10px;font-size:11px;white-space:nowrap}main{padding:14px 13px 42px!important}.card{padding:14px!important}.transaction-stats{gap:7px!important}.transaction-stat{padding:11px 8px!important}.dv-refresh-row{font-size:11px}.refresh{min-width:100px!important}.transaction{padding:13px!important}}
-</style></head>
+</style><style id="dv-compact-marketplace-transactions">
+
+/* Compact wallet activity */
+body{font-size:13px!important}
+.dv-list-header{max-width:980px!important;padding:12px 15px!important;gap:10px!important}
+.dv-list-header h1{font-size:21px!important;margin:3px 0!important}
+.dv-list-header p{font-size:11px!important}
+.dv-list-header>a{padding:8px 10px!important;font-size:11px!important;border-radius:8px!important}
+main{max-width:900px!important;padding:12px 14px 55px!important}
+.top-dashboard-back-wrap{margin:0 0 9px!important}
+.top-dashboard-back{font-size:11px!important}
+.card{padding:12px!important;border-radius:12px!important;margin:0 0 10px!important}
+.balance-label{font-size:11px!important;margin:0 0 4px!important}
+#walletBalance{font-size:24px!important}
+.transaction-stats{gap:7px!important;margin:9px 0 13px!important}
+.transaction-stat{padding:9px 10px!important;border-radius:9px!important;min-height:0!important}
+.transaction-stat strong{font-size:15px!important}
+.transaction-stat span{font-size:9px!important}
+.dv-refresh-row{margin:10px 0 8px!important;font-size:11px!important}
+.refresh{min-width:0!important;padding:7px 10px!important;font-size:11px!important;border-radius:8px!important}
+#transactions{gap:8px!important}
+.transaction{padding:10px!important;border-radius:10px!important}
+.transaction-type{font-size:12px!important}
+.amount{font-size:14px!important}
+.status,.description{font-size:11px!important;margin-top:5px!important;line-height:1.4!important}
+@media(max-width:520px){main{padding:10px 11px 45px!important}.dv-list-header{padding:10px 11px!important}.dv-list-header h1{font-size:19px!important}.transaction-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}.card{padding:10px!important}}
+
+</style>
+</head>
 
 <body>
 
