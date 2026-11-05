@@ -70,10 +70,14 @@ async function loadMessages(){
  if(!active)return;
  const {data,error}=await db.from("support_chat_messages").select("id,sender_user_id,sender_role,message_text,image_path,created_at").eq("conversation_id",active.id).order("created_at",{ascending:false}).limit(300);
  if(error)throw error;
+ const {data:chatState}=await db.from("support_chat_conversations").select("admin_last_read_at,admin_typing_at").eq("id",active.id).maybeSingle();
+ await db.rpc("support_chat_mark_read",{p_conversation_id:active.id});
+ const supportTyping=chatState?.admin_typing_at&&Date.now()-new Date(chatState.admin_typing_at).getTime()<5000;
+ $("chatSubtitle").textContent=supportTyping?"Support is typing…":"Your conversation";
  const rows=(data||[]).reverse(),images=await Promise.all(rows.map(m=>m.image_path?signedImage(m.image_path):null));
  $("messages").innerHTML=rows.length?rows.map((m,i)=>{
   const mine=m.sender_role==="customer"&&m.sender_user_id===user.id,bot=m.sender_role==="bot";
-  return '<article class="bubble '+(mine?'mine':bot?'bot':'')+'">'+(m.message_text?esc(m.message_text):'')+(images[i]?'<img src="'+esc(images[i])+'" alt="Image attachment" loading="lazy">':'')+'<small>'+(bot?'Delight Vendor Logs':mine?'You':'Support')+' · '+time(m.created_at)+'</small></article>';
+  return '<article class="bubble '+(mine?'mine':bot?'bot':'')+'">'+(m.message_text?esc(m.message_text):'')+(images[i]?'<img src="'+esc(images[i])+'" alt="Image attachment" loading="lazy">':'')+'<small>'+(bot?'Delight Vendor Logs':mine?'You':'Support')+' · '+time(m.created_at)+(mine&&chatState?.admin_last_read_at&&new Date(chatState.admin_last_read_at)>=new Date(m.created_at)?" · Seen by support":"")+'</small></article>';
  }).join(""):'<div class="empty">This conversation is ready. Send us a message to begin.</div>';
  $("messages").scrollTop=$("messages").scrollHeight;
 }
@@ -108,6 +112,7 @@ $("composer").addEventListener("submit",async e=>{
   await loadMessages();await refreshSupportPresence();
  }catch(e){status("Your message couldn’t be sent. Please check your connection and try again.")}finally{$("sendBtn").disabled=false}
 });
+let typingTimer=null;$("messageInput").addEventListener("input",()=>{if(!active)return;db.rpc("support_chat_set_typing",{p_conversation_id:active.id,p_is_typing:true});clearTimeout(typingTimer);typingTimer=setTimeout(()=>db.rpc("support_chat_set_typing",{p_conversation_id:active.id,p_is_typing:false}),1800);});
 $("messageInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("composer").requestSubmit()}});
 (async()=>{
  try{const {data,error}=await db.auth.getSession();if(error)throw error;user=data.session?.user;if(!user){location.replace("login.html?redirect=support-chat.html");return}
