@@ -76,46 +76,57 @@ async function refreshCounts(){
 }
 function card(n,l){return '<div class="metric"><strong>'+Number(n||0).toLocaleString()+'</strong><span>'+l+'</span></div>'}
 function render(){
- let m=[],t=[];
- if(active==="all"){
-  $("activeTitle").textContent="Combined business overview";$("activeDescription").textContent="A combined view of both businesses. Their financial records remain separate.";
-  m=[card(counts.dv.customers,"DV customers"),card(counts.dv.purchases,"DV purchases"),card(counts.dv.pending,"DV pending orders"),card(counts.dv.chats,"DV support conversations"),card(counts.dve.users,"DVE users"),card(counts.dve.sellers,"Approved sellers"),card(counts.dve.applications,"Seller applications pending"),card(counts.dve.payouts,"Seller payouts pending")];
-  t=[
-   tool("DV · Main Admin","Main dashboard for the original marketplace","admin.html"),
-   tool("DV · Banner Management","Upload, edit and reorder dashboard banners","banner-admin.html"),
-   tool("DV · User Management","Find customers and inspect accounts","view-user.html"),
-   tool("DV · Virtual Number Pricing","Manage virtual number markup and price overrides","override-price.html"),
-   tool("DV · Services & Prices","Manage service category markup and prices","sociallogs-admin.html"),
-   tool("DV · Services Marketplace","Open the services management area","sociallogs.html"),
-   tool("DV · Boosting Markup","Manage boosting prices and markup","boosting-admin.html"),
-   tool("DV · Gmail Admin","Manage Gmail service options","gmail-admin.html"),
-   tool("DV · Referral Management","Referral rates, earnings and withdrawal requests","admin-refer.html"),
-   tool("DV · Purchase Protection & Reviews","Handle customer purchase reports and moderate reviews","admin-purchase-protection.html"),
-   tool("DV · Wallet Management","Review and adjust customer wallet balances","admin_wallet.html"),
-   tool("DV · Notifications","Send and manage customer announcements","admin-notification.html"),
-   tool("DV · Live Chat Inbox","Reply to customer conversations","admin-live-chat.html"),
-   tool("DV · Transactions","Inspect marketplace transactions","transactions.html"),
-   tool("DV · Site Announcement","Edit the scrolling website announcement","admin-site-announcement.html"),
-   tool("DV · TheGiftUNC Token","Manage the provider token","thegiftunc-token-admin.html"),
-   tool("DVE · Main Admin","Main DelightVendorEdit dashboard",dveBase+"admin.html"),
-   tool("DVE · Banner Management","Manage marketplace dashboard banners",dveBase+"banner-admin.html"),
-   tool("DVE · User Management","Inspect buyer and seller accounts",dveBase+"admin-view-user.html"),
-   tool("DVE · Seller Control","Applications, listings, orders and payouts",dveBase+"admin-seller.html"),
-   tool("DVE · Seller Verification","Assign Verified, Trusted and Top Seller badges",dveBase+"admin-seller-verification.html"),
-   tool("DVE · Reviews","Moderate seller and customer reviews",dveBase+"admin-reviews.html"),
-   tool("DVE · Referral Admin","Manage referral rewards and withdrawals",dveBase+"admin-referrals.html"),
-   tool("DVE · Announcement","Edit the scrolling marketplace announcement",dveBase+"admin-announcement.html"),
-   tool("DVE · Notifications","Send account notifications to users",dveBase+"admin-notification.html"),
-   tool("DVE · Live Chat Inbox","Reply to marketplace customer conversations",dveBase+"admin-live-chat.html"),
-   tool("DVE · Admin Alert Settings","Configure email and Telegram alert settings",dveBase+"admin-alert-settings.html"),
-   tool("DVE · Services Catalogue","Manage services, activation and selling prices",dveBase+"admin-services-v2.html"),
-   tool("DVE · Pricing & Markup","Manage product prices and markup rules",dveBase+"admin-pricing.html"),
-   tool("DVE · FAQ & Help Content","Manage customer FAQ and help pages",dveBase+"faq-admin.html"),
-   tool("Central · Support Inbox","One inbox for both websites","central-support.html"),
-   tool("Central · Notifications","Combined notification activity","central-notifications.html")
+ let m=[];
+ const t=[
+  tool("DV · Main Admin","Main dashboard for the original marketplace","admin.html"),
+  tool("DV · Banner Management","Upload, edit and reorder dashboard banners","banner-admin.html"),
+  tool("DV · User Management","Find customers and inspect accounts","view-user.html"),
+  tool("DV · Virtual Number Pricing","Manage virtual number markup and price overrides","override-price.html"),
+  tool("DV · Services & Prices","Manage service category markup and prices","sociallogs-admin.html"),
+  tool("DV · Services Marketplace","Open the services management area","sociallogs.html"),
+  tool("DV · Boosting Markup","Manage boosting prices and markup","boosting-admin.html"),
+  tool("DV · Gmail Admin","Manage Gmail service options","gmail-admin.html"),
+  tool("DV · Referral Management","Referral rates, earnings and withdrawal requests","admin-refer.html"),
+  tool("DV · Purchase Protection & Reviews","Handle customer purchase reports and moderate reviews","admin-purchase-protection.html"),
+  tool("DV · Wallet Management","Review and adjust customer wallet balances","admin_wallet.html"),
+  tool("DV · Notifications","Send and manage customer announcements","admin-notification.html"),
+  tool("DV · Live Chat Inbox","Reply to customer conversations","admin-live-chat.html"),
+  tool("DV · Transactions","Inspect marketplace transactions","transactions.html"),
+  tool("DV · Site Announcement","Edit the scrolling website announcement","admin-site-announcement.html"),
+  tool("DV · TheGiftUNC Token","Manage the provider token","thegiftunc-token-admin.html"),
+  tool("DVE · Main Admin","Main DelightVendorEdit dashboard",dveBase+"admin.html"),
+  tool("DVE · Banner Management","Manage marketplace dashboard banners",dveBase+"banner-admin.html"),
+  tool("DVE · User Management","Inspect buyer and seller accounts",dveBase+"admin-view-user.html"),
+  tool("DVE · Seller Control","Applications, listings, orders and payouts",dveBase+"admin-seller.html"),
+  tool("DVE · Seller Verification","Assign Verified, Trusted and Top Seller badges",dveBase+"admin-seller-verification.html"),
+  tool("DVE · Reviews","Moderate seller and customer reviews",dveBase+"admin-reviews.html"),
+  tool("DVE · Referral Admin","Manage referral rewards and withdrawals",dveBase+"admin-referrals.html"),
+  tool("DVE · Announcement","Edit the scrolling marketplace announcement",dveBase+"admin-announcement.html"),
+  tool("DVE · Notifications","Send account notifications to users",dveBase+"admin-notification.html"),
+  tool("DVE · Live Chat Inbox","Reply to marketplace customer conversations",dveBase+"admin-live-chat.html"),
+  tool("DVE · Admin Alert Settings","Configure email and Telegram alert settings",dveBase+"admin-alert-settings.html"),
+  tool("DVE · Services Catalogue","Manage services, activation and selling prices",dveBase+"admin-services-v2.html"),
+  tool("DVE · Pricing & Markup","Manage product prices and markup rules",dveBase+"admin-pricing.html"),
+  tool("DVE · FAQ & Help Content","Manage customer FAQ and help pages",dveBase+"faq-admin.html"),
+  tool("Central · Support Inbox","One inbox for both websites","central-support.html"),
+  tool("Central · Notifications","Combined notification activity","central-notifications.html")
  ];
+ if(active==="all"){
+  $("activeTitle").textContent="Combined business overview";
+  $("activeDescription").textContent="A combined view of both businesses. Their financial records remain separate.";
+  m=[card(counts.dv.customers,"DV customers"),card(counts.dv.purchases,"DV purchases"),card(counts.dv.pending,"DV pending orders"),card(counts.dv.chats,"DV support conversations"),card(counts.dve.users,"DVE users"),card(counts.dve.sellers,"Approved sellers"),card(counts.dve.applications,"Seller applications pending"),card(counts.dve.payouts,"Seller payouts pending")];
+ }else if(active==="dv"){
+  $("activeTitle").textContent="Delight Vendor Logs";
+  $("activeDescription").textContent="Original digital marketplace, wallet and virtual-number operations.";
+  m=[card(counts.dv.customers,"Customers"),card(counts.dv.purchases,"Purchases"),card(counts.dv.pending,"Pending orders"),card(counts.dv.transactions,"Transactions"),card(counts.dv.chats,"Support conversations")];
+ }else{
+  $("activeTitle").textContent="DelightVendorEdit";
+  $("activeDescription").textContent="Seller marketplace, buyer orders, payouts and referrals.";
+  m=[card(counts.dve.users,"Users"),card(counts.dve.sellers,"Approved sellers"),card(counts.dve.applications,"Pending seller applications"),card(counts.dve.orders,"Orders"),card(counts.dve.payouts,"Pending payouts"),card(counts.dve.chats,"Support conversations")];
  }
- $("metrics").innerHTML=m.join("");$("tools").innerHTML=t.join("");applyToolSearch();
+ $("metrics").innerHTML=m.join("");
+ $("tools").innerHTML=t.join("");
+ applyToolSearch();
 }
 function tool(title,desc,url){const search=(title+" "+desc).toLowerCase().replace(/&/g,"&amp;").replace(/"/g,"&quot;");return '<a class="tool" data-search="'+search+'" href="'+url+'"><b>'+title+' →</b><span>'+desc+'</span></a>'}
 function applyToolSearch(){const q=($("toolSearch")?.value||"").trim().toLowerCase();let shown=0;document.querySelectorAll("#tools .tool").forEach(el=>{const match=!q||(el.dataset.search||"").includes(q);el.classList.toggle("hidden",!match);if(match)shown++});$("toolSearchEmpty").classList.toggle("hidden",shown>0)}
