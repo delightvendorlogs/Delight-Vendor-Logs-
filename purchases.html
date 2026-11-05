@@ -1580,7 +1580,7 @@ async function maybeShowPurchaseReviewPrompt(){
    }
   }
   if(!targetPurchase)return;
-  const delay=3000+Math.floor(Math.random()*2001);
+  const delay=justPurchased?1800+Math.floor(Math.random()*2001):3000+Math.floor(Math.random()*2001);
   setTimeout(()=>{location.href="purchase-protection.html?purchase="+encodeURIComponent(targetPurchase.id)+"&auto=1"},delay);
  }catch(error){console.warn("Review prompt check skipped:",error)}
 }
