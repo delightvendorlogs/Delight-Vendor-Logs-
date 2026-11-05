@@ -46,8 +46,12 @@ function renderList(){
 async function signedImage(path){if(!path)return null;const {data,error}=await db.storage.from(BUCKET).createSignedUrl(path,3600);if(error)return null;return data.signedUrl}
 async function loadMessages(){
  if(!active)return;const {data,error}=await db.from("support_chat_messages").select("id,sender_user_id,sender_role,message_text,image_path,created_at").eq("conversation_id",active.id).order("created_at",{ascending:false}).limit(500);if(error)throw error;
+ const {data:chatState}=await db.from("support_chat_conversations").select("customer_last_read_at,customer_typing_at").eq("id",active.id).maybeSingle();
+ await db.rpc("support_chat_mark_read",{p_conversation_id:active.id});
+ const customerTyping=chatState?.customer_typing_at&&Date.now()-new Date(chatState.customer_typing_at).getTime()<5000;
+ $("chatSubtitle").textContent=customerTyping?"Customer is typing…":(profiles[active.customer_user_id]?.email||"Customer conversation");
  const rows=(data||[]).reverse(),images=await Promise.all(rows.map(m=>m.image_path?signedImage(m.image_path):null));
- $("messages").innerHTML=rows.length?rows.map((m,i)=>'<article class="bubble '+(m.sender_role==='customer'?'customer':m.sender_role==='bot'?'bot':'')+'">'+(m.message_text?esc(m.message_text):'')+(images[i]?'<img src="'+esc(images[i])+'" alt="Customer image attachment" loading="lazy">':'')+'<small>'+(m.sender_role==='customer'?'Customer':m.sender_role==='bot'?'Automatic reply':'You')+' · '+time(m.created_at)+'</small></article>').join(""):'<div class="empty">This conversation is ready for your reply.</div>';
+ $("messages").innerHTML=rows.length?rows.map((m,i)=>'<article class="bubble '+(m.sender_role==='customer'?'customer':m.sender_role==='bot'?'bot':'')+'">'+(m.message_text?esc(m.message_text):'')+(images[i]?'<img src="'+esc(images[i])+'" alt="Customer image attachment" loading="lazy">':'')+'<small>'+(m.sender_role==='customer'?'Customer':m.sender_role==='bot'?'Automatic reply':'You')+' · '+time(m.created_at)+(m.sender_role==="admin"&&chatState?.customer_last_read_at&&new Date(chatState.customer_last_read_at)>=new Date(m.created_at)?" · Seen by customer":"")+'</small></article>').join(""):'<div class="empty">This conversation is ready for your reply.</div>';
  $("messages").scrollTop=$("messages").scrollHeight;
 }
 async function openChat(id){
@@ -66,6 +70,7 @@ $("composer").addEventListener("submit",async e=>{
  $("messageInput").value="";$("imageInput").value="";$("fileName").textContent="";await loadMessages();await loadConversations();status("Reply sent.");
  }catch(e){status("Reply could not be sent. Please check your connection and try again.")}finally{$("sendBtn").disabled=false}
 });
+let typingTimer=null;$("messageInput").addEventListener("input",()=>{if(!active)return;db.rpc("support_chat_set_typing",{p_conversation_id:active.id,p_is_typing:true});clearTimeout(typingTimer);typingTimer=setTimeout(()=>db.rpc("support_chat_set_typing",{p_conversation_id:active.id,p_is_typing:false}),1800);});
 $("messageInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("composer").requestSubmit()}});
 (async()=>{
  try{const {data,error}=await db.auth.getSession();if(error)throw error;user=data.session?.user;if(!user){location.replace("login.html?redirect=admin-live-chat.html");return}
