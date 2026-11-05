@@ -333,11 +333,26 @@ async function tvRequest(
     message: extractProviderErrorMessage(data),
   };
 
+  // Check provider account funding before treating any failed response as
+  // a stock or generic request error. Some provider versions return HTTP 400.
+  if (isInsufficientProviderBalance(providerError)) {
+    const error = new Error("Insufficient funds. Please contact support.");
+    Object.assign(error, {
+      status: result.status,
+      data,
+      provider: "textverified",
+      path,
+      code: "PROVIDER_INSUFFICIENT_FUNDS",
+      providerMessage: extractProviderErrorMessage(data),
+    });
+    throw error;
+  }
+
   if (!result.ok) {
     const error = new Error(
       str(
         extractProviderErrorMessage(data),
-        `TextVerified request failed (${result.status}).`,
+        `Number request failed (${result.status}).`,
       ),
     );
 
@@ -347,25 +362,6 @@ async function tvRequest(
       provider: "textverified",
       path,
       providerMessage: extractProviderErrorMessage(data),
-    });
-
-    throw error;
-  }
-
-  if (isInsufficientProviderBalance(providerError)) {
-    const error = new Error(
-      str(
-        data?.message,
-        data?.error,
-        data?.detail,
-        "TextVerified provider balance is insufficient.",
-      ),
-    );
-
-    Object.assign(error, {
-      status: result.status,
-      data,
-      provider: "textverified",
     });
 
     throw error;
@@ -801,6 +797,40 @@ async function fetchProviderLink(
   return data;
 }
 
+function customerServiceLabel(serviceName: string): string {
+  const raw = str(serviceName).replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
+  if (!raw) return "This service";
+  const key = raw.toLowerCase();
+  const known: Record<string, string> = {
+    whatsapp: "WhatsApp",
+    telegram: "Telegram",
+    gmail: "Gmail",
+    "google voice": "Google Voice",
+    instagram: "Instagram",
+    facebook: "Facebook",
+    tiktok: "TikTok",
+    snapchat: "Snapchat",
+    discord: "Discord",
+    amazon: "Amazon",
+    microsoft: "Microsoft",
+  };
+  return known[key] ?? raw.charAt(0).toUpperCase() + raw.slice(1);
+}
+
+function outOfStockMessage(serviceName: string): string {
+  return `${customerServiceLabel(serviceName)} is out of stock. Please try again later.`;
+}
+
+function isExplicitOutOfStock(error: any): boolean {
+  const text = [
+    error?.message,
+    error?.providerMessage,
+    extractProviderErrorMessage(error?.data),
+    error?.data,
+  ].map((v) => typeof v === "string" ? v : JSON.stringify(v ?? "")).join(" ").toLowerCase();
+  return /out of stock|no available numbers?|no numbers? available|no phone numbers? available|inventory unavailable|no inventory|no number available|number availability exhausted|no stock available/.test(text);
+}
+
 /* =========================================================
    BUY NUMBER
 ========================================================= */
@@ -878,19 +908,18 @@ async function actionBuy(body: any, userId: string, req: Request) {
     // A low provider credit balance is an account-funding issue, not stock.
     // Do not tell customers the service is out of stock in this case.
     if (isInsufficientProviderBalance(error)) {
-      return fail("This service is temporarily unavailable. Please contact support.", 503, {
+      return fail("Insufficient funds. Please contact support.", 402, {
         error_code: "PROVIDER_INSUFFICIENT_FUNDS",
+        no_customer_charge: true,
       });
     }
 
-    // Only report stock when the provider explicitly signals unavailable inventory.
-    if (
-      providerStatus === 404 ||
-      providerStatus === 409 ||
-      /out of stock|no available number|no number available|inventory unavailable|no inventory/.test(providerMessage)
-    ) {
-      return fail("Out of Stock. This option has no available number right now. Please try again later.", 409, {
+    // HTTP 404/409 alone is not proof of empty inventory. Only explicit
+    // provider stock wording is shown to customers as an out-of-stock result.
+    if (isExplicitOutOfStock(error)) {
+      return fail(outOfStockMessage(serviceName), 409, {
         error_code: "NUMBER_OUT_OF_STOCK",
+        no_customer_charge: true,
       });
     }
 
@@ -914,8 +943,21 @@ async function actionBuy(body: any, userId: string, req: Request) {
       );
     } catch (error) {
       logSafeError("textverified-availability-details", error);
-      return fail("Out of Stock. This option has no available number right now. Please try again later.", 503, {
+      if (isInsufficientProviderBalance(error)) {
+        return fail("Insufficient funds. Please contact support.", 402, {
+          error_code: "PROVIDER_INSUFFICIENT_FUNDS",
+          no_customer_charge: true,
+        });
+      }
+      if (isExplicitOutOfStock(error)) {
+        return fail(outOfStockMessage(serviceName), 409, {
+          error_code: "NUMBER_OUT_OF_STOCK",
+          no_customer_charge: true,
+        });
+      }
+      return fail("We could not confirm an available number. No money was deducted. Please try again later.", 503, {
         error_code: "NUMBER_AVAILABILITY_UNAVAILABLE",
+        no_customer_charge: true,
       });
     }
   }
@@ -938,8 +980,9 @@ async function actionBuy(body: any, userId: string, req: Request) {
         logSafeError("textverified-release-number-without-phone", cancelError);
       }
     }
-    return fail("Out of Stock. This option has no available number right now. Please try again later.", 409, {
+    return fail(outOfStockMessage(serviceName), 409, {
       error_code: "NUMBER_OUT_OF_STOCK",
+      no_customer_charge: true,
     });
   }
 
@@ -1016,12 +1059,14 @@ async function actionBuy(body: any, userId: string, req: Request) {
       }, refund.confirmed ? 502 : 202);
     }
     if (isInsufficientProviderBalance(error)) {
-      return fail("This service is temporarily unavailable. Please contact support.", 503, {
+      return fail("Insufficient funds. Please contact support.", 402, {
         error_code: "PROVIDER_INSUFFICIENT_FUNDS",
+        no_customer_charge: true,
       });
     }
     return fail("The number could not be secured. No money was deducted. Please try again later.", 503, {
       error_code: "NUMBER_ALLOCATION_FAILED",
+      no_customer_charge: true,
     });
   }
 }
@@ -1430,7 +1475,7 @@ Deno.serve(async (req: Request) => {
 
     if (isInsufficientProviderBalance(error)) {
       return fail(
-        "Insufficient provider funds. Please contact support.",
+        "Insufficient funds. Please contact support.",
         402,
         {
           error_code: "PROVIDER_INSUFFICIENT_FUNDS",
