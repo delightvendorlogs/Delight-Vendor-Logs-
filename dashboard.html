@@ -5967,9 +5967,16 @@ function renderServices(){
 
 function buyProduct(id){
 
+    const returnUrl =
+        selectedCategory && selectedCategory !== "Home"
+        ? "dashboard.html?category=" + encodeURIComponent(selectedCategory)
+        : "dashboard.html";
+
     location.href =
         "products.html?id=" +
-        encodeURIComponent(id);
+        encodeURIComponent(id) +
+        "&return=" +
+        encodeURIComponent(returnUrl);
 }
 
 
