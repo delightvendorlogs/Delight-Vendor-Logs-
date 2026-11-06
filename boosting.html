@@ -633,6 +633,14 @@
 
     .message.show {
       display: block;
+      position: fixed;
+      top: 82px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min( calc(100% - 28px), 640px );
+      z-index: 1000;
+      margin: 0;
+      box-shadow: 0 8px 28px rgba(0,0,0,.45);
     }
 
     .message.success {
@@ -1384,6 +1392,8 @@
     }
 
 
+    let messageTimeout = null;
+
     function showMessage(
       text,
       type = "error"
@@ -1396,14 +1406,22 @@
         "message show " +
         type;
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
+      if (messageTimeout) {
+        clearTimeout(messageTimeout);
+      }
+
+      messageTimeout = setTimeout(() => {
+        clearMessage();
+      }, 3000);
     }
 
 
     function clearMessage() {
+
+      if (messageTimeout) {
+        clearTimeout(messageTimeout);
+        messageTimeout = null;
+      }
 
       messageEl.textContent =
         "";
@@ -2713,37 +2731,10 @@
         ) {
 
           showMessage(
-            "Insufficient wallet balance. Please fund your wallet.",
+            "Insufficient funds. Please fund your wallet and try again.",
             "warning"
           );
 
-          return;
-        }
-
-
-        const confirmed =
-          confirm(
-            "Confirm Boost Order\n\n" +
-            "Service: " +
-            getServiceName(
-              selectedService
-            ) +
-            "\n" +
-            "Quantity: " +
-            formatNumber(
-              quantity
-            ) +
-            "\n" +
-            "Total: " +
-            formatMoney(
-              total
-            ) +
-            "\n\n" +
-            "Your wallet will be debited after confirmation."
-          );
-
-
-        if (!confirmed) {
           return;
         }
 
