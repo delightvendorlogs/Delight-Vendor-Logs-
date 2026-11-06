@@ -382,22 +382,23 @@ async function listServices(country?: string) {
     ? `/customer/services?country=${encodeURIComponent(country)}`
     : "/customer/services";
   const result = await providerRequest(path);
-  const services = getRows(result).map((item: any) => ({
-    code: getServiceCode(item), service_code: getServiceCode(item),
-    name: getServiceName(item), service_name: getServiceName(item),
-    description: str(item?.description), available: item?.available !== false,
+
+  // Return the provider's service catalogue immediately. Do not call /price
+  // once for every service: large catalogues can exhaust the Edge Function CPU
+  // budget and leave the customer stuck on "Loading services".
+  // The selected service's exact customer price is fetched by the existing
+  // single-service "price" action when the customer taps it.
+  return getRows(result).map((item: any) => ({
+    code: getServiceCode(item),
+    service_code: getServiceCode(item),
+    name: getServiceName(item),
+    service_name: getServiceName(item),
+    description: str(item?.description),
+    available: item?.available !== false,
+    price: null,
+    price_ngn: null,
     provider_data: item,
   }));
-  return await mapWithConcurrency(services, 3, async (item) => {
-    if (!country || item.available === false) return { ...item, price: null, price_ngn: null };
-    try {
-      const quote = await getQuote(item.code, country);
-      return { ...item, price: quote.price, price_ngn: quote.price, currency: "NGN" };
-    } catch {
-      console.warn("[virtualsms-service-price] Quote unavailable for service.");
-      return { ...item, price: null, price_ngn: null };
-    }
-  });
 }
 
 async function getQuote(service: string, country: string) {
