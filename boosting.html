@@ -637,28 +637,30 @@
       top: 82px;
       left: 50%;
       transform: translateX(-50%);
-      width: min( calc(100% - 28px), 640px );
-      z-index: 1000;
+      width: min(calc(100% - 28px), 640px);
+      z-index: 99999;
       margin: 0;
-      box-shadow: 0 8px 28px rgba(0,0,0,.45);
+      opacity: 1;
+      box-shadow: 0 10px 32px rgba(0,0,0,.85);
+      isolation: isolate;
     }
 
     .message.success {
-      background: rgba(53, 201, 120, 0.10);
-      border: 1px solid rgba(53, 201, 120, 0.28);
-      color: #70e6a1;
+      background: #10271b;
+      border: 1px solid #35a968;
+      color: #9af0bb;
     }
 
     .message.error {
-      background: rgba(255, 82, 82, 0.09);
-      border: 1px solid rgba(255, 82, 82, 0.28);
-      color: #ff8585;
+      background: #2a1111;
+      border: 1px solid #b94444;
+      color: #ffaaaa;
     }
 
     .message.warning {
-      background: rgba(201, 154, 36, 0.10);
-      border: 1px solid rgba(201, 154, 36, 0.30);
-      color: var(--gold-light);
+      background: #2b220d;
+      border: 1px solid #b58a24;
+      color: #ffe08a;
     }
 
     /* ORDERS */
@@ -1930,36 +1932,29 @@
       error
     ) {
 
-      /*
-       * Only customer-owned wallet errors are
-       * described specifically. Never pass raw
-       * backend/provider/vendor messages to the UI.
-       */
+      const errorText =
+        getErrorText(error);
 
+      /*
+       * A balance/funds error returned by the
+       * boost service is shown simply as a support
+       * message. Never expose provider diagnostics.
+       */
       if (
-        isCustomerInsufficientBalance(
-          error
-        )
+        isCustomerInsufficientBalance(error) ||
+        /insufficient|not enough funds|low balance|balance too low/.test(errorText)
       ) {
         return {
           text:
-            "Insufficient wallet balance. Please fund your wallet.",
+            "Insufficient funds. Please contact support.",
           type:
             "warning"
         };
       }
 
-      /*
-       * Provider-side failures, unavailable services,
-       * vendor errors, API responses, and unknown
-       * order failures all use the same neutral message.
-       * Internal vendor/provider names and diagnostics
-       * must remain private.
-       */
-
       return {
         text:
-          "We couldn't place your boost right now. Please try again later or contact support.",
+          "We couldn't place your boost right now. Please contact support.",
         type:
           "error"
       };
