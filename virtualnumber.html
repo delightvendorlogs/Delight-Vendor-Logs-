@@ -850,8 +850,8 @@ function renderServices(which){
  menu.innerHTML=filteredServices.map(s=>{
   const i=visibleServices.indexOf(s);
   const price=servicePrice(s);
-  const priceText=price===null?"Price shown after selecting":money(price);
-  return `<button type="button" class="service-button" onclick="selectService(${i})"><strong><span style="color:var(--gold-light);margin-right:7px">${escapeHTML(priceText)}</span>${escapeHTML(cleanCustomerLabel(s.name)||"Available service")}</strong></button>`;
+  const priceHtml=price!==null&&price>=0?'<span style="color:var(--gold-light);margin-left:8px">'+escapeHTML(money(price))+'</span>':"";
+  return `<button type="button" class="service-button" onclick="selectService(${i})"><strong>${escapeHTML(cleanCustomerLabel(s.name)||"Available service")}${priceHtml}</strong></button>`;
  }).join("");
 }
 
