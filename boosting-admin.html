@@ -324,7 +324,7 @@
 
     .service-controls {
       display: grid;
-      grid-template-columns: 1fr 1fr auto;
+      grid-template-columns: 1fr 1fr 1fr auto;
       gap: 12px;
       align-items: end;
     }
@@ -571,16 +571,22 @@
 
         <div class="card-header">
           <div>
-            <h2>Default Markup</h2>
+            <h2>Default Pricing</h2>
             <p>
-              This markup is used for boosting services that do not have
-              an individual price override.
+              Choose the default pricing method for all services. Individual service settings can override it.
             </p>
           </div>
         </div>
 
         <div class="markup-box">
 
+          <div class="field">
+            <label for="defaultPricingMode">Default Pricing Method</label>
+            <select id="defaultPricingMode">
+              <option value="markup">Markup percentage</option>
+              <option value="fixed">Fixed customer rate per 1,000</option>
+            </select>
+          </div>
           <div class="field">
             <label for="defaultMarkup">
               Default Markup Percentage
@@ -598,6 +604,10 @@
             </div>
           </div>
 
+          <div class="field">
+            <label for="defaultFixedPrice">Default Fixed Customer Rate (per 1,000)</label>
+            <input type="number" id="defaultFixedPrice" min="0" step="0.01" placeholder="NGN per 1,000">
+          </div>
           <button
             class="primary-btn"
             id="saveMarkupBtn"
@@ -626,9 +636,9 @@
             <button
               class="secondary-btn"
               id="syncServicesBtn"
-              onclick="syncSizzleServices()"
+              onclick="syncFreshConnectServices()"
             >
-              ⇅ Sync Sizzle Social Services
+              ⇅ Sync Fresh Connect Services
             </button>
             <button
               class="secondary-btn"
@@ -901,7 +911,7 @@
         error
       } = await supabaseClient
         .from("boosting_settings")
-        .select("id, default_markup_percent")
+        .select("id, default_markup_percent, default_pricing_mode, default_fixed_price")
         .order("id", {
           ascending: true
         })
@@ -933,6 +943,8 @@
 
       const markup =
         Number(data.default_markup_percent);
+      document.getElementById("defaultPricingMode").value = data.default_pricing_mode || "markup";
+      document.getElementById("defaultFixedPrice").value = data.default_fixed_price ?? "";
 
       document
         .getElementById("defaultMarkup")
@@ -960,6 +972,9 @@
 
       const markup =
         Number(input.value);
+      const pricingMode = document.getElementById("defaultPricingMode").value;
+      const fixedRaw = document.getElementById("defaultFixedPrice").value.trim();
+      const fixedPrice = fixedRaw === "" ? null : Number(fixedRaw);
 
       if (!Number.isFinite(markup) || markup < 0) {
 
@@ -970,6 +985,10 @@
         return;
       }
 
+      if (pricingMode === "fixed" && (fixedPrice === null || !Number.isFinite(fixedPrice) || fixedPrice < 0)) {
+        showError("Enter a valid default fixed customer rate.");
+        return;
+      }
       button.disabled = true;
       button.textContent = "Saving...";
 
@@ -1000,6 +1019,8 @@
             .from("boosting_settings")
             .update({
               default_markup_percent: markup,
+              default_pricing_mode: pricingMode,
+              default_fixed_price: fixedPrice,
               updated_at: new Date().toISOString()
             })
             .eq("id", existing.id);
@@ -1009,7 +1030,9 @@
           result = await supabaseClient
             .from("boosting_settings")
             .insert({
-              default_markup_percent: markup
+              default_markup_percent: markup,
+              default_pricing_mode: pricingMode,
+              default_fixed_price: fixedPrice
             });
 
         }
@@ -1050,14 +1073,14 @@
     // SYNC LIVE SIZZLE SOCIAL SERVICES
     // =====================================================
 
-    async function syncSizzleServices() {
+    async function syncFreshConnectServices() {
       const button = document.getElementById("syncServicesBtn");
       const original = button ? button.textContent : "";
       try {
         hideMessages();
         if (button) {
           button.disabled = true;
-          button.textContent = "Syncing Sizzle Social...";
+          button.textContent = "Syncing Fresh Connect...";
         }
         const { data: sessionData, error: sessionError } =
           await supabaseClient.auth.getSession();
@@ -1076,19 +1099,19 @@
         );
         const result = await response.json().catch(() => ({}));
         if (!response.ok || result.success === false) {
-          throw new Error(result.error || result.message || "Sizzle Social service sync failed.");
+          throw new Error(result.error || result.message || "Fresh Connect service sync failed.");
         }
         await loadServices();
-        showSuccess("Sizzle Social services synced. " +
+        showSuccess("Fresh Connect services synced. " +
           (result.synced ?? result.count ?? result.imported ?? "Latest") +
           " services available for pricing.");
       } catch (error) {
-        console.error("Sizzle Social sync failed:", error);
-        showError(error.message || "Unable to sync Sizzle Social services.");
+        console.error("Fresh Connect sync failed:", error);
+        showError(error.message || "Unable to sync Fresh Connect services.");
       } finally {
         if (button) {
           button.disabled = false;
-          button.textContent = original || "⇅ Sync Sizzle Social Services";
+          button.textContent = original || "⇅ Sync Fresh Connect Services";
         }
       }
     }
@@ -1128,6 +1151,7 @@
           max_quantity,
           is_active,
           price_override,
+          markup_percent,
           updated_at
         `)
         .order("platform", {
@@ -1239,6 +1263,7 @@
               service.price_override === ""
                 ? ""
                 : service.price_override;
+            const serviceMarkup = service.markup_percent ?? "";
 
             return `
               <div
@@ -1334,7 +1359,7 @@
                   <div class="field">
 
                     <label>
-                      Price Override
+                      Fixed Customer Rate / 1,000
                     </label>
 
                     <input
@@ -1349,11 +1374,17 @@
                     >
 
                     <div class="override-note">
-                      Leave empty to use the default markup.
+                      Fixed rate takes priority. Leave empty to use markup.
                     </div>
 
                   </div>
 
+
+                  <div class="field">
+                    <label>Service Markup Percentage</label>
+                    <input type="number" id="markup-${service.id}" min="0" max="10000" step="0.01" value="${escapeHtml(serviceMarkup)}" placeholder="Use default pricing">
+                    <div class="override-note">Overrides the global default if no fixed rate is set.</div>
+                  </div>
 
                   <div>
 
@@ -1465,8 +1496,9 @@
         document.getElementById(
           `active-${serviceId}`
         );
+      const markupInput = document.getElementById(`markup-${serviceId}`);
 
-      if (!overrideInput || !activeInput) {
+      if (!overrideInput || !activeInput || !markupInput) {
         return;
       }
 
@@ -1494,6 +1526,12 @@
 
       }
 
+      const rawMarkup = markupInput.value.trim();
+      const serviceMarkup = rawMarkup === "" ? null : Number(rawMarkup);
+      if (serviceMarkup !== null && (!Number.isFinite(serviceMarkup) || serviceMarkup < 0 || serviceMarkup > 10000)) {
+        showError("Enter a valid service markup between 0 and 10000 percent.");
+        return;
+      }
       const serviceItem =
         document.querySelector(
           `.service-item[data-service-id="${serviceId}"]`
@@ -1521,6 +1559,7 @@
           .from("boosting_services")
           .update({
             price_override: priceOverride,
+            markup_percent: serviceMarkup,
             is_active: activeInput.checked,
             updated_at: new Date().toISOString()
           })
@@ -1539,6 +1578,7 @@
 
           service.price_override =
             priceOverride;
+          service.markup_percent = serviceMarkup;
 
           service.is_active =
             activeInput.checked;
