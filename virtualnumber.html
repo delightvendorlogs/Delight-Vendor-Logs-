@@ -9,7 +9,7 @@
 
 
  <title>Virtual Numbers — Delight Vendor Logs</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js'"></script>
+
 
 <style>
 :root{
@@ -366,7 +366,7 @@ const FUNCTIONS={
  fetchsms:SUPABASE_URL+"/functions/v1/fetch-sms-api"
 };
 
-const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let sb=null,authListenerRegistered=false;
 const $=id=>document.getElementById(id);
 
 let session=null,currentUser=null,walletBalance=0;
@@ -1534,24 +1534,57 @@ function finishCancelPopup(){
 }
 
 /*
+ * Load the browser SDK before creating the client. This keeps the page's
+ * startup handler alive even when a CDN request fails or is delayed.
+ */
+async function ensureSupabaseSDK(){
+ if(window.supabase?.createClient)return;
+ const sources=[
+  "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js",
+  "https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"
+ ];
+ let lastError=null;
+ for(const src of sources){
+  try{
+   await new Promise((resolve,reject)=>{
+    const script=document.createElement("script");
+    script.src=src;
+    script.async=true;
+    script.onload=()=>window.supabase?.createClient?resolve():reject(new Error("Supabase browser SDK did not initialize."));
+    script.onerror=()=>reject(new Error("Could not load Supabase browser SDK."));
+    document.head.appendChild(script);
+   });
+   if(window.supabase?.createClient)return;
+  }catch(error){lastError=error;}
+ }
+ throw lastError||new Error("The account security library could not be loaded.");
+}
+
+/*
  * Authentication listener:
  * Supabase can fire an auth event while init() is running.
  * Incrementing the generation prevents older initialization from overwriting
  * the newer session state.
  */
-sb.auth.onAuthStateChange((_event,newSession)=>{
- setTimeout(()=>{
-  session=newSession||null;
-  currentUser=session?.user||null;
-  init();
- },0);
-});
+function registerAuthListener(){
+ if(!sb||authListenerRegistered)return;
+ authListenerRegistered=true;
+ sb.auth.onAuthStateChange((_event,newSession)=>{
+  setTimeout(()=>{
+   session=newSession||null;
+   currentUser=session?.user||null;
+   init();
+  },0);
+ });
+}
 
-function bootVirtualNumberPage(){
+async function bootVirtualNumberPage(){
  try{
-  if(!window.supabase||!window.supabase.createClient)throw new Error("The account security library could not be loaded. Please check your connection and reload.");
+  await ensureSupabaseSDK();
+  if(!sb)sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  registerAuthListener();
   showVerification();
-  init();
+  await init();
   if(countdownTimer)clearInterval(countdownTimer);
   countdownTimer=setInterval(updateCountdowns,1000);
  }catch(e){
