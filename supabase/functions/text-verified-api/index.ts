@@ -447,6 +447,21 @@ async function getFxRate(): Promise<number> {
 /* =========================================================
    SERVICES
 ========================================================= */
+async function mapWithConcurrency<T, R>(items: T[], limit: number, worker: (item: T) => Promise<R>): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let nextIndex = 0;
+  const workers = Array.from({ length: Math.min(Math.max(1, limit), items.length) }, async () => {
+    while (true) {
+      const index = nextIndex++;
+      if (index >= items.length) return;
+      results[index] = await worker(items[index]);
+    }
+  });
+  await Promise.all(workers);
+  return results;
+}
+
+
 
 function normalizeService(item: any) {
   const name = str(
@@ -474,10 +489,16 @@ async function listServices() {
   const result = await tvRequest(
     "/services?numberType=mobile&reservationType=verification",
   );
-
-  return getRows(result)
-    .map(normalizeService)
-    .filter((item) => item.name);
+  const services = getRows(result).map(normalizeService).filter((item) => item.name);
+  return await mapWithConcurrency(services, 3, async (item) => {
+    try {
+      const quote = await getQuote(item.name, item.capability || "sms");
+      return { ...item, price: quote.price, price_ngn: quote.price, currency: "NGN" };
+    } catch {
+      console.warn("[textverified-service-price] Quote unavailable for service.");
+      return { ...item, price: null, price_ngn: null };
+    }
+  });
 }
 
 /* =========================================================
