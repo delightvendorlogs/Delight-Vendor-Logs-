@@ -833,13 +833,15 @@
           .getElementById("accessDenied")
           .style.display = "none";
 
+        let freshConnectSyncError = "";
         try {
           await syncFreshConnectServices();
         } catch (syncError) {
           console.error("Fresh Connect initial sync failed:", syncError);
-          showError(syncError.message || "Fresh Connect service sync failed. Existing catalogue was not changed.");
+          freshConnectSyncError = syncError.message || "Fresh Connect service sync failed. Existing catalogue was not changed.";
         }
         await loadAll();
+        if (freshConnectSyncError) showError(freshConnectSyncError);
 
       } catch (error) {
 
