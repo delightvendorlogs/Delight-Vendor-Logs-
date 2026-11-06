@@ -10,6 +10,7 @@
 
  <title>Virtual Numbers — Delight Vendor Logs</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>if(!window.supabase||!window.supabase.createClient){document.write('<script src="https://unpkg.com/@supabase/supabase-js@2"><\/script>')}</script>
 
 <style>
 :root{
@@ -1547,12 +1548,22 @@ sb.auth.onAuthStateChange((_event,newSession)=>{
  },0);
 });
 
-document.addEventListener("DOMContentLoaded",()=>{
- showVerification();
- init();
- if(countdownTimer)clearInterval(countdownTimer);
- countdownTimer=setInterval(updateCountdowns,1000);
-});
+function bootVirtualNumberPage(){
+ try{
+  if(!window.supabase||!window.supabase.createClient)throw new Error("The account security library could not be loaded. Please check your connection and reload.");
+  showVerification();
+  init();
+  if(countdownTimer)clearInterval(countdownTimer);
+  countdownTimer=setInterval(updateCountdowns,1000);
+ }catch(e){
+  console.error("Virtual number page startup failed:",e);
+  $("walletBalance").textContent="Unavailable";
+  $("ordersList").innerHTML='<div class="empty">The page could not start. Please reload or contact support.</div>';
+  showGlobal("The page could not start. Please check your connection and reload.","error");
+ }
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bootVirtualNumberPage,{once:true});
+else bootVirtualNumberPage();
 </script>
 <script src="branding.js"></script>
 <script src="assets/site-announcement.js" defer></script>
