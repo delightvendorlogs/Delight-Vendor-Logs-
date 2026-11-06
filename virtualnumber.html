@@ -850,9 +850,6 @@ function renderServices(which){
   return `<button type="button" class="service-button" onclick="selectService(${i})"><strong><span style="color:var(--gold-light);margin-right:7px">${escapeHTML(priceText)}</span>${escapeHTML(cleanCustomerLabel(s.name)||"Available service")}</strong></button>`;
  }).join("");
 }
-></button>`;
- }).join("");
-}
 
 async function selectService(index){
  if(index<0||index>=visibleServices.length)return;
