@@ -95,10 +95,44 @@ input:focus,select:focus,textarea:focus{outline:1px solid var(--gold)}button{cur
  document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===btn));["compose","history","inbox"].forEach(id=>$(id).classList.toggle("hidden",id!==btn.dataset.tab));if(btn.dataset.tab==="history")loadHistory();if(btn.dataset.tab==="inbox")loadThreads();}));
  document.querySelectorAll("[data-cmd]").forEach(b=>b.addEventListener("click",()=>{document.execCommand(b.dataset.cmd,false,null);$("editor").focus();}));
  $("linkBtn").addEventListener("click",()=>{const url=prompt("Enter the link URL");if(url&&/^https?:\/\//i.test(url)){document.execCommand("createLink",false,url);}});
- $("imageBtn").addEventListener("click",()=>$("imageFile").click());
- $("imageFile").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;try{const path=Date.now()+"-"+Math.random().toString(36).slice(2)+"-"+file.name.replace(/[^a-z0-9._-]/gi,"_");const {error}=await db.storage.from("email-assets").upload(path,file,{upsert:false,contentType:file.type});if(error)throw error;const {data}=db.storage.from("email-assets").getPublicUrl(path);document.execCommand("insertHTML",false,'<img src="'+data.publicUrl+'" alt="Email picture" style="max-width:100%;height:auto">');note("Picture uploaded and added to your email.");}catch(err){note(err.message||"Picture upload failed.",true);}e.target.value="";});
+ let savedImageRange=null;
+ function rememberImagePosition(){
+  const editor=$("editor"),sel=window.getSelection();
+  if(sel&&sel.rangeCount&&editor.contains(sel.anchorNode)){savedImageRange=sel.getRangeAt(0).cloneRange();}
+  else{const range=document.createRange();range.selectNodeContents(editor);range.collapse(false);savedImageRange=range;}
+ }
+ function prepareEmailHtml(){
+  const doc=new DOMParser().parseFromString($("editor").innerHTML.trim(),"text/html");
+  doc.body.querySelectorAll("img").forEach(img=>{
+   const src=(img.getAttribute("src")||"").trim();
+   if(!src.startsWith("https://")&&!src.startsWith("http://"))throw new Error("One of your pictures does not have a public web address. Please upload it again before sending.");
+   img.setAttribute("alt",img.getAttribute("alt")||"Email picture");
+   img.setAttribute("width","600");
+   img.style.cssText="display:block;width:100%;max-width:600px;height:auto;border:0;margin:12px 0";
+  });
+  return linkifyHtml(doc.body.innerHTML);
+ }
+ $("imageBtn").addEventListener("click",()=>{rememberImagePosition();$("imageFile").click();});
+ $("imageFile").addEventListener("change",async e=>{
+  const file=e.target.files&&e.target.files[0];if(!file)return;
+  try{
+   const path=Date.now()+"-"+Math.random().toString(36).slice(2)+"-"+file.name.replace(/[^a-z0-9._-]/gi,"_");
+   const {error}=await db.storage.from("email-assets").upload(path,file,{upsert:false,contentType:file.type});if(error)throw error;
+   const {data}=db.storage.from("email-assets").getPublicUrl(path);
+   if(!data||!data.publicUrl||(!data.publicUrl.startsWith("https://")&&!data.publicUrl.startsWith("http://")))throw new Error("The picture uploaded, but its public image link could not be created.");
+   const img=document.createElement("img");img.src=data.publicUrl;img.alt="Email picture";img.setAttribute("width","600");img.style.cssText="display:block;width:100%;max-width:600px;height:auto;border:0;margin:12px 0";
+   const editor=$("editor"),range=savedImageRange;
+   if(range&&editor.contains(range.commonAncestorContainer)){range.deleteContents();range.insertNode(img);range.setStartAfter(img);range.collapse(true);const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);}
+   else editor.appendChild(img);
+   savedImageRange=null;
+   note("Picture uploaded and inserted. It will be included in the email.");
+  }catch(err){note(err.message||"Picture upload failed.",true);}
+  e.target.value="";
+ });
  $("sendBtn").addEventListener("click",async()=>{
-  const subject=$("subject").value.trim(),html=linkifyHtml($("editor").innerHTML.trim()),audience=document.querySelector('input[name="audience"]:checked').value;
+  let html;
+  try{html=prepareEmailHtml();}catch(err){note(err.message||"Please check the pictures in your email.",true);return;}
+  const subject=$("subject").value.trim(),audience=document.querySelector('input[name="audience"]:checked').value;
   if(!subject||!html){note("Enter a subject and message before sending.",true);return;}
   if(audience==="selected"&&!selected.size){note("Select at least one customer.",true);return;}
   if(!confirm(audience==="all"?"Send this email to all customers with email addresses?":"Send this email to "+selected.size+" selected customer(s)?"))return;
