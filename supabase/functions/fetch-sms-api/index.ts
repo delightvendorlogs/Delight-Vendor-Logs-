@@ -126,6 +126,21 @@ async function getFxRate(): Promise<number> {
   throw new Error("Unable to retrieve the current USD to NGN exchange rate.");
 }
 
+
+async function mapWithConcurrency<T, R>(items: T[], limit: number, worker: (item: T) => Promise<R>): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let nextIndex = 0;
+  const workers = Array.from({ length: Math.min(Math.max(1, limit), items.length) }, async () => {
+    while (true) {
+      const index = nextIndex++;
+      if (index >= items.length) return;
+      results[index] = await worker(items[index]);
+    }
+  });
+  await Promise.all(workers);
+  return results;
+}
+
 async function listServicesRaw(): Promise<any[]> {
   const result = await providerRequest("/services", {}, false);
   return Array.isArray(result) ? result : Array.isArray(result?.services) ? result.services : [];
@@ -133,18 +148,23 @@ async function listServicesRaw(): Promise<any[]> {
 
 async function listServices() {
   const rows = await listServicesRaw();
-  return rows.filter((item: any) => Number(item?.id) !== 1).map((item: any) => ({
-    id: num(item?.id),
-    code: String(item?.id ?? ""),
-    service_code: String(item?.id ?? ""),
-    slug: str(item?.slug),
-    name: str(item?.name, item?.slug, item?.id),
-    service_name: str(item?.name, item?.slug, item?.id),
-    price_cents: num(item?.price_cents),
-    short_available: num(item?.short_available),
-    available: num(item?.short_available) > 0,
+  const services = rows.filter((item: any) => Number(item?.id) !== 1).map((item: any) => ({
+    id: num(item?.id), code: String(item?.id ?? ""), service_code: String(item?.id ?? ""),
+    slug: str(item?.slug), name: str(item?.name, item?.slug, item?.id),
+    service_name: str(item?.name, item?.slug, item?.id), price_cents: num(item?.price_cents),
+    short_available: num(item?.short_available), available: num(item?.short_available) > 0,
     long_available: num(item?.long_available),
   }));
+  return await mapWithConcurrency(services, 3, async (item) => {
+    if (!item.available) return { ...item, price: null, price_ngn: null };
+    try {
+      const quote = await getQuote(String(item.service_code), item);
+      return { ...item, price: quote.price, price_ngn: quote.price, currency: "NGN" };
+    } catch {
+      console.warn("[fetchsms-service-price] Quote unavailable for service.");
+      return { ...item, price: null, price_ngn: null };
+    }
+  });
 }
 
 async function getMarkup(service: string): Promise<number> {
@@ -193,7 +213,7 @@ async function getFixedPriceOverride(service: string): Promise<number | null> {
   return price > 0 ? price : null;
 }
 
-async function getQuote(service: string) {
+async function getQuote(service: string, serviceRowOverride?: any) {
   if (!/^\d+$/.test(service) || Number(service) === 1) {
     throw new Error("Select a valid short-term Fetch SMS service. Long-term rentals are not part of this USA verification flow.");
   }
@@ -204,7 +224,7 @@ async function getQuote(service: string) {
       {},
       false,
     ),
-    listServicesRaw(),
+    serviceRowOverride ? Promise.resolve([]) : listServicesRaw(),
     getFxRate(),
     getMarkup(service),
     getFixedPriceOverride(service),
@@ -213,7 +233,7 @@ async function getQuote(service: string) {
   const cents = num(quote?.total_cents, -1);
   if (cents < 0) throw new Error("Fetch SMS did not return a valid service price.");
 
-  const serviceRow = catalog.find((item: any) => String(item?.id) === service);
+  const serviceRow = serviceRowOverride ?? catalog.find((item: any) => String(item?.id) === service);
   const stock = num(serviceRow?.short_available);
   const providerPrice = cents / 100;
   const costNaira = Math.ceil(providerPrice * fx);
