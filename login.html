@@ -218,10 +218,7 @@ body {
     cursor: not-allowed;
     transform: none;
 }
-
-async function notifyAdminAuthActivity(eventType) {
-  try { const { data, error } = await supabaseClient.functions.invoke("auth-activity-alert", { body: { event: eventType } }); if (error) console.warn("Admin activity alert:", error.message); else if (data && data.emailSent === false && data.telegramSent === false) console.warn("Admin alerts not delivered:", data.emailError, data.telegramError); } catch (e) { console.warn("Admin activity alert failed:", e); }
-}
+ 
 
 /* MESSAGE */
 
@@ -687,8 +684,7 @@ async function loginUser(event) {
         }
 
         if (data && data.session) {
-            void notifyAdminAuthActivity("login");
-            showMessage(
+showMessage(
                 "Login successful. Redirecting...",
                 "success"
             );
