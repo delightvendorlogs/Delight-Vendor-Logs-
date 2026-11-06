@@ -635,13 +635,6 @@
           <div class="top-actions">
             <button
               class="secondary-btn"
-              id="syncServicesBtn"
-              onclick="syncFreshConnectServices()"
-            >
-              ⇅ Sync Fresh Connect Services
-            </button>
-            <button
-              class="secondary-btn"
               onclick="loadAll()"
             >
               ↻ Refresh
@@ -840,6 +833,12 @@
           .getElementById("accessDenied")
           .style.display = "none";
 
+        try {
+          await syncFreshConnectServices();
+        } catch (syncError) {
+          console.error("Fresh Connect initial sync failed:", syncError);
+          showError(syncError.message || "Fresh Connect service sync failed. Existing catalogue was not changed.");
+        }
         await loadAll();
 
       } catch (error) {
@@ -1074,46 +1073,26 @@
     // =====================================================
 
     async function syncFreshConnectServices() {
-      const button = document.getElementById("syncServicesBtn");
-      const original = button ? button.textContent : "";
-      try {
-        hideMessages();
-        if (button) {
-          button.disabled = true;
-          button.textContent = "Syncing Fresh Connect...";
-        }
-        const { data: sessionData, error: sessionError } =
-          await supabaseClient.auth.getSession();
-        if (sessionError) throw sessionError;
-        const token = sessionData?.session?.access_token;
-        if (!token) throw new Error("Your admin session has expired. Please log in again.");
-        const response = await fetch(
-          SUPABASE_URL + "/functions/v1/boosting-api/sync",
-          {
-            method: "GET",
-            headers: {
-              "Authorization": "Bearer " + token,
-              "apikey": SUPABASE_ANON_KEY
-            }
+      const { data: sessionData, error: sessionError } =
+        await supabaseClient.auth.getSession();
+      if (sessionError) throw sessionError;
+      const token = sessionData?.session?.access_token;
+      if (!token) throw new Error("Your admin session has expired. Please log in again.");
+      const response = await fetch(
+        SUPABASE_URL + "/functions/v1/boosting-api/sync",
+        {
+          method: "GET",
+          headers: {
+            "Authorization": "Bearer " + token,
+            "apikey": SUPABASE_ANON_KEY
           }
-        );
-        const result = await response.json().catch(() => ({}));
-        if (!response.ok || result.success === false) {
-          throw new Error(result.error || result.message || "Fresh Connect service sync failed.");
         }
-        await loadServices();
-        showSuccess("Fresh Connect services synced. " +
-          (result.synced ?? result.count ?? result.imported ?? "Latest") +
-          " services available for pricing.");
-      } catch (error) {
-        console.error("Fresh Connect sync failed:", error);
-        showError(error.message || "Unable to sync Fresh Connect services.");
-      } finally {
-        if (button) {
-          button.disabled = false;
-          button.textContent = original || "⇅ Sync Fresh Connect Services";
-        }
+      );
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || result.success === false) {
+        throw new Error(result.error || result.message || "Fresh Connect service sync failed.");
       }
+      return result;
     }
 
 
@@ -1141,6 +1120,7 @@
         .from("boosting_services")
         .select(`
           id,
+          provider,
           provider_service_id,
           platform,
           service_name,
@@ -1154,6 +1134,7 @@
           markup_percent,
           updated_at
         `)
+        .eq("provider", "Fresh Connect")
         .order("platform", {
           ascending: true
         })
