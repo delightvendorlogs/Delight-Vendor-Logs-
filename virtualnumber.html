@@ -815,7 +815,11 @@ async function loadServices(){
   console.error("Service loading failed:",e);
   if(generation!==servicesGeneration)return;
   menu.innerHTML='<div class="picker-placeholder">Services could not be loaded.</div><button class="btn btn-dark full" onclick="loadServices()">Retry</button>';
-  showMessage(provider==="textverified"?"usaMessage":"allMessage",formatError(e,"Unable to load services. Pleconst PRIORITY_SERVICES=["whatsapp","telegram","signal","facebook","instagram","tiktok","cashapp","paypal"];
+  showMessage(provider==="textverified"?"usaMessage":"allMessage",formatError(e,"Unable to load services. Please try again."),"error");
+ }
+}
+
+const PRIORITY_SERVICES=["whatsapp","telegram","signal","facebook","instagram","tiktok","cashapp","paypal"];
 function serviceSortKey(value){
  return String(value||"").toLowerCase().replace(/[^a-z0-9]/g,"");
 }
