@@ -808,17 +808,24 @@ async function loadServices(){
    if(seen.has(key))return false;
    seen.add(key);
    return true;
-  });
+  }).sort(compareServicePriority);
   showMessage(provider==="textverified"?"usaMessage":"allMessage","");
   filterServices(provider==="textverified"?"usa":"all");
  }catch(e){
   console.error("Service loading failed:",e);
   if(generation!==servicesGeneration)return;
   menu.innerHTML='<div class="picker-placeholder">Services could not be loaded.</div><button class="btn btn-dark full" onclick="loadServices()">Retry</button>';
-  showMessage(provider==="textverified"?"usaMessage":"allMessage",formatError(e,"Unable to load services. Please retry."),"error");
- }
+  showMessage(provider==="textverified"?"usaMessage":"allMessage",formatError(e,"Unable to load services. Pleconst PRIORITY_SERVICES=["whatsapp","telegram","signal","facebook","instagram","tiktok","cashapp","paypal"];
+function serviceSortKey(value){
+ return String(value||"").toLowerCase().replace(/[^a-z0-9]/g,"");
 }
-
+function compareServicePriority(a,b){
+ const an=serviceSortKey(a?.name),bn=serviceSortKey(b?.name);
+ const ai=PRIORITY_SERVICES.indexOf(an),bi=PRIORITY_SERVICES.indexOf(bn);
+ const ar=ai<0?PRIORITY_SERVICES.length:ai,br=bi<0?PRIORITY_SERVICES.length:bi;
+ if(ar!==br)return ar-br;
+ return String(a?.name||"").localeCompare(String(b?.name||""),undefined,{sensitivity:"base"});
+}
 function filterServices(which){
  const provider=which==="usa"?"textverified":chosenProvider==="fetchsms"?"fetchsms":"virtualsms";
  if(chosenProvider!==provider)return;
@@ -827,7 +834,7 @@ function filterServices(which){
   String(s.name).toLowerCase().includes(q)||
   String(serviceCode(s)).toLowerCase().includes(q)||
   String(s.description||"").toLowerCase().includes(q)
- );
+ ).sort(compareServicePriority);
  renderServices(which);
 }
 function renderServices(which){
@@ -838,7 +845,12 @@ function renderServices(which){
  }
  menu.innerHTML=filteredServices.map(s=>{
   const i=visibleServices.indexOf(s);
-  return `<button type="button" class="service-button" onclick="selectService(${i})"><strong>${escapeHTML(cleanCustomerLabel(s.name)||"Available service")}</strong></button>`;
+  const price=servicePrice(s);
+  const priceText=price===null?"Price shown after selecting":money(price);
+  return `<button type="button" class="service-button" onclick="selectService(${i})"><strong><span style="color:var(--gold-light);margin-right:7px">${escapeHTML(priceText)}</span>${escapeHTML(cleanCustomerLabel(s.name)||"Available service")}</strong></button>`;
+ }).join("");
+}
+></button>`;
  }).join("");
 }
 
