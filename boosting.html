@@ -1913,9 +1913,9 @@
     ) {
 
       /*
-       * CUSTOMER WALLET
-       *
-       * Never mention provider support here.
+       * Only customer-owned wallet errors are
+       * described specifically. Never pass raw
+       * backend/provider/vendor messages to the UI.
        */
 
       if (
@@ -1923,7 +1923,6 @@
           error
         )
       ) {
-
         return {
           text:
             "Insufficient wallet balance. Please fund your wallet.",
@@ -1932,119 +1931,21 @@
         };
       }
 
-
       /*
-       * PROVIDER WALLET
-       *
-       * Never expose the provider name,
-       * provider balance, API details, or
-       * internal provider error.
-       */
-
-      if (
-        isProviderInsufficientBalance(
-          error
-        )
-      ) {
-
-        return {
-          text:
-            "Please fund wallet and contact support.",
-          type:
-            "warning"
-        };
-      }
-
-
-      const text =
-        getErrorText(
-          error
-        );
-
-
-      /*
-       * If the backend returns a generic
-       * "insufficient balance/funds" error
-       * without identifying whose balance it is,
-       * do NOT expose the backend's raw message.
-       *
-       * The customer has already passed the
-       * frontend wallet check, so this is treated
-       * as a provider-side failure.
-       */
-
-      if (
-        (
-          text.includes(
-            "insufficient balance"
-          ) ||
-          text.includes(
-            "insufficient funds"
-          ) ||
-          text.includes(
-            "not enough balance"
-          ) ||
-          text.includes(
-            "not enough funds"
-          ) ||
-          text.includes(
-            "balance is too low"
-          )
-        ) &&
-        !isCustomerInsufficientBalance(
-          error
-        )
-      ) {
-
-        return {
-          text:
-            "Please fund wallet and contact support.",
-          type:
-            "warning"
-        };
-      }
-
-
-      /*
-       * Any raw provider name or provider
-       * reference is also hidden from customers.
-       */
-
-      if (
-        text.includes(
-          "fresh connect"
-        ) ||
-        text.includes(
-          "fresh connect"
-        ) ||
-        text.includes(
-          "provider"
-        )
-      ) {
-
-        return {
-          text:
-            "Unable to complete the boost right now. Please contact support.",
-          type:
-            "error"
-        };
-      }
-
-
-      /*
-       * Normal application errors can still
-       * be shown as before.
+       * Provider-side failures, unavailable services,
+       * vendor errors, API responses, and unknown
+       * order failures all use the same neutral message.
+       * Internal vendor/provider names and diagnostics
+       * must remain private.
        */
 
       return {
         text:
-          error?.message ||
-          "Unable to place boost order.",
+          "We couldn't place your boost right now. Please try again later or contact support.",
         type:
           "error"
       };
     }
-
 
     /* ============================================================
        SESSION
