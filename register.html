@@ -284,6 +284,10 @@ body::after {
   transform: none;
 }
 
+async function notifyAdminAuthActivity(eventType) {
+  try { const { data, error } = await supabaseClient.functions.invoke("auth-activity-alert", { body: { event: eventType } }); if (error) console.warn("Admin activity alert:", error.message); else if (data && data.emailSent === false && data.telegramSent === false) console.warn("Admin alerts not delivered:", data.emailError, data.telegramError); } catch (e) { console.warn("Admin activity alert failed:", e); }
+}
+
 /* MESSAGE */
 
 #message {
@@ -795,6 +799,7 @@ async function createAccount() {
     */
 
     if (data && data.session) {
+      void notifyAdminAuthActivity("signup");
       showMessage(
         "Account created successfully!",
         "success"
