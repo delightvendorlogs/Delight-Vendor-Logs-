@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#080808">
+<title>Admin Email Centre — Delight Vendor Logs</title>
+<link rel="icon" type="image/png" href="assets/dv-logo.png">
+<script src="auth-guard.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--gold:#d8b84e;--gold2:#f0d98a;--bg:#080808;--panel:#111;--panel2:#171717;--line:#443719;--text:#f6f1e2;--muted:#b9ad8b;--red:#ff8888;--green:#8fdda9}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 Arial,sans-serif}a{color:var(--gold2);text-decoration:none}
+.top{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;background:#0c0c0c;border-bottom:1px solid #332a17}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800}.brand img{width:32px;height:32px;object-fit:contain}
+.wrap{max-width:1100px;margin:24px auto;padding:0 14px 50px}
+.hero{padding:22px;border:1px solid var(--line);border-radius:16px;background:radial-gradient(ellipse at top right,#2a210d,#111 62%);margin-bottom:16px}
+.eyebrow{font-size:10px;letter-spacing:.16em;color:var(--gold);font-weight:800}.hero h1{margin:6px 0;font-size:28px}.muted{color:var(--muted);font-size:12px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.tab{border:1px solid var(--line);background:#141414;color:var(--gold2);padding:10px 14px;border-radius:9px;font-weight:700}.tab.active{background:var(--gold);color:#111}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.panel h2{font-size:17px;margin:0 0 12px}.field{margin-bottom:12px}.field label{display:block;color:var(--gold2);font-weight:700;font-size:12px;margin-bottom:5px}
+input,select,textarea{width:100%;background:#090909;border:1px solid #504224;color:var(--text);border-radius:8px;padding:11px;font:inherit}
+input:focus,select:focus,textarea:focus{outline:1px solid var(--gold)}button{cursor:pointer}
+.btn{background:var(--gold);color:#141107;border:0;border-radius:9px;padding:11px 15px;font-weight:800}.btn.secondary{background:#262116;color:var(--gold2);border:1px solid var(--line)}.btn:disabled{opacity:.55;cursor:wait}
+.toolbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:7px}.toolbar button{background:#252116;color:var(--gold2);border:1px solid #544522;border-radius:7px;padding:7px 10px;font-weight:700}
+.editor{min-height:230px;background:#fff;color:#181818;border-radius:9px;padding:14px;outline:none;line-height:1.6;overflow-wrap:anywhere}.editor img{max-width:100%;height:auto}
+.audience{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0 12px}.audience label{display:flex;gap:7px;align-items:center;color:var(--text)}.audience input{width:auto;margin:0;accent-color:var(--gold)}
+.user-list{max-height:250px;overflow:auto;border:1px solid #41361e;border-radius:9px;padding:8px}.user-row{display:flex;align-items:center;gap:9px;padding:8px;border-bottom:1px solid #292313}.user-row:last-child{border:0}.user-row input{width:auto;margin:0;accent-color:var(--gold)}.user-row span{overflow-wrap:anywhere}.user-row small{display:block;color:var(--muted)}
+.notice{margin:10px 0;padding:10px 12px;border-radius:8px;background:#211c10;color:var(--gold2);font-size:12px}.notice.error{background:#2a1414;color:var(--red)}.notice.success{background:#102318;color:var(--green)}
+.list{display:grid;gap:8px}.entry{padding:12px;border:1px solid #3b301b;border-radius:10px;background:#151515}.entry strong{display:block}.entry small{color:var(--muted)}.entry button{margin-top:8px}
+.inbox-layout{display:grid;grid-template-columns:minmax(220px, .8fr) minmax(0,1.6fr);gap:12px}.thread-list{max-height:520px;overflow:auto}.thread-btn{display:block;width:100%;text-align:left;background:#151515;color:var(--text);border:1px solid #3b301b;border-radius:9px;padding:11px;margin-bottom:7px}.thread-btn.active{border-color:var(--gold)}.thread-btn small{display:block;color:var(--muted);overflow-wrap:anywhere}
+.message-list{display:grid;gap:9px;max-height:390px;overflow:auto;margin-bottom:12px}.message{padding:11px;border:1px solid #3b301b;border-radius:9px;background:#151515}.message.outgoing{border-color:#80672a}.message small{color:var(--gold2)}.message p{margin:7px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.hidden{display:none!important}
+@media(max-width:700px){.wrap{margin:14px auto}.hero{padding:18px}.hero h1{font-size:24px}.panel{padding:12px}.inbox-layout{grid-template-columns:1fr}.thread-list{max-height:220px}.top{align-items:flex-start}.brand{font-size:12px}}
+</style></head><body>
+<header class="top"><a class="brand" href="admin.html"><img src="assets/dv-logo.png" alt="DV logo"><span>Delight Vendor Logs · Email Centre</span></a><a href="admin.html">← Main Admin</a></header>
+<main class="wrap">
+<section class="hero"><div class="eyebrow">ADMIN COMMUNICATIONS</div><h1>Email Centre</h1><div class="muted">Send branded updates, review delivery history and reply to customer emails from one place.</div><div id="status" class="notice">Checking admin access…</div></section>
+<nav class="tabs"><button class="tab active" data-tab="compose">Compose</button><button class="tab" data-tab="history">Sent history</button><button class="tab" data-tab="inbox">Customer replies <span id="inboxCount"></span></button></nav>
+<section id="compose" class="panel">
+<h2>Compose customer email</h2>
+<div class="field"><label for="subject">Email subject</label><input id="subject" maxlength="180" placeholder="Write a clear subject"></div>
+<div class="field"><label>Recipients</label><div class="audience"><label><input type="radio" name="audience" value="all"> All customers</label><label><input type="radio" name="audience" value="selected" checked> Choose customers</label></div>
+<input id="userSearch" placeholder="Search customers by name or email">
+<div id="userList" class="user-list"><div class="muted">Loading customer list…</div></div><div id="selectedCount" class="muted">0 customers selected</div></div>
+<div class="field"><label>Email message</label><div class="toolbar"><button type="button" data-cmd="bold"><b>B</b></button><button type="button" data-cmd="italic"><i>I</i></button><button type="button" data-cmd="underline"><u>U</u></button><button type="button" data-cmd="insertUnorderedList">• List</button><button type="button" id="linkBtn">Add link</button><button type="button" id="imageBtn">Upload picture</button></div>
+<div id="editor" class="editor" contenteditable="true"><p>Hello,</p><p>We have an update for you.</p><p>Thank you,<br>Delight Vendor Logs</p></div><input id="imageFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden"></div>
+<button id="sendBtn" class="btn">Send email</button><span id="sendInfo" class="muted" style="margin-left:10px"></span>
+<div class="muted" style="margin-top:12px">Emails are sent individually so each customer receives their own message. Use promotional email responsibly and only contact customers who expect to hear from your business.</div>
+</section>
+<section id="history" class="panel hidden"><h2>Sent email history</h2><div id="historyList" class="list"><div class="muted">Open this tab to load recent sends.</div></div></section>
+<section id="inbox" class="panel hidden"><h2>Customer email inbox</h2><div class="inbox-layout"><div><div class="muted" style="margin-bottom:8px">Conversations</div><div id="threadList" class="thread-list"><div class="muted">Open this tab to load replies.</div></div></div><div><div id="threadTitle" class="muted">Select a conversation to read it.</div><div id="messageList" class="message-list"></div><div id="replyArea" class="hidden"><label class="muted" for="replyEditor">Reply to customer</label><div id="replyEditor" class="editor" contenteditable="true" style="min-height:120px;margin:7px 0 10px"><p>Thank you for contacting us.</p></div><button id="replyBtn" class="btn">Send reply</button></div></div></div></section>
+</main>
+<script>
+(async function(){
+ const URL="https://hkfhehbhmucymusaytoe.supabase.co",KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_",MODE="admin_users",db=window.supabase.createClient(URL,KEY),$=id=>document.getElementById(id);
+ let users=[],selected=new Set(),activeThread=null;
+ function note(message,error){$("status").textContent=message;$("status").className="notice"+(error?" error":"");}
+ async function invoke(action,extra){const {data,error}=await db.functions.invoke("email-centre",{body:Object.assign({action},extra||{})});if(error)throw error;if(data&&data.error)throw new Error(data.error);return data||{};}
+ try{
+  const {data:{user},error}=await db.auth.getUser();if(error||!user)throw new Error("Please sign in again.");
+  if(MODE==="admin_users"){const {data,error:e}=await db.from("admin_users").select("user_id").eq("user_id",user.id).maybeSingle();if(e||!data)throw new Error("Admin access required.");}
+  else{const {data,error:e}=await db.rpc("is_admin");if(e||!data)throw new Error("Admin access required.");}
+  note("Admin access verified. Email service will be ready after the Resend key is added to this project.");
+  users=(await invoke("users")).users||[];renderUsers();
+ }catch(e){note(e.message||"Could not verify admin access.",true);}
+ function renderUsers(){
+  const q=$("userSearch").value.toLowerCase();const list=$("userList");list.textContent="";
+  users.filter(u=>(u.name+" "+u.email).toLowerCase().includes(q)).forEach(u=>{
+   const label=document.createElement("label");label.className="user-row";
+   const cb=document.createElement("input");cb.type="checkbox";cb.checked=selected.has(u.id);cb.addEventListener("change",()=>{if(cb.checked)selected.add(u.id);else selected.delete(u.id);updateSelected();});
+   const span=document.createElement("span");span.textContent=u.name||u.email;const small=document.createElement("small");small.textContent=u.email;span.appendChild(small);label.append(cb,span);list.appendChild(label);
+  });
+  if(!list.children.length)list.textContent="No matching customer email addresses.";
+  updateSelected();
+ }
+ function updateSelected(){$("selectedCount").textContent=selected.size+" customers selected";}
+ $("userSearch").addEventListener("input",renderUsers);
+ document.querySelectorAll('input[name="audience"]').forEach(x=>x.addEventListener("change",()=>{$("userList").style.opacity=x.value==="all"?"0.45":"1";}));
+ document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===btn));["compose","history","inbox"].forEach(id=>$(id).classList.toggle("hidden",id!==btn.dataset.tab));if(btn.dataset.tab==="history")loadHistory();if(btn.dataset.tab==="inbox")loadThreads();}));
+ document.querySelectorAll("[data-cmd]").forEach(b=>b.addEventListener("click",()=>{document.execCommand(b.dataset.cmd,false,null);$("editor").focus();}));
+ $("linkBtn").addEventListener("click",()=>{const url=prompt("Enter the link URL");if(url&&/^https?:\/\//i.test(url)){document.execCommand("createLink",false,url);}});
+ $("imageBtn").addEventListener("click",()=>$("imageFile").click());
+ $("imageFile").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;try{const path=Date.now()+"-"+Math.random().toString(36).slice(2)+"-"+file.name.replace(/[^a-z0-9._-]/gi,"_");const {error}=await db.storage.from("email-assets").upload(path,file,{upsert:false,contentType:file.type});if(error)throw error;const {data}=db.storage.from("email-assets").getPublicUrl(path);document.execCommand("insertHTML",false,'<img src="'+data.publicUrl+'" alt="Email picture" style="max-width:100%;height:auto">');note("Picture uploaded and added to your email.");}catch(err){note(err.message||"Picture upload failed.",true);}e.target.value="";});
+ $("sendBtn").addEventListener("click",async()=>{
+  const subject=$("subject").value.trim(),html=$("editor").innerHTML.trim(),audience=document.querySelector('input[name="audience"]:checked').value;
+  if(!subject||!html){note("Enter a subject and message before sending.",true);return;}
+  if(audience==="selected"&&!selected.size){note("Select at least one customer.",true);return;}
+  if(!confirm(audience==="all"?"Send this email to all customers with email addresses?":"Send this email to "+selected.size+" selected customer(s)?"))return;
+  const btn=$("sendBtn");btn.disabled=true;btn.textContent="Sending…";
+  try{const result=await invoke("send",{subject,html,audience,user_ids:Array.from(selected)});note("Email campaign complete: "+result.sent+" sent, "+result.failed+" failed out of "+result.total+".");$("sendInfo").textContent=result.total+" recipients";$("subject").value="";$("editor").innerHTML="<p>Hello,</p><p>We have an update for you.</p><p>Thank you,<br>Delight Vendor Logs</p>";selected.clear();renderUsers();}
+  catch(err){note(err.message||"Could not send email.",true);}finally{btn.disabled=false;btn.textContent="Send email";}
+ });
+ async function loadHistory(){try{const rows=(await invoke("history")).messages||[];const box=$("historyList");box.textContent="";if(!rows.length){box.textContent="No email history yet.";return;}rows.forEach(m=>{const el=document.createElement("div");el.className="entry";const title=document.createElement("strong");title.textContent=m.subject;const line=document.createElement("small");line.textContent=m.recipient_email+" · "+m.status+" · "+new Date(m.created_at).toLocaleString();el.append(title,line);if(m.error){const err=document.createElement("div");err.className="muted";err.textContent=m.error;el.appendChild(err);}box.appendChild(el);});}catch(e){$("historyList").textContent=e.message||"Could not load history.";}}
+ async function loadThreads(){try{const rows=(await invoke("threads")).threads||[];$("inboxCount").textContent=rows.length?"("+rows.length+")":"";const box=$("threadList");box.textContent="";if(!rows.length){box.textContent="No customer replies received yet.";return;}rows.forEach(t=>{const b=document.createElement("button");b.className="thread-btn"+(activeThread===t.id?" active":"");const strong=document.createElement("strong");strong.textContent=t.customer_name||t.customer_email;const small=document.createElement("small");small.textContent=t.subject+" · "+new Date(t.last_message_at).toLocaleString();b.append(strong,small);b.addEventListener("click",()=>loadThread(t));box.appendChild(b);});}catch(e){$("threadList").textContent=e.message||"Could not load inbox.";}}
+ async function loadThread(t){activeThread=t.id;$("threadTitle").textContent=(t.customer_name||t.customer_email)+" — "+t.subject;$("replyArea").classList.remove("hidden");try{const rows=(await invoke("thread_messages",{thread_id:t.id})).messages||[];const box=$("messageList");box.textContent="";rows.forEach(m=>{const el=document.createElement("div");el.className="message "+m.direction;const head=document.createElement("small");head.textContent=(m.direction==="incoming"?"Customer · ":"You · ")+new Date(m.created_at).toLocaleString();const p=document.createElement("p");p.textContent=m.text_body||(m.html_body||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim()||"(No message text)";el.append(head,p);box.appendChild(el);});$("threadList").querySelectorAll(".thread-btn").forEach(b=>b.classList.remove("active"));loadThreads();}catch(e){$("messageList").textContent=e.message||"Could not load conversation.";}}
+ $("replyBtn").addEventListener("click",async()=>{if(!activeThread){note("Choose a conversation first.",true);return;}const html=$("replyEditor").innerHTML.trim();if(!html){note("Write a reply first.",true);return;}const btn=$("replyBtn");btn.disabled=true;try{await invoke("reply",{thread_id:activeThread,html});$("replyEditor").innerHTML="";note("Your reply has been sent.");await loadThreads();const threadTitle=$("threadTitle").textContent;const match=threadTitle.split(" — ");await loadThread({id:activeThread,customer_email:match[0],subject:match[1]||""});}catch(e){note(e.message||"Could not send reply.",true);}finally{btn.disabled=false;}});
+})();
+</script></body></html>
