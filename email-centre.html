@@ -58,7 +58,7 @@ input:focus,select:focus,textarea:focus{outline:1px solid var(--gold)}button{cur
   const walker=doc.createTreeWalker(doc.body,NodeFilter.SHOW_TEXT);const nodes=[];
   while(walker.nextNode()){const n=walker.currentNode;if(n.parentElement&&!n.parentElement.closest("a,script,style"))nodes.push(n);}
   for(const node of nodes){
-   const text=node.nodeValue||"",re=/https?:\\/\\/[^\\s<]+/gi;let match,last=0;const frag=document.createDocumentFragment();
+   const text=node.nodeValue||"",re=/https?:\/\/[^\s<]+/gi;let match,last=0;const frag=document.createDocumentFragment();
    while((match=re.exec(text))){
     const raw=match[0],url=raw.replace(/[),.!?;:]+$/,""),tail=raw.slice(url.length);
     if(!url)continue;
@@ -78,7 +78,7 @@ input:focus,select:focus,textarea:focus{outline:1px solid var(--gold)}button{cur
   else{const {data,error:e}=await db.rpc("is_admin");if(e||!data)throw new Error("Admin access required.");}
   note("Admin access verified. Email service will be ready after the Resend key is added to this project.");
   users=(await invoke("users")).users||[];renderUsers();
- }catch(e){note(e.message||"Could not verify admin access.",true);}
+ }catch(e){note(e.message||"Could not verify admin access.",true);$("userList").textContent="Could not load customer list: "+(e.message||"Please check the admin session and try again.");}
  function renderUsers(){
   const q=$("userSearch").value.toLowerCase();const list=$("userList");list.textContent="";
   users.filter(u=>(u.name+" "+u.email).toLowerCase().includes(q)).forEach(u=>{
