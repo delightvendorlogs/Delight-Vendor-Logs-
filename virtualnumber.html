@@ -1,4 +1,3 @@
-<head><script>document.documentElement.style.visibility="hidden";</script><script src="auth-guard.js"></script><style>.dve-banner-dots,#dvBannerDots{display:none!important}</style></head>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -597,9 +596,10 @@ async function init(){
   session=data?.session||null;
   currentUser=session?.user||null;
   if(!currentUser){
-   $("walletBalance").textContent="Sign in required";
-   $("ordersList").innerHTML='<div class="empty">Sign in to view your orders.</div>';
-   showGlobal("Please sign in to use virtual number services.","error");
+   const redirect=location.pathname+location.search+location.hash;
+   const loginUrl=new URL("login.html",new URL("./",location.href));
+   loginUrl.searchParams.set("redirect",redirect);
+   location.replace(loginUrl.href);
    return;
   }
   clearMessages();
