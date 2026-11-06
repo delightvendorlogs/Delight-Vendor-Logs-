@@ -1,4 +1,13 @@
-<head><script>document.documentElement.style.visibility="hidden";</script><script src="auth-guard.js"></script><style>.dve-banner-dots,#dvBannerDots{display:none!important}</style></head><!DOCTYPE html>
+<head><script>document.documentElement.style.visibility="hidden";</script><script src="auth-guard.js"></script><style>.dve-banner-dots,#dvBannerDots{display:none!important}</style><style id="fresh-connect-service-search">
+.service-search-wrap{display:flex;align-items:center;gap:9px;min-height:48px;padding:0 12px;border:1px solid #554522;border-radius:12px;background:#101114;color:#e5bd52}
+.service-search-wrap:focus-within{border-color:#e5bd52;box-shadow:0 0 0 3px #e5bd521c}
+.service-search-wrap>span{font-size:23px;line-height:1}
+.service-search-input{flex:1;min-width:0;width:100%;padding:12px 0;border:0!important;outline:0!important;background:transparent!important;color:#fff!important;font:inherit;font-size:13px!important;box-shadow:none!important}
+.service-search-input::placeholder{color:#777}
+.clear-service-search{width:27px;height:27px;border:0;border-radius:50%;background:#292316;color:#e5bd52;font-size:20px;line-height:1}
+.service-search-count{min-height:17px;margin:6px 0 8px;color:#b8a77d;font-size:11px}
+</style>
+</head><!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -1004,6 +1013,22 @@
             Choose Service
           </label>
 
+          <label for="serviceSearchInput">Search Services</label>
+          <div class="service-search-wrap">
+            <span aria-hidden="true">⌕</span>
+            <input
+              type="search"
+              id="serviceSearchInput"
+              class="service-search-input"
+              placeholder="Search likes, followers, views, comments..."
+              autocomplete="off"
+              aria-label="Search Fresh Connect boosting services"
+            >
+            <button type="button" id="clearServiceSearch" class="clear-service-search" aria-label="Clear service search" hidden>×</button>
+          </div>
+
+          <div id="serviceSearchCount" class="service-search-count" aria-live="polite"></div>
+
           <div
             id="serviceGrid"
             class="service-grid"
@@ -1221,6 +1246,22 @@
       document.getElementById(
         "serviceGrid"
       );
+
+    const serviceSearchInput = document.getElementById("serviceSearchInput");
+    const clearServiceSearch = document.getElementById("clearServiceSearch");
+    const serviceSearchCount = document.getElementById("serviceSearchCount");
+
+    serviceSearchInput.addEventListener("input", () => {
+      clearServiceSearch.hidden = !serviceSearchInput.value;
+      populateServices();
+    });
+
+    clearServiceSearch.addEventListener("click", () => {
+      serviceSearchInput.value = "";
+      clearServiceSearch.hidden = true;
+      populateServices();
+      serviceSearchInput.focus();
+    });
 
     const serviceInfo =
       document.getElementById(
@@ -2187,41 +2228,35 @@
         null;
 
 
+      const searchTerm = (serviceSearchInput.value || "").trim().toLowerCase();
+
       const services =
         allServices.filter(
           service => {
+            const platform = normalizePlatform(getServicePlatform(service));
+            const platformMatches = searchTerm
+              ? true
+              : selectedPlatform === "Other"
+                ? !["Instagram", "TikTok", "YouTube", "Facebook", "X"].includes(platform)
+                : platform === selectedPlatform;
 
-            const platform =
-              normalizePlatform(
-                getServicePlatform(
-                  service
-                )
-              );
+            const searchableText = [
+              getServiceName(service),
+              getServicePlatform(service),
+              getServiceType(service),
+              service.category || "",
+              service.description || ""
+            ].join(" ").toLowerCase();
 
-
-            if (
-              selectedPlatform ===
-              "Other"
-            ) {
-
-              return ![
-                "Instagram",
-                "TikTok",
-                "YouTube",
-                "Facebook",
-                "X"
-              ].includes(
-                platform
-              );
-            }
-
-
-            return (
-              platform ===
-              selectedPlatform
-            );
+            return platformMatches && (!searchTerm || searchableText.includes(searchTerm));
           }
         );
+
+      if (serviceSearchCount) {
+        serviceSearchCount.textContent = searchTerm
+          ? services.length + " matching service" + (services.length === 1 ? "" : "s") + " across all platforms"
+          : services.length + " services shown";
+      }
 
 
       serviceGrid.innerHTML =
@@ -2233,7 +2268,7 @@
         serviceGrid.innerHTML =
           `
             <div class="service-empty">
-              No services available for this platform.
+              ${searchTerm ? 'No services match your search. Try another keyword.' : 'No services available for this platform.'}
             </div>
           `;
 
