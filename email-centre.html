@@ -52,6 +52,24 @@ input:focus,select:focus,textarea:focus{outline:1px solid var(--gold)}button{cur
 (async function(){
  const URL="https://hkfhehbhmucymusaytoe.supabase.co",KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_",MODE="admin_users",db=window.supabase.createClient(URL,KEY),$=id=>document.getElementById(id);
  let users=[],selected=new Set(),activeThread=null;
+
+ function linkifyHtml(html){
+  const doc=new DOMParser().parseFromString(html,"text/html");
+  const walker=doc.createTreeWalker(doc.body,NodeFilter.SHOW_TEXT);const nodes=[];
+  while(walker.nextNode()){const n=walker.currentNode;if(n.parentElement&&!n.parentElement.closest("a,script,style"))nodes.push(n);}
+  for(const node of nodes){
+   const text=node.nodeValue||"",re=/https?:\\/\\/[^\\s<]+/gi;let match,last=0;const frag=document.createDocumentFragment();
+   while((match=re.exec(text))){
+    const raw=match[0],url=raw.replace(/[),.!?;:]+$/,""),tail=raw.slice(url.length);
+    if(!url)continue;
+    frag.append(document.createTextNode(text.slice(last,match.index)));
+    const a=document.createElement("a");a.href=url;a.textContent=url;a.target="_blank";a.rel="noopener noreferrer";frag.append(a);
+    if(tail)frag.append(document.createTextNode(tail));last=match.index+raw.length;
+   }
+   if(last){frag.append(document.createTextNode(text.slice(last)));node.parentNode.replaceChild(frag,node);}
+  }
+  return doc.body.innerHTML;
+ }
  function note(message,error){$("status").textContent=message;$("status").className="notice"+(error?" error":"");}
  async function invoke(action,extra){const {data,error}=await db.functions.invoke("email-centre",{body:Object.assign({action},extra||{})});if(error)throw error;if(data&&data.error)throw new Error(data.error);return data||{};}
  try{
@@ -80,7 +98,7 @@ input:focus,select:focus,textarea:focus{outline:1px solid var(--gold)}button{cur
  $("imageBtn").addEventListener("click",()=>$("imageFile").click());
  $("imageFile").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;try{const path=Date.now()+"-"+Math.random().toString(36).slice(2)+"-"+file.name.replace(/[^a-z0-9._-]/gi,"_");const {error}=await db.storage.from("email-assets").upload(path,file,{upsert:false,contentType:file.type});if(error)throw error;const {data}=db.storage.from("email-assets").getPublicUrl(path);document.execCommand("insertHTML",false,'<img src="'+data.publicUrl+'" alt="Email picture" style="max-width:100%;height:auto">');note("Picture uploaded and added to your email.");}catch(err){note(err.message||"Picture upload failed.",true);}e.target.value="";});
  $("sendBtn").addEventListener("click",async()=>{
-  const subject=$("subject").value.trim(),html=$("editor").innerHTML.trim(),audience=document.querySelector('input[name="audience"]:checked').value;
+  const subject=$("subject").value.trim(),html=linkifyHtml($("editor").innerHTML.trim()),audience=document.querySelector('input[name="audience"]:checked').value;
   if(!subject||!html){note("Enter a subject and message before sending.",true);return;}
   if(audience==="selected"&&!selected.size){note("Select at least one customer.",true);return;}
   if(!confirm(audience==="all"?"Send this email to all customers with email addresses?":"Send this email to "+selected.size+" selected customer(s)?"))return;
@@ -91,6 +109,6 @@ input:focus,select:focus,textarea:focus{outline:1px solid var(--gold)}button{cur
  async function loadHistory(){try{const rows=(await invoke("history")).messages||[];const box=$("historyList");box.textContent="";if(!rows.length){box.textContent="No email history yet.";return;}rows.forEach(m=>{const el=document.createElement("div");el.className="entry";const title=document.createElement("strong");title.textContent=m.subject;const line=document.createElement("small");line.textContent=m.recipient_email+" · "+m.status+" · "+new Date(m.created_at).toLocaleString();el.append(title,line);if(m.error){const err=document.createElement("div");err.className="muted";err.textContent=m.error;el.appendChild(err);}box.appendChild(el);});}catch(e){$("historyList").textContent=e.message||"Could not load history.";}}
  async function loadThreads(){try{const rows=(await invoke("threads")).threads||[];$("inboxCount").textContent=rows.length?"("+rows.length+")":"";const box=$("threadList");box.textContent="";if(!rows.length){box.textContent="No customer replies received yet.";return;}rows.forEach(t=>{const b=document.createElement("button");b.className="thread-btn"+(activeThread===t.id?" active":"");const strong=document.createElement("strong");strong.textContent=t.customer_name||t.customer_email;const small=document.createElement("small");small.textContent=t.subject+" · "+new Date(t.last_message_at).toLocaleString();b.append(strong,small);b.addEventListener("click",()=>loadThread(t));box.appendChild(b);});}catch(e){$("threadList").textContent=e.message||"Could not load inbox.";}}
  async function loadThread(t){activeThread=t.id;$("threadTitle").textContent=(t.customer_name||t.customer_email)+" — "+t.subject;$("replyArea").classList.remove("hidden");try{const rows=(await invoke("thread_messages",{thread_id:t.id})).messages||[];const box=$("messageList");box.textContent="";rows.forEach(m=>{const el=document.createElement("div");el.className="message "+m.direction;const head=document.createElement("small");head.textContent=(m.direction==="incoming"?"Customer · ":"You · ")+new Date(m.created_at).toLocaleString();const p=document.createElement("p");p.textContent=m.text_body||(m.html_body||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim()||"(No message text)";el.append(head,p);box.appendChild(el);});$("threadList").querySelectorAll(".thread-btn").forEach(b=>b.classList.remove("active"));loadThreads();}catch(e){$("messageList").textContent=e.message||"Could not load conversation.";}}
- $("replyBtn").addEventListener("click",async()=>{if(!activeThread){note("Choose a conversation first.",true);return;}const html=$("replyEditor").innerHTML.trim();if(!html){note("Write a reply first.",true);return;}const btn=$("replyBtn");btn.disabled=true;try{await invoke("reply",{thread_id:activeThread,html});$("replyEditor").innerHTML="";note("Your reply has been sent.");await loadThreads();const threadTitle=$("threadTitle").textContent;const match=threadTitle.split(" — ");await loadThread({id:activeThread,customer_email:match[0],subject:match[1]||""});}catch(e){note(e.message||"Could not send reply.",true);}finally{btn.disabled=false;}});
+ $("replyBtn").addEventListener("click",async()=>{if(!activeThread){note("Choose a conversation first.",true);return;}const html=linkifyHtml($("replyEditor").innerHTML.trim());if(!html){note("Write a reply first.",true);return;}const btn=$("replyBtn");btn.disabled=true;try{await invoke("reply",{thread_id:activeThread,html});$("replyEditor").innerHTML="";note("Your reply has been sent.");await loadThreads();const threadTitle=$("threadTitle").textContent;const match=threadTitle.split(" — ");await loadThread({id:activeThread,customer_email:match[0],subject:match[1]||""});}catch(e){note(e.message||"Could not send reply.",true);}finally{btn.disabled=false;}});
 })();
 </script></body></html>
