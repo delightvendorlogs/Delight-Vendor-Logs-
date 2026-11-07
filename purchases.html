@@ -689,7 +689,7 @@ function virtualStatusBadge(status){
 // Country flags and service logos used in saved virtual-number purchases.
 function purchaseCountryFlag(country){
     const raw=String(country?.name??country?.country_name??country?.countryName??country??"").trim();
-    const name=raw.toLowerCase().replace(/&/g,"and").replace(/[’']/g,"").replace(/[^a-z0-9]+/g," ").trim().replace(/\\s+/g," ");
+    const name=raw.toLowerCase().replace(/&/g,"and").replace(/[’']/g,"").replace(/[^a-z0-9]+/g," ").trim().replace(/\s+/g," ");
     let code=String(country?.code??country?.iso2??country?.iso??country?.country_code??country?.countryCode??country?.alpha2??"").trim().toUpperCase();
     const map={
         "USA":"US","US":"US","UNITED STATES":"US","UNITED STATES OF AMERICA":"US","AMERICA":"US",
@@ -700,7 +700,7 @@ function purchaseCountryFlag(country){
         "AUSTRALIA":"AU","NEW ZEALAND":"NZ","FIJI":"FJ","FRANCE":"FR","GERMANY":"DE","ITALY":"IT","SPAIN":"ES","PORTUGAL":"PT","NETHERLANDS":"NL","BELGIUM":"BE","SWITZERLAND":"CH","AUSTRIA":"AT","IRELAND":"IE","POLAND":"PL","UKRAINE":"UA","RUSSIA":"RU","SWEDEN":"SE","NORWAY":"NO","DENMARK":"DK","FINLAND":"FI","GREECE":"GR","ROMANIA":"RO","BULGARIA":"BG","HUNGARY":"HU","CROATIA":"HR","SERBIA":"RS","SLOVAKIA":"SK","SLOVENIA":"SI","CZECH REPUBLIC":"CZ","CZECHIA":"CZ","ICELAND":"IS","LUXEMBOURG":"LU","CYPRUS":"CY","ESTONIA":"EE","LATVIA":"LV","LITHUANIA":"LT","MALTA":"MT","MOLDOVA":"MD","BELARUS":"BY","ALBANIA":"AL","BOSNIA AND HERZEGOVINA":"BA","MONTENEGRO":"ME","NORTH MACEDONIA":"MK",
         "SOUTH KOREA":"KR","NORTH KOREA":"KP","RUSSIAN FEDERATION":"RU","UNITED ARAB EMIRATES":"AE","UAE":"AE","IVORY COAST":"CI","COTE D IVOIRE":"CI","COTE DIVOIRE":"CI","CONGO":"CG","DR CONGO":"CD","DEMOCRATIC REPUBLIC OF THE CONGO":"CD","REPUBLIC OF THE CONGO":"CG","MYANMAR":"MM","BURMA":"MM","SRI LANKA":"LK","BRUNEI":"BN","LAOS":"LA","PALESTINE":"PS","MACAU":"MO","ESWATINI":"SZ","SWAZILAND":"SZ"
     };
-    if(!/^[A-Z]{2}$/.test(code))code=map[name]||"";
+    if(!/^[A-Z]{2}$/.test(code))code=map[name.toUpperCase()]||"";
     if(!/^[A-Z]{2}$/.test(code))return '<span class="country-flag-fallback" title="Country flag unavailable">🏳️</span>';
     const lower=code.toLowerCase();
     return '<img class="country-flag" src="https://flagcdn.com/w40/'+lower+'.png" srcset="https://flagcdn.com/w80/'+lower+'.png 2x" alt="'+esc(raw||code)+' flag" loading="lazy" onerror="this.replaceWith(document.createTextNode(\'🏳️\'))">';
