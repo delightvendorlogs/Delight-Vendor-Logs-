@@ -102,7 +102,7 @@ p{line-height:1.5}
 .country-name{font-weight:800}
 .choice-line{display:flex;align-items:center;gap:10px;min-width:0}
 .choice-icon{width:25px;height:20px;flex:0 0 25px;display:inline-flex;align-items:center;justify-content:center;font-size:19px;line-height:1}
-.choice-icon img{width:20px;height:20px;object-fit:contain;display:block}
+.choice-icon img{width:20px;height:20px;object-fit:contain;display:block}.choice-icon img.country-flag{width:24px;height:18px;object-fit:cover;border-radius:2px}.country-flag{width:24px;height:18px;object-fit:cover;border-radius:2px;vertical-align:-3px;display:inline-block}.country-flag-fallback{font-size:18px;vertical-align:-2px}
 .choice-label{min-width:0;overflow-wrap:anywhere}
 .selected-value .choice-line{display:inline-flex;vertical-align:middle}
 .purchase-choice{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
@@ -497,13 +497,32 @@ function getCountryCode(c){
 function getCountryId(c){return c?.country_id??c?.countryId??c?.id??null;}
 
 function countryFlag(country){
- const name=String(country?.name??country?.country_name??country?.countryName??country??"").trim().toLowerCase();
- let code=String(country?.code??country?.iso2??country?.iso??country?.country_code??country?.countryCode??"").trim().toUpperCase();
- const aliases={"USA":"US","UNITED STATES":"US","UNITED STATES OF AMERICA":"US","UK":"GB","UNITED KINGDOM":"GB","GREAT BRITAIN":"GB","ENGLAND":"GB","SOUTH KOREA":"KR","NORTH KOREA":"KP","VIETNAM":"VN","RUSSIA":"RU","BOLIVIA":"BO","IRAN":"IR","SYRIA":"SY","TAIWAN":"TW"};
- if(!/^[A-Z]{2}$/.test(code))code=aliases[name]||"";
- if(!code)code=aliases[name]||"";
- if(!/^[A-Z]{2}$/.test(code))return "🌍";
- return String.fromCodePoint(...[...code].map(ch=>127397+ch.charCodeAt(0)));
+ const rawName=String(country?.name??country?.country_name??country?.countryName??country??"").trim();
+ const name=rawName.toLowerCase().replace(/&/g,"and").replace(/[’']/g,"").replace(/[^a-z0-9]+/g," ").trim().replace(/\\s+/g," ");
+ let code=String(country?.code??country?.iso2??country?.iso??country?.country_code??country?.countryCode??country?.alpha2??country?.alpha_2??"").trim().toUpperCase();
+ const aliases={
+  "usa":"US","us":"US","united states":"US","united states of america":"US","america":"US",
+  "uk":"GB","gb":"GB","united kingdom":"GB","great britain":"GB","england":"GB","scotland":"GB","wales":"GB",
+  "south korea":"KR","republic of korea":"KR","korea south":"KR","north korea":"KP","viet nam":"VN","vietnam":"VN",
+  "russia":"RU","russian federation":"RU","iran":"IR","iran islamic republic of":"IR","syria":"SY","taiwan":"TW",
+  "bolivia":"BO","venezuela":"VE","tanzania":"TZ","moldova":"MD","brunei":"BN","laos":"LA","sri lanka":"LK",
+  "ivory coast":"CI","cote divoire":"CI","cote d ivoire":"CI","czech republic":"CZ","czechia":"CZ",
+  "uae":"AE","united arab emirates":"AE","palestine":"PS","hong kong":"HK","macau":"MO",
+  "democratic republic of the congo":"CD","dr congo":"CD","republic of the congo":"CG","congo":"CG",
+  "north macedonia":"MK","macedonia":"MK","eswatini":"SZ","swaziland":"SZ","myanmar":"MM","burma":"MM",
+  "cape verde":"CV","cabo verde":"CV","curacao":"CW","kosovo":"XK"
+ };
+ const names={
+  "nigeria":"NG","ghana":"GH","kenya":"KE","south africa":"ZA","egypt":"EG","morocco":"MA","algeria":"DZ","tunisia":"TN","uganda":"UG","cameroon":"CM","senegal":"SN","ethiopia":"ET","ivory coast":"CI","cote divoire":"CI","tanzania":"TZ","rwanda":"RW","zambia":"ZM","zimbabwe":"ZW",
+  "canada":"CA","mexico":"MX","brazil":"BR","argentina":"AR","chile":"CL","colombia":"CO","peru":"PE","jamaica":"JM","puerto rico":"PR","dominican republic":"DO","costa rica":"CR","panama":"PA",
+  "india":"IN","pakistan":"PK","bangladesh":"BD","indonesia":"ID","malaysia":"MY","singapore":"SG","philippines":"PH","thailand":"TH","vietnam":"VN","japan":"JP","china":"CN","hong kong":"HK","taiwan":"TW","south korea":"KR","turkey":"TR","saudi arabia":"SA","israel":"IL","qatar":"QA","kuwait":"KW","oman":"OM","bahrain":"BH","jordan":"JO","iraq":"IQ","iran":"IR",
+  "australia":"AU","new zealand":"NZ","fiji":"FJ",
+  "france":"FR","germany":"DE","italy":"IT","spain":"ES","portugal":"PT","netherlands":"NL","belgium":"BE","switzerland":"CH","austria":"AT","ireland":"IE","united kingdom":"GB","uk":"GB","poland":"PL","ukraine":"UA","russia":"RU","sweden":"SE","norway":"NO","denmark":"DK","finland":"FI","greece":"GR","romania":"RO","bulgaria":"BG","hungary":"HU","croatia":"HR","serbia":"RS","slovakia":"SK","slovenia":"SI","czech republic":"CZ","czechia":"CZ","iceland":"IS","luxembourg":"LU","cyprus":"CY","estonia":"EE","latvia":"LV","lithuania":"LT","malta":"MT","moldova":"MD","belarus":"BY","albania":"AL","bosnia and herzegovina":"BA","montenegro":"ME","north macedonia":"MK"
+ };
+ if(!/^[A-Z]{2}$/.test(code))code=aliases[name]||names[name]||"";
+ if(!/^[A-Z]{2}$/.test(code))return '<span class="country-flag-fallback" aria-label="Country flag unavailable">🏳️</span>';
+ const lower=code.toLowerCase();
+ return '<img class="country-flag" src="https://flagcdn.com/w40/'+lower+'.png" srcset="https://flagcdn.com/w80/'+lower+'.png 2x" alt="'+escapeHTML(rawName||code)+' flag" loading="lazy" onerror="this.replaceWith(document.createTextNode(\'🏳️\'))">';
 }
 const SERVICE_BRANDS=[
  ["whatsapp","whatsapp","25D366"],["telegram","telegram","26A5E4"],["facebook","facebook","0866FF"],
