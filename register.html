@@ -1,714 +1,156 @@
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#080808">
-
-
-
-<title>Create Account - Delight Vendor Logs</title>
-
+<meta name="description" content="Create your Delight Vendor Logs account.">
+<title>Create Account — Delight Vendor Logs</title>
+<link rel="icon" type="image/png" href="assets/dv-logo.png">
+<link rel="apple-touch-icon" href="assets/dv-logo.png">
+<link rel="stylesheet" href="site-theme.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-* {
-  box-sizing: border-box;
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
-}
-
-:root {
-  --black: #050505;
-  --black2: #0a0a0a;
-  --card: #0d0d0d;
-  --gold: #d4af37;
-  --gold-light: #f1d77a;
-  --gold-dark: #9c7b16;
-  --white: #ffffff;
-  --muted: #969696;
-  --border: rgba(212,175,55,.20);
-}
-
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: var(--black);
-  color: #fff;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 15% 10%, rgba(212,175,55,.10), transparent 28%),
-    radial-gradient(circle at 85% 20%, rgba(212,175,55,.07), transparent 30%),
-    radial-gradient(circle at 50% 85%, rgba(212,175,55,.045), transparent 35%);
-  z-index: -2;
-}
-
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  opacity: .035;
-  background-image:
-    linear-gradient(rgba(255,255,255,.8) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.8) 1px, transparent 1px);
-  background-size: 55px 55px;
-  z-index: -1;
-}
-
-/* COMPACT MAIN PAGE */
-
-.page {
-  width: 100%;
-  max-width: 460px;
-  margin: 0 auto;
-  padding: 20px 22px 18px;
-}
-
-/* TOP BRAND */
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  margin-bottom: 17px;
-}
-
-.brand-mark {
-  width: 31px;
-  height: 31px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--gold);
-  border-radius: 9px;
-  color: var(--gold);
-  font-size: 16px;
-  font-weight: 900;
-  box-shadow: 0 0 15px rgba(212,175,55,.12);
-}
-
-.brand-name {
-  color: #fff;
-  font-size: 15px;
-  font-weight: 850;
-}
-
-.brand-name span {
-  color: var(--gold);
-}
-
-/* HEADER */
-
-.heading {
-  margin-bottom: 18px;
-}
-
-.heading h1 {
-  margin: 0;
-  font-size: 27px;
-  line-height: 1.15;
-  font-weight: 800;
-  letter-spacing: -.7px;
-  color: #fff;
-}
-
-.heading p {
-  margin: 7px 0 0;
-  font-size: 13px;
-  line-height: 1.4;
-  color: #888;
-}
-
-/* SECTION */
-
-.section {
-  margin-bottom: 13px;
-}
-
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  margin-bottom: 10px;
-}
-
-.section-title span {
-  font-size: 10px;
-  font-weight: 800;
-  color: #888;
-  letter-spacing: 1.2px;
-  white-space: nowrap;
-}
-
-.section-title::after {
-  content: "";
-  height: 1px;
-  background: rgba(212,175,55,.18);
-  flex: 1;
-}
-
-/* NAME FIELDS SIDE BY SIDE */
-
-.name-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-/* FIELD */
-
-.field {
-  min-width: 0;
-  margin-bottom: 11px;
-}
-
-.name-row .field {
-  margin-bottom: 11px;
-}
-
-.field label {
-  display: block;
-  margin-bottom: 5px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #eee;
-}
-
-.input-wrap {
-  position: relative;
-}
-
-.input-icon {
-  position: absolute;
-  left: 11px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--gold);
-  font-size: 14px;
-  pointer-events: none;
-}
-
-.input-wrap input {
-  display: block;
-  width: 100%;
-  height: 43px;
-  border: 1px solid rgba(212,175,55,.20);
-  background: #0d0d0d;
-  border-radius: 10px;
-  outline: none;
-  padding: 0 10px 0 34px;
-  font-family: inherit;
-  font-size: 13px;
-  color: #fff;
-  transition: .2s;
-  box-shadow: inset 0 0 12px rgba(0,0,0,.20);
-}
-
-.input-wrap input::placeholder {
-  color: #686868;
-}
-
-.input-wrap input:focus {
-  border-color: var(--gold);
-  background: #101010;
-  box-shadow: 0 0 0 2px rgba(212,175,55,.08);
-}
-
-/* PASSWORD */
-
-.password-toggle {
-  position: absolute;
-  right: 7px;
-  top: 50%;
-  transform: translateY(-50%);
-  border: 0;
-  background: none;
-  color: #888;
-  font-size: 15px;
-  padding: 5px;
-  cursor: pointer;
-}
-
-.password-toggle:hover {
-  color: var(--gold);
-}
-
-.password-input {
-  padding-right: 38px !important;
-}
-
-/* BUTTON */
-
-.create-btn {
-  display: block;
-  width: 100%;
-  height: 44px;
-  border: 1px solid var(--gold);
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  color: #080808;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: 0 5px 15px rgba(212,175,55,.10);
-  transition: .2s;
-}
-
-.create-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 7px 18px rgba(212,175,55,.18);
-}
-
-.create-btn:active {
-  transform: scale(.99);
-}
-
-.create-btn:disabled {
-  opacity: .65;
-  cursor: not-allowed;
-  transform: none;
-}
-
-async function notifyAdminAuthActivity(eventType) {
-  try { const { data, error } = await supabaseClient.functions.invoke("auth-activity-alert", { body: { event: eventType } }); if (error) console.warn("Admin activity alert:", error.message); else if (data && data.emailSent === false && data.telegramSent === false) console.warn("Admin alerts not delivered:", data.emailError, data.telegramError); } catch (e) { console.warn("Admin activity alert failed:", e); }
-}
-
-/* MESSAGE */
-
-#message {
-  margin: 8px 0 0;
-  text-align: center;
-  font-size: 12px;
-  line-height: 1.4;
-  color: #999;
-  overflow-wrap: anywhere;
-}
-
-#message:empty {
-  display: none;
-}
-
-#message.error {
-  color: #ff7777;
-}
-
-#message.success {
-  color: var(--gold-light);
-}
-
-/* TERMS & POLICIES */
-
-.policy-menu {
-  position: relative;
-  margin-top: 10px;
-  text-align: center;
-}
-
-.policy-menu summary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 8px 12px;
-  border: 1px solid rgba(212,175,55,.25);
-  border-radius: 8px;
-  background: rgba(212,175,55,.045);
-  color: var(--gold-light);
-  font-size: 12px;
-  font-weight: 750;
-  cursor: pointer;
-  list-style: none;
-  transition: .2s;
-}
-
-.policy-menu summary::-webkit-details-marker {
-  display: none;
-}
-
-.policy-menu summary::after {
-  content: "▾";
-  font-size: 12px;
-  transition: transform .2s;
-}
-
-.policy-menu[open] summary::after {
-  transform: rotate(180deg);
-}
-
-.policy-menu summary:hover {
-  background: rgba(212,175,55,.10);
-  border-color: var(--gold);
-}
-
-.policy-links {
-  width: 100%;
-  max-width: 300px;
-  margin: 8px auto 0;
-  padding: 5px;
-  border: 1px solid rgba(212,175,55,.22);
-  border-radius: 10px;
-  background: #101010;
-  box-shadow: 0 12px 30px rgba(0,0,0,.4);
-  text-align: left;
-}
-
-.policy-links a {
-  display: block;
-  padding: 9px 10px;
-  border-radius: 7px;
-  color: #ddd;
-  text-decoration: none;
-  font-size: 12px;
-  font-weight: 600;
-  transition: .2s;
-}
-
-.policy-links a:hover {
-  background: rgba(212,175,55,.10);
-  color: var(--gold-light);
-}
-
-/* LOGIN LINK */
-
-.account-link {
-  text-align: center;
-  margin-top: 13px;
-  font-size: 12px;
-  color: #888;
-  line-height: 1.5;
-}
-
-.account-link a {
-  color: var(--gold-light);
-  text-decoration: none;
-  font-weight: 800;
-  margin-left: 3px;
-  transition: .2s;
-}
-
-.account-link a:hover {
-  color: #fff;
-}
-
-/* SMALL PHONES */
-
-@media(max-width:360px) {
-  .page {
-    padding: 15px 15px 12px;
-  }
-
-  .brand {
-    margin-bottom: 13px;
-  }
-
-  .heading {
-    margin-bottom: 15px;
-  }
-
-  .heading h1 {
-    font-size: 24px;
-  }
-
-  .name-row {
-    gap: 7px;
-  }
-
-  .field label {
-    font-size: 11px;
-  }
-
-  .input-wrap input {
-    height: 41px;
-    font-size: 12px;
-    padding-left: 30px;
-  }
-
-  .input-icon {
-    left: 9px;
-    font-size: 12px;
-  }
-}
-
-/* SHORT SCREENS */
-
-@media(max-height:700px) {
-  .page {
-    padding-top: 12px;
-    padding-bottom: 10px;
-  }
-
-  .brand {
-    margin-bottom: 11px;
-  }
-
-  .heading {
-    margin-bottom: 12px;
-  }
-
-  .heading h1 {
-    font-size: 24px;
-  }
-
-  .heading p {
-    margin-top: 5px;
-  }
-
-  .section {
-    margin-bottom: 9px;
-  }
-
-  .section-title {
-    margin-bottom: 7px;
-  }
-
-  .field,
-  .name-row .field {
-    margin-bottom: 8px;
-  }
-
-  .input-wrap input {
-    height: 39px;
-  }
-
-  .create-btn {
-    height: 41px;
-  }
-
-  .policy-menu {
-    margin-top: 7px;
-  }
-
-  .account-link {
-    margin-top: 9px;
-  }
-}
-
-.google-auth{margin:0 0 18px}
-.google-auth-btn{width:100%;min-height:48px;display:flex;align-items:center;justify-content:center;gap:11px;padding:12px 16px;border:1px solid #dedede;border-radius:11px;background:#fff;color:#202124;font:700 14px/1.2 Arial,Helvetica,sans-serif;cursor:pointer;transition:background .18s,box-shadow .18s,transform .18s}
-.google-auth-btn:hover{background:#f7f7f7;box-shadow:0 4px 14px rgba(0,0,0,.18)}
-.google-auth-btn:active{transform:scale(.99)}
-.google-auth-btn:disabled{opacity:.65;cursor:wait}
-.google-auth-btn svg{width:19px;height:19px;flex:0 0 19px}
-.auth-divider{display:flex;align-items:center;gap:12px;margin:17px 0 0;color:#888;font-size:11px;text-align:center}
-.auth-divider:before,.auth-divider:after{content:"";height:1px;flex:1;background:rgba(212,175,55,.2)}
+:root{color-scheme:dark;--bg:#080808;--panel:#111;--gold:#d9ad45;--gold-light:#f2d27a;--text:#f7f4ec;--muted:#aaa69b;--border:rgba(217,173,69,.25);--danger:#ff7777;--success:#8ce0a8}
+*{box-sizing:border-box}html{min-height:100%;scroll-behavior:smooth}body{margin:0;min-height:100vh;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:radial-gradient(ellipse at 15% 0%,rgba(217,173,69,.12),transparent 38%),radial-gradient(ellipse at 100% 90%,rgba(217,173,69,.07),transparent 35%),var(--bg);display:flex;flex-direction:column}a{color:var(--gold-light)}
+.topbar{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px clamp(16px,4vw,44px);border-bottom:1px solid rgba(255,255,255,.07)}
+.brand{display:inline-flex;align-items:center;gap:10px;color:var(--text);text-decoration:none;font-weight:850;letter-spacing:-.035em;font-size:clamp(17px,2.5vw,22px)}.brand img{width:42px;height:42px;object-fit:contain;flex:0 0 auto}
+.top-link{text-decoration:none;border:1px solid var(--border);border-radius:999px;padding:10px 15px;font-weight:750;font-size:13px;white-space:nowrap}.top-link:hover{background:rgba(217,173,69,.1)}
+main{width:100%;flex:1;display:grid;place-items:center;padding:34px 16px 44px}.layout{width:min(100%,1040px);display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(22px,5vw,58px);align-items:center}
+.intro{padding:14px 0}.eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--gold-light);font-size:12px;font-weight:850;letter-spacing:.13em;text-transform:uppercase}.eyebrow:before{content:"";width:22px;height:2px;background:var(--gold);border-radius:2px}
+h1{margin:16px 0 14px;font-size:clamp(34px,5vw,56px);line-height:1.04;letter-spacing:-.055em}h1 span{background:linear-gradient(100deg,var(--gold-light),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}.intro p{color:var(--muted);line-height:1.75;max-width:430px;margin:0}
+.benefits{list-style:none;padding:0;margin:26px 0 0;display:grid;gap:13px}.benefits li{display:flex;gap:11px;align-items:flex-start;color:#ddd8ca;font-size:14px;line-height:1.5}.check{display:inline-grid;place-items:center;flex:0 0 23px;width:23px;height:23px;color:#080808;background:var(--gold);border-radius:50%;font-weight:950;font-size:12px;margin-top:1px}
+.card{width:100%;background:linear-gradient(155deg,rgba(255,255,255,.035),transparent 40%),var(--panel);border:1px solid var(--border);border-radius:20px;padding:clamp(22px,4vw,36px);box-shadow:0 24px 90px rgba(0,0,0,.4)}.card-head{margin-bottom:20px}.card-head h2{font-size:27px;letter-spacing:-.035em;margin:0 0 8px}.card-head p{margin:0;color:var(--muted);font-size:14px;line-height:1.6}
+.google-auth{margin:0 0 20px}.google-auth-btn{width:100%;min-height:49px;display:flex;align-items:center;justify-content:center;gap:11px;padding:12px 16px;border:1px solid #dedede;border-radius:11px;background:#fff;color:#202124;font:700 14px/1.2 Arial,Helvetica,sans-serif;cursor:pointer;transition:background .18s,box-shadow .18s,transform .18s}.google-auth-btn:hover{background:#f7f7f7;box-shadow:0 4px 14px rgba(0,0,0,.18)}.google-auth-btn:active{transform:scale(.99)}.google-auth-btn:disabled{opacity:.65;cursor:wait}.google-auth-btn svg{width:19px;height:19px;flex:0 0 19px}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:17px 0 0;color:#888;font-size:11px;text-align:center}.auth-divider:before,.auth-divider:after{content:"";height:1px;flex:1;background:rgba(217,173,69,.2)}
+.field{margin-top:16px}label{display:block;font-size:13px;font-weight:750;margin-bottom:8px;color:#e8e2d4}.input-wrap{position:relative}
+input{width:100%;min-height:49px;border:1px solid #34312a;background:#090909;border-radius:12px;color:var(--text);padding:13px 14px;font:inherit;font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s}input::placeholder{color:#777368}input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,173,69,.12)}.password-input{padding-right:76px}
+.toggle-password{position:absolute;top:50%;right:9px;transform:translateY(-50%);border:0;background:transparent;color:var(--gold-light);padding:8px;cursor:pointer;font:inherit;font-size:12px;font-weight:800}.hint{margin:7px 0 0;font-size:12px;line-height:1.5;color:var(--muted)}
+.submit{width:100%;min-height:51px;margin-top:23px;border:0;border-radius:12px;padding:13px 18px;background:linear-gradient(100deg,var(--gold-light),var(--gold));color:#171105;font:inherit;font-size:14px;font-weight:900;cursor:pointer;transition:transform .15s,filter .15s}.submit:hover{filter:brightness(1.06)}.submit:active{transform:scale(.99)}.submit:disabled{opacity:.65;cursor:wait}
+.message{display:none;margin-top:16px;border-radius:11px;padding:12px 13px;font-size:13px;line-height:1.55;overflow-wrap:anywhere}.message.error{display:block;color:#ffd2d2;border:1px solid rgba(255,119,119,.35);background:rgba(255,80,80,.08)}.message.success{display:block;color:#caffd8;border:1px solid rgba(140,224,168,.3);background:rgba(80,220,130,.08)}
+.signin{text-align:center;margin:21px 0 0;color:var(--muted);font-size:13px;line-height:1.7}.signin a{font-weight:850;text-decoration:none}.signin a:hover{text-decoration:underline}.terms{text-align:center;color:#888477;font-size:11px;line-height:1.6;margin:17px 0 0}.terms a{color:#c9a84e}
+.policy-menu{position:relative;margin-top:16px;text-align:center}.policy-menu summary{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:rgba(217,173,69,.045);color:var(--gold-light);font-size:12px;font-weight:750;cursor:pointer;list-style:none}.policy-menu summary::-webkit-details-marker{display:none}.policy-links{width:100%;max-width:300px;margin:8px auto 0;padding:5px;border:1px solid var(--border);border-radius:10px;background:#101010;text-align:left}.policy-links a{display:block;padding:9px 10px;border-radius:7px;color:#ddd;text-decoration:none;font-size:12px}.policy-links a:hover{background:rgba(217,173,69,.1);color:var(--gold-light)}
+footer{text-align:center;color:#777368;font-size:12px;padding:18px 16px 24px}
+@media(max-width:760px){.layout{grid-template-columns:1fr;max-width:500px;gap:20px}.intro{text-align:center;padding:8px 4px 0}.intro p{margin-inline:auto}.benefits{display:none}.eyebrow{justify-content:center}h1{font-size:clamp(32px,9vw,44px);margin-top:12px}main{padding-top:25px;padding-bottom:28px}.card{padding:24px 20px}}
+@media(max-width:380px){.topbar{padding:14px 12px}.brand{gap:7px;font-size:15px}.brand img{width:34px;height:34px}.top-link{padding:9px 11px;font-size:12px}}
 </style>
-<link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css"></head>
-
+</head>
 <body>
-
-<div class="page">
-
-  <!-- BRAND -->
-
-  <div class="brand">
-    <div class="brand-mark">D</div>
-
-    <div class="brand-name">
-      Delight <span>Vendor Logs</span>
-    </div>
-  </div>
-
-  <!-- HEADER -->
-
-  <div class="heading">
-    <h1>Create your account 🚀</h1>
-    <p>Fill in your details below to get started for free</p>
-  </div>
-
-
+<header class="topbar">
+<a class="brand" href="index.html" aria-label="Delight Vendor Logs home"><img src="assets/dv-logo.png" alt="DV Logo"><span>Delight Vendor Logs</span></a>
+<a class="top-link" href="login.html">Sign in</a>
+</header>
+<main>
+<div class="layout">
+<section class="intro">
+<div class="eyebrow">Join the marketplace</div>
+<h1>Your next move starts <span>here.</span></h1>
+<p>Create your Delight Vendor Logs account to access your dashboard, manage purchases, and use referral rewards when someone invites you.</p>
+<ul class="benefits"><li><span class="check">✓</span><span>One account for your vendor log marketplace activity.</span></li><li><span class="check">✓</span><span>Manage your account and purchases from your dashboard.</span></li><li><span class="check">✓</span><span>Enter a referral code during signup if you have one.</span></li></ul>
+</section>
+<section class="card" aria-labelledby="register-title">
+<div class="card-head"><h2 id="register-title">Create your account</h2><p>Enter your details below to get started.</p></div>
 <div class="google-auth">
-  <button class="google-auth-btn" type="button" id="google-signin">
-    <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.9c-.58 2.96-2.26 5.48-4.76 7.18l7.73 6C44.38 37.98 46.98 31.88 46.98 24.55z"/><path fill="#FBBC05" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.52 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.9-5.8l-7.73-6c-2.14 1.44-4.89 2.3-8.17 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-    <span>Continue with Google</span>
-  </button>
-  <div class="auth-divider"><span>or continue with email</span></div>
+<button class="google-auth-btn" type="button" id="google-signin">
+<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.9c-.58 2.96-2.26 5.48-4.76 7.18l7.73 6C44.38 37.98 46.98 31.88 46.98 24.55z"/><path fill="#FBBC05" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.52 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.9-5.8l-7.73-6c-2.14 1.44-4.89 2.3-8.17 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+<span>Continue with Google</span>
+</button>
+<div class="auth-divider"><span>or continue with email</span></div>
 </div>
-\n    <!-- PERSONAL INFO -->
-
-  <section class="section">
-
-    <div class="section-title">
-      <span>PERSONAL INFO</span>
-    </div>
-
-    <!-- FIRST AND LAST NAME -->
-
-    <div class="name-row">
-
-      <div class="field">
-        <label for="firstName">First Name</label>
-
-        <div class="input-wrap">
-          <span class="input-icon">🪪</span>
-
-          <input
-            id="firstName"
-            type="text"
-            placeholder="John"
-            autocomplete="given-name"
-            required
-          >
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="lastName">Last Name</label>
-
-        <div class="input-wrap">
-          <span class="input-icon">🪪</span>
-
-          <input
-            id="lastName"
-            type="text"
-            placeholder="Doe"
-            autocomplete="family-name"
-            required
-          >
-        </div>
-      </div>
-
-    </div>
-
-    <!-- EMAIL -->
-
-    <div class="field">
-      <label for="email">Email Address</label>
-
-      <div class="input-wrap">
-        <span class="input-icon">✉</span>
-
-        <input
-          id="email"
-          type="email"
-          placeholder="you@example.com"
-          autocomplete="email"
-          required
-        >
-      </div>
-    </div>
-
-  </section>
-
-  <div class="field">
-    <label for="referralCode">Referral Code <span style="color:#888;font-weight:400">(Optional)</span></label>
-    <div class="input-wrap">
-      <span class="input-icon">🎁</span>
-      <input id="referralCode" type="text" placeholder="Enter referral code if you have one" autocomplete="off" maxlength="40">
-    </div>
-  </div>
-
-  <!-- ACCOUNT SECURITY -->
-
-  <section class="section">
-
-    <div class="section-title">
-      <span>ACCOUNT SECURITY</span>
-    </div>
-
-    <!-- PASSWORD -->
-
-    <div class="field">
-      <label for="password">Password</label>
-
-      <div class="input-wrap">
-        <span class="input-icon">🔒</span>
-
-        <input
-          id="password"
-          class="password-input"
-          type="password"
-          placeholder="Create a password"
-          autocomplete="new-password"
-          required
-        >
-
-        <button
-          type="button"
-          class="password-toggle"
-          onclick="togglePassword()"
-          aria-label="Show password"
-        >
-          👁
-        </button>
-      </div>
-    </div>
-
-  </section>
-
-  <!-- CREATE ACCOUNT -->
-
-  <button
-    id="createButton"
-    class="create-btn"
-    type="button"
-    onclick="createAccount()"
-  >
-    Create Account
-  </button>
-
-  <p id="message" role="status" aria-live="polite"></p>
-
-  <!-- TERMS & POLICIES -->
-
-  <details class="policy-menu" id="policyMenu">
-    <summary>Terms &amp; Policies</summary>
-
-    <div class="policy-links">
-      <a href="about.html">About Us</a>
-      <a href="terms.html">Terms &amp; Conditions</a>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="refund-policy.html">Refund Policy</a>
-      <a href="faq.html">Frequently Asked Questions (FAQ)</a>
-    </div>
-  </details>
-
-  <!-- LOGIN -->
-
-  <div class="account-link">
-    Already have an account?
-    <a href="login.html">Sign In</a>
-  </div>
-
+<div id="form-fields">
+<div class="field"><label for="firstName">First name</label><input id="firstName" type="text" placeholder="Enter your first name" autocomplete="given-name" maxlength="60" required></div>
+<div class="field"><label for="lastName">Last name</label><input id="lastName" type="text" placeholder="Enter your last name" autocomplete="family-name" maxlength="60" required></div>
+<div class="field"><label for="email">Email address</label><input id="email" type="email" placeholder="you@example.com" autocomplete="email" maxlength="254" required></div>
+<div class="field"><label for="referralCode">Referral code <span style="color:var(--muted);font-weight:500">(optional)</span></label><input id="referralCode" type="text" placeholder="Enter a referral code if you have one" autocomplete="off" maxlength="40"><p class="hint">If someone invited you, enter their code here.</p></div>
+<div class="field"><label for="password">Password</label><div class="input-wrap"><input class="password-input" id="password" type="password" placeholder="Create a password" autocomplete="new-password" minlength="6" required><button class="toggle-password" type="button" id="togglePassword" aria-label="Show password">Show</button></div><p class="hint">Use at least 6 characters.</p></div>
+<button class="submit" id="createButton" type="button">Create account</button>
+<div id="message" class="message" role="status" aria-live="polite"></div>
 </div>
-
+<p class="signin">Already have an account? <a href="login.html">Sign in</a></p>
+<details class="policy-menu" id="policyMenu"><summary>Terms &amp; Policies</summary><div class="policy-links"><a href="about.html">About Us</a><a href="terms.html">Terms &amp; Conditions</a><a href="privacy.html">Privacy Policy</a><a href="refund-policy.html">Refund Policy</a><a href="faq.html">Frequently Asked Questions (FAQ)</a></div></details>
+<p class="terms">By creating an account, you agree to our <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a>.</p>
+</section>
+</div>
+</main>
+<footer>© <span id="year"></span> Delight Vendor Logs. All rights reserved.</footer>
 <script>
+(() => {
+"use strict";
+const SUPABASE_URL = "https://hkfhehbhmucymusaytoe.supabase.co";
+const SUPABASE_KEY = "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true }
+});
+const messageBox = document.getElementById("message");
+const createButton = document.getElementById("createButton");
+const firstNameInput = document.getElementById("firstName");
+const lastNameInput = document.getElementById("lastName");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const referralInput = document.getElementById("referralCode");
+document.getElementById("year").textContent = new Date().getFullYear();
 
-/* SUPABASE */
+function showMessage(text, type) {
+  messageBox.textContent = text;
+  messageBox.className = "message" + (type ? " " + type : "");
+}
+async function notifyAdminAuthActivity(eventType) {
+  try {
+    const { data, error } = await client.functions.invoke("auth-activity-alert", { body: { event: eventType } });
+    if (error) console.warn("Admin activity alert:", error.message);
+    else if (data && data.emailSent === false && data.telegramSent === false) console.warn("Admin alerts not delivered:", data.emailError, data.telegramError);
+  } catch (error) { console.warn("Admin activity alert failed:", error); }
+}
+const params = new URLSearchParams(window.location.search);
+const referralFromUrl = (params.get("ref") || params.get("referral_code") || "").trim().toUpperCase();
+if (referralFromUrl) referralInput.value = referralFromUrl;
 
-const SUPABASE_URL =
-  "https://hkfhehbhmucymusaytoe.supabase.co";
-
-const SUPABASE_KEY =
-  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
-
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
-
+document.getElementById("togglePassword").addEventListener("click", () => {
+  const show = passwordInput.type === "password";
+  passwordInput.type = show ? "text" : "password";
+  document.getElementById("togglePassword").textContent = show ? "Hide" : "Show";
+  document.getElementById("togglePassword").setAttribute("aria-label", show ? "Hide password" : "Show password");
+});
+createButton.addEventListener("click", async () => {
+  showMessage("", "");
+  const firstName = firstNameInput.value.trim();
+  const lastName = lastNameInput.value.trim();
+  const email = emailInput.value.trim().toLowerCase();
+  const password = passwordInput.value;
+  const referralCode = referralInput.value.trim().toUpperCase();
+  if (!firstName || !lastName || !email || !password) { showMessage("Please fill in all required fields.", "error"); return; }
+  if (!emailInput.checkValidity()) { showMessage("Please enter a valid email address.", "error"); emailInput.focus(); return; }
+  if (password.length < 6) { showMessage("Your password must contain at least 6 characters.", "error"); passwordInput.focus(); return; }
+  createButton.disabled = true;
+  createButton.textContent = "Creating account…";
+  try {
+    const fullName = firstName + " " + lastName;
+    const { data, error } = await client.auth.signUp({
+      email, password,
+      options: { data: { name: fullName, first_name: firstName, last_name: lastName, referral_code: referralCode || null } }
+    });
+    if (error) throw error;
+    if (data && data.session) {
+      void notifyAdminAuthActivity("signup");
+      showMessage("Account created successfully. Redirecting…", "success");
+      setTimeout(() => window.location.replace("dashboard.html"), 500);
+    } else {
+      showMessage("Account created successfully. Please sign in to continue.", "success");
+      setTimeout(() => window.location.replace("login.html"), 1000);
+    }
+  } catch (error) {
+    console.error("Signup error:", error);
+    showMessage(error.message || "Something went wrong. Please try again.", "error");
+    createButton.disabled = false;
+    createButton.textContent = "Create account";
+  }
+});
 const googleButton = document.getElementById("google-signin");
 googleButton.addEventListener("click", async () => {
   googleButton.disabled = true;
   googleButton.querySelector("span").textContent = "Connecting to Google…";
   try {
-    const { error } = await supabaseClient.auth.signInWithOAuth({
+    const { error } = await client.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: new URL("dashboard.html", window.location.href).href }
     });
@@ -720,179 +162,18 @@ googleButton.addEventListener("click", async () => {
     googleButton.querySelector("span").textContent = "Continue with Google";
   }
 });
-\n/* PASSWORD TOGGLE */
-
-function togglePassword() {
-  const password =
-    document.getElementById("password");
-
-  const button =
-    document.querySelector(".password-toggle");
-
-  if (password.type === "password") {
-    password.type = "text";
-    button.textContent = "🙈";
-    button.setAttribute("aria-label", "Hide password");
-  } else {
-    password.type = "password";
-    button.textContent = "👁";
-    button.setAttribute("aria-label", "Show password");
-  }
-}
-
-/* SHARED MESSAGE */
-
-function showMessage(text, type = "") {
-  const message =
-    document.getElementById("message");
-
-  message.textContent = text;
-  message.className = type;
-}
-
-/* CREATE ACCOUNT */
-
-// Fill the optional code when a user opens register.html?ref=CODE.
-(function(){const q=new URLSearchParams(location.search);const c=(q.get("ref")||q.get("referral_code")||"").trim().toUpperCase();const i=document.getElementById("referralCode");if(i&&c&&!i.value)i.value=c;})();
-
-async function createAccount() {
-  const firstName =
-    document.getElementById("firstName").value.trim();
-
-  const lastName =
-    document.getElementById("lastName").value.trim();
-
-  const email =
-    document.getElementById("email").value.trim();
-
-  const password =
-    document.getElementById("password").value;
-
-  const referralCode =
-    (document.getElementById("referralCode")?.value || "").trim().toUpperCase();
-
-  const message =
-    document.getElementById("message");
-
-  const button =
-    document.getElementById("createButton");
-
-  message.textContent = "";
-  message.className = "";
-
-  if (!firstName || !lastName || !email || !password) {
-    showMessage("Please fill in all fields.", "error");
-    return;
-  }
-
-  if (password.length < 6) {
-    showMessage(
-      "Your password must contain at least 6 characters.",
-      "error"
-    );
-    return;
-  }
-
-  button.disabled = true;
-  button.textContent = "Creating Account...";
-
-  showMessage("Creating your account...");
-
-  try {
-    const fullName =
-      firstName + " " + lastName;
-
-    const { data, error } =
-      await supabaseClient.auth.signUp({
-        email: email,
-        password: password,
-
-        options: {
-          data: {
-            name: fullName,
-            first_name: firstName,
-            last_name: lastName,
-            referral_code: referralCode || null
-          }
-        }
-      });
-
-    if (error) {
-      console.error(error);
-
-      showMessage(error.message, "error");
-
-      button.disabled = false;
-      button.textContent = "Create Account";
-
-      return;
-    }
-
-    /*
-      Confirm Email is OFF in Supabase,
-      so a session should normally exist.
-    */
-
-    if (data && data.session) {
-      void notifyAdminAuthActivity("signup");
-      showMessage(
-        "Account created successfully!",
-        "success"
-      );
-
-      setTimeout(function() {
-        window.location.href = "dashboard.html";
-      }, 500);
-
-    } else {
-      showMessage(
-        "Account created successfully. Please log in.",
-        "success"
-      );
-
-      setTimeout(function() {
-        window.location.href = "login.html";
-      }, 1000);
-    }
-
-  } catch (error) {
-    console.error(error);
-
-    showMessage(
-      "Something went wrong. Please try again.",
-      "error"
-    );
-
-    button.disabled = false;
-    button.textContent = "Create Account";
-  }
-}
-
-/* CLOSE POLICY MENU WHEN CLICKING OUTSIDE */
-
-document.addEventListener("click", function(event) {
-  const menu =
-    document.getElementById("policyMenu");
-
-  if (menu && !menu.contains(event.target)) {
-    menu.open = false;
-  }
+document.addEventListener("click", event => {
+  const menu = document.getElementById("policyMenu");
+  if (menu && !menu.contains(event.target)) menu.open = false;
 });
-
-/* CLOSE POLICY MENU WITH ESCAPE */
-
-document.addEventListener("keydown", function(event) {
+document.addEventListener("keydown", event => {
   if (event.key === "Escape") {
-    const menu =
-      document.getElementById("policyMenu");
-
-    if (menu) {
-      menu.open = false;
-    }
+    const menu = document.getElementById("policyMenu");
+    if (menu) menu.open = false;
   }
 });
-
+})();
 </script>
-
-<script src="branding.js"></script></body>
+<script src="branding.js"></script>
+</body>
 </html>
