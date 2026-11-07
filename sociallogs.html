@@ -85,7 +85,7 @@ function serviceIdentity(s){
  return {name:String(s?.category_name||"Digital Service"),slug:"",description:"",emoji:"✨"};
 }
 function serviceDescription(s){
- const found=[x?.description,x?.service_description,x?.details,x?.usage,x?.short_description,x?.game_description,x?.product_description,x?.instructions,x?.note,x?.desc].find(v=>typeof v==="string"&&v.trim());
+ const found=[s?.description,s?.service_description,s?.details,s?.usage,s?.short_description,s?.game_description,s?.product_description,s?.instructions,s?.note,s?.desc].find(v=>typeof v==="string"&&v.trim());
  if(found)return found.trim();
  const identity=serviceIdentity(s);if(identity.description)return identity.description;
  return "The provider has not supplied a detailed description for this listing. Please review the product title and checkout requirements before ordering.";
