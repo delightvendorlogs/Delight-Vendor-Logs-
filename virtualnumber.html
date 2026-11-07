@@ -100,6 +100,12 @@ p{line-height:1.5}
 .country-button,.service-button,.option-button{display:block;width:100%;text-align:left;background:var(--panel2);color:var(--text);border:1px solid #303030;border-radius:11px;padding:12px}
 .country-button:hover,.service-button:hover,.option-button:hover{border-color:var(--gold)}
 .country-name{font-weight:800}
+.choice-line{display:flex;align-items:center;gap:10px;min-width:0}
+.choice-icon{width:25px;height:20px;flex:0 0 25px;display:inline-flex;align-items:center;justify-content:center;font-size:19px;line-height:1}
+.choice-icon img{width:20px;height:20px;object-fit:contain;display:block}
+.choice-label{min-width:0;overflow-wrap:anywhere}
+.selected-value .choice-line{display:inline-flex;vertical-align:middle}
+.purchase-choice{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .country-meta,.service-button small,.option-button small{display:block;margin-top:5px;color:var(--muted);font-size:12px}
 .section{display:none}
 .section.active{display:block}
@@ -490,6 +496,43 @@ function getCountryCode(c){
 }
 function getCountryId(c){return c?.country_id??c?.countryId??c?.id??null;}
 
+function countryFlag(country){
+ const name=String(country?.name??country?.country_name??country?.countryName??country??"").trim().toLowerCase();
+ let code=String(country?.code??country?.iso2??country?.iso??country?.country_code??country?.countryCode??"").trim().toUpperCase();
+ const aliases={"USA":"US","UNITED STATES":"US","UNITED STATES OF AMERICA":"US","UK":"GB","UNITED KINGDOM":"GB","GREAT BRITAIN":"GB","ENGLAND":"GB","SOUTH KOREA":"KR","NORTH KOREA":"KP","VIETNAM":"VN","RUSSIA":"RU","BOLIVIA":"BO","IRAN":"IR","SYRIA":"SY","TAIWAN":"TW"};
+ if(!/^[A-Z]{2}$/.test(code))code=aliases[name]||"";
+ if(!code)code=aliases[name]||"";
+ if(!/^[A-Z]{2}$/.test(code))return "🌍";
+ return String.fromCodePoint(...[...code].map(ch=>127397+ch.charCodeAt(0)));
+}
+const SERVICE_BRANDS=[
+ ["whatsapp","whatsapp","25D366"],["telegram","telegram","26A5E4"],["facebook","facebook","0866FF"],
+ ["instagram","instagram","E4405F"],["tiktok","tiktok","FFFFFF"],["twitter","x","FFFFFF"],
+ ["gmail","gmail","EA4335"],["google","google","4285F4"],["discord","discord","5865F2"],
+ ["snapchat","snapchat","FFFC00"],["outlook","microsoftoutlook","0078D4"],["amazon","amazon","FF9900"],
+ ["uber","uber","FFFFFF"],["netflix","netflix","E50914"],["apple","apple","FFFFFF"],
+ ["paypal","paypal","003087"],["reddit","reddit","FF4500"],["linkedin","linkedin","0A66C2"],
+ ["spotify","spotify","1DB954"],["twitch","twitch","9146FF"],["yahoo","yahoo","6001D2"],
+ ["viber","viber","7360F2"],["signal","signal","3A76F0"],["pinterest","pinterest","E60023"],
+ ["steam","steam","FFFFFF"],["airbnb","airbnb","FF5A5F"]
+];
+function serviceIconHTML(value){
+ const name=String(value??"").toLowerCase();
+ const brand=SERVICE_BRANDS.find(([needle])=>name.includes(needle));
+ if(!brand)return '<span class="choice-icon" aria-hidden="true">📱</span>';
+ const [,slug,color]=brand;
+ return '<span class="choice-icon"><img src="https://cdn.simpleicons.org/'+slug+'/'+color+'" alt="" loading="lazy" onerror="this.parentElement.textContent=\'📱\'"></span>';
+}
+function countryChoiceHTML(country){
+ const flag=countryFlag(country);
+ const name=String(country?.name??country?.country_name??country?.countryName??country??"Unknown country");
+ return '<span class="choice-line"><span class="choice-icon" aria-hidden="true">'+flag+'</span><span class="choice-label">'+escapeHTML(name)+'</span></span>';
+}
+function serviceChoiceHTML(serviceName){
+ const name=cleanCustomerLabel(serviceName)||"Available service";
+ return '<span class="choice-line">'+serviceIconHTML(name)+'<span class="choice-label">'+escapeHTML(name)+'</span></span>';
+}
+
 function normalizeCountries(payload){
  let list=getList(payload);
  if(!list.length&&payload&&typeof payload==="object"){
@@ -739,7 +782,7 @@ function renderCountries(list){
  }
  menu.innerHTML=list.map(c=>{
   const i=countryList.indexOf(c);
-  return `<button type="button" class="country-button" onclick="selectCountry(${i})"><div class="country-name">${escapeHTML(c.name)}</div><div class="country-meta">${escapeHTML(c.code||"")}</div></button>`;
+  return `<button type="button" class="country-button" onclick="selectCountry(${i})">${countryChoiceHTML(c)}<div class="country-meta">${escapeHTML(c.code||"")}</div></button>`;
  }).join("");
 }
 
@@ -755,7 +798,7 @@ async function selectCountry(index){
  selectedService=null;
  selectedOption=null;
  $("countrySearch").value=selectedCountry.name;
- $("countrySelected").textContent="Selected: "+selectedCountry.name;
+ $("countrySelected").innerHTML="Selected: "+countryChoiceHTML(selectedCountry);
  $("countrySelected").style.display="block";
  closePickers();
  $("allServiceSearch").disabled=false;
@@ -851,7 +894,7 @@ function renderServices(which){
   const i=visibleServices.indexOf(s);
   const price=servicePrice(s);
   const priceHtml=price!==null&&price>=0?'<span style="color:var(--gold-light);margin-left:8px">'+escapeHTML(money(price))+'</span>':"";
-  return `<button type="button" class="service-button" onclick="selectService(${i})"><strong>${escapeHTML(cleanCustomerLabel(s.name)||"Available service")}${priceHtml}</strong></button>`;
+  return `<button type="button" class="service-button" onclick="selectService(${i})"><strong class="choice-line">${serviceChoiceHTML(s.name)}${priceHtml}</strong></button>`;
  }).join("");
 }
 
@@ -862,14 +905,14 @@ async function selectService(index){
  closePickers();
  if(chosenProvider==="textverified"){
   $("usaServiceSearch").value=cleanCustomerLabel(selectedService.name);
-  $("usaSelected").textContent="Selected: "+cleanCustomerLabel(selectedService.name);
+  $("usaSelected").innerHTML="Selected: "+serviceChoiceHTML(selectedService.name);
   $("usaSelected").style.display="block";
  }else{
   $("allServiceSearch").value=cleanCustomerLabel(selectedService.name);
-  $("allSelected").textContent="Selected: "+cleanCustomerLabel(selectedService.name);
+  $("allSelected").innerHTML="Selected: "+serviceChoiceHTML(selectedService.name);
   $("allSelected").style.display="block";
  }
- $("optionsTitle").textContent=cleanCustomerLabel(selectedService.name)||"Available service";
+ $("optionsTitle").innerHTML=serviceChoiceHTML(selectedService.name);
  $("optionsSubtitle").textContent=(selectedCountry?selectedCountry.name+" · ":"United States · ")+"Choose an available option.";
  $("optionsList").innerHTML='<div class="loading">Loading prices and availability…</div>';
  showMessage("optionsMessage","");
@@ -912,8 +955,8 @@ function chooseOption(index){
   return;
  }
  $("purchaseSummary").innerHTML=
-  `<div><strong>Service:</strong> ${escapeHTML(selectedService?.name||"Selected service")}</div>
-   <div style="margin-top:6px"><strong>Country:</strong> ${escapeHTML(selectedCountry?.name||"United States")}</div>
+  `<div class="purchase-choice"><strong>Service:</strong> ${serviceChoiceHTML(selectedService?.name||"Selected service")}</div>
+   <div class="purchase-choice" style="margin-top:6px"><strong>Country:</strong> ${countryChoiceHTML(selectedCountry||{name:"United States",code:"US"})}</div>
    <div style="margin-top:6px"><strong>Option:</strong> ${escapeHTML(optionLabel(selectedOption))}</div>
    <div style="margin-top:8px"><strong>Price:</strong> ${escapeHTML(money(price))}</div>
    <div style="margin-top:6px"><strong>Wallet balance:</strong> ${escapeHTML(money(walletBalance))}</div>`;
@@ -1229,6 +1272,7 @@ function renderOrders(){
   const price=getPrice(o);
   const service=cleanCustomerLabel(o.service_name||o.service_code||"Virtual Number")||"Virtual Number";
   const country=String(o.country_name||o.country_code||"Unknown country");
+   const countryIcon=countryFlag({name:country,code:o.country_code});
   const pending=status==="waiting";
   const received=status==="received";
   const cancelled=status==="cancelled";
@@ -1253,11 +1297,11 @@ function renderOrders(){
     <div><h3>${escapeHTML(headline)}</h3><p class="order-subtitle">${escapeHTML(subtitle)}</p></div>
     <span class="badge ${status}">${escapeHTML(statusLabel(status))}</span>
    </div>
-   <div class="order-service">${escapeHTML(service)} · ${escapeHTML(country)}</div>
+   <div class="order-service"><span class="purchase-choice">${serviceChoiceHTML(service)} · <span>${countryIcon} ${escapeHTML(country)}</span></span></div>
    <div class="number-box">
     <div class="number-label">${pending?"YOUR PHONE NUMBER":"PHONE NUMBER"}</div>
     <div class="${pending?"number-big":"number-small"}">${escapeHTML(number||(searching?"Searching for an available number…":"Waiting for number confirmation"))}</div>
-    <div class="number-meta"><span>${escapeHTML(service)} · ${escapeHTML(country)}</span><span>Order #${escapeHTML(o.id)}</span></div>
+    <div class="number-meta"><span>${serviceIconHTML(service)} ${escapeHTML(service)} · ${countryIcon} ${escapeHTML(country)}</span><span>Order #${escapeHTML(o.id)}</span></div>
    </div>`;
 
   if(pending){
@@ -1424,8 +1468,8 @@ function cancelOrder(id){
  $("cancelPopupStatus").textContent="";
  $("cancelPopupStatus").className="cancel-status";
  $("cancelDetails").innerHTML=
-  `<div class="detail-row"><span>Service</span><strong>${escapeHTML(o.service_name||o.service_code||"Virtual Number")}</strong></div>
-   <div class="detail-row"><span>Country</span><strong>${escapeHTML(o.country_name||o.country_code||"Unknown country")}</strong></div>
+  `<div class="detail-row"><span>Service</span><strong class="purchase-choice">${serviceChoiceHTML(o.service_name||o.service_code||"Virtual Number")}</strong></div>
+   <div class="detail-row"><span>Country</span><strong>${countryFlag({name:o.country_name||o.country_code,code:o.country_code})} ${escapeHTML(o.country_name||o.country_code||"Unknown country")}</strong></div>
    <div class="detail-row"><span>Phone number</span><strong>${escapeHTML(getOrderNumber(o)||"Not assigned yet")}</strong></div>
    <div class="detail-row"><span>Order ID</span><strong>${escapeHTML(o.id)}</strong></div>
    <div class="detail-row"><span>Purchase price</span><strong>${escapeHTML(money(getPrice(o)))}</strong></div>`;
