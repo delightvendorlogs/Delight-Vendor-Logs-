@@ -498,7 +498,7 @@ function getCountryId(c){return c?.country_id??c?.countryId??c?.id??null;}
 
 function countryFlag(country){
  const rawName=String(country?.name??country?.country_name??country?.countryName??country??"").trim();
- const name=rawName.toLowerCase().replace(/&/g,"and").replace(/[’']/g,"").replace(/[^a-z0-9]+/g," ").trim().replace(/\\s+/g," ");
+ const name=rawName.toLowerCase().replace(/&/g,"and").replace(/[’']/g,"").replace(/[^a-z0-9]+/g," ").trim().replace(/\s+/g," ");
  let code=String(country?.code??country?.iso2??country?.iso??country?.country_code??country?.countryCode??country?.alpha2??country?.alpha_2??"").trim().toUpperCase();
  const aliases={
   "usa":"US","us":"US","united states":"US","united states of america":"US","america":"US",
