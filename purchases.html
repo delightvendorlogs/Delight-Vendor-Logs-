@@ -665,7 +665,7 @@ function virtualStatusBadge(status){
     }
 
 
-    if(value === "cancelled"){
+    if(["cancelled","canceled","refunded","expired","failed","failed_refunded","rejected","declined"].includes(value)){
 
         return `
             <span class="badge badge-cancelled">
@@ -1206,7 +1206,6 @@ async function loadPurchases(){
                     "service_name",
                     "country_id",
                     "country_name",
-                    "country_code",
                     "number",
                     "provider_cost_usd",
                     "exchange_rate",
@@ -1432,8 +1431,9 @@ async function loadPurchases(){
         function purchaseBucket(item){
             const raw=String(item.data.status||"").toLowerCase().trim();
             if(item.type==="virtual"){
-                if(["received","completed","complete","success","successful"].includes(raw))return "completed";
-                if(["cancelled","canceled","refunded","expired"].includes(raw))return "cancelled";
+                const provider=String(item.data.provider_state||"").toLowerCase().replace(/[\\s_-]/g,"");
+                if(["received","completed","complete","success","successful","verified","verificationcompleted","smsreceived","finished"].includes(raw)||["received","completed","complete","success","successful","verified","verificationcompleted","smsreceived","finished"].includes(provider))return "completed";
+                if(["cancelled","canceled","refunded","expired","failed","failed_refunded","rejected","declined"].includes(raw)||["cancelled","canceled","refunded","expired","failed","failedrefunded","rejected","declined"].includes(provider))return "cancelled";
                 return "pending";
             }
             if(["completed","complete","success","successful","approved"].includes(raw))return "completed";
