@@ -204,75 +204,77 @@ function logSafeError(stage: string, error: unknown) {
 let cachedToken = "";
 let tokenExpiry = 0;
 
+async function fetchTextWithRetry(url: string, init: RequestInit, path: string) {
+  let lastError: unknown = null;
+  let lastResponse: Response | null = null;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      const response = await fetch(url, {
+        ...init,
+        signal: init.signal ?? AbortSignal.timeout(30000),
+      });
+      lastResponse = response;
+      let raw = "";
+      try {
+        raw = await response.text();
+      } catch (error) {
+        lastError = error;
+        if (attempt === 3) break;
+        await new Promise((resolve) => setTimeout(resolve, 800 * (attempt + 1)));
+        continue;
+      }
+      if ([429, 500, 502, 503, 504].includes(response.status) && attempt < 3) {
+        await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+        continue;
+      }
+      return { response, raw };
+    } catch (error) {
+      lastError = error;
+      if (attempt === 3) break;
+      await new Promise((resolve) => setTimeout(resolve, 800 * (attempt + 1)));
+    }
+  }
+  if (lastResponse && lastError == null) return { response: lastResponse, raw: "" };
+  throw Object.assign(
+    new Error("TextVerified response could not be read after retrying. Please try again."),
+    { path, cause: lastError },
+  );
+}
+
 async function getToken(forceRefresh = false): Promise<string> {
   if (!TV_USERNAME || !TV_API_KEY) {
     throw new Error(
       "TextVerified credentials are missing. Check TEXTVERIFIED_API_USERNAME and TEXTVERIFIED_API_KEY in Supabase Secrets.",
     );
   }
+  if (!forceRefresh && cachedToken && Date.now() < tokenExpiry) return cachedToken;
 
-  if (!forceRefresh && cachedToken && Date.now() < tokenExpiry) {
-    return cachedToken;
-  }
-
-  let result: Response | null = null;
-  let authFailure: unknown = null;
-  // Auth was previously outside the retry path. A transient auth-gateway
-  // failure therefore prevented the services request from ever being made.
-  for (let attempt = 0; attempt < 4; attempt++) {
-    try {
-      result = await fetch(`${TV_BASE}/auth`, {
-        method: "POST",
-        // Match TextVerified's documented SDK auth request exactly:
-        // POST /auth with only the two credential headers and no body.
-        headers: {
-          "X-API-KEY": TV_API_KEY,
-          "X-API-USERNAME": TV_USERNAME,
-        },
-      });
-      if (![429, 500, 502, 503, 504].includes(result.status) || attempt === 3) break;
-      await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
-    } catch (error) {
-      authFailure = error;
-      if (attempt === 3) throw Object.assign(new Error("TextVerified authentication request failed or timed out."), { path: "/auth", cause: error });
-      await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
-    }
-  }
-  if (!result) throw Object.assign(new Error("TextVerified authentication returned no response."), { path: "/auth", cause: authFailure });
-
-  const raw = await result.text();
+  const { response: result, raw } = await fetchTextWithRetry(
+    `${TV_BASE}/auth`,
+    {
+      method: "POST",
+      headers: {
+        "X-API-KEY": TV_API_KEY,
+        "X-API-USERNAME": TV_USERNAME,
+      },
+    },
+    "/auth",
+  );
   let data: any;
-
   try {
     data = raw ? JSON.parse(raw) : {};
   } catch {
     data = { message: raw };
   }
-
   if (!result.ok) {
     const error = new Error(
-      str(
-        data?.message,
-        data?.error,
-        data?.detail,
-        `TextVerified authentication failed (${result.status}).`,
-      ),
+      str(data?.message, data?.error, data?.detail, `TextVerified authentication failed (${result.status}).`),
     );
-
     Object.assign(error, { status: result.status, data, path: "/auth" });
     throw error;
   }
-
-  cachedToken = str(
-    data?.token,
-    data?.access_token,
-    data?.data?.token,
-  );
-
-  if (!cachedToken) {
-    throw new Error("TextVerified did not return an authentication token.");
-  }
-
+  cachedToken = str(data?.token, data?.access_token, data?.data?.token);
+  if (!cachedToken) throw new Error("TextVerified did not return an authentication token.");
   tokenExpiry = Date.now() + 50 * 60 * 1000;
   return cachedToken;
 }
@@ -284,92 +286,48 @@ async function tvRequest(
 ): Promise<any> {
   const token = await getToken();
   const headers = new Headers(options.headers);
-
   headers.set("Authorization", `Bearer ${token}`);
   headers.set("Accept", "application/json");
+  if (options.body) headers.set("Content-Type", "application/json");
 
-  if (options.body) {
-    headers.set("Content-Type", "application/json");
-  }
-
-  let result: Response | null = null;
-  // Retry transient provider gateway failures before returning an error.
-  // This does not retry authentication, validation, or other client errors.
-  let lastFetchError: unknown = null;
-  for (let attempt = 0; attempt < 4; attempt++) {
-    try {
-      result = await fetch(`${TV_BASE}${path}`, {
-        ...options,
-        headers,
-      });
-      if (![429, 500, 502, 503, 504].includes(result.status) || attempt === 3) break;
-    } catch (error) {
-      lastFetchError = error;
-      if (attempt === 3) {
-        throw Object.assign(new Error("TextVerified request failed or timed out."), { path, cause: error });
-      }
-    }
-    await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
-  }
-  if (!result) throw Object.assign(new Error("TextVerified request did not return a response."), { path, cause: lastFetchError });
-
-  const raw = await result.text();
+  const { response: result, raw } = await fetchTextWithRetry(
+    `${TV_BASE}${path}`,
+    { ...options, headers },
+    path,
+  );
   let data: any;
-
   try {
     data = raw ? JSON.parse(raw) : {};
   } catch {
     data = { message: raw };
   }
-
   if (result.status === 401 && retry) {
     await getToken(true);
     return await tvRequest(path, options, false);
   }
 
-  const providerError = {
-    status: result.status,
-    data,
-    message: extractProviderErrorMessage(data),
-  };
-
-  // Check provider account funding before treating any failed response as
-  // a stock or generic request error. Some provider versions return HTTP 400.
+  const providerError = { status: result.status, data, message: extractProviderErrorMessage(data) };
   if (isInsufficientProviderBalance(providerError)) {
     const error = new Error("Insufficient funds. Please contact support.");
     Object.assign(error, {
-      status: result.status,
-      data,
-      provider: "textverified",
-      path,
+      status: result.status, data, provider: "textverified", path,
       code: "PROVIDER_INSUFFICIENT_FUNDS",
       providerMessage: extractProviderErrorMessage(data),
     });
     throw error;
   }
-
   if (!result.ok) {
     const error = new Error(
-      str(
-        extractProviderErrorMessage(data),
-        `Number request failed (${result.status}).`,
-      ),
+      str(extractProviderErrorMessage(data), `Number request failed (${result.status}).`),
     );
-
     Object.assign(error, {
-      status: result.status,
-      data,
-      provider: "textverified",
-      path,
+      status: result.status, data, provider: "textverified", path,
       providerMessage: extractProviderErrorMessage(data),
     });
-
     throw error;
   }
-
   return data;
 }
-
 /* =========================================================
    USER AUTHENTICATION
 ========================================================= */
@@ -494,8 +452,8 @@ async function listServices() {
     try {
       const quote = await getQuote(item.name, item.capability || "sms");
       return { ...item, price: quote.price, price_ngn: quote.price, currency: "NGN" };
-    } catch {
-      console.warn("[textverified-service-price] Quote unavailable for service.");
+    } catch (error) {
+      logSafeError("textverified-service-price", error);
       return { ...item, price: null, price_ngn: null };
     }
   });
