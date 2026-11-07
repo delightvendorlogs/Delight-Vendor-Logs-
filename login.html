@@ -11,7 +11,7 @@
 
 <title>Login - Delight Vendor Logs</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
 <style>
 * {
@@ -586,11 +586,72 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+let supabaseClient = null;
+
+function isNetworkFailure(error) {
+    const message = String(error && (error.message || error) || "").toLowerCase();
+    return error instanceof TypeError ||
+        message.includes("failed to fetch") ||
+        message.includes("load failed") ||
+        message.includes("networkerror") ||
+        message.includes("network request failed") ||
+        message.includes("fetch failed");
+}
+
+async function loadSupabaseSdk() {
+    if (window.supabase && window.supabase.createClient) return;
+    const urls = [
+        "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2",
+        "https://unpkg.com/@supabase/supabase-js@2"
+    ];
+    let lastError;
+    for (const url of urls) {
+        try {
+            await new Promise((resolve, reject) => {
+                const script = document.createElement("script");
+                script.src = url;
+                script.onload = resolve;
+                script.onerror = () => reject(new Error("Could not load the sign-in service."));
+                document.head.appendChild(script);
+            });
+            if (window.supabase && window.supabase.createClient) return;
+        } catch (error) {
+            lastError = error;
+        }
+    }
+    throw lastError || new Error("The sign-in service could not be loaded. Please try again.");
+}
+
+async function getSupabaseClient() {
+    if (supabaseClient) return supabaseClient;
+    await loadSupabaseSdk();
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+        auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true
+        }
+    });
+    return supabaseClient;
+}
+
+async function signInWithRetry(client, credentials) {
+    let lastError;
+    for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+            const result = await client.auth.signInWithPassword(credentials);
+            if (!result.error || !isNetworkFailure(result.error)) return result;
+            lastError = result.error;
+        } catch (error) {
+            if (!isNetworkFailure(error)) throw error;
+            lastError = error;
+        }
+        if (attempt < 2) {
+            await new Promise(resolve => setTimeout(resolve, 700 * (attempt + 1)));
+        }
+    }
+    throw lastError || new Error("The connection is temporarily unavailable.");
+}
 
 
 
@@ -658,11 +719,11 @@ async function loginUser(event) {
     loginButton.textContent = "Signing In...";
 
     try {
-        const { data, error } =
-            await supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: password
-            });
+        const client = await getSupabaseClient();
+        const { data, error } = await signInWithRetry(client, {
+            email: email,
+            password: password
+        });
 
         if (error) {
             console.error("Login error:", error);
@@ -713,7 +774,9 @@ showMessage(
         console.error("Unexpected login error:", error);
 
         showMessage(
-            "Something went wrong. Please check your internet connection and try again.",
+            isNetworkFailure(error)
+                ? "Connection to the sign-in service failed. We retried automatically. Please check your connection and try again."
+                : (error.message || "Something went wrong. Please try again."),
             "error"
         );
 
