@@ -935,6 +935,31 @@ function createVirtualNumberCard(order){
 }
 
 
+function serviceDeliveryText(value){
+    if(value===null||value===undefined||value==="")return "";
+    if(typeof value==="string"){
+        const raw=value.trim();if(!raw)return "";
+        try{return serviceDeliveryText(JSON.parse(raw))}catch{return raw}
+    }
+    if(Array.isArray(value))return value.map(serviceDeliveryText).filter(Boolean).join("\n\n");
+    if(typeof value!=="object")return String(value);
+    const priority=["credentials","credential","delivery_info","delivery","content","result","data","account","details","items","logs","log"];
+    for(const key of priority){
+        if(value[key]!==undefined&&value[key]!==null&&value[key]!==""){
+            const extracted=serviceDeliveryText(value[key]);
+            if(extracted)return extracted;
+        }
+    }
+    const hidden=new Set(["id","_id","order_id","provider_order_id","reference","wallet_reference","transaction_id","created_at","updated_at","status","success","provider","provider_name","provider_status","raw"]);
+    const rows=Object.entries(value).filter(([key,val])=>!hidden.has(key.toLowerCase())&&val!==null&&val!=="").map(([key,val])=>{
+        const label=key.replace(/_/g," ").replace(/\\b\\w/g,ch=>ch.toUpperCase());
+        const content=typeof val==="object"?serviceDeliveryText(val):String(val);
+        return content?label+": "+content:"";
+    }).filter(Boolean);
+    return rows.join("\n");
+}
+
+
 // =====================================================
 // CREATE NORMAL PURCHASE CARD
 // =====================================================
@@ -1230,6 +1255,23 @@ async function loadPurchases(){
 
 
         // =================================================
+        // LOAD SERVICE ORDERS (THEGIFTUNC + LOGSPLUG)
+        // Successful service deliveries are shown in My Purchases.
+        // =================================================
+        const {
+            data:serviceOrderData,
+            error:serviceOrderError
+        } = await supabaseClient
+            .from("social_log_orders")
+            .select("id,provider_order_id,service_id,service_name,customer_price,quantity,status,provider_response,created_at")
+            .eq("user_id",user.id)
+            .order("created_at",{ascending:false});
+
+        if(serviceOrderError){
+            console.error("Service purchase history loading error:",serviceOrderError);
+        }
+
+        // =================================================
         // CHECK BOTH RESULTS
         // =================================================
 
@@ -1317,6 +1359,21 @@ async function loadPurchases(){
 
             }
         );
+
+
+        (serviceOrderData || []).forEach(order => {
+            combined.push({
+                type:"normal",
+                date:order.created_at,
+                data:{
+                    product_name:(order.service_name||"Service order")+(Number(order.quantity)>1?" × "+order.quantity:""),
+                    amount:order.customer_price,
+                    content:serviceDeliveryText(order.provider_response),
+                    status:order.status,
+                    created_at:order.created_at
+                }
+            });
+        });
 
 
         // =================================================
