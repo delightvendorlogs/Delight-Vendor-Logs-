@@ -187,6 +187,8 @@ main{
     font-size:13px;
 }
 
+.country-flag{width:24px;height:18px;object-fit:cover;border-radius:2px;vertical-align:-3px;display:inline-block}.country-flag-fallback{font-size:18px;vertical-align:-2px}.purchase-service-logo{width:20px;height:20px;object-fit:contain;vertical-align:-4px;display:inline-block}.purchase-service-icon{font-size:18px;vertical-align:-2px}
+
 /* =========================
    VIRTUAL NUMBER
 ========================= */
@@ -683,6 +685,45 @@ function virtualStatusBadge(status){
 }
 
 
+
+// Country flags and service logos used in saved virtual-number purchases.
+function purchaseCountryFlag(country){
+    const raw=String(country?.name??country?.country_name??country?.countryName??country??"").trim();
+    const name=raw.toLowerCase().replace(/&/g,"and").replace(/[’']/g,"").replace(/[^a-z0-9]+/g," ").trim().replace(/\\s+/g," ");
+    let code=String(country?.code??country?.iso2??country?.iso??country?.country_code??country?.countryCode??country?.alpha2??"").trim().toUpperCase();
+    const map={
+        "USA":"US","US":"US","UNITED STATES":"US","UNITED STATES OF AMERICA":"US","AMERICA":"US",
+        "UK":"GB","GB":"GB","UNITED KINGDOM":"GB","GREAT BRITAIN":"GB","ENGLAND":"GB","SCOTLAND":"GB","WALES":"GB",
+        "NIGERIA":"NG","GHANA":"GH","KENYA":"KE","SOUTH AFRICA":"ZA","EGYPT":"EG","MOROCCO":"MA","ALGERIA":"DZ","TUNISIA":"TN","UGANDA":"UG","CAMEROON":"CM","SENEGAL":"SN","ETHIOPIA":"ET","TANZANIA":"TZ","RWANDA":"RW","ZAMBIA":"ZM","ZIMBABWE":"ZW",
+        "CANADA":"CA","MEXICO":"MX","BRAZIL":"BR","ARGENTINA":"AR","CHILE":"CL","COLOMBIA":"CO","PERU":"PE","JAMAICA":"JM","PUERTO RICO":"PR","DOMINICAN REPUBLIC":"DO","COSTA RICA":"CR","PANAMA":"PA",
+        "INDIA":"IN","PAKISTAN":"PK","BANGLADESH":"BD","INDONESIA":"ID","MALAYSIA":"MY","SINGAPORE":"SG","PHILIPPINES":"PH","THAILAND":"TH","VIETNAM":"VN","VIET NAM":"VN","JAPAN":"JP","CHINA":"CN","HONG KONG":"HK","TAIWAN":"TW","SOUTH KOREA":"KR","REPUBLIC OF KOREA":"KR","TURKEY":"TR","SAUDI ARABIA":"SA","ISRAEL":"IL","QATAR":"QA","KUWAIT":"KW","OMAN":"OM","BAHRAIN":"BH","JORDAN":"JO","IRAQ":"IQ","IRAN":"IR",
+        "AUSTRALIA":"AU","NEW ZEALAND":"NZ","FIJI":"FJ","FRANCE":"FR","GERMANY":"DE","ITALY":"IT","SPAIN":"ES","PORTUGAL":"PT","NETHERLANDS":"NL","BELGIUM":"BE","SWITZERLAND":"CH","AUSTRIA":"AT","IRELAND":"IE","POLAND":"PL","UKRAINE":"UA","RUSSIA":"RU","SWEDEN":"SE","NORWAY":"NO","DENMARK":"DK","FINLAND":"FI","GREECE":"GR","ROMANIA":"RO","BULGARIA":"BG","HUNGARY":"HU","CROATIA":"HR","SERBIA":"RS","SLOVAKIA":"SK","SLOVENIA":"SI","CZECH REPUBLIC":"CZ","CZECHIA":"CZ","ICELAND":"IS","LUXEMBOURG":"LU","CYPRUS":"CY","ESTONIA":"EE","LATVIA":"LV","LITHUANIA":"LT","MALTA":"MT","MOLDOVA":"MD","BELARUS":"BY","ALBANIA":"AL","BOSNIA AND HERZEGOVINA":"BA","MONTENEGRO":"ME","NORTH MACEDONIA":"MK",
+        "SOUTH KOREA":"KR","NORTH KOREA":"KP","RUSSIAN FEDERATION":"RU","UNITED ARAB EMIRATES":"AE","UAE":"AE","IVORY COAST":"CI","COTE D IVOIRE":"CI","COTE DIVOIRE":"CI","CONGO":"CG","DR CONGO":"CD","DEMOCRATIC REPUBLIC OF THE CONGO":"CD","REPUBLIC OF THE CONGO":"CG","MYANMAR":"MM","BURMA":"MM","SRI LANKA":"LK","BRUNEI":"BN","LAOS":"LA","PALESTINE":"PS","MACAU":"MO","ESWATINI":"SZ","SWAZILAND":"SZ"
+    };
+    if(!/^[A-Z]{2}$/.test(code))code=map[name]||"";
+    if(!/^[A-Z]{2}$/.test(code))return '<span class="country-flag-fallback" title="Country flag unavailable">🏳️</span>';
+    const lower=code.toLowerCase();
+    return '<img class="country-flag" src="https://flagcdn.com/w40/'+lower+'.png" srcset="https://flagcdn.com/w80/'+lower+'.png 2x" alt="'+esc(raw||code)+' flag" loading="lazy" onerror="this.replaceWith(document.createTextNode(\'🏳️\'))">';
+}
+const PURCHASE_SERVICE_BRANDS=[
+ ["whatsapp","whatsapp","25D366"],["telegram","telegram","26A5E4"],["facebook","facebook","0866FF"],
+ ["instagram","instagram","E4405F"],["tiktok","tiktok","FFFFFF"],["twitter","x","FFFFFF"],
+ ["gmail","gmail","EA4335"],["google","google","4285F4"],["discord","discord","5865F2"],
+ ["snapchat","snapchat","FFFC00"],["outlook","microsoftoutlook","0078D4"],["amazon","amazon","FF9900"],
+ ["uber","uber","FFFFFF"],["netflix","netflix","E50914"],["apple","apple","FFFFFF"],
+ ["paypal","paypal","003087"],["reddit","reddit","FF4500"],["linkedin","linkedin","0A66C2"],
+ ["spotify","spotify","1DB954"],["twitch","twitch","9146FF"],["yahoo","yahoo","6001D2"],
+ ["viber","viber","7360F2"],["signal","signal","3A76F0"],["pinterest","pinterest","E60023"],
+ ["steam","steam","FFFFFF"],["airbnb","airbnb","FF5A5F"]
+];
+function purchaseServiceIcon(service){
+    const name=String(service??"").toLowerCase();
+    const brand=PURCHASE_SERVICE_BRANDS.find(([needle])=>name.includes(needle));
+    if(!brand)return '<span class="purchase-service-icon" aria-hidden="true">📱</span>';
+    const [,slug,color]=brand;
+    return '<img class="purchase-service-logo" src="https://cdn.simpleicons.org/'+slug+'/'+color+'" alt="" loading="lazy" onerror="this.replaceWith(document.createTextNode(\'📱\'))">';
+}
+
 // =====================================================
 // CREATE VIRTUAL NUMBER CARD
 // =====================================================
@@ -859,21 +900,14 @@ function createVirtualNumberCard(order){
         "virtual-number-card";
 
 
+    const serviceName = cleanVirtualCustomerText(order.service_name || "Virtual Number") || "Virtual Number";
+    const countryName = String(order.country_name || order.country_code || "Unknown country");
+    const countryFlag = purchaseCountryFlag({name:countryName,code:order.country_code});
+
     card.innerHTML = `
 
         <div class="virtual-title">
-
-            📱
-            ${esc(
-                cleanVirtualCustomerText(order.service_name || "Virtual Number") || "Virtual Number"
-            )}
-
-            -
-            ${esc(
-                order.country_name ||
-                ""
-            )}
-
+            <span class="purchase-choice">${purchaseServiceIcon(serviceName)} ${esc(serviceName)} · ${countryFlag} ${esc(countryName)}</span>
         </div>
 
 
@@ -1172,6 +1206,7 @@ async function loadPurchases(){
                     "service_name",
                     "country_id",
                     "country_name",
+                    "country_code",
                     "number",
                     "provider_cost_usd",
                     "exchange_rate",
