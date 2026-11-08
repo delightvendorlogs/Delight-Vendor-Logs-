@@ -1172,7 +1172,7 @@ async function loadPurchases(){
             data:serviceOrderData,
             error:serviceOrderError
         } = await supabaseClient
-            .from("social_log_orders")
+            .from("customer_social_log_order_history")
             .select("id,provider_order_id,service_id,service_name,customer_price,quantity,status,provider_response,created_at")
             .eq("user_id",user.id)
             .order("created_at",{ascending:false});
