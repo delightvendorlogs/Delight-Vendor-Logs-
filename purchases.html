@@ -1185,7 +1185,7 @@ async function loadPurchases(){
         // in the customer's single purchase history.
         const [logsplugResult,youngpgResult,boostingResult] = await Promise.all([
             supabaseClient.from("logsplug_orders")
-                .select("id,log_id,provider_order_id,title_snapshot,category_name,customer_total,quantity,status,credentials,provider_response,created_at")
+                .select("id,log_id,provider_order_id,title_snapshot,category_name,customer_total,customer_unit_price,quantity,status,credentials,provider_response,created_at")
                 .eq("user_id",user.id).order("created_at",{ascending:false}),
             supabaseClient.from("youngpg_orders")
                 .select("id,product_name,content,customer_price_ngn,status,provider_response,created_at")
@@ -1307,7 +1307,7 @@ async function loadPurchases(){
             combinedServiceOrders.push({
                 provider_order_id:order.provider_order_id,
                 service_name:order.title_snapshot||order.category_name||"Service purchase",
-                customer_price:order.customer_total,
+                customer_price:order.customer_total??(Number(order.customer_unit_price||0)*Number(order.quantity||1)),
                 quantity:order.quantity,
                 status:order.status,
                 created_at:order.created_at,
