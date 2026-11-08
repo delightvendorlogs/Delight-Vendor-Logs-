@@ -1184,13 +1184,13 @@ async function loadPurchases(){
         // Load additional provider orders so every service category is included
         // in the customer's single purchase history.
         const [logsplugResult,youngpgResult,boostingResult,aiJobsResult,aiServicesResult] = await Promise.all([
-            supabaseClient.from("logsplug_orders")
+            supabaseClient.from("customer_logsplug_order_history")
                 .select("id,log_id,provider_order_id,title_snapshot,category_name,customer_total,customer_unit_price,quantity,status,credentials,provider_response,created_at")
                 .eq("user_id",user.id).order("created_at",{ascending:false}),
             supabaseClient.from("youngpg_orders")
                 .select("id,product_name,content,customer_price_ngn,status,provider_response,created_at")
                 .eq("user_id",user.id).order("created_at",{ascending:false}),
-            supabaseClient.from("boosting_orders")
+            supabaseClient.from("customer_boosting_order_history")
                 .select("id,platform,service_name,link,quantity,customer_charge,status,created_at")
                 .eq("user_id",user.id).order("created_at",{ascending:false}),
             supabaseClient.from("ai_jobs")
