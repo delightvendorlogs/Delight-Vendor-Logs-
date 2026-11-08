@@ -558,6 +558,24 @@ summary{
     overflow-wrap:anywhere;
 }
 
+
+/* =========================
+   BULK PRICE MANAGER
+========================= */
+.bulk-price-panel{border:1px solid #bfd3ef;background:#f4f8ff;border-radius:12px;padding:14px;margin:12px 0}
+.bulk-price-panel h3{margin:0 0 5px;font-size:15px}
+.bulk-price-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;align-items:end}
+.bulk-price-controls label{margin-top:0}
+.bulk-price-controls input,.bulk-price-controls select{margin:5px 0 0}
+.bulk-selection-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}
+.bulk-selection-count{font-weight:800;color:#0b3d91}
+.product-select-line{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.product-select-line input{width:auto;margin:0}
+.bulk-preview{max-height:300px;overflow:auto;background:#fff;border:1px solid #dbe3ef;border-radius:9px;margin-top:10px}
+.bulk-preview-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;padding:8px 10px;border-bottom:1px solid #edf0f5;font-size:12px}
+.bulk-preview-row:last-child{border-bottom:0}
+@media(max-width:700px){.bulk-price-controls{grid-template-columns:1fr 1fr}.bulk-preview-row{grid-template-columns:1fr auto}.bulk-preview-row span:last-child{grid-column:1/-1}}
+
 /* =========================
    MOBILE
 ========================= */
@@ -1342,6 +1360,29 @@ summary{
         oninput="renderProducts()"
     >
 
+    <div class="bulk-price-panel" id="bulkPricePanel">
+        <h3>💷 Bulk Price Manager</h3>
+        <div class="small">Select one product, several products, or all products. Each selected product keeps its own price calculation.</div>
+        <div class="bulk-selection-bar">
+            <button type="button" class="gray" onclick="selectAllProducts()">Select all products</button>
+            <button type="button" class="gray" onclick="selectVisibleProducts()">Select search results</button>
+            <button type="button" class="gray" onclick="clearProductSelection()">Clear selection</button>
+            <span class="bulk-selection-count" id="bulkSelectionCount">0 selected</span>
+        </div>
+        <div class="bulk-price-controls">
+            <div><label for="bulkPriceAction">Price action</label><select id="bulkPriceAction" onchange="updateBulkPriceControls()"><option value="set">Set new price</option><option value="increase">Increase price</option><option value="decrease">Reduce price</option></select></div>
+            <div><label for="bulkPriceMode">Adjustment type</label><select id="bulkPriceMode" onchange="updateBulkPriceControls()"><option value="fixed">Fixed amount (₦)</option><option value="percent">Percentage (%)</option></select></div>
+            <div><label for="bulkPriceValue">Amount / percentage</label><input id="bulkPriceValue" type="number" min="0" step="0.01" placeholder="e.g. 500 or 10"></div>
+            <div><button type="button" onclick="previewBulkPrices()">Preview price changes</button></div>
+        </div>
+        <div id="bulkPriceMessage" class="message"></div>
+        <div id="bulkPricePreview" style="display:none"></div>
+        <div class="actions" id="bulkPriceApplyRow" style="display:none">
+            <button type="button" onclick="applyBulkPrices()">Confirm and apply prices</button>
+            <button type="button" class="gray" onclick="clearBulkPricePreview()">Cancel preview</button>
+        </div>
+    </div>
+
     <div id="productEditor" class="item" style="display:none;margin:14px 0;padding:16px;border:1px solid #1261d6;">
         <div class="row" style="align-items:center;justify-content:space-between;">
             <h3 style="margin:0;">✏️ Edit Product / Service</h3>
@@ -1481,6 +1522,8 @@ let inventory = [];
 let orders = [];
 let users = [];
 let categories = [];
+let selectedProductIds = new Set();
+let bulkPricePreviewRows = [];
 
 /* =========================
    DASHBOARD NAVIGATION
@@ -2158,22 +2201,33 @@ async function loadProducts(){
     if(container) container.innerHTML = '<div class="loading">Loading products...</div>';
 
     try{
-        const {data,error} = await supabaseClient
-            .from("Product")
-            .select("*")
-            .order("id",{ascending:false})
-            .limit(500);
+        const pageSize = 1000;
+        const rows = [];
+        let offset = 0;
+        while(true){
+            const {data,error} = await supabaseClient
+                .from("Product")
+                .select("*")
+                .order("id",{ascending:false})
+                .range(offset,offset+pageSize-1);
+            if(error) throw error;
+            const page = data || [];
+            rows.push(...page);
+            if(page.length < pageSize) break;
+            offset += pageSize;
+        }
 
-        if(error) throw error;
-
-        products = data || [];
+        products = rows;
         allProducts = products.slice();
+        const validIds = new Set(products.map(p=>String(p.id)));
+        selectedProductIds = new Set([...selectedProductIds].filter(id=>validIds.has(String(id))));
         renderProducts();
         loadInventoryProductDropdown();
     }catch(error){
         console.error("Load products error:",error);
         products = [];
         allProducts = [];
+        selectedProductIds.clear();
         if(container) container.innerHTML = '<div class="item error">❌ Products could not be loaded.<br><br>' + escapeHTML(error.message || "Please refresh and try again.") + '</div>';
         const select=document.getElementById("inventoryProduct");
         if(select) select.innerHTML='<option value="">Products unavailable</option>';
@@ -2196,6 +2250,9 @@ function renderProducts(){
         return !search || haystack.includes(search);
     });
 
+    const count=document.getElementById("bulkSelectionCount");
+    if(count) count.textContent=selectedProductIds.size+" selected";
+
     if(!list.length){
         container.innerHTML='<div class="item">No products found.</div>';
         return;
@@ -2206,10 +2263,13 @@ function renderProducts(){
         const box=document.createElement("div");
         box.className="item";
         const stock=Number(product.stock||0);
+        const checked=selectedProductIds.has(String(product.id))?"checked":"";
         const imageHTML=product.image_url
             ? '<div style="margin-bottom:10px;"><img src="'+escapeHTML(product.image_url)+'" alt="'+escapeHTML(product.name||"Product")+'" style="width:90px;height:90px;object-fit:cover;border-radius:10px;border:1px solid #eee;"></div>'
             : "";
-        box.innerHTML=imageHTML+
+        box.innerHTML=
+            '<label class="product-select-line"><input type="checkbox" style="width:auto;margin:0" '+checked+' onchange="toggleProductSelection('+Number(product.id)+',this.checked)"> Select for bulk price change</label>'+
+            imageHTML+
             '<b>'+escapeHTML(product.name||"Unnamed Service")+'</b>'+
             '<div class="small">Category: '+escapeHTML(product.category||"Service")+
             '<br>Price: ₦'+money(product.price)+
@@ -2222,10 +2282,153 @@ function renderProducts(){
             '<div class="actions"><button type="button" onclick="openProductEditor('+Number(product.id)+')">✏️ Edit product</button>'+
             (product.is_active===false
                 ? '<button type="button" onclick="setProductActive('+Number(product.id)+',true)">Restore / Activate</button>'
-                : '<button type="button" class="danger" onclick="deleteProduct('+Number(product.id)+')">🗑️ Deactivate</button>')+
+                : '<button type="button" class="danger" onclick="setProductActive('+Number(product.id)+',false)">Deactivate</button>')+
             '</div>';
         container.appendChild(box);
     });
+    if(count) count.textContent=selectedProductIds.size+" selected";
+}
+
+function toggleProductSelection(id,checked){
+    const key=String(id);
+    if(checked) selectedProductIds.add(key);
+    else selectedProductIds.delete(key);
+    const count=document.getElementById("bulkSelectionCount");
+    if(count) count.textContent=selectedProductIds.size+" selected";
+    clearBulkPricePreview();
+}
+
+function selectAllProducts(){
+    products.forEach(p=>selectedProductIds.add(String(p.id)));
+    renderProducts();
+    clearBulkPricePreview();
+    const message=document.getElementById("bulkPriceMessage");
+    if(message) message.textContent="All "+products.length+" loaded products selected.";
+}
+
+function selectVisibleProducts(){
+    const search=(document.getElementById("productSearch")?.value||"").toLowerCase().trim();
+    products.filter(p=>{
+        const haystack=[p.name,p.category,p.description,p.status,p.is_active?"active":"inactive"].join(" ").toLowerCase();
+        return !search || haystack.includes(search);
+    }).forEach(p=>selectedProductIds.add(String(p.id)));
+    renderProducts();
+    clearBulkPricePreview();
+}
+
+function clearProductSelection(){
+    selectedProductIds.clear();
+    renderProducts();
+    clearBulkPricePreview();
+    const message=document.getElementById("bulkPriceMessage");
+    if(message) message.textContent="Selection cleared.";
+}
+
+function updateBulkPriceControls(){
+    const action=document.getElementById("bulkPriceAction")?.value;
+    const mode=document.getElementById("bulkPriceMode");
+    if(mode){
+        if(action==="set"){
+            mode.value="fixed";
+            mode.disabled=true;
+        }else{
+            mode.disabled=false;
+        }
+    }
+    clearBulkPricePreview();
+}
+
+function clearBulkPricePreview(){
+    bulkPricePreviewRows=[];
+    const preview=document.getElementById("bulkPricePreview");
+    const row=document.getElementById("bulkPriceApplyRow");
+    if(preview){preview.style.display="none";preview.innerHTML="";}
+    if(row) row.style.display="none";
+}
+
+function previewBulkPrices(){
+    const message=document.getElementById("bulkPriceMessage");
+    const action=document.getElementById("bulkPriceAction").value;
+    const mode=document.getElementById("bulkPriceMode").value;
+    const amount=Number(document.getElementById("bulkPriceValue").value);
+    const selected=products.filter(p=>selectedProductIds.has(String(p.id)));
+
+    if(!selected.length){message.textContent="Select at least one product first.";message.className="message error";return;}
+    if(!Number.isFinite(amount)||amount<0||(action!=="set"&&amount===0)){message.textContent="Enter a valid price or adjustment amount.";message.className="message error";return;}
+    if(action==="set"&&mode!=="fixed"){message.textContent="Set new price uses a fixed naira amount.";message.className="message error";return;}
+    if(mode==="percent"&&amount>100&&action==="decrease"){message.textContent="A reduction percentage cannot be greater than 100%.";message.className="message error";return;}
+
+    bulkPricePreviewRows=selected.map(p=>{
+        const oldPrice=Number(p.price||0);
+        let newPrice=oldPrice;
+        if(action==="set") newPrice=amount;
+        else if(mode==="fixed") newPrice=action==="increase"?oldPrice+amount:oldPrice-amount;
+        else newPrice=action==="increase"?oldPrice*(1+amount/100):oldPrice*(1-amount/100);
+        newPrice=Math.round((newPrice+Number.EPSILON)*100)/100;
+        return {id:p.id,name:p.name||"Unnamed product",oldPrice,newPrice};
+    });
+
+    const invalid=bulkPricePreviewRows.filter(p=>p.newPrice<0||!Number.isFinite(p.newPrice));
+    if(invalid.length){message.textContent="This adjustment would make "+invalid.length+" product price(s) negative. Reduce the adjustment and preview again.";message.className="message error";return;}
+
+    const preview=document.getElementById("bulkPricePreview");
+    preview.innerHTML='<div class="small" style="padding:9px 10px;font-weight:700">Preview: '+bulkPricePreviewRows.length+' product(s) will be updated</div>'+
+        bulkPricePreviewRows.map(p=>'<div class="bulk-preview-row"><strong>'+escapeHTML(p.name)+'</strong><span>₦'+money(p.oldPrice)+'</span><span>→ ₦'+money(p.newPrice)+'</span></div>').join("");
+    preview.style.display="block";
+    document.getElementById("bulkPriceApplyRow").style.display="flex";
+    message.textContent="Review every new price above. Nothing has been saved yet.";
+    message.className="message";
+}
+
+async function applyBulkPrices(){
+    if(!bulkPricePreviewRows.length){alert("Preview the price changes first.");return;}
+    const confirmed=confirm("Apply the previewed prices to "+bulkPricePreviewRows.length+" selected product(s)? This changes the live store prices.");
+    if(!confirmed) return;
+
+    const buttons=document.querySelectorAll("#bulkPriceApplyRow button");
+    buttons.forEach(b=>b.disabled=true);
+    const message=document.getElementById("bulkPriceMessage");
+    message.textContent="Updating prices... please keep this page open.";
+    message.className="message";
+    let updated=0;
+    const failures=[];
+
+    try{
+        for(let i=0;i<bulkPricePreviewRows.length;i+=6){
+            const batch=bulkPricePreviewRows.slice(i,i+6);
+            const results=await Promise.all(batch.map(async item=>{
+                const {data,error}=await supabaseClient.from("Product").update({price:item.newPrice}).eq("id",item.id).select("id").maybeSingle();
+                return {item,data,error};
+            }));
+            results.forEach(result=>{
+                if(result.error||!result.data) failures.push({name:result.item.name,error:result.error?.message||"No row updated"});
+                else updated++;
+            });
+            message.textContent="Updating prices... "+updated+" of "+bulkPricePreviewRows.length+" completed.";
+        }
+
+        await loadProducts();
+        await updateStats();
+        selectedProductIds.clear();
+        renderProducts();
+        clearBulkPricePreview();
+
+        if(failures.length){
+            message.textContent="Updated "+updated+" product(s); "+failures.length+" failed. First error: "+failures[0].error;
+            message.className="message error";
+            console.error("Bulk price update failures:",failures);
+        }else{
+            message.textContent="Successfully updated prices for all "+updated+" selected product(s).";
+            message.className="message success";
+        }
+    }catch(error){
+        console.error("Bulk price update error:",error);
+        message.textContent="Price update stopped: "+(error.message||"Unknown error")+". "+updated+" product(s) were updated before the error.";
+        message.className="message error";
+        await loadProducts();
+    }finally{
+        buttons.forEach(b=>b.disabled=false);
+    }
 }
 
 function openProductEditor(id){
