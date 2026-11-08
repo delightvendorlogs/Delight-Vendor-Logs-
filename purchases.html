@@ -1183,7 +1183,7 @@ async function loadPurchases(){
 
         // Load additional provider orders so every service category is included
         // in the customer's single purchase history.
-        const [logsplugResult,youngpgResult,boostingResult] = await Promise.all([
+        const [logsplugResult,youngpgResult,boostingResult,aiJobsResult,aiServicesResult] = await Promise.all([
             supabaseClient.from("logsplug_orders")
                 .select("id,log_id,provider_order_id,title_snapshot,category_name,customer_total,customer_unit_price,quantity,status,credentials,provider_response,created_at")
                 .eq("user_id",user.id).order("created_at",{ascending:false}),
@@ -1192,11 +1192,17 @@ async function loadPurchases(){
                 .eq("user_id",user.id).order("created_at",{ascending:false}),
             supabaseClient.from("boosting_orders")
                 .select("id,platform,service_name,link,quantity,customer_charge,status,created_at")
-                .eq("user_id",user.id).order("created_at",{ascending:false})
+                .eq("user_id",user.id).order("created_at",{ascending:false}),
+            supabaseClient.from("ai_jobs")
+                .select("id,service_id,price,status,result_url,error_message,created_at")
+                .eq("user_id",user.id).order("created_at",{ascending:false}),
+            supabaseClient.from("ai_services").select("id,name")
         ]);
         if(logsplugResult.error)console.error("LogsPlug delivery history loading error:",logsplugResult.error);
         if(youngpgResult.error)console.error("Product purchase history loading error:",youngpgResult.error);
         if(boostingResult.error)console.error("Service order history loading error:",boostingResult.error);
+        if(aiJobsResult.error)console.error("AI Studio purchase history loading error:",aiJobsResult.error);
+        if(aiServicesResult.error)console.error("AI Studio service names loading error:",aiServicesResult.error);
 
         // =================================================
         // CHECK BOTH RESULTS
@@ -1342,6 +1348,15 @@ async function loadPurchases(){
                 amount:order.customer_charge,
                 content:order.link?"Order link: "+order.link:"",
                 status:order.status,created_at:order.created_at
+            }});
+        });
+        const aiServiceNames=new Map((aiServicesResult.data||[]).map(service=>[String(service.id),service.name]));
+        (aiJobsResult.data||[]).forEach(job=>{
+            combined.push({type:"normal",date:job.created_at,data:{
+                product_name:"AI Studio · "+(aiServiceNames.get(String(job.service_id))||"Generated result"),
+                amount:job.price,
+                content:job.result_url||job.error_message||"",
+                status:job.status,created_at:job.created_at
             }});
         });
 
