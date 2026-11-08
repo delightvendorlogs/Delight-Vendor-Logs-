@@ -2282,7 +2282,7 @@ function renderProducts(){
             '<div class="actions"><button type="button" onclick="openProductEditor('+Number(product.id)+')">✏️ Edit product</button>'+
             (product.is_active===false
                 ? '<button type="button" onclick="setProductActive('+Number(product.id)+',true)">Restore / Activate</button>'
-                : '<button type="button" class="danger" onclick="setProductActive('+Number(product.id)+',false)">Deactivate</button>')+
+                : '<button type="button" class="danger" onclick="deleteProduct('+Number(product.id)+')">🗑️ Deactivate</button>')+
             '</div>';
         container.appendChild(box);
     });
