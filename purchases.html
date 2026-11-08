@@ -984,7 +984,7 @@ function serviceDeliveryText(value){
             if(extracted)return extracted;
         }
     }
-    const hidden=new Set(["id","_id","order_id","provider_order_id","reference","wallet_reference","transaction_id","created_at","updated_at","status","success","provider","provider_name","provider_status","provider_order","provider_reference","raw"]);
+    const hidden=new Set(["id","_id","order_id","provider_order_id","reference","wallet_reference","transaction_id","created_at","updated_at","status","success","provider","provider_name","provider_status","provider_order","provider_reference","source","vendor","service_provider","provider_label","provider_code","api_provider","raw_response","raw"]);
     const rows=Object.entries(value).filter(([key,val])=>!hidden.has(key.toLowerCase())&&val!==null&&val!=="").map(([key,val])=>{
         const label=key.replace(/_/g," ").replace(/\b\w/g,ch=>ch.toUpperCase());
         const content=typeof val==="object"?serviceDeliveryText(val):String(val);
