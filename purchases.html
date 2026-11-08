@@ -1183,7 +1183,10 @@ async function loadPurchases(){
 
         // Load additional provider orders so every service category is included
         // in the customer's single purchase history.
-        const [youngpgResult,boostingResult] = await Promise.all([
+        const [logsplugResult,youngpgResult,boostingResult] = await Promise.all([
+            supabaseClient.from("logsplug_orders")
+                .select("id,log_id,provider_order_id,title_snapshot,category_name,customer_total,quantity,status,credentials,provider_response,created_at")
+                .eq("user_id",user.id).order("created_at",{ascending:false}),
             supabaseClient.from("youngpg_orders")
                 .select("id,product_name,content,customer_price_ngn,status,provider_response,created_at")
                 .eq("user_id",user.id).order("created_at",{ascending:false}),
@@ -1191,6 +1194,7 @@ async function loadPurchases(){
                 .select("id,platform,service_name,link,quantity,customer_charge,status,created_at")
                 .eq("user_id",user.id).order("created_at",{ascending:false})
         ]);
+        if(logsplugResult.error)console.error("LogsPlug delivery history loading error:",logsplugResult.error);
         if(youngpgResult.error)console.error("Product purchase history loading error:",youngpgResult.error);
         if(boostingResult.error)console.error("Service order history loading error:",boostingResult.error);
 
@@ -1284,14 +1288,40 @@ async function loadPurchases(){
         );
 
 
-        (serviceOrderData || []).forEach(order => {
+        const combinedServiceOrders=(serviceOrderData||[]).map(order=>({
+            ...order,
+            deliveryText:serviceDeliveryText(order.provider_response)
+        }));
+        (logsplugResult.data||[]).forEach(order=>{
+            const deliveryText=serviceDeliveryText(order.credentials||order.provider_response);
+            const mirror=combinedServiceOrders.find(item=>{
+                if(item.provider_order_id&&order.provider_order_id)
+                    return String(item.provider_order_id)===String(order.provider_order_id);
+                return item.service_id&&order.log_id&&String(item.service_id)===String(order.log_id)
+                    &&Math.abs(new Date(item.created_at||0).getTime()-new Date(order.created_at||0).getTime())<10000;
+            });
+            if(mirror){
+                if(!mirror.deliveryText&&deliveryText)mirror.deliveryText=deliveryText;
+                return;
+            }
+            combinedServiceOrders.push({
+                provider_order_id:order.provider_order_id,
+                service_name:order.title_snapshot||order.category_name||"Service purchase",
+                customer_price:order.customer_total,
+                quantity:order.quantity,
+                status:order.status,
+                created_at:order.created_at,
+                deliveryText
+            });
+        });
+        combinedServiceOrders.forEach(order=>{
             combined.push({
                 type:"normal",
                 date:order.created_at,
                 data:{
                     product_name:(order.service_name||"Service order")+(Number(order.quantity)>1?" × "+order.quantity:""),
                     amount:order.customer_price,
-                    content:serviceDeliveryText(order.provider_response),
+                    content:order.deliveryText||serviceDeliveryText(order.provider_response),
                     status:order.status,
                     created_at:order.created_at
                 }
