@@ -984,7 +984,7 @@ function serviceDeliveryText(value){
             if(extracted)return extracted;
         }
     }
-    const hidden=new Set(["id","_id","order_id","provider_order_id","reference","wallet_reference","transaction_id","created_at","updated_at","status","success","provider","provider_name","provider_status","raw"]);
+    const hidden=new Set(["id","_id","order_id","provider_order_id","reference","wallet_reference","transaction_id","created_at","updated_at","status","success","provider","provider_name","provider_status","provider_order","provider_reference","raw"]);
     const rows=Object.entries(value).filter(([key,val])=>!hidden.has(key.toLowerCase())&&val!==null&&val!=="").map(([key,val])=>{
         const label=key.replace(/_/g," ").replace(/\b\w/g,ch=>ch.toUpperCase());
         const content=typeof val==="object"?serviceDeliveryText(val):String(val);
@@ -999,143 +999,19 @@ function serviceDeliveryText(value){
 // =====================================================
 
 function createNormalPurchaseCard(purchase){
-
-    const status =
-        String(purchase.status || "")
-        .toLowerCase()
-        .trim();
-
-
-    const content =
-        String(
-            purchase.content ?? ""
-        );
-
-
-    const safeContent =
-        formatContent(content);
-
-
-    const copyButton =
-        content.trim()
-
-        ? `
-
-            <button
-                class="copy-btn"
-                onclick='copyContent(
-                    this,
-                    ${JSON.stringify(content)}
-                )'
-            >
-                📋 Copy
-            </button>
-
-        `
-
-        : "";
-
-
-    const date =
-        formatDate(
-            purchase.created_at
-        );
-
-
-    const purchaseBox =
-        document.createElement("div");
-
-
-    purchaseBox.className =
-        "purchase";
-
-
-    purchaseBox.innerHTML = `
-
-        <div class="top">
-
-            <div class="name">
-
-                ${esc(
-                    purchase.product_name ||
-                    "Unnamed Product"
-                )}
-
-            </div>
-
-
-            <div class="amount">
-
-                ₦${formatMoney(
-                    purchase.amount
-                )}
-
-            </div>
-
-        </div>
-
-
-        <div class="status">
-
-            ${
-                status === "completed"
-
-                ? `
-                    <span class="badge badge-received">
-                        ✅ Completed
-                    </span>
-                `
-
-                : status === "cancelled"
-
-                ? `
-                    <span class="badge badge-cancelled">
-                        ❌ Cancelled
-                    </span>
-                `
-
-                : `
-                    <span class="badge badge-waiting">
-                        ${esc(
-                            purchase.status ||
-                            "Pending"
-                        )}
-                    </span>
-                `
-            }
-
-        </div>
-
-
-        ${
-            content.trim()
-
-            ? `
-
-                <div class="content">
-                    ${safeContent}
-                </div>
-
-                ${copyButton}
-
-            `
-
-            : ""
-        }
-
-
-        <div class="date">
-
-            ${esc(date)}
-
-        </div>
-
-    `;
-
-
+    const status=String(purchase.status||"pending").toLowerCase().trim();
+    const content=String(purchase.content??"");
+    const safeContent=formatContent(content);
+    const copyButton=content.trim()?'<button class="copy-btn" type="button" data-copy-delivery="1">Copy delivery</button>':"";
+    const date=formatDate(purchase.created_at);
+    const purchaseBox=document.createElement("div");
+    purchaseBox.className="purchase";
+    purchaseBox.innerHTML='<div class="purchase-head"><div><div class="purchase-eyebrow">Purchase details</div><div class="name">'+esc(purchase.product_name||"Purchase")+'</div><div class="date">'+esc(date)+'</div></div><div class="amount">₦'+formatMoney(purchase.amount)+'</div></div><div class="status">'+(status==="completed"||status==="complete"||status==="success"||status==="successful"||status==="approved"||status==="delivered"?'<span class="badge badge-received">Completed</span>':status==="cancelled"||status==="canceled"||status==="refunded"||status==="rejected"||status==="failed"?'<span class="badge badge-cancelled">Cancelled</span>':'<span class="badge badge-waiting">'+esc(purchase.status||"Pending")+'</span>')+'</div>'+(content.trim()?'<section class="purchase-delivery"><div class="delivery-heading"><strong>Delivery information</strong><span>Saved for later access</span></div><div class="content">'+safeContent+'</div>'+copyButton+'</section>':(status==="completed"||status==="complete"||status==="success"||status==="successful"||status==="approved"||status==="delivered"?'<div class="delivery-empty">Your purchase is complete. Delivery details are being prepared or are not required for this item.</div>':""));
+    const copy=purchaseBox.querySelector("[data-copy-delivery]");
+    if(copy)copy.addEventListener("click",()=>copyContent(copy,content));
     return purchaseBox;
-
 }
+
 
 
 // =====================================================
@@ -1305,6 +1181,23 @@ async function loadPurchases(){
             console.error("Service purchase history loading error:",serviceOrderError);
         }
 
+        // Load additional provider orders so every service category is included
+        // in the customer's single purchase history.
+        const [logsplugResult,youngpgResult,boostingResult] = await Promise.all([
+            supabaseClient.from("logsplug_orders")
+                .select("id,title_snapshot,category_name,customer_total,quantity,status,credentials,provider_response,created_at")
+                .eq("user_id",user.id).order("created_at",{ascending:false}),
+            supabaseClient.from("youngpg_orders")
+                .select("id,product_name,content,customer_price_ngn,status,provider_response,created_at")
+                .eq("user_id",user.id).order("created_at",{ascending:false}),
+            supabaseClient.from("boosting_orders")
+                .select("id,platform,service_name,link,quantity,customer_charge,status,created_at")
+                .eq("user_id",user.id).order("created_at",{ascending:false})
+        ]);
+        if(logsplugResult.error)console.error("Additional purchase history loading error:",logsplugResult.error);
+        if(youngpgResult.error)console.error("Product purchase history loading error:",youngpgResult.error);
+        if(boostingResult.error)console.error("Service order history loading error:",boostingResult.error);
+
         // =================================================
         // CHECK BOTH RESULTS
         // =================================================
@@ -1407,6 +1300,31 @@ async function loadPurchases(){
                     created_at:order.created_at
                 }
             });
+        });
+
+        (logsplugResult.data || []).forEach(order => {
+            combined.push({type:"normal",date:order.created_at,data:{
+                product_name:order.title_snapshot||order.category_name||"Service purchase",
+                amount:order.customer_total,
+                content:serviceDeliveryText(order.credentials||order.provider_response),
+                status:order.status,created_at:order.created_at
+            }});
+        });
+        (youngpgResult.data || []).forEach(order => {
+            combined.push({type:"normal",date:order.created_at,data:{
+                product_name:order.product_name||"Digital product",
+                amount:order.customer_price_ngn,
+                content:serviceDeliveryText(order.content||order.provider_response),
+                status:order.status,created_at:order.created_at
+            }});
+        });
+        (boostingResult.data || []).forEach(order => {
+            combined.push({type:"normal",date:order.created_at,data:{
+                product_name:order.service_name||order.platform||"Service order",
+                amount:order.customer_charge,
+                content:order.link?"Order link: "+order.link:"",
+                status:order.status,created_at:order.created_at
+            }});
         });
 
 
@@ -1635,5 +1553,5 @@ loadPurchases();
 <script src="branding.js"></script>
 <script src="assets/site-announcement.js" defer></script>
 <style id="dv-balanced-purchases">body{font-size:15px!important}.dv-list-header{max-width:1120px!important;padding:22px clamp(15px,3vw,30px) 18px!important}.dv-list-header h1{font-size:clamp(25px,3vw,32px)!important}.dv-list-header p{font-size:14px!important}.dv-list-header>a{font-size:13px!important;padding:10px 14px!important}main{max-width:1120px!important;padding:22px clamp(14px,3vw,30px) 60px!important}.total-card{padding:21px 23px!important;border-radius:18px!important;margin-bottom:16px!important}.total-title{font-size:13px!important}.total-amount{font-size:clamp(29px,3vw,36px)!important}.purchase-stats{gap:11px!important;margin:16px 0 20px!important}.purchase-stat{padding:14px 15px!important;border-radius:14px!important}.purchase-stat strong{font-size:23px!important}.purchase-stat span{font-size:13px!important}.dv-list-section-head{margin:23px 0 13px!important}.dv-list-section-head h2,.section-title{font-size:21px!important}.dv-list-section-head>div>span{font-size:11px!important}.dv-live-label{font-size:10px!important}.card{padding:17px!important;border-radius:18px!important}.purchase,.virtual-number-card{padding:17px!important;border-radius:15px!important;margin-bottom:12px!important}.purchase h3,.purchase-title,.name,.virtual-title{font-size:16px!important}.purchase p,.purchase small,.virtual-number-card p{font-size:13px!important;line-height:1.6!important}.purchase button,.virtual-number-card button{font-size:13px!important;padding:10px 13px!important}@media(max-width:600px){.dv-list-header{padding:16px 14px!important}.dv-list-header h1{font-size:24px!important}.dv-list-header p{font-size:12px!important}main{padding:15px 13px 45px!important}.total-card{padding:17px!important}.purchase-stats{gap:8px!important;margin:13px 0 17px!important}.purchase-stat{padding:12px 10px!important}.purchase-stat strong{font-size:20px!important}.purchase-stat span{font-size:12px!important}.dv-list-section-head{margin:19px 0 11px!important}.dv-list-section-head h2,.section-title{font-size:19px!important}.card{padding:13px!important}.purchase,.virtual-number-card{padding:14px!important}.purchase p,.purchase small,.virtual-number-card p{font-size:13px!important}}</style>
-</body>
+<style id="dv-purchase-details-layout">.purchase{background:#111;border:1px solid #2b2b2b;border-radius:16px;padding:17px;margin:0 0 13px;box-shadow:0 8px 24px rgba(0,0,0,.14)}.purchase-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}.purchase-eyebrow{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#c5a34b;font-weight:800;margin-bottom:5px}.purchase .name{font-size:16px;font-weight:800;line-height:1.35;overflow-wrap:anywhere}.purchase .amount{font-size:17px;font-weight:900;white-space:nowrap;color:#e9bd53}.purchase .date{font-size:12px;color:#999;margin-top:7px}.purchase .status{margin:12px 0}.purchase-delivery{background:#0a0a0a;border:1px solid #303030;border-radius:12px;padding:13px;margin-top:12px}.delivery-heading{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}.delivery-heading strong{font-size:13px;color:#f3d88a}.delivery-heading span{font-size:10px;color:#999}.purchase-delivery .content{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65;font-size:13px;color:#f4f0e5}.purchase-delivery .copy-btn{margin-top:12px;border:1px solid #a88735;background:#1b170d;color:#f4d77e;border-radius:8px;padding:9px 13px;font-weight:800}.delivery-empty{background:#0a0a0a;border:1px dashed #444;border-radius:10px;padding:12px;color:#aaa;font-size:12px}@media(max-width:520px){.purchase{padding:14px}.purchase-head{gap:9px}.purchase .amount{font-size:15px}.delivery-heading{align-items:flex-start;flex-direction:column;gap:3px}}</style></body>
 </html>
