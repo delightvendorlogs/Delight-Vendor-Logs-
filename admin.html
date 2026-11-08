@@ -2297,7 +2297,7 @@ async function saveProductEdits(){
             imageUrl=supabaseClient.storage.from("product-images").getPublicUrl(path).data.publicUrl;
         }
         const payload={
-            name,price,category,description,
+            name,price,category,category_slug:category.toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,""),description,
             stock:trackStock?stock:0,
             status,track_stock:trackStock,
             is_active:isActive,
