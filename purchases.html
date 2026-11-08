@@ -1293,7 +1293,7 @@ async function loadPurchases(){
             deliveryText:serviceDeliveryText(order.provider_response)
         }));
         (logsplugResult.data||[]).forEach(order=>{
-            const deliveryText=serviceDeliveryText(order.credentials||order.provider_response);
+            const deliveryText=serviceDeliveryText(order.credentials)||serviceDeliveryText(order.provider_response);
             const mirror=combinedServiceOrders.find(item=>{
                 if(item.provider_order_id&&order.provider_order_id)
                     return String(item.provider_order_id)===String(order.provider_order_id);
@@ -1332,7 +1332,7 @@ async function loadPurchases(){
             combined.push({type:"normal",date:order.created_at,data:{
                 product_name:order.product_name||"Digital product",
                 amount:order.customer_price_ngn,
-                content:serviceDeliveryText(order.content||order.provider_response),
+                content:serviceDeliveryText(order.content)||serviceDeliveryText(order.provider_response),
                 status:order.status,created_at:order.created_at
             }});
         });
