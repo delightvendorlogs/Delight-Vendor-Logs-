@@ -1183,10 +1183,7 @@ async function loadPurchases(){
 
         // Load additional provider orders so every service category is included
         // in the customer's single purchase history.
-        const [logsplugResult,youngpgResult,boostingResult] = await Promise.all([
-            supabaseClient.from("logsplug_orders")
-                .select("id,title_snapshot,category_name,customer_total,quantity,status,credentials,provider_response,created_at")
-                .eq("user_id",user.id).order("created_at",{ascending:false}),
+        const [youngpgResult,boostingResult] = await Promise.all([
             supabaseClient.from("youngpg_orders")
                 .select("id,product_name,content,customer_price_ngn,status,provider_response,created_at")
                 .eq("user_id",user.id).order("created_at",{ascending:false}),
@@ -1194,7 +1191,6 @@ async function loadPurchases(){
                 .select("id,platform,service_name,link,quantity,customer_charge,status,created_at")
                 .eq("user_id",user.id).order("created_at",{ascending:false})
         ]);
-        if(logsplugResult.error)console.error("Additional purchase history loading error:",logsplugResult.error);
         if(youngpgResult.error)console.error("Product purchase history loading error:",youngpgResult.error);
         if(boostingResult.error)console.error("Service order history loading error:",boostingResult.error);
 
@@ -1302,14 +1298,6 @@ async function loadPurchases(){
             });
         });
 
-        (logsplugResult.data || []).forEach(order => {
-            combined.push({type:"normal",date:order.created_at,data:{
-                product_name:order.title_snapshot||order.category_name||"Service purchase",
-                amount:order.customer_total,
-                content:serviceDeliveryText(order.credentials||order.provider_response),
-                status:order.status,created_at:order.created_at
-            }});
-        });
         (youngpgResult.data || []).forEach(order => {
             combined.push({type:"normal",date:order.created_at,data:{
                 product_name:order.product_name||"Digital product",
