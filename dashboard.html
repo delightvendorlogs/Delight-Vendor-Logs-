@@ -6,9 +6,9 @@
 @media(max-width:520px){.dv-boost-promo{gap:10px;padding:12px 11px;border-radius:14px}.dv-boost-promo-icon{flex-basis:37px;width:37px;height:37px;font-size:21px}.dv-boost-promo-copy strong{font-size:12px}.dv-boost-promo-copy small{font-size:9px}.dv-boost-promo-cta{font-size:10px}}
 </style>
 <style id="dv-service-media-styles">
-.dv-service-media{width:100%;margin:0 0 10px;background:#080808;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.dv-service-media{position:relative;width:100%;margin:0 0 12px;padding:0;border:0;background:#080808;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:zoom-in;color:#fff}
 .dv-service-media img,.dv-service-media video{display:block;width:100%;max-height:260px;aspect-ratio:16/9;object-fit:contain;background:#080808}
-.dv-view-full-media{display:block;width:100%;margin:0 0 12px;padding:9px 12px;border:1px solid #b68c32;border-radius:9px;background:#17130b;color:#e9bd53;font-weight:800;cursor:pointer}
+.dv-service-media::after{content:"Tap to view";position:absolute;left:8%;right:8%;bottom:12px;padding:9px 12px;border-radius:999px;background:#000b;color:#fff;font-weight:800;text-align:center;letter-spacing:.2px;pointer-events:none}
 #dvServiceMediaViewer{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:14px;background:#000e}
 #dvServiceMediaViewer.show{display:flex}
 .dv-media-viewer-panel{width:min(100%,1000px);max-height:94vh;overflow:auto;background:#111;border:1px solid #8b6c2d;border-radius:16px;padding:12px}
@@ -5861,10 +5861,9 @@ function renderServices(){
                     ? '<video class="dv-service-preview-video" src="' + escapeHTML(mediaUrl) + '" muted autoplay loop playsinline preload="metadata"></video>'
                     : '<img src="' + escapeHTML(mediaUrl) + '" alt="' + escapeHTML(product.name || "Service") + '" loading="lazy">';
                 mediaHTML =
-                    '<div class="dv-service-media">' + mediaElement + '</div>' +
-                    '<button type="button" class="dv-view-full-media" data-media-url="' + escapeHTML(mediaUrl) +
+                    '<button type="button" class="dv-service-media" data-media-url="' + escapeHTML(mediaUrl) +
                     '" data-media-kind="' + mediaKind + '" data-media-title="' + escapeHTML(product.name || "Service") +
-                    '" onclick="viewServiceMedia(this)">View Full</button>';
+                    '" onclick="viewServiceMedia(this)" aria-label="Tap to view media">' + mediaElement + '</button>';
             }
 
             const card =
