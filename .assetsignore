@@ -1,2 +1,3 @@
+# Keep repository metadata out of deployed assets
 .git/
 .wrangler/
