@@ -18,6 +18,9 @@
   function finishAuthLoading(){
     if(authLoader.parentNode) authLoader.parentNode.removeChild(authLoader);
     loaderStyle.textContent = loaderStyle.textContent.replace("body{visibility:hidden!important}","");
+    // Some protected pages hide the document root before this guard loads.
+    // Clear that inline state after authentication so the page becomes visible.
+    root.style.removeProperty("visibility");
   }
   function startNavigationProgress(){
     navProgress.classList.add("active");
