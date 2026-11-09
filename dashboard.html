@@ -17,13 +17,24 @@
 .dv-media-viewer-image,.dv-media-viewer-video{display:block;max-width:100%;max-height:80vh;width:auto;height:auto;margin:auto;object-fit:contain;background:#000}
 .dv-media-viewer-video{width:100%}
 </style><style id="dv-service-loading-overlay">
-#dvServiceLoadingOverlay{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.97);padding:24px}
-#dvServiceLoadingOverlay.show{display:flex}
-.dv-service-loading-inner{display:flex;flex-direction:column;align-items:center;gap:11px;text-align:center}
-.dv-service-loading-logo{display:block;width:44px;height:44px;object-fit:contain;animation:dvServiceLogoPulse 1.05s ease-in-out infinite;filter:drop-shadow(0 0 9px #d4af3740)}
-.dv-service-loading-text{color:#e8d39a;font-size:12px;font-weight:600;letter-spacing:.35px}
-@keyframes dvServiceLogoPulse{0%,100%{transform:scale(.86);opacity:.78}50%{transform:scale(1.08);opacity:1}}
-@media(prefers-reduced-motion:reduce){.dv-service-loading-logo{animation:none}}
+#products .dv-service-loading-panel{display:grid;gap:16px;padding:18px 0 12px}
+#products .dv-service-loading-head{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;color:#e8d39a;font-size:12px;font-weight:650;letter-spacing:.25px}
+#products .dv-service-loading-logo{width:29px;height:29px;object-fit:contain;animation:dvServiceLogoPulse 1.05s ease-in-out infinite;filter:drop-shadow(0 0 8px #d4af3740)}
+#products .dv-service-loading-track{width:112px;height:3px;overflow:hidden;border-radius:99px;background:#ffffff20}
+#products .dv-service-loading-track:after{content:"";display:block;width:38%;height:100%;border-radius:99px;background:linear-gradient(90deg,#8f6b25,#f0d48b,#8f6b25);animation:dvServiceProgress 1.15s ease-in-out infinite}
+#products .dv-service-loading-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#products .dv-service-skeleton{min-height:174px;padding:10px;border:1px solid #ffffff12;border-radius:14px;background:linear-gradient(145deg,#171717,#101010)}
+#products .dv-service-skeleton-media,#products .dv-service-skeleton-line{border-radius:8px;background:linear-gradient(100deg,#ffffff08 18%,#ffffff1b 45%,#ffffff08 72%);background-size:220% 100%;animation:dvServiceShimmer 1.35s linear infinite}
+#products .dv-service-skeleton-media{height:83px;margin-bottom:12px}
+#products .dv-service-skeleton-line{height:8px;margin:9px 0}
+#products .dv-service-skeleton-line.short{width:55%}
+#products .dv-service-skeleton-line.medium{width:76%}
+#products .dv-service-skeleton-button{height:27px;margin-top:12px;border-radius:8px;background:#ffffff0d}
+@keyframes dvServiceLogoPulse{0%,100%{transform:scale(.88);opacity:.78}50%{transform:scale(1.08);opacity:1}}
+@keyframes dvServiceProgress{0%{transform:translateX(-120%)}100%{transform:translateX(360%)}}
+@keyframes dvServiceShimmer{to{background-position:-220% 0}}
+@media(min-width:620px){#products .dv-service-loading-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){#products .dv-service-loading-panel *{animation:none!important}}
 </style><style id="dv-working-tools-category-cards">
 #products .dv-working-tools-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch;width:100%}
 #products .dv-working-tool-card{min-width:0;overflow:hidden;display:flex;flex-direction:column;background:#141414;border:1px solid #303030;border-radius:14px;padding:12px;margin:0}
@@ -5617,7 +5628,6 @@ function selectCategory(
 ========================================================= */
 
 function backHome(){
-    hideServiceLoader();
     if(sessionStorage.getItem("dvOpenedFromCategories")==="1"){
         sessionStorage.removeItem("dvOpenedFromCategories");
         location.href="categories.html";
@@ -5687,31 +5697,17 @@ function backHome(){
    RENDER SERVICES
 ========================================================= */
 
-let dvServiceLoaderHideTimer=null;
 function showServiceLoader(){
-  let overlay=document.getElementById("dvServiceLoadingOverlay");
-  if(!overlay){
-    overlay=document.createElement("div");
-    overlay.id="dvServiceLoadingOverlay";
-    overlay.setAttribute("role","status");
-    overlay.setAttribute("aria-live","polite");
-    overlay.innerHTML='<div class="dv-service-loading-inner"><img class="dv-service-loading-logo" src="assets/dv-logo.png" alt="Delight Vendor Logs"><span class="dv-service-loading-text">Loading service…</span></div>';
-    document.body.appendChild(overlay);
-  }
-  if(dvServiceLoaderHideTimer){clearTimeout(dvServiceLoaderHideTimer);dvServiceLoaderHideTimer=null;}
-  overlay.classList.add("show");
+  const box=document.getElementById("products");
+  if(!box)return;
+  box.innerHTML='<div class="dv-service-loading-panel" role="status" aria-live="polite"><div class="dv-service-loading-head"><img class="dv-service-loading-logo" src="assets/dv-logo.png" alt=""><span>Loading service…</span><span class="dv-service-loading-track" aria-hidden="true"></span></div><div class="dv-service-loading-grid" aria-hidden="true"><div class="dv-service-skeleton"><div class="dv-service-skeleton-media"></div><div class="dv-service-skeleton-line medium"></div><div class="dv-service-skeleton-line short"></div><div class="dv-service-skeleton-button"></div></div><div class="dv-service-skeleton"><div class="dv-service-skeleton-media"></div><div class="dv-service-skeleton-line medium"></div><div class="dv-service-skeleton-line short"></div><div class="dv-service-skeleton-button"></div></div></div></div>';
 }
-function hideServiceLoader(){
-  const overlay=document.getElementById("dvServiceLoadingOverlay");
-  if(!overlay)return;
-  overlay.classList.remove("show");
-}
+function hideServiceLoader(){}
 
 function renderServices(){
     const box=document.getElementById("products");
-    if(selectedCategory==="Home"){hideServiceLoader();box.innerHTML="";return}
-    if(!allServices.length&&productsLoading){showServiceLoader();box.innerHTML="";return}
-    hideServiceLoader();
+    if(selectedCategory==="Home"){box.innerHTML="";return}
+    if(!allServices.length&&productsLoading){showServiceLoader();return}
     const search=document.getElementById("serviceSearch").value.trim().toLowerCase();
     let list=allServices.filter(product=>product&&product.is_active!==false&&categoryMatches(product.category,selectedCategory));
     if(search)list=list.filter(product=>String(product.name||"").toLowerCase().includes(search)||String(product.description||"").toLowerCase().includes(search));
