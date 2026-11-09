@@ -308,7 +308,7 @@ main > button:hover:not(:disabled) {
 </header>
 <main class="dv-product-main">
   <section class="dv-product-layout">
-    <div class="dv-product-media"><div class="dv-media-label">SERVICE PREVIEW</div><img id="productImage" src="" alt="Service image" style="display:none;"><video id="productVideo" playsinline muted autoplay loop preload="metadata" style="display:none;width:100%;min-height:220px;max-height:540px;object-fit:contain;border-radius:17px;background:#090a0d;"></video><button id="viewFullMedia" type="button" style="display:none;align-self:flex-start;padding:10px 16px;border:1px solid #b68c32;border-radius:10px;background:#17130b;color:#e9bd53;font-weight:800;">View Full</button></div>
+    <div class="dv-product-media"><div class="dv-media-label">SERVICE PREVIEW</div><img id="productImage" src="" alt="Service image" style="display:none;"><video id="productVideo" playsinline muted autoplay loop preload="metadata" style="display:none;width:100%;min-height:220px;max-height:540px;object-fit:contain;border-radius:17px;background:#090a0d;"></video><span id="tapViewMediaLabel" style="display:none;position:absolute;left:8%;right:8%;bottom:12px;padding:10px 12px;border-radius:999px;background:#000b;color:#fff;font-weight:800;text-align:center;pointer-events:none;">Tap to view</span></div>
     <div class="dv-product-details">
       <div class="dv-detail-eyebrow">SERVICE DETAILS</div>
       <p id="productDescription">Loading product...</p>
@@ -387,7 +387,7 @@ price.textContent="₦"+Number(product.price||0).toLocaleString("en-NG",{minimum
 const productStatus=String(product.status||"Unavailable");
 status.textContent=productStatus;
 const video=document.getElementById("productVideo");
-const viewFull=document.getElementById("viewFullMedia");
+const viewFull=document.getElementById("tapViewMediaLabel");
 const mediaUrl=product.video_url||product.image_url||"";
 if(product.video_url&&String(product.video_url).trim()!==""){
 image.style.display="none";
