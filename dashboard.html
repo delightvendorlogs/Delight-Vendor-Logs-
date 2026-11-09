@@ -16,6 +16,14 @@
 .dv-media-viewer-top button{background:#333;color:#fff;border:0;border-radius:8px;padding:9px 13px}
 .dv-media-viewer-image,.dv-media-viewer-video{display:block;max-width:100%;max-height:80vh;width:auto;height:auto;margin:auto;object-fit:contain;background:#000}
 .dv-media-viewer-video{width:100%}
+</style><style id="dv-service-loading-overlay">
+#dvServiceLoadingOverlay{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.97);padding:24px}
+#dvServiceLoadingOverlay.show{display:flex}
+.dv-service-loading-inner{display:flex;flex-direction:column;align-items:center;gap:11px;text-align:center}
+.dv-service-loading-logo{display:block;width:44px;height:44px;object-fit:contain;animation:dvServiceLogoPulse 1.05s ease-in-out infinite;filter:drop-shadow(0 0 9px #d4af3740)}
+.dv-service-loading-text{color:#e8d39a;font-size:12px;font-weight:600;letter-spacing:.35px}
+@keyframes dvServiceLogoPulse{0%,100%{transform:scale(.86);opacity:.78}50%{transform:scale(1.08);opacity:1}}
+@media(prefers-reduced-motion:reduce){.dv-service-loading-logo{animation:none}}
 </style><style id="dv-working-tools-category-cards">
 #products .dv-working-tools-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch;width:100%}
 #products .dv-working-tool-card{min-width:0;overflow:hidden;display:flex;flex-direction:column;background:#141414;border:1px solid #303030;border-radius:14px;padding:12px;margin:0}
@@ -5609,6 +5617,7 @@ function selectCategory(
 ========================================================= */
 
 function backHome(){
+    hideServiceLoader();
     if(sessionStorage.getItem("dvOpenedFromCategories")==="1"){
         sessionStorage.removeItem("dvOpenedFromCategories");
         location.href="categories.html";
@@ -5678,13 +5687,34 @@ function backHome(){
    RENDER SERVICES
 ========================================================= */
 
+let dvServiceLoaderHideTimer=null;
+function showServiceLoader(){
+  let overlay=document.getElementById("dvServiceLoadingOverlay");
+  if(!overlay){
+    overlay=document.createElement("div");
+    overlay.id="dvServiceLoadingOverlay";
+    overlay.setAttribute("role","status");
+    overlay.setAttribute("aria-live","polite");
+    overlay.innerHTML='<div class="dv-service-loading-inner"><img class="dv-service-loading-logo" src="assets/dv-logo.png" alt="Delight Vendor Logs"><span class="dv-service-loading-text">Loading service…</span></div>';
+    document.body.appendChild(overlay);
+  }
+  if(dvServiceLoaderHideTimer){clearTimeout(dvServiceLoaderHideTimer);dvServiceLoaderHideTimer=null;}
+  overlay.classList.add("show");
+}
+function hideServiceLoader(){
+  const overlay=document.getElementById("dvServiceLoadingOverlay");
+  if(!overlay)return;
+  overlay.classList.remove("show");
+}
+
 function renderServices(){
     const box=document.getElementById("products");
-    if(selectedCategory==="Home"){box.innerHTML="";return}
+    if(selectedCategory==="Home"){hideServiceLoader();box.innerHTML="";return}
+    if(!allServices.length&&productsLoading){showServiceLoader();box.innerHTML="";return}
+    hideServiceLoader();
     const search=document.getElementById("serviceSearch").value.trim().toLowerCase();
     let list=allServices.filter(product=>product&&product.is_active!==false&&categoryMatches(product.category,selectedCategory));
     if(search)list=list.filter(product=>String(product.name||"").toLowerCase().includes(search)||String(product.description||"").toLowerCase().includes(search));
-    if(!allServices.length&&productsLoading){box.innerHTML='<div class="msg"><div style="font-size:40px">⏳</div><br><strong>Loading services...</strong><p>Please wait while we load the available services.</p></div>';return}
     if(!list.length){box.innerHTML='<div class="msg"><div style="font-size:40px">🔍</div><br><strong>No services found</strong><p>There are currently no services in this category.</p></div>';return}
     box.innerHTML="";
     const grid=document.createElement("div");grid.className="dv-working-tools-grid";
@@ -6175,6 +6205,7 @@ async function startDashboard(){
 
     loadCategories();
 
+    if(requestedCategory) showServiceLoader();
     loadProducts();
 
     loadWallet();
