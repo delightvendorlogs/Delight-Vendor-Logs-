@@ -5,7 +5,18 @@
 .dv-boost-promo-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:5px}.dv-boost-promo-copy strong{font-size:14px;font-weight:850;color:#ffe7a2}.dv-boost-promo-copy small{font-size:10px;line-height:1.45;color:#c9c0aa}.dv-boost-promo-cta{display:inline-flex;align-items:center;gap:7px;margin-top:3px;color:#f0cf70;font-size:11px;font-weight:850}.dv-boost-promo-arrow{font-size:27px;color:#e5bd52}
 @media(max-width:520px){.dv-boost-promo{gap:10px;padding:12px 11px;border-radius:14px}.dv-boost-promo-icon{flex-basis:37px;width:37px;height:37px;font-size:21px}.dv-boost-promo-copy strong{font-size:12px}.dv-boost-promo-copy small{font-size:9px}.dv-boost-promo-cta{font-size:10px}}
 </style>
-</head><!DOCTYPE html>
+<style id="dv-service-media-styles">
+.dv-service-media{width:100%;margin:0 0 10px;background:#080808;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.dv-service-media img,.dv-service-media video{display:block;width:100%;max-height:260px;aspect-ratio:16/9;object-fit:contain;background:#080808}
+.dv-view-full-media{display:block;width:100%;margin:0 0 12px;padding:9px 12px;border:1px solid #b68c32;border-radius:9px;background:#17130b;color:#e9bd53;font-weight:800;cursor:pointer}
+#dvServiceMediaViewer{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:14px;background:#000e}
+#dvServiceMediaViewer.show{display:flex}
+.dv-media-viewer-panel{width:min(100%,1000px);max-height:94vh;overflow:auto;background:#111;border:1px solid #8b6c2d;border-radius:16px;padding:12px}
+.dv-media-viewer-top{display:flex;justify-content:space-between;align-items:center;gap:12px;color:#fff;margin-bottom:10px}
+.dv-media-viewer-top button{background:#333;color:#fff;border:0;border-radius:8px;padding:9px 13px}
+.dv-media-viewer-image,.dv-media-viewer-video{display:block;max-width:100%;max-height:80vh;width:auto;height:auto;margin:auto;object-fit:contain;background:#000}
+.dv-media-viewer-video{width:100%}
+</style></head><!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -5362,7 +5373,7 @@ async function loadProducts(){
             await supabaseClient
                 .from("Product")
                 .select(
-                    "id,name,price,category,description,image_url,stock,status,track_stock"
+                    "id,name,price,category,description,image_url,video_url,stock,status,track_stock"
                 )
                 .eq(
                     "is_active",
@@ -5842,36 +5853,19 @@ function renderServices(){
                 status === "unavailable";
 
 
-            let imageHTML =
-                "";
-
-
-            if(
-                product.image_url &&
-                String(
-                    product.image_url
-                ).trim()
-            ){
-
-                imageHTML =
-
-                    '<img ' +
-
-                        'src="' +
-                        escapeHTML(
-                            product.image_url
-                        ) +
-                        '" ' +
-
-                        'alt="" ' +
-
-                        'onerror="' +
-                            "this.style.display='none'" +
-                        '"' +
-
-                    '>';
+            let mediaHTML = "";
+            const mediaUrl = product.video_url || product.image_url;
+            const mediaKind = product.video_url ? "video" : "image";
+            if(mediaUrl && String(mediaUrl).trim()){
+                const mediaElement = mediaKind === "video"
+                    ? '<video class="dv-service-preview-video" src="' + escapeHTML(mediaUrl) + '" muted autoplay loop playsinline preload="metadata"></video>'
+                    : '<img src="' + escapeHTML(mediaUrl) + '" alt="' + escapeHTML(product.name || "Service") + '" loading="lazy">';
+                mediaHTML =
+                    '<div class="dv-service-media">' + mediaElement + '</div>' +
+                    '<button type="button" class="dv-view-full-media" data-media-url="' + escapeHTML(mediaUrl) +
+                    '" data-media-kind="' + mediaKind + '" data-media-title="' + escapeHTML(product.name || "Service") +
+                    '" onclick="viewServiceMedia(this)">View Full</button>';
             }
-
 
             const card =
                 document.createElement(
@@ -5885,7 +5879,7 @@ function renderServices(){
 
             card.innerHTML =
 
-                imageHTML +
+                mediaHTML +
 
                 '<h3>' +
 
@@ -5974,11 +5968,41 @@ function renderServices(){
             box.appendChild(
                 card
             );
+            const previewVideo=card.querySelector(".dv-service-preview-video");
+            if(previewVideo){previewVideo.muted=true;previewVideo.play().catch(()=>{});}
 
         }
     );
 }
 
+
+function viewServiceMedia(button){
+    const url=button?.dataset?.mediaUrl;
+    if(!url)return;
+    let overlay=document.getElementById("dvServiceMediaViewer");
+    if(!overlay){
+        overlay=document.createElement("div");
+        overlay.id="dvServiceMediaViewer";
+        overlay.innerHTML='<div class="dv-media-viewer-panel"><div class="dv-media-viewer-top"><strong></strong><button type="button" aria-label="Close viewer">Close ✕</button></div><div class="dv-media-viewer-content"></div></div>';
+        document.body.appendChild(overlay);
+        overlay.addEventListener("click",event=>{if(event.target===overlay||event.target.closest("button[aria-label=\"Close viewer\"]"))closeServiceMediaViewer();});
+    }
+    overlay.querySelector(".dv-media-viewer-top strong").textContent=button.dataset.mediaTitle||"Service media";
+    const content=overlay.querySelector(".dv-media-viewer-content");
+    content.innerHTML="";
+    const isVideo=button.dataset.mediaKind==="video";
+    const el=document.createElement(isVideo?"video":"img");
+    el.src=url;
+    el.className=isVideo?"dv-media-viewer-video":"dv-media-viewer-image";
+    if(isVideo){el.controls=true;el.autoplay=true;el.playsInline=true}else el.alt=button.dataset.mediaTitle||"Service media";
+    content.appendChild(el);
+    overlay.classList.add("show");
+}
+function closeServiceMediaViewer(){
+    const overlay=document.getElementById("dvServiceMediaViewer");
+    if(overlay){overlay.classList.remove("show");overlay.querySelector(".dv-media-viewer-content").innerHTML="";}
+}
+document.addEventListener("keydown",event=>{if(event.key==="Escape")closeServiceMediaViewer();});
 
 /* =========================================================
    BUY PRODUCT
