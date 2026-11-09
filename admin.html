@@ -1233,20 +1233,17 @@ summary{
         placeholder="Describe this service..."
     ></textarea>
 
-    <label>Product Image</label>
+    <label>Service Media (Picture or Video)</label>
 
     <input
         id="productImage"
         type="file"
-        accept="image/*"
+        accept="image/*,video/mp4,video/webm,video/quicktime"
+        onchange="previewProductMedia()"
     >
 
-    <div
-        id="imageName"
-        class="small"
-    >
-        No image selected
-    </div>
+    <div id="imageName" class="small">No media selected</div>
+    <div id="productMediaPreview" style="margin:8px 0;max-width:440px;"></div>
 
     <div class="row">
 
@@ -2535,371 +2532,80 @@ async function setProductActive(id,active){
    ADD PRODUCT
 ========================= */
 
+function previewProductMedia(){
+    const input=document.getElementById("productImage");
+    const file=input.files?.[0];
+    const name=document.getElementById("imageName");
+    const preview=document.getElementById("productMediaPreview");
+    preview.innerHTML="";
+    if(!file){name.textContent="No media selected";return;}
+    if(file.size>50*1024*1024){input.value="";name.textContent="File is larger than 50 MB";return;}
+    if(!(file.type.startsWith("image/")||["video/mp4","video/webm","video/quicktime"].includes(file.type))){
+        input.value="";name.textContent="Choose an image or MP4, WebM or MOV video.";return;
+    }
+    name.textContent=file.name;
+    const url=URL.createObjectURL(file);
+    const el=document.createElement(file.type.startsWith("video/")?"video":"img");
+    el.src=url;
+    el.style.cssText="display:block;width:100%;max-height:260px;object-fit:contain;background:#080808;border-radius:10px;";
+    if(el.tagName==="VIDEO"){el.muted=true;el.autoplay=true;el.loop=true;el.playsInline=true}
+    else el.alt="Service media preview";
+    preview.appendChild(el);
+}
+
 async function addProduct(){
-
-    const message =
-        document.getElementById(
-            "productMessage"
-        );
-
-    const name =
-        document.getElementById(
-            "productName"
-        ).value.trim();
-
-    const price =
-        Number(
-            document.getElementById(
-                "productPrice"
-            ).value || 0
-        );
-
-    const category =
-        document.getElementById(
-            "productCategory"
-        ).value;
-
-    const description =
-        document.getElementById(
-            "productDescription"
-        ).value.trim();
-
-    const stock =
-        Number(
-            document.getElementById(
-                "productStock"
-            ).value || 0
-        );
-
-    const status =
-        document.getElementById(
-            "productStatus"
-        ).value;
-
-    const trackStock =
-        document.getElementById(
-            "trackStock"
-        ).checked;
-
-    const imageInput =
-        document.getElementById(
-            "productImage"
-        );
-
-    const file =
-        imageInput.files?.[0];
-
-    if(!name){
-
-        message.textContent =
-            "❌ Enter a service name.";
-
-        return;
-    }
-
-    if(price < 0){
-
-        message.textContent =
-            "❌ Price cannot be negative.";
-
-        return;
-    }
-
-    if(stock < 0){
-
-        message.textContent =
-            "❌ Stock cannot be negative.";
-
-        return;
-    }
-
-    if(!category){
-
-        message.textContent =
-            "❌ Select a category.";
-
-        return;
-    }
-
-    message.textContent =
-        "Adding service...";
-
+    const message=document.getElementById("productMessage");
+    const name=document.getElementById("productName").value.trim();
+    const price=Number(document.getElementById("productPrice").value||0);
+    const category=document.getElementById("productCategory").value;
+    const description=document.getElementById("productDescription").value.trim();
+    const stock=Number(document.getElementById("productStock").value||0);
+    const status=document.getElementById("productStatus").value;
+    const trackStock=document.getElementById("trackStock").checked;
+    const input=document.getElementById("productImage");
+    const file=input.files?.[0];
+    if(!name){message.textContent="❌ Enter a service name.";return;}
+    if(!Number.isFinite(price)||price<0){message.textContent="❌ Enter a valid price.";return;}
+    if(!Number.isInteger(stock)||stock<0){message.textContent="❌ Stock cannot be negative.";return;}
+    if(!category){message.textContent="❌ Select a category.";return;}
+    if(file&&file.size>50*1024*1024){message.textContent="❌ Media must be 50 MB or smaller.";return;}
+    if(file&&!(file.type.startsWith("image/")||["video/mp4","video/webm","video/quicktime"].includes(file.type))){message.textContent="❌ Choose an image or MP4, WebM or MOV video.";return;}
+    message.textContent="Adding service...";
+    let uploadedPath=null;
     try{
-
-        let imageUrl = null;
-
+        let imageUrl=null,videoUrl=null;
         if(file){
-
-            message.textContent =
-                "Uploading product image...";
-
-            const fileExtension =
-                file.name.includes(".")
-                ?
-                file.name.split(".").pop()
-                :
-                "jpg";
-
-            const fileName =
-                "product_" +
-                Date.now() +
-                "_" +
-                Math.random()
-                    .toString(36)
-                    .substring(2,8) +
-                "." +
-                fileExtension;
-
-            const {
-                error:uploadError
-            } =
-            await supabaseClient
-                .storage
-                .from("product-images")
-                .upload(
-                    fileName,
-                    file,
-                    {
-                        cacheControl:"3600",
-                        upsert:false
-                    }
-                );
-
-            if(uploadError){
-
-                console.error(
-                    "Image upload error:",
-                    uploadError
-                );
-
-                message.textContent =
-                    "❌ Image upload failed: " +
-                    uploadError.message;
-
-                return;
-            }
-
-            const {
-                data:publicUrlData
-            } =
-            supabaseClient
-                .storage
-                .from("product-images")
-                .getPublicUrl(
-                    fileName
-                );
-
-            imageUrl =
-                publicUrlData.publicUrl;
-
+            message.textContent="Uploading service media...";
+            const ext=(file.name.split(".").pop()||"jpg").replace(/[^a-zA-Z0-9]/g,"")||"jpg";
+            const fileName="product_"+Date.now()+"_"+Math.random().toString(36).substring(2,8)+"."+ext;
+            const {error:uploadError}=await supabaseClient.storage.from("product-images").upload(fileName,file,{cacheControl:"3600",upsert:false,contentType:file.type});
+            if(uploadError)throw uploadError;
+            uploadedPath=fileName;
+            const publicUrl=supabaseClient.storage.from("product-images").getPublicUrl(fileName).data.publicUrl;
+            if(file.type.startsWith("video/"))videoUrl=publicUrl;else imageUrl=publicUrl;
         }
-
-        message.textContent =
-            "Saving service...";
-
-        const {
-            data,
-            error
-        } =
-        await supabaseClient
-            .from("Product")
-            .insert([{
-
-                name,
-
-                price,
-
-                category,
-
-                description,
-
-                stock:
-                    trackStock
-                    ?
-                    stock
-                    :
-                    0,
-
-                status,
-
-                track_stock:
-                    trackStock,
-
-                is_active:true,
-
-                image_url:
-                    imageUrl
-
-            }])
-            .select()
-            .single();
-
-        if(error){
-
-            console.error(
-                "Add product error:",
-                error
-            );
-
-            message.textContent =
-                "❌ " +
-                error.message;
-
-            return;
-        }
-
-        console.log(
-            "Product created:",
-            data
-        );
-
-        message.textContent =
-            "✅ Service added successfully.";
-
-        document.getElementById(
-            "productName"
-        ).value = "";
-
-        document.getElementById(
-            "productPrice"
-        ).value = "";
-
-        document.getElementById(
-            "productDescription"
-        ).value = "";
-
-        document.getElementById(
-            "productStock"
-        ).value = "0";
-
-        document.getElementById(
-            "productImage"
-        ).value = "";
-
-        document.getElementById(
-            "imageName"
-        ).textContent =
-            "No image selected";
-
-        await loadProducts();
-        await loadInventory();
-        await updateStats();
-
+        message.textContent="Saving service...";
+        const {data,error}=await supabaseClient.from("Product").insert([{
+            name,price,category,
+            category_slug:category.toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,""),
+            description,stock:trackStock?stock:0,status,track_stock:trackStock,
+            is_active:true,image_url:imageUrl,video_url:videoUrl
+        }]).select().single();
+        if(error)throw error;
+        message.textContent="✅ Service added successfully.";
+        document.getElementById("productName").value="";
+        document.getElementById("productPrice").value="";
+        document.getElementById("productDescription").value="";
+        document.getElementById("productStock").value="0";
+        input.value="";
+        document.getElementById("imageName").textContent="No media selected";
+        document.getElementById("productMediaPreview").innerHTML="";
+        await loadProducts();await loadInventory();await updateStats();
     }catch(error){
-
-        console.error(
-            "Unexpected add product error:",
-            error
-        );
-
-        message.textContent =
-            "❌ " +
-            (
-                error.message ||
-                "Something went wrong."
-            );
-
+        console.error("Add product error:",error);
+        if(uploadedPath)await supabaseClient.storage.from("product-images").remove([uploadedPath]).catch(()=>{});
+        message.textContent="❌ "+(error.message||"Could not add this service.");
     }
-
-}
-
-/* =========================
-   DELETE PRODUCT
-========================= */
-
-async function deleteProduct(id){
-
-    if(!confirm(
-        "Are you sure you want to delete this service?\n\n" +
-        "It will disappear from the store. " +
-        "Old orders and purchases will be kept."
-    )){
-
-        return;
-    }
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-        .from("Product")
-        .update({
-            is_active:false
-        })
-        .eq("id",id)
-        .select("id,name,is_active");
-
-    if(error){
-
-        alert(
-            "❌ Could not delete service:\n\n" +
-            error.message
-        );
-
-        return;
-    }
-
-    if(
-        !data ||
-        data.length === 0
-    ){
-
-        alert(
-            "❌ Service was NOT deleted.\n\n" +
-            "The database did not allow the update."
-        );
-
-        return;
-    }
-
-    alert(
-        "🗑️ Service deleted successfully."
-    );
-
-    await loadProducts();
-    await loadInventory();
-    await updateStats();
-
-}
-
-/* =========================
-   INVENTORY DROPDOWN
-========================= */
-
-async function loadInventoryProductDropdown(){
-
-    const select=document.getElementById("inventoryProduct");
-    if(!select) return;
-    select.innerHTML="";
-    const activeProducts=products.filter(product=>product.is_active!==false);
-    if(!activeProducts.length){
-        select.innerHTML='<option value="">No active services available</option>';
-        return;
-    }
-    activeProducts.forEach(product => {
-
-        const option =
-            document.createElement(
-                "option"
-            );
-
-        option.value =
-            product.id;
-
-        option.textContent =
-            (
-                product.name ||
-                "Unnamed Service"
-            ) +
-            " — ₦" +
-            money(product.price);
-
-        select.appendChild(
-            option
-        );
-
-    });
-
 }
 
 /* =========================
