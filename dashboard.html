@@ -16,6 +16,20 @@
 .dv-media-viewer-top button{background:#333;color:#fff;border:0;border-radius:8px;padding:9px 13px}
 .dv-media-viewer-image,.dv-media-viewer-video{display:block;max-width:100%;max-height:80vh;width:auto;height:auto;margin:auto;object-fit:contain;background:#000}
 .dv-media-viewer-video{width:100%}
+</style><style id="dv-working-tools-category-cards">
+#products .dv-working-tools-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch;width:100%}
+#products .dv-working-tool-card{min-width:0;overflow:hidden;display:flex;flex-direction:column;background:#141414;border:1px solid #303030;border-radius:14px;padding:12px;margin:0}
+#products .dv-working-tool-media-tap{position:relative;width:100%;padding:0;margin:0 0 12px;border:0;border-radius:10px;overflow:hidden;background:#222;cursor:zoom-in}
+#products .dv-working-tool-media{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#222}
+#products .dv-working-tool-media-tap span{position:absolute;left:8%;right:8%;bottom:9px;padding:8px 10px;border-radius:999px;background:#000b;color:#fff;font-size:12px;font-weight:800;text-align:center;pointer-events:none}
+#products .dv-working-tool-no-media{width:100%;aspect-ratio:4/3;display:grid;place-items:center;border-radius:10px;background:#222;color:#aaa;margin-bottom:12px;font-size:12px}
+#products .dv-working-tool-name{display:block;line-height:1.3;min-height:2.6em;font-size:14px;color:#f7f4ec;overflow-wrap:anywhere}
+#products .dv-working-tool-description{color:#c8c3b8;font-size:13px;line-height:1.5;white-space:pre-wrap;margin:9px 0;overflow-wrap:anywhere;flex:1}
+#products .dv-working-tool-price{color:#e9bd53;font-size:22px;font-weight:800}
+#products .dv-working-tool-price-label{color:#aaa;font-size:12px}
+#products .dv-working-tool-buy{width:100%;margin-top:12px;background:#e9bd53;color:#171208;border:0;border-radius:9px;padding:10px 8px;font-weight:800;font-size:14px}
+#products .dv-working-tool-buy:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:360px){#products .dv-working-tools-grid{gap:8px}#products .dv-working-tool-card{padding:9px}#products .dv-working-tool-name{font-size:12px}#products .dv-working-tool-price{font-size:18px}}
 </style></head><!DOCTYPE html>
 <html lang="en">
 
@@ -5665,315 +5679,31 @@ function backHome(){
 ========================================================= */
 
 function renderServices(){
-
-    const box =
-        document.getElementById(
-            "products"
-        );
-
-
-    if(
-        selectedCategory ===
-        "Home"
-    ){
-
-        box.innerHTML = "";
-
-        return;
-    }
-
-
-    const search =
-        document
-            .getElementById(
-                "serviceSearch"
-            )
-            .value
-            .trim()
-            .toLowerCase();
-
-
-    let list =
-        allServices.filter(
-            product =>
-
-                product &&
-                product.is_active !== false &&
-
-                categoryMatches(
-                    product.category,
-                    selectedCategory
-                )
-        );
-
-
-    if(search){
-
-        list =
-            list.filter(
-                product =>
-
-                    String(
-                        product.name || ""
-                    )
-                    .toLowerCase()
-                    .includes(search)
-
-                    ||
-
-                    String(
-                        product.description ||
-                        ""
-                    )
-                    .toLowerCase()
-                    .includes(search)
-            );
-    }
-
-
-    if(
-        !allServices.length &&
-        productsLoading
-    ){
-
-        box.innerHTML =
-
-            '<div class="msg">' +
-
-                '<div style="font-size:40px">' +
-                    '⏳' +
-                '</div>' +
-
-                '<br>' +
-
-                '<strong>' +
-                    'Loading services...' +
-                '</strong>' +
-
-                '<p>' +
-                    'Please wait while we load the available services.' +
-                '</p>' +
-
-            '</div>';
-
-        return;
-    }
-
-
-    if(!list.length){
-
-        if(productsLoading){
-
-            box.innerHTML =
-
-                '<div class="msg">' +
-
-                    '<div style="font-size:40px">' +
-                        '⏳' +
-                    '</div>' +
-
-                    '<br>' +
-
-                    '<strong>' +
-                        'Loading services...' +
-                    '</strong>' +
-
-                    '<p>' +
-                        'Please wait while we load the available services.' +
-                    '</p>' +
-
-                '</div>';
-
-            return;
-        }
-
-
-        box.innerHTML =
-
-            '<div class="msg">' +
-
-                '<div style="font-size:40px">' +
-                    '🔍' +
-                '</div>' +
-
-                '<br>' +
-
-                '<strong>' +
-                    'No services found' +
-                '</strong>' +
-
-                '<p>' +
-                    'There are currently no services in this category.' +
-                '</p>' +
-
-            '</div>';
-
-        return;
-    }
-
-
-    box.innerHTML = "";
-
-
-    list.forEach(
-        product => {
-
-            const stock =
-                Number(
-                    product.stock || 0
-                );
-
-
-            const track =
-                product.track_stock !== false;
-
-
-            const status =
-                String(
-                    product.status ||
-                    "Available"
-                )
-                .trim()
-                .toLowerCase();
-
-
-            const soldOut =
-                track
-                ?
-                (
-                    stock <= 0 ||
-
-                    status === "sold" ||
-
-                    status === "sold out" ||
-
-                    status === "unavailable"
-                )
-                :
-                status === "unavailable";
-
-
-            let mediaHTML = "";
-            const mediaUrl = product.video_url || product.image_url;
-            const mediaKind = product.video_url ? "video" : "image";
-            if(mediaUrl && String(mediaUrl).trim()){
-                const mediaElement = mediaKind === "video"
-                    ? '<video class="dv-service-preview-video" src="' + escapeHTML(mediaUrl) + '" muted autoplay loop playsinline preload="metadata"></video>'
-                    : '<img src="' + escapeHTML(mediaUrl) + '" alt="' + escapeHTML(product.name || "Service") + '" loading="lazy">';
-                mediaHTML =
-                    '<button type="button" class="dv-service-media" data-media-url="' + escapeHTML(mediaUrl) +
-                    '" data-media-kind="' + mediaKind + '" data-media-title="' + escapeHTML(product.name || "Service") +
-                    '" onclick="viewServiceMedia(this)" aria-label="Tap to view media">' + mediaElement + '</button>';
-            }
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-
-            card.className =
-                "product";
-
-
-            card.innerHTML =
-
-                mediaHTML +
-
-                '<h3>' +
-
-                    escapeHTML(
-                        product.name ||
-                        "Unnamed Service"
-                    ) +
-
-                '</h3>' +
-
-                '<span class="badge">' +
-
-                    escapeHTML(
-                        product.category ||
-                        "Service"
-                    ) +
-
-                '</span>' +
-
-                '<p class="desc">' +
-
-                    escapeHTML(
-                        product.description ||
-                        ""
-                    ) +
-
-                '</p>' +
-
-                '<p class="price">' +
-
-                    '₦' +
-
-                    Number(
-                        product.price || 0
-                    ).toLocaleString(
-                        "en-NG",
-                        {
-                            minimumFractionDigits:0,
-                            maximumFractionDigits:2
-                        }
-                    ) +
-
-                '</p>' +
-
-                '<p class="stock">' +
-
-                    (
-                        soldOut
-                        ?
-                        "❌ Sold Out / Unavailable"
-                        :
-                        "✅ Available"
-                    ) +
-
-                '</p>' +
-
-                '<button ' +
-
-                    'class="buy" ' +
-
-                    (
-                        soldOut
-                        ? "disabled"
-                        : ""
-                    ) +
-
-                    ' onclick="buyProduct(' +
-
-                        Number(
-                            product.id
-                        ) +
-
-                    ')"' +
-
-                '>' +
-
-                    (
-                        soldOut
-                        ? "Sold Out"
-                        : "Buy Now"
-                    ) +
-
-                '</button>';
-
-
-            box.appendChild(
-                card
-            );
-            const previewVideo=card.querySelector(".dv-service-preview-video");
-            if(previewVideo){previewVideo.muted=true;previewVideo.play().catch(()=>{});}
-
-        }
-    );
+    const box=document.getElementById("products");
+    if(selectedCategory==="Home"){box.innerHTML="";return}
+    const search=document.getElementById("serviceSearch").value.trim().toLowerCase();
+    let list=allServices.filter(product=>product&&product.is_active!==false&&categoryMatches(product.category,selectedCategory));
+    if(search)list=list.filter(product=>String(product.name||"").toLowerCase().includes(search)||String(product.description||"").toLowerCase().includes(search));
+    if(!allServices.length&&productsLoading){box.innerHTML='<div class="msg"><div style="font-size:40px">⏳</div><br><strong>Loading services...</strong><p>Please wait while we load the available services.</p></div>';return}
+    if(!list.length){box.innerHTML='<div class="msg"><div style="font-size:40px">🔍</div><br><strong>No services found</strong><p>There are currently no services in this category.</p></div>';return}
+    box.innerHTML="";
+    const grid=document.createElement("div");grid.className="dv-working-tools-grid";
+    list.forEach(product=>{
+      const stock=Number(product.stock||0),track=product.track_stock!==false;
+      const status=String(product.status||"Available").trim().toLowerCase();
+      const soldOut=track?(stock<=0||status==="sold"||status==="sold out"||status==="unavailable"):status==="unavailable";
+      const mediaUrl=product.video_url||product.image_url,mediaKind=product.video_url?"video":"image";
+      const card=document.createElement("article");card.className="dv-working-tool-card";
+      let mediaHTML="";
+      if(mediaUrl&&String(mediaUrl).trim()){
+        const mediaElement=mediaKind==="video"?'<video class="dv-working-tool-media" src="'+escapeHTML(mediaUrl)+'" muted autoplay loop playsinline preload="metadata" aria-label="'+escapeHTML(product.name||"Service")+' video preview"></video>':'<img class="dv-working-tool-media" src="'+escapeHTML(mediaUrl)+'" alt="'+escapeHTML(product.name||"Service")+'" loading="lazy">';
+        mediaHTML='<button type="button" class="dv-working-tool-media-tap" data-media-url="'+escapeHTML(mediaUrl)+'" data-media-kind="'+mediaKind+'" data-media-title="'+escapeHTML(product.name||"Service")+'" onclick="viewServiceMedia(this)" aria-label="Tap to view media">'+mediaElement+'<span>Tap to view</span></button>';
+      }else mediaHTML='<div class="dv-working-tool-no-media">Image unavailable</div>';
+      card.innerHTML=mediaHTML+'<b class="dv-working-tool-name">'+escapeHTML(product.name||"Unnamed Service")+'</b>'+'<p class="dv-working-tool-description">'+escapeHTML(product.description||"")+'</p>'+'<div class="dv-working-tool-price">₦'+Number(product.price||0).toLocaleString("en-NG",{minimumFractionDigits:0,maximumFractionDigits:2})+'</div>'+'<small class="dv-working-tool-price-label">Price</small>'+'<button class="dv-working-tool-buy" type="button" '+(soldOut?"disabled":"")+' onclick="buyProduct('+Number(product.id)+')">'+(soldOut?"Sold Out":"Purchase")+'</button>';
+      grid.appendChild(card);const preview=card.querySelector("video");if(preview){preview.muted=true;preview.play().catch(()=>{})}
+    });
+    box.appendChild(grid);
 }
-
 
 function viewServiceMedia(button){
     const url=button?.dataset?.mediaUrl;
