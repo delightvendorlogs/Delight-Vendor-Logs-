@@ -308,7 +308,7 @@ main > button:hover:not(:disabled) {
 </header>
 <main class="dv-product-main">
   <section class="dv-product-layout">
-    <div class="dv-product-media"><div class="dv-media-label">SERVICE PREVIEW</div><img id="productImage" src="" alt="Service image" style="display:none;"></div>
+    <div class="dv-product-media"><div class="dv-media-label">SERVICE PREVIEW</div><img id="productImage" src="" alt="Service image" style="display:none;"><video id="productVideo" playsinline muted autoplay loop preload="metadata" style="display:none;width:100%;min-height:220px;max-height:540px;object-fit:contain;border-radius:17px;background:#090a0d;"></video><button id="viewFullMedia" type="button" style="display:none;align-self:flex-start;padding:10px 16px;border:1px solid #b68c32;border-radius:10px;background:#17130b;color:#e9bd53;font-weight:800;">View Full</button></div>
     <div class="dv-product-details">
       <div class="dv-detail-eyebrow">SERVICE DETAILS</div>
       <p id="productDescription">Loading product...</p>
@@ -320,6 +320,7 @@ main > button:hover:not(:disabled) {
     </div>
   </section>
 </main>
+<div id="productMediaViewer" style="display:none;position:fixed;inset:0;z-index:9999;background:#000e;align-items:center;justify-content:center;padding:14px;"><section style="width:min(100%,1000px);max-height:94vh;overflow:auto;background:#111;border:1px solid #8b6c2d;border-radius:16px;padding:12px;"><div style="display:flex;justify-content:space-between;align-items:center;color:#fff;margin-bottom:10px;"><strong id="productViewerTitle">Service media</strong><button id="closeProductViewer" type="button" style="padding:9px 13px;background:#333;color:#fff;border:0;border-radius:8px;">Close ✕</button></div><div id="productViewerContent"></div></section></div>
 <script>
 const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
 const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
@@ -333,6 +334,28 @@ document.querySelectorAll(".dv-back-link,.dv-secondary-link").forEach(link=>{
   link.href=safeReturnUrl;
 });
 
+
+function openProductMedia(){
+const button=document.getElementById("viewFullMedia");
+const url=button?.dataset.url;
+if(!url)return;
+const viewer=document.getElementById("productMediaViewer");
+const content=document.getElementById("productViewerContent");
+content.innerHTML="";
+document.getElementById("productViewerTitle").textContent=document.getElementById("productName").textContent||"Service media";
+const isVideo=button.dataset.kind==="video";
+const el=document.createElement(isVideo?"video":"img");
+el.src=url;
+el.style.cssText="display:block;max-width:100%;max-height:80vh;width:auto;height:auto;margin:auto;object-fit:contain;background:#000;";
+if(isVideo){el.controls=true;el.autoplay=true;el.playsInline=true;el.style.width="100%"}else el.alt="Service media";
+content.appendChild(el);
+viewer.style.display="flex";
+}
+function closeProductMedia(){const viewer=document.getElementById("productMediaViewer");viewer.style.display="none";document.getElementById("productViewerContent").innerHTML="";}
+document.getElementById("viewFullMedia").addEventListener("click",openProductMedia);
+document.getElementById("closeProductViewer").addEventListener("click",closeProductMedia);
+document.getElementById("productMediaViewer").addEventListener("click",event=>{if(event.target.id==="productMediaViewer")closeProductMedia()});
+document.addEventListener("keydown",event=>{if(event.key==="Escape")closeProductMedia()});
 
 async function loadProduct(){
 const name=document.getElementById("productName");
@@ -363,12 +386,29 @@ description.textContent=product.description||"No description available.";
 price.textContent="₦"+Number(product.price||0).toLocaleString("en-NG",{minimumFractionDigits:0,maximumFractionDigits:2});
 const productStatus=String(product.status||"Unavailable");
 status.textContent=productStatus;
-if(product.image_url&&String(product.image_url).trim()!==""){
+const video=document.getElementById("productVideo");
+const viewFull=document.getElementById("viewFullMedia");
+const mediaUrl=product.video_url||product.image_url||"";
+if(product.video_url&&String(product.video_url).trim()!==""){
+image.style.display="none";
+video.src=product.video_url;
+video.style.display="block";
+video.play().catch(()=>{});
+viewFull.style.display="inline-flex";
+viewFull.dataset.url=product.video_url;
+viewFull.dataset.kind="video";
+}else if(product.image_url&&String(product.image_url).trim()!==""){
+video.pause();video.removeAttribute("src");video.load();video.style.display="none";
 image.src=product.image_url;
 image.alt=product.name||"Service";
 image.style.display="block";
-image.onerror=()=>image.style.display="none";
-}else image.style.display="none";
+image.onerror=()=>{image.style.display="none";viewFull.style.display="none"};
+viewFull.style.display="inline-flex";
+viewFull.dataset.url=product.image_url;
+viewFull.dataset.kind="image";
+}else{
+image.style.display="none";video.style.display="none";viewFull.style.display="none";
+}
 if(productStatus.toLowerCase().trim()!=="available"){
 button.disabled=true;
 button.textContent="Unavailable";
