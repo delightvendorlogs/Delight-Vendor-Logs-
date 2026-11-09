@@ -17,7 +17,7 @@
   root.appendChild(navProgress);
   function finishAuthLoading(){
     if(authLoader.parentNode) authLoader.parentNode.removeChild(authLoader);
-    if(loaderStyle.parentNode) loaderStyle.parentNode.removeChild(loaderStyle);
+    loaderStyle.textContent = loaderStyle.textContent.replace("body{visibility:hidden!important}","");
   }
   function startNavigationProgress(){
     navProgress.classList.add("active");
