@@ -15,7 +15,21 @@
   var navProgress = document.createElement("div");
   navProgress.id = "dvNavProgress";
   root.appendChild(navProgress);
+
+  // Never allow a failed or stalled authentication check to leave the whole site hidden.
+  var authFailsafe = setTimeout(function () {
+    finishAuthLoading();
+    if (document.getElementById("dv-auth-failsafe")) return;
+    var panel = document.createElement("section");
+    panel.id = "dv-auth-failsafe";
+    panel.setAttribute("role", "alert");
+    panel.style.cssText = "position:fixed;z-index:2147483647;inset:0;display:grid;place-content:center;gap:14px;padding:24px;background:#080808;color:#f7f4ec;text-align:center;font:15px/1.6 system-ui,sans-serif";
+    panel.innerHTML = '<div style="max-width:440px"><strong style="font-size:21px;color:#e7c56d">Still connecting…</strong><p style="color:#c8c1b2">The sign-in service is taking too long to respond. Your account and purchases have not been changed. Check your connection and try again.</p><button type="button" id="dv-auth-failsafe-retry" style="border:0;border-radius:10px;padding:12px 20px;background:#e7b84b;color:#171107;font-weight:800">Try again</button></div>';
+    document.body.appendChild(panel);
+    panel.querySelector("#dv-auth-failsafe-retry").addEventListener("click", function () { location.reload(); });
+  }, 20000);
   function finishAuthLoading(){
+    if(authFailsafe) clearTimeout(authFailsafe);
     if(authLoader.parentNode) authLoader.parentNode.removeChild(authLoader);
     loaderStyle.textContent = loaderStyle.textContent.replace("body{visibility:hidden!important}","");
     // Some protected pages hide the document root before this guard loads.
@@ -66,13 +80,13 @@
     var lastError;
     for (var i = 0; i < urls.length; i++) {
       try {
-        await new Promise(function (resolve, reject) {
+        await withTimeout(new Promise(function (resolve, reject) {
           var script = document.createElement("script");
           script.src = urls[i];
           script.onload = resolve;
           script.onerror = function () { reject(new Error("Supabase SDK could not be loaded")); };
           document.head.appendChild(script);
-        });
+        }), 10000);
         if (window.supabase && window.supabase.createClient) return;
       } catch (error) {
         lastError = error;
