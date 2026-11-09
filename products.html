@@ -335,15 +335,12 @@ document.querySelectorAll(".dv-back-link,.dv-secondary-link").forEach(link=>{
 });
 
 
-function openProductMedia(){
-const button=document.getElementById("viewFullMedia");
-const url=button?.dataset.url;
+function openProductMedia(url,isVideo){
 if(!url)return;
 const viewer=document.getElementById("productMediaViewer");
 const content=document.getElementById("productViewerContent");
 content.innerHTML="";
 document.getElementById("productViewerTitle").textContent=document.getElementById("productName").textContent||"Service media";
-const isVideo=button.dataset.kind==="video";
 const el=document.createElement(isVideo?"video":"img");
 el.src=url;
 el.style.cssText="display:block;max-width:100%;max-height:80vh;width:auto;height:auto;margin:auto;object-fit:contain;background:#000;";
@@ -352,7 +349,6 @@ content.appendChild(el);
 viewer.style.display="flex";
 }
 function closeProductMedia(){const viewer=document.getElementById("productMediaViewer");viewer.style.display="none";document.getElementById("productViewerContent").innerHTML="";}
-document.getElementById("viewFullMedia").addEventListener("click",openProductMedia);
 document.getElementById("closeProductViewer").addEventListener("click",closeProductMedia);
 document.getElementById("productMediaViewer").addEventListener("click",event=>{if(event.target.id==="productMediaViewer")closeProductMedia()});
 document.addEventListener("keydown",event=>{if(event.key==="Escape")closeProductMedia()});
