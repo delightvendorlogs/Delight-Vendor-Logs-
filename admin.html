@@ -2189,6 +2189,45 @@ async function checkAdmin(){
 }
 
 /* =========================
+   INVENTORY PRODUCT DROPDOWN
+========================= */
+
+function loadInventoryProductDropdown(){
+    const select=document.getElementById("inventoryProduct");
+    if(!select) return;
+
+    const previousValue=select.value;
+    const source=Array.isArray(products)&&products.length
+        ? products
+        : (Array.isArray(allProducts)?allProducts:[]);
+
+    const available=source
+        .filter(product=>product&&product.id!==undefined&&product.id!==null)
+        .slice()
+        .sort((a,b)=>String(a.name||"").localeCompare(String(b.name||"")));
+
+    select.innerHTML='<option value="">Select a service</option>';
+
+    available.forEach(product=>{
+        const option=document.createElement("option");
+        option.value=String(product.id);
+        const status=product.is_active===false||String(product.status||"").toLowerCase()==="inactive"
+            ? " (Inactive)"
+            : "";
+        option.textContent=(product.name||"Unnamed service")+status;
+        select.appendChild(option);
+    });
+
+    if(previousValue&&available.some(product=>String(product.id)===previousValue)){
+        select.value=previousValue;
+    }
+
+    if(!available.length){
+        select.innerHTML='<option value="">No services available</option>';
+    }
+}
+
+/* =========================
    LOAD PRODUCTS
 ========================= */
 
