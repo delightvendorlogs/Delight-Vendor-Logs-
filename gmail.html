@@ -451,16 +451,12 @@
     <section id="listView">
 
         <h1 class="page-title">
-            Nigeria Email
+            Gmail
         </h1>
 
         <p class="page-description">
-            Browse Gmail accounts added by our team under Nigeria Email.
+            Browse available Gmail accounts and email services.
         </p>
-        <div class="category-heading">
-            <strong>🇳🇬 Nigeria Email</strong>
-            <span>Gmail accounts manually added by the admin team.</span>
-        </div>
 
         <div
             id="loading"
@@ -734,11 +730,35 @@ async function loadGmails(){
     }
 
 
-    availableGmails = (data || []).map(item => ({...item, source:"manual", available:true, description:"Manually added Gmail account"}));
+    const manualGmails = (data || []).map(item => ({...item, source:"manual", available:true}));
 
-    // This page is reserved for manually added Nigeria Email inventory.
-    // Provider-supplied Mail products must remain in their separate catalogue.
+    // Load the provider's Mail catalogue and display its returned products
+    // alongside the manually managed Gmail inventory.
+    let providerGmails = [];
+    try {
+        const {data:mailData,error:mailError} = await supabaseClient.functions.invoke(
+            "xclusive-mail-api",
+            {body:{action:"catalog"}}
+        );
+        if (!mailError && mailData?.ok && Array.isArray(mailData.products)) {
+            providerGmails = mailData.products
+                .filter(item => item.enabled)
+                .map(item => ({
+                    id:item.id,
+                    gmail:item.name,
+                    price:Number(item.customer_price ?? item.price ?? 0),
+                    source:"xclusive_mail",
+                    description:String(item.description ?? ""),
+                    available:item.available === true
+                }));
+        } else if (mailError) {
+            console.warn("Provider Gmail catalogue is temporarily unavailable.");
+        }
+    } catch (mailError) {
+        console.warn("Provider Gmail catalogue is temporarily unavailable.");
+    }
 
+    availableGmails = [...manualGmails, ...providerGmails];
     renderGmails();
 
 }
@@ -759,7 +779,7 @@ function renderGmails(){
         const item = document.createElement("div");
         item.className = "gmail-item";
         const isAvailable = gmail.available !== false;
-        const description = gmail.source === "xclusive_mail" ? (gmail.description || "") : "Manually added Gmail account";
+        const description = gmail.description || "";
         item.innerHTML = `
             <div class="gmail-left">
                 <div class="gmail-icon">📧</div>
@@ -799,7 +819,7 @@ function openGmail(gmail){
                 gmail.price ?? gmail.customer_price
             );
 
-    document.getElementById("detailDescription").textContent = gmail.description || (gmail.source === "manual" ? "Manually added Gmail account." : "No description was provided by the service provider.");
+    document.getElementById("detailDescription").textContent = gmail.description || "";
     const available = gmail.available !== false;
     const availability = document.getElementById("detailAvailability");
     availability.innerHTML = '<span class="availability ' + (available ? '' : 'unavailable') + '">' + (available ? '● Available' : '● Currently unavailable') + '</span>';
