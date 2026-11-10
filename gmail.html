@@ -455,11 +455,11 @@
         </h1>
 
         <p class="page-description">
-            Browse email services and available Gmail inventory in one place.
+            Browse Gmail accounts added by our team under Nigeria Email.
         </p>
         <div class="category-heading">
             <strong>🇳🇬 Nigeria Email</strong>
-            <span>Provider email services and manually added Gmail accounts, together in one category.</span>
+            <span>Gmail accounts manually added by the admin team.</span>
         </div>
 
         <div
@@ -736,30 +736,8 @@ async function loadGmails(){
 
     availableGmails = (data || []).map(item => ({...item, source:"manual", available:true, description:"Manually added Gmail account"}));
 
-    try {
-        const {data:mailData,error:mailError} = await supabaseClient.functions.invoke(
-            "xclusive-mail-api",
-            {body:{action:"catalog"}}
-        );
-        if (!mailError && mailData?.ok && Array.isArray(mailData.products)) {
-            const mailProducts = mailData.products
-                .filter(item => item.enabled)
-                .map(item => ({
-                    id:item.id,
-                    gmail:item.name,
-                    price:Number(item.customer_price || 0),
-                    source:"xclusive_mail",
-                    provider_price:Number(item.provider_price || 0),
-                    description:String(item.description || "No description was provided by the service provider."),
-                    available:item.available === true
-                }));
-            availableGmails = availableGmails.concat(mailProducts);
-        } else if (mailError) {
-            console.warn("Additional Gmail catalogue is temporarily unavailable.");
-        }
-    } catch (mailError) {
-        console.warn("Additional Gmail catalogue is temporarily unavailable.");
-    }
+    // This page is reserved for manually added Nigeria Email inventory.
+    // Provider-supplied Mail products must remain in their separate catalogue.
 
     renderGmails();
 
