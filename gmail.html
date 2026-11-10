@@ -714,11 +714,6 @@ async function loadGmails(){
         );
 
 
-    document
-        .getElementById("loading")
-        .style.display = "none";
-
-
     if(error){
 
         showMessage(
@@ -759,6 +754,12 @@ async function loadGmails(){
     }
 
     availableGmails = [...manualGmails, ...providerGmails];
+
+    // Keep the existing loading indicator visible until BOTH inventories finish loading.
+    document
+        .getElementById("loading")
+        .style.display = "none";
+
     renderGmails();
 
 }
