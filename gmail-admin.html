@@ -379,6 +379,36 @@
   </div>
 
 
+  <!-- XCLUSIVE MAIL PRICING: kept inside the existing Gmail admin centre -->
+  <div class="card inventory-card">
+    <div class="inventory-header">
+      <h2 style="margin:0;">MAIL PRODUCTS & PRICING</h2>
+      <button class="refresh-btn" onclick="loadXclusiveMailAdmin()">Refresh</button>
+    </div>
+    <p class="small-note">These products appear inside the customer Gmail page. Your manually added Gmail inventory above remains unchanged.</p>
+    <label for="xmailPricingMode">Pricing method</label>
+    <select id="xmailPricingMode" onchange="toggleXmailGlobalPrice()">
+      <option value="markup">One markup percentage for all</option>
+      <option value="fixed_all">One fixed selling price for all</option>
+      <option value="per_product">Set markup or fixed price per product</option>
+    </select>
+    <div id="xmailGlobalMarkupWrap">
+      <label for="xmailGlobalMarkup">Global markup (%)</label>
+      <input id="xmailGlobalMarkup" type="number" min="0" step="0.01" placeholder="e.g. 30">
+    </div>
+    <div id="xmailGlobalFixedWrap" style="display:none;">
+      <label for="xmailGlobalFixed">Fixed selling price for all (₦)</label>
+      <input id="xmailGlobalFixed" type="number" min="0" step="0.01" placeholder="e.g. 2500">
+    </div>
+    <button class="primary-btn" onclick="saveXmailSettings()">SAVE PRICING METHOD</button>
+    <div class="table-wrap" style="margin-top:18px;">
+      <table style="min-width:700px;">
+        <thead><tr><th>Mail product</th><th>Provider price</th><th>Markup %</th><th>Fixed price (₦)</th><th>Enabled</th><th>Action</th></tr></thead>
+        <tbody id="xmailPricingBody"><tr><td colspan="6" class="empty">Load Mail products to manage prices.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
   <!-- =========================
        INVENTORY
   ========================== -->
@@ -1407,6 +1437,89 @@
       );
   }
 
+
+  // =====================================================
+  // XCLUSIVE MAIL CATALOGUE & PRICING
+  // =====================================================
+  let xmailProducts = [];
+
+  function toggleXmailGlobalPrice(){
+    const mode=document.getElementById('xmailPricingMode').value;
+    document.getElementById('xmailGlobalMarkupWrap').style.display=mode==='markup'?'block':'none';
+    document.getElementById('xmailGlobalFixedWrap').style.display=mode==='fixed_all'?'block':'none';
+  }
+
+  async function callXmail(action,extra={}){
+    const {data,error}=await supabaseClient.functions.invoke('xclusive-mail-api',{body:{action,...extra}});
+    if(error) throw new Error(data?.error || error.message || 'Mail service request failed.');
+    if(data?.error) throw new Error(data.error);
+    return data;
+  }
+
+  async function loadXclusiveMailAdmin(){
+    const body=document.getElementById('xmailPricingBody');
+    body.innerHTML='<tr><td colspan="6" class="empty">Loading Mail products...</td></tr>';
+    try{
+      const data=await callXmail('admin_catalog');
+      xmailProducts=data.products||[];
+      const settings=data.settings||{};
+      document.getElementById('xmailPricingMode').value=settings.pricing_mode||'markup';
+      document.getElementById('xmailGlobalMarkup').value=settings.global_markup??0;
+      document.getElementById('xmailGlobalFixed').value=settings.global_fixed_price??'';
+      toggleXmailGlobalPrice();
+      renderXmailPricing();
+    }catch(error){
+      body.innerHTML='<tr><td colspan="6" class="empty">Mail products could not be loaded. Please refresh.</td></tr>';
+      console.error('Mail pricing load failed:',error);
+      showMessage(error.message||'Mail products could not be loaded.','error');
+    }
+  }
+
+  function renderXmailPricing(){
+    const body=document.getElementById('xmailPricingBody');
+    if(!xmailProducts.length){
+      body.innerHTML='<tr><td colspan="6" class="empty">No Mail products were returned by the provider.</td></tr>';
+      return;
+    }
+    body.innerHTML=xmailProducts.map((item,index)=>`
+      <tr>
+        <td>${escapeHtml(item.name)}</td>
+        <td>₦${Number(item.provider_price||0).toLocaleString('en-NG')}</td>
+        <td><input id="xmMarkup_${index}" type="number" min="0" step="0.01" value="${Number(item.markup_percent||0)}" style="min-width:100px"></td>
+        <td><input id="xmFixed_${index}" type="number" min="0" step="0.01" placeholder="Use markup" value="${item.custom_price??''}" style="min-width:120px"></td>
+        <td><input id="xmEnabled_${index}" type="checkbox" ${item.enabled?'checked':''} style="width:auto"></td>
+        <td><button class="edit-btn" onclick="saveXmailProduct(${index})">Save</button></td>
+      </tr>`).join('');
+  }
+
+  async function saveXmailSettings(){
+    const mode=document.getElementById('xmailPricingMode').value;
+    const global_markup=Number(document.getElementById('xmailGlobalMarkup').value||0);
+    const fixedRaw=document.getElementById('xmailGlobalFixed').value;
+    if(mode==='fixed_all'&&(fixedRaw===''||!Number.isFinite(Number(fixedRaw))||Number(fixedRaw)<0)){
+      showMessage('Enter a valid fixed selling price.','error');return;
+    }
+    try{
+      await callXmail('save_settings',{pricing_mode:mode,global_markup,global_fixed_price:fixedRaw===''?null:Number(fixedRaw)});
+      showMessage('Mail pricing method saved.');
+      await loadXclusiveMailAdmin();
+    }catch(error){showMessage(error.message||'Could not save Mail pricing.','error');}
+  }
+
+  async function saveXmailProduct(index){
+    const item=xmailProducts[index];if(!item)return;
+    const markup=Number(document.getElementById('xmMarkup_'+index).value||0);
+    const fixedRaw=document.getElementById('xmFixed_'+index).value;
+    const enabled=document.getElementById('xmEnabled_'+index).checked;
+    if(!Number.isFinite(markup)||markup<0||(fixedRaw!==''&&(!Number.isFinite(Number(fixedRaw))||Number(fixedRaw)<0))){
+      showMessage('Enter valid product pricing.','error');return;
+    }
+    try{
+      await callXmail('save_product',{log_id:item.id,title:item.name,provider_price:item.provider_price,markup_percent:markup,custom_price:fixedRaw===''?null:Number(fixedRaw),enabled});
+      showMessage('Mail product price saved.');
+      await loadXclusiveMailAdmin();
+    }catch(error){showMessage(error.message||'Could not save product price.','error');}
+  }
 
   // =====================================================
   // START
