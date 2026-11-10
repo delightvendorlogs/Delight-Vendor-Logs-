@@ -723,9 +723,30 @@ async function loadGmails(){
     }
 
 
-    availableGmails =
-        data || [];
+    availableGmails = (data || []).map(item => ({...item, source:"manual"}));
 
+    try {
+        const {data:mailData,error:mailError} = await supabaseClient.functions.invoke(
+            "xclusive-mail-api",
+            {body:{action:"catalog"}}
+        );
+        if (!mailError && mailData?.ok && Array.isArray(mailData.products)) {
+            const mailProducts = mailData.products
+                .filter(item => item.enabled && item.available)
+                .map(item => ({
+                    id:item.id,
+                    gmail:item.name,
+                    price:Number(item.customer_price || 0),
+                    source:"xclusive_mail",
+                    provider_price:Number(item.provider_price || 0)
+                }));
+            availableGmails = availableGmails.concat(mailProducts);
+        } else if (mailError) {
+            console.warn("Additional Gmail catalogue is temporarily unavailable.");
+        }
+    } catch (mailError) {
+        console.warn("Additional Gmail catalogue is temporarily unavailable.");
+    }
 
     renderGmails();
 
@@ -799,7 +820,7 @@ function renderGmails(){
 
                         <div class="gmail-address">
                             ${escapeHtml(
-                                gmail.gmail
+                                gmail.gmail || gmail.name
                             )}
                         </div>
 
@@ -851,14 +872,14 @@ function openGmail(gmail){
     document
         .getElementById("detailGmail")
         .textContent =
-            gmail.gmail;
+            gmail.gmail || gmail.name;
 
 
     document
         .getElementById("detailPrice")
         .textContent =
             formatNaira(
-                gmail.price
+                gmail.price ?? gmail.customer_price
             );
 
 
@@ -937,12 +958,34 @@ async function buySelectedGmail(){
 
     hideMessage();
 
+    if(selectedGmail.source === "xclusive_mail"){
+        try{
+            const {data,error} = await supabaseClient.functions.invoke(
+                "xclusive-mail-api",
+                {body:{action:"buy",log_id:selectedGmail.id}}
+            );
+            if(error){
+                const msg=String(error.message || "");
+                showMessage(/insufficient/i.test(msg) ? "Insufficient funds. Please fund your wallet." : "Purchase could not be completed. Please try again.", "error");
+                return;
+            }
+            if(data?.success === true && data?.credential !== undefined){
+                showPurchaseResult(data);
+                return;
+            }
+            showMessage(data?.error || data?.message || "Purchase could not be completed. Please try again.", "error");
+        }catch(e){
+            showMessage("Purchase could not be completed. Please try again.", "error");
+        }finally{
+            buyButton.disabled=false;
+            buyButton.textContent="BUY NOW";
+        }
+        return;
+    }
 
     /*
-     * Stop the customer UI from staying
-     * on PROCESSING forever.
+     * Existing manually managed Gmail purchase flow remains unchanged.
      */
-
     let rpcResult;
 
     try{
@@ -1215,7 +1258,9 @@ function showPurchaseResult(data){
     document
         .getElementById("credential")
         .textContent =
-            data.credential || "";
+            typeof data.credential === "string"
+                ? data.credential
+                : JSON.stringify(data.credential || "", null, 2);
 
 
     document
