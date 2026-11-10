@@ -165,6 +165,41 @@
         .category-heading{margin:0 0 14px;padding:15px 17px;border:1px solid rgba(212,175,55,.22);border-radius:16px;background:linear-gradient(135deg,rgba(212,175,55,.12),rgba(212,175,55,.035))}
         .category-heading strong{display:block;color:#f0cf68;font-size:18px;font-weight:900}
         .category-heading span{display:block;margin-top:5px;color:#999;font-size:12px;line-height:1.5}
+        .gmail-search-wrap{
+            position:relative;
+            margin:0 0 18px;
+        }
+        .gmail-search-icon{
+            position:absolute;
+            left:16px;
+            top:50%;
+            transform:translateY(-52%);
+            color:#d4af37;
+            font-size:27px;
+            line-height:1;
+            pointer-events:none;
+        }
+        .gmail-search{
+            display:block;
+            width:100%;
+            box-sizing:border-box;
+            min-height:52px;
+            padding:0 16px 0 48px;
+            border:1px solid rgba(212,175,55,.28);
+            border-radius:15px;
+            outline:none;
+            background:#0d0d0d;
+            color:#f5f5f5;
+            font:inherit;
+            font-size:14px;
+            transition:border-color .18s ease,box-shadow .18s ease;
+        }
+        .gmail-search::placeholder{color:#858585}
+        .gmail-search:focus{
+            border-color:#d4af37;
+            box-shadow:0 0 0 3px rgba(212,175,55,.1);
+        }
+
         .gmail-list{
             display:flex;
             flex-direction:column;
@@ -478,6 +513,19 @@
             Browse available Gmail accounts and email services.
         </p>
 
+        <div class="gmail-search-wrap">
+            <span class="gmail-search-icon" aria-hidden="true">⌕</span>
+            <input
+                id="gmailSearch"
+                class="gmail-search"
+                type="search"
+                placeholder="Search any Gmail..."
+                autocomplete="off"
+                aria-label="Search Gmail products"
+                oninput="filterGmails()"
+            >
+        </div>
+
         <div
             id="loading"
             class="loading"
@@ -787,14 +835,35 @@ async function loadGmails(){
    RENDER GMAILS
 ========================= */
 
+function filterGmails(){
+    renderGmails();
+}
+
 function renderGmails(){
     const list = document.getElementById("gmailList");
+    const search = document.getElementById("gmailSearch");
+    const query = String(search?.value || "").trim().toLowerCase();
+    const matches = availableGmails.filter(gmail => {
+        const searchable = [
+            gmail.gmail,
+            gmail.name,
+            gmail.description,
+            gmail.price,
+            gmail.customer_price
+        ].join(" ").toLowerCase();
+        return searchable.includes(query);
+    });
+
     list.innerHTML = "";
-    if(availableGmails.length === 0){
-        list.innerHTML = `<div class="empty"><div class="empty-icon">📧</div><div class="empty-title">No Email Services Available</div><div class="empty-text">There are currently no email products or Gmail accounts available. Please check again later.</div></div>`;
+    if(matches.length === 0){
+        const message = query
+            ? "No Gmail products match your search. Try another name or keyword."
+            : "There are currently no email products or Gmail accounts available. Please check again later.";
+        list.innerHTML = `<div class="empty"><div class="empty-icon">📧</div><div class="empty-title">${query ? "No Search Results" : "No Email Services Available"}</div><div class="empty-text">${message}</div></div>`;
         return;
     }
-    availableGmails.forEach(gmail => {
+
+    matches.forEach(gmail => {
         const item = document.createElement("div");
         item.className = "gmail-item";
         const isAvailable = gmail.available !== false;
