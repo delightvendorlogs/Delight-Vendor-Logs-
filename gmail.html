@@ -142,6 +142,9 @@
             line-height:1.5;
         }
 
+        .category-heading{margin:0 0 14px;padding:15px 17px;border:1px solid rgba(212,175,55,.22);border-radius:16px;background:linear-gradient(135deg,rgba(212,175,55,.12),rgba(212,175,55,.035))}
+        .category-heading strong{display:block;color:#f0cf68;font-size:18px;font-weight:900}
+        .category-heading span{display:block;margin-top:5px;color:#999;font-size:12px;line-height:1.5}
         .gmail-list{
             display:flex;
             flex-direction:column;
@@ -193,11 +196,12 @@
             color:#fff;
         }
 
-        .gmail-sub{
-            margin-top:4px;
-            color:#777;
-            font-size:12px;
-        }
+        .gmail-sub{margin-top:4px;color:#9b9b9b;font-size:12px;line-height:1.45}
+        .service-description{margin-top:6px;color:#888;font-size:12px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+        .availability{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:11px;font-weight:800;padding:5px 9px;border-radius:999px;background:#102015;color:#4ade80;border:1px solid rgba(74,222,128,.2)}
+        .availability.unavailable{background:#241313;color:#f87171;border-color:rgba(248,113,113,.22)}
+        .detail-description{color:#aaa;font-size:14px;line-height:1.65;margin:-10px 0 18px;white-space:pre-wrap}
+        .detail-availability{margin:0 0 18px}
 
         .arrow{
             color:#f0cf68;
@@ -451,8 +455,12 @@
         </h1>
 
         <p class="page-description">
-            Select an available Gmail account to view its price and purchase it.
+            Browse email services and available Gmail inventory in one place.
         </p>
+        <div class="category-heading">
+            <strong>🇳🇬 Nigeria Email</strong>
+            <span>Provider email services and manually added Gmail accounts, together in one category.</span>
+        </div>
 
         <div
             id="loading"
@@ -487,6 +495,9 @@
                 id="detailGmail"
                 class="detail-gmail"
             ></div>
+
+            <div id="detailDescription" class="detail-description"></div>
+            <div id="detailAvailability" class="detail-availability"></div>
 
             <div class="price-box">
 
@@ -723,7 +734,7 @@ async function loadGmails(){
     }
 
 
-    availableGmails = (data || []).map(item => ({...item, source:"manual"}));
+    availableGmails = (data || []).map(item => ({...item, source:"manual", available:true, description:"Manually added Gmail account"}));
 
     try {
         const {data:mailData,error:mailError} = await supabaseClient.functions.invoke(
@@ -732,13 +743,15 @@ async function loadGmails(){
         );
         if (!mailError && mailData?.ok && Array.isArray(mailData.products)) {
             const mailProducts = mailData.products
-                .filter(item => item.enabled && item.available)
+                .filter(item => item.enabled)
                 .map(item => ({
                     id:item.id,
                     gmail:item.name,
                     price:Number(item.customer_price || 0),
                     source:"xclusive_mail",
-                    provider_price:Number(item.provider_price || 0)
+                    provider_price:Number(item.provider_price || 0),
+                    description:String(item.description || "No description was provided by the service provider."),
+                    available:item.available === true
                 }));
             availableGmails = availableGmails.concat(mailProducts);
         } else if (mailError) {
@@ -758,106 +771,32 @@ async function loadGmails(){
 ========================= */
 
 function renderGmails(){
-
-    const list =
-        document.getElementById(
-            "gmailList"
-        );
-
+    const list = document.getElementById("gmailList");
     list.innerHTML = "";
-
-
-    if(
-        availableGmails.length === 0
-    ){
-
-        list.innerHTML = `
-
-            <div class="empty">
-
-                <div class="empty-icon">
-                    📧
-                </div>
-
-                <div class="empty-title">
-                    No Gmail Available
-                </div>
-
-                <div class="empty-text">
-                    There are currently no Gmail accounts available for purchase.
-                    Please check again later.
-                </div>
-
-            </div>
-
-        `;
-
+    if(availableGmails.length === 0){
+        list.innerHTML = `<div class="empty"><div class="empty-icon">📧</div><div class="empty-title">No Email Services Available</div><div class="empty-text">There are currently no email products or Gmail accounts available. Please check again later.</div></div>`;
         return;
     }
-
-
-    availableGmails.forEach(
-        gmail => {
-
-            const item =
-                document.createElement(
-                    "div"
-                );
-
-            item.className =
-                "gmail-item";
-
-
-            item.innerHTML = `
-
-                <div class="gmail-left">
-
-                    <div class="gmail-icon">
-                        📧
-                    </div>
-
-                    <div>
-
-                        <div class="gmail-address">
-                            ${escapeHtml(
-                                gmail.gmail || gmail.name
-                            )}
-                        </div>
-
-                        <div class="gmail-sub">
-                            Available
-                        </div>
-
-                    </div>
-
+    availableGmails.forEach(gmail => {
+        const item = document.createElement("div");
+        item.className = "gmail-item";
+        const isAvailable = gmail.available !== false;
+        const description = gmail.source === "xclusive_mail" ? (gmail.description || "") : "Manually added Gmail account";
+        item.innerHTML = `
+            <div class="gmail-left">
+                <div class="gmail-icon">📧</div>
+                <div>
+                    <div class="gmail-address">${escapeHtml(gmail.gmail || gmail.name)}</div>
+                    ${description ? `<div class="service-description">${escapeHtml(description)}</div>` : ""}
+                    <span class="availability ${isAvailable ? "" : "unavailable"}">${isAvailable ? "● Available" : "● Currently unavailable"}</span>
                 </div>
-
-                <div class="arrow">
-                    ›
-                </div>
-
-            `;
-
-
-            item.onclick =
-                function(){
-
-                    openGmail(
-                        gmail
-                    );
-
-                };
-
-
-            list.appendChild(
-                item
-            );
-
-        }
-    );
-
+            </div>
+            <div class="arrow">${isAvailable ? "›" : "·"}</div>`;
+        if(isAvailable){ item.onclick = function(){ openGmail(gmail); }; }
+        else { item.style.cursor = "default"; item.setAttribute("aria-disabled","true"); }
+        list.appendChild(item);
+    });
 }
-
 
 /* =========================
    OPEN GMAIL
@@ -881,6 +820,11 @@ function openGmail(gmail){
             formatNaira(
                 gmail.price ?? gmail.customer_price
             );
+
+    document.getElementById("detailDescription").textContent = gmail.description || (gmail.source === "manual" ? "Manually added Gmail account." : "No description was provided by the service provider.");
+    const available = gmail.available !== false;
+    const availability = document.getElementById("detailAvailability");
+    availability.innerHTML = '<span class="availability ' + (available ? '' : 'unavailable') + '">' + (available ? '● Available' : '● Currently unavailable') + '</span>';
 
 
     document
@@ -907,12 +851,8 @@ function openGmail(gmail){
         );
 
 
-    buyButton.disabled =
-        false;
-
-
-    buyButton.textContent =
-        "BUY NOW";
+    buyButton.disabled = gmail.available === false;
+    buyButton.textContent = gmail.available === false ? "CURRENTLY UNAVAILABLE" : "BUY NOW";
 
 
     hideMessage();
