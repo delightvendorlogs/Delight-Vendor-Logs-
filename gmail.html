@@ -244,6 +244,14 @@
             font-size:22px;
         }
 
+        .gmail-price{
+            margin-top:5px;
+            color:#f0cf68;
+            font-size:15px;
+            font-weight:900;
+            letter-spacing:.1px;
+        }
+
         .gmail-address{
             font-size:15px;
             font-weight:800;
@@ -873,6 +881,7 @@ function renderGmails(){
                 <div class="gmail-icon">📧</div>
                 <div>
                     <div class="gmail-address">${escapeHtml(gmail.gmail || gmail.name)}</div>
+                    <div class="gmail-price">${formatNaira(gmail.price ?? gmail.customer_price ?? 0)}</div>
                     ${description ? `<div class="service-description">${escapeHtml(description)}</div>` : ""}
                     <span class="availability ${isAvailable ? "" : "unavailable"}">${isAvailable ? "● Available" : "● Currently unavailable"}</span>
                 </div>
