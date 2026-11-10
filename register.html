@@ -92,6 +92,15 @@ async function notifyAdminAuthActivity(eventType) {
     else if (data && data.emailSent === false && data.telegramSent === false) console.warn("Admin alerts not delivered:", data.emailError, data.telegramError);
   } catch (error) { console.warn("Admin activity alert failed:", error); }
 }
+
+async function sendWelcomeForRegistration(userId) {
+  try {
+    const { data, error } = await client.functions.invoke("welcome-registration", { body: { user_id: userId } });
+    if (error) console.warn("Welcome email/notification:", error.message);
+    else if (data && data.emailSent === false) console.warn("Welcome email was not delivered:", data.emailError);
+  } catch (error) { console.warn("Welcome email/notification failed:", error); }
+}
+
 const params = new URLSearchParams(window.location.search);
 const referralFromUrl = (params.get("ref") || params.get("referral_code") || "").trim().toUpperCase();
 if (referralFromUrl) referralInput.value = referralFromUrl;
@@ -121,6 +130,7 @@ createButton.addEventListener("click", async () => {
       options: { data: { name: fullName, first_name: firstName, last_name: lastName, referral_code: referralCode || null } }
     });
     if (error) throw error;
+    if (data && data.user && data.user.id) await sendWelcomeForRegistration(data.user.id);
     if (data && data.session) {
       void notifyAdminAuthActivity("signup");
       showMessage("Account created successfully. Redirecting…", "success");
