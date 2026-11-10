@@ -116,6 +116,26 @@
             font-weight:700;
         }
 
+        /* Match the animated service loader used when opening a dashboard category. */
+        .gmail-service-loading-panel{display:grid;gap:16px;padding:18px 0 12px}
+        .gmail-service-loading-head{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;color:#e8d39a;font-size:12px;font-weight:650;letter-spacing:.25px}
+        .gmail-service-loading-logo{width:29px;height:29px;object-fit:contain;animation:gmailServiceLogoPulse 1.05s ease-in-out infinite;filter:drop-shadow(0 0 8px #d4af3740)}
+        .gmail-service-loading-track{width:112px;height:3px;overflow:hidden;border-radius:99px;background:#ffffff20}
+        .gmail-service-loading-track:after{content:"";display:block;width:38%;height:100%;border-radius:99px;background:linear-gradient(90deg,#8f6b25,#f0d48b,#8f6b25);animation:gmailServiceProgress 1.15s ease-in-out infinite}
+        .gmail-service-loading-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+        .gmail-service-skeleton{min-height:174px;padding:10px;border:1px solid #ffffff12;border-radius:14px;background:linear-gradient(145deg,#171717,#101010)}
+        .gmail-service-skeleton-media,.gmail-service-skeleton-line{border-radius:8px;background:linear-gradient(100deg,#ffffff08 18%,#ffffff1b 45%,#ffffff08 72%);background-size:220% 100%;animation:gmailServiceShimmer 1.35s linear infinite}
+        .gmail-service-skeleton-media{height:83px;margin-bottom:12px}
+        .gmail-service-skeleton-line{height:8px;margin:9px 0}
+        .gmail-service-skeleton-line.short{width:55%}
+        .gmail-service-skeleton-line.medium{width:76%}
+        .gmail-service-skeleton-button{height:27px;margin-top:12px;border-radius:8px;background:#ffffff0d}
+        @keyframes gmailServiceLogoPulse{0%,100%{transform:scale(.88);opacity:.78}50%{transform:scale(1.08);opacity:1}}
+        @keyframes gmailServiceProgress{0%{transform:translateX(-120%)}100%{transform:translateX(360%)}}
+        @keyframes gmailServiceShimmer{to{background-position:-220% 0}}
+        @media(min-width:620px){.gmail-service-loading-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+        @media(prefers-reduced-motion:reduce){.gmail-service-loading-panel *{animation:none!important}}
+
         .empty{
             background:#0d0d0d;
             border:1px solid rgba(212,175,55,.14);
@@ -684,13 +704,11 @@ async function loadGmails(){
 
     resetToListView();
 
-    document
-        .getElementById("loading")
-        .style.display = "block";
+    const loading = document.getElementById("loading");
+    loading.style.display = "block";
+    loading.innerHTML = '<div class="gmail-service-loading-panel" role="status" aria-live="polite"><div class="gmail-service-loading-head"><img class="gmail-service-loading-logo" src="assets/dv-logo.png" alt=""><span>Loading service…</span><span class="gmail-service-loading-track" aria-hidden="true"></span></div><div class="gmail-service-loading-grid" aria-hidden="true"><div class="gmail-service-skeleton"><div class="gmail-service-skeleton-media"></div><div class="gmail-service-skeleton-line medium"></div><div class="gmail-service-skeleton-line short"></div><div class="gmail-service-skeleton-button"></div></div><div class="gmail-service-skeleton"><div class="gmail-service-skeleton-media"></div><div class="gmail-service-skeleton-line medium"></div><div class="gmail-service-skeleton-line short"></div><div class="gmail-service-skeleton-button"></div></div></div></div>';
 
-    document
-        .getElementById("gmailList")
-        .innerHTML = "";
+    document.getElementById("gmailList").innerHTML = "";
 
 
     const {
