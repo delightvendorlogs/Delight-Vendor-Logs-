@@ -68,10 +68,11 @@
   window.fetch = function(input, init) {
     var saved = readAdminImpersonation();
     var requestUrl = typeof input === "string" ? input : (input && input.url) || "";
-    if (saved && saved.site === "logs" && saved.session_id && requestUrl.indexOf("https://hkfhehbhmucymusaytoe.supabase.co/") === 0) {
+    if (saved && saved.site === "logs" && saved.session_id && requestUrl.indexOf("https://hkfhehbhmucymusaytoe.supabase.co/rest/v1/") === 0) {
       var headers = new Headers(input instanceof Request ? input.headers : undefined);
       if (init && init.headers) new Headers(init.headers).forEach(function(value,key){headers.set(key,value);});
-      headers.set("x-dv-admin-session-id", saved.session_id);
+      var clientInfo = headers.get("x-client-info") || "supabase-js";
+      headers.set("x-client-info", clientInfo + "; dv-admin-session-id=" + saved.session_id);
       init = Object.assign({}, init || {}, {headers:headers});
     }
     return originalDvFetch(input, init);
