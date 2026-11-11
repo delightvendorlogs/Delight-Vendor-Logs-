@@ -814,15 +814,7 @@ function createVirtualNumberCard(order){
 
         smsSection = `
 
-            <div class="sms-box">
-
-                <div class="virtual-label">
-                    Full SMS
-                </div>
-
-                ${esc(sms)}
-
-            </div>
+            <div class="sms-box">${esc(sms)}</div>
 
         `;
 
@@ -1619,5 +1611,9 @@ loadPurchases();
   .purchase-delivery{padding:9px!important}
 }
 </style>
-\n</body>
+\n
+<style id="dv-purchases-sms-full-display">
+.virtual-number-card .sms-box{max-height:none!important;height:auto!important;overflow:visible!important;white-space:pre-wrap!important;overflow-wrap:anywhere!important;background:transparent!important;border:0!important;padding:2px 0!important;margin-top:7px!important;border-radius:0!important;font-size:13px!important;line-height:1.5!important;color:#e8e4da!important}
+</style>
+</body>
 </html>
