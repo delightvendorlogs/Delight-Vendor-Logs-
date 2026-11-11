@@ -680,7 +680,9 @@ th{background:#211b10!important;color:#f3d36b!important}
       sessionStorage.setItem("dv-admin-impersonation", JSON.stringify(backup));
       const { data, error } = await supabaseClient.functions.invoke("admin-user-control", { body: { action: "impersonate", user_id: targetId } });
       if (error) throw error;
-      if (!data || !data.token_hash) throw new Error(data && data.error || "Could not create the temporary customer session.");
+      if (!data || !data.token_hash || !data.session_id) throw new Error(data && data.error || "Could not create the temporary customer session.");
+      backup.session_id = data.session_id;
+      sessionStorage.setItem("dv-admin-impersonation", JSON.stringify(backup));
       const { error: verifyError } = await supabaseClient.auth.verifyOtp({ token_hash: data.token_hash, type: "magiclink" });
       if (verifyError) throw verifyError;
       location.assign("dashboard.html");
