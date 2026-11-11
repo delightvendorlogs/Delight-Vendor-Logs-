@@ -492,6 +492,7 @@ th{background:#211b10!important;color:#f3d36b!important}
         </div>
 
       </div>
+      <div style="margin-top:14px"><button class="primary" id="loginAsCustomerButton" type="button">Login as Customer</button></div>
 
     </section>
 
@@ -659,6 +660,41 @@ th{background:#211b10!important;color:#f3d36b!important}
   let currentTab = "virtual";
   let virtualOrdersCache = [];
 
+  async function loginAsCustomer() {
+    const targetId = selectedUserId;
+    if (!targetId) return;
+    const button = document.getElementById("loginAsCustomerButton");
+    const original = button ? button.textContent : "Login as Customer";
+    if (button) { button.disabled = true; button.textContent = "Opening customer account…"; }
+    let backup = null;
+    try {
+      const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+      if (sessionError || !sessionData.session) throw sessionError || new Error("Your admin session has expired. Sign in again.");
+      backup = {
+        site: "logs",
+        admin: { access_token: sessionData.session.access_token, refresh_token: sessionData.session.refresh_token },
+        target_user_id: targetId,
+        return_to: "view-user.html?user=" + encodeURIComponent(targetId),
+        started_at: new Date().toISOString()
+      };
+      sessionStorage.setItem("dv-admin-impersonation", JSON.stringify(backup));
+      const { data, error } = await supabaseClient.functions.invoke("admin-user-control", { body: { action: "impersonate", user_id: targetId } });
+      if (error) throw error;
+      if (!data || !data.token_hash) throw new Error(data && data.error || "Could not create the temporary customer session.");
+      const { error: verifyError } = await supabaseClient.auth.verifyOtp({ token_hash: data.token_hash, type: "magiclink" });
+      if (verifyError) throw verifyError;
+      location.assign("dashboard.html");
+    } catch (error) {
+      if (backup) {
+        try { await supabaseClient.auth.setSession({ access_token: backup.admin.access_token, refresh_token: backup.admin.refresh_token }); } catch (_) {}
+        sessionStorage.removeItem("dv-admin-impersonation");
+      }
+      const box = document.getElementById("mainError");
+      if (box) box.innerHTML = '<div class="error">' + escapeHtml(error.message || "Could not open customer account.") + '</div>';
+      if (button) { button.disabled = false; button.textContent = original; }
+    }
+  }
+
 
   /*
   ==========================================
@@ -671,6 +707,8 @@ th{background:#211b10!important;color:#f3d36b!important}
     async () => {
 
       await checkAdminAccess();
+      const loginButton = document.getElementById("loginAsCustomerButton");
+      if (loginButton) loginButton.addEventListener("click", loginAsCustomer);
 
       document
         .getElementById("userSearch")
