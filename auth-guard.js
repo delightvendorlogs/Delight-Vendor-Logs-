@@ -52,6 +52,38 @@
   window.addEventListener("beforeunload",startNavigationProgress);
 
   var base = new URL("./", location.href);
+
+  var activeAuthClient = null;
+  function isAdminRoute() {
+    var file = location.pathname.split("/").pop().toLowerCase();
+    return file.indexOf("admin") === 0 || ["view-user.html","delete-users.html","override-price.html","pending.html"].indexOf(file) >= 0;
+  }
+  function readAdminImpersonation() {
+    try { return JSON.parse(sessionStorage.getItem("dv-admin-impersonation") || "null"); } catch (_) { return null; }
+  }
+  async function restoreAdminSession(client) {
+    var saved = readAdminImpersonation();
+    if (!saved || saved.site !== "logs" || !saved.admin || !saved.admin.access_token || !saved.admin.refresh_token) return false;
+    try {
+      var restored = await client.auth.setSession({access_token:saved.admin.access_token,refresh_token:saved.admin.refresh_token});
+      if (restored.error) throw restored.error;
+      try {
+        await fetch("https://hkfhehbhmucymusaytoe.supabase.co/functions/v1/admin-user-control", {
+          method:"POST",
+          headers:{"Content-Type":"application/json","apikey":"sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_","Authorization":"Bearer "+saved.admin.access_token},
+          body:JSON.stringify({action:"end",target_user_id:saved.target_user_id})
+        });
+      } catch (auditError) { console.warn("Could not write admin session-end audit:",auditError); }
+      sessionStorage.removeItem("dv-admin-impersonation");
+      return true;
+    } catch (error) {
+      console.error("Could not restore administrator session:",error);
+      return false;
+    }
+  }
+  window.addEventListener("pageshow",function(event){
+    if(event.persisted && isAdminRoute() && activeAuthClient) restoreAdminSession(activeAuthClient);
+  });
   var SUPABASE_URL = "https://hkfhehbhmucymusaytoe.supabase.co";
   var SUPABASE_KEY = "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
@@ -120,6 +152,8 @@
           detectSessionInUrl: true
         }
       });
+      activeAuthClient = client;
+      if (isAdminRoute()) await restoreAdminSession(client);
 
       var sessionResult = await withTimeout(client.auth.getSession(), 12000);
       var session = sessionResult && sessionResult.data && sessionResult.data.session;
@@ -156,6 +190,12 @@
       finishAuthLoading();
       client.auth.onAuthStateChange(function (event, nextSession) {
         if (event === "SIGNED_OUT" || (event === "INITIAL_SESSION" && !nextSession)) {
+          var saved = readAdminImpersonation();
+          if (saved && saved.site === "logs" && !isAdminRoute()) {
+            var returnTo = saved.return_to || "view-user.html";
+            restoreAdminSession(client).then(function(ok){ location.replace(ok ? returnTo : "login.html"); });
+            return;
+          }
           goToLogin();
         }
       });
