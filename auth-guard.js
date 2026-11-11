@@ -87,6 +87,24 @@
       });
     }
   });
+  // Mobile-friendly, invisible exit gesture: tap the page logo five times quickly.
+  var dvExitTapCount=0,dvExitTapTimer=null;
+  document.addEventListener("click",function(event){
+    var saved=readAdminImpersonation();
+    if(!saved||saved.site!=="logs"||isAdminRoute()||!activeAuthClient)return;
+    var logo=event.target&&event.target.closest?event.target.closest(".brand-logo, .brand img, header .brand img"):null;
+    if(!logo)return;
+    event.preventDefault();event.stopPropagation();
+    dvExitTapCount++;
+    if(dvExitTapTimer)clearTimeout(dvExitTapTimer);
+    dvExitTapTimer=setTimeout(function(){dvExitTapCount=0;},2500);
+    if(dvExitTapCount>=5){
+      dvExitTapCount=0;clearTimeout(dvExitTapTimer);
+      restoreAdminSession(activeAuthClient).then(function(ok){
+        if(ok)location.replace(saved.return_to || "view-user.html");
+      });
+    }
+  },true);
   async function restoreAdminSession(client) {
     var saved = readAdminImpersonation();
     if (!saved || saved.site !== "logs" || !saved.admin || !saved.admin.access_token || !saved.admin.refresh_token) return false;
