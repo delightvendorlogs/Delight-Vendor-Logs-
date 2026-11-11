@@ -153,7 +153,7 @@ p{line-height:1.5}
 .sms-box{background:#1a1a1a;border:1px solid #2c2c2c;border-radius:14px;padding:16px;margin-top:14px}
 .sms-heading{font-size:12px;color:var(--muted);text-align:center}
 .sms-code{font-size:32px;font-weight:900;text-align:center;margin:15px 0;letter-spacing:1px}
-.copy-button{display:block;margin:0 auto;border:1px solid #444;background:#222;color:white;border-radius:30px;padding:12px 22px;font-weight:800}
+.copy-button{display:block;margin:0 auto;border:1px solid #444;background:#222;color:white;border-radius:30px;padding:12px 22px;font-weight:800}.copy-button.copied{background:#123b25;border-color:#2eae68;color:#a5f3c3}
 .order-footnote{font-size:12px;color:var(--muted);line-height:1.5;margin:14px 0 0}
 .order-service{font-size:13px;color:#d5d5d5;margin-top:10px}
 hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
@@ -1339,7 +1339,7 @@ function renderOrders(){
    html+=`<div class="sms-box">
     <div class="sms-heading">VERIFICATION CODE</div>
     <div class="sms-code">${escapeHTML(code||"Retrieving verification code…")}</div>
-    ${code?`<button class="copy-button" onclick="copyOrderCode(${id})">▢ &nbsp; Copy Code</button>`:""}
+    ${code?`<button class="copy-button" id="copy-code-${id}" onclick="copyOrderCode(${id})">▢ &nbsp; Copy Code</button>`:""}
     ${sms?`<hr><div class="order-line">${escapeHTML(sms)}</div>`:""}
    </div>`;
   }
@@ -1402,9 +1402,10 @@ async function copyOrderCode(id){
  const o=allOrders.find(x=>Number(x.id)===Number(id));
  const code=getCode(o||{});
  if(!code){showMessage("ordersMessage","The verification code is still being retrieved. Please refresh shortly.","error");return;}
+ let copied=false;
  try{
   await navigator.clipboard.writeText(String(code));
-  showMessage("ordersMessage","Verification code copied.","success");
+  copied=true;
  }catch{
   const t=document.createElement("textarea");
   t.value=String(code);
@@ -1412,10 +1413,25 @@ async function copyOrderCode(id){
   t.style.opacity="0";
   document.body.appendChild(t);
   t.select();
-  let ok=false;
-  try{ok=document.execCommand("copy");}catch{}
+  try{copied=document.execCommand("copy");}catch{copied=false;}
   t.remove();
-  showMessage("ordersMessage",ok?"Verification code copied.":"Unable to copy automatically. Please select the code manually.",ok?"success":"error");
+ }
+ const button=document.getElementById("copy-code-"+id);
+ if(copied){
+  if(button){
+   button.textContent="✓ Copied";
+   button.classList.add("copied");
+   button.disabled=true;
+   window.setTimeout(()=>{
+    if(!button.isConnected)return;
+    button.textContent="▢  Copy Code";
+    button.classList.remove("copied");
+    button.disabled=false;
+   },2000);
+  }
+  showMessage("ordersMessage","Verification code copied.","success");
+ }else{
+  showMessage("ordersMessage","Unable to copy automatically. Please select the code manually.","error");
  }
 }
 
