@@ -3050,6 +3050,8 @@ header{gap:10px}.brand{order:0;flex:1}
 @media(max-width:420px){header{padding-left:12px;padding-right:12px}.logo{width:42px;height:42px}.menu-btn{flex-basis:39px;width:39px;height:39px}.notification-btn{flex-basis:38px;width:38px;height:38px}.brand{gap:8px}.brand h1{font-size:15px}.brand p{font-size:10px}.all-services-banner{padding:12px 10px;gap:8px}.all-services-copy strong{font-size:12px}.all-services-copy small{font-size:10px}}
 
 .menu-btn{display:grid;place-items:center}.menu-btn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}.notification-btn{display:grid;place-items:center}.notification-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.cat-icon{font-size:0!important}.cat-icon .dashboard-line-icon{width:22px;height:22px;display:block}
+
+.menu-item{display:flex;align-items:center;gap:12px}.menu-item-icon{width:22px;height:22px;flex:0 0 22px;display:inline-flex;align-items:center;justify-content:center;color:#d4af37}.menu-item-icon svg{width:20px;height:20px;display:block}.eye{display:grid;place-items:center}.balance-eye-icon{width:19px;height:19px;display:block}
 </style><link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css">
 <style id="dv-premium-marketplace">
 :root{color-scheme:dark;--dv-gold:#e5bd52;--dv-gold2:#b98b2e;--dv-ink:#090a0d;--dv-panel:#14161b;--dv-muted:#a9a394}
@@ -3198,7 +3200,7 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
                     type="button"
                     onclick="toggleBalance()"
                 >
-                    👁
+                    <svg class="balance-eye-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.5"/></svg>
                 </button>
 
             </div>
@@ -4267,7 +4269,7 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
         class="menu-item"
         onclick="location.href='profile.html'"
     >
-        👤 Profile
+        <span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></span> Profile
     </div>
 
 
@@ -4275,7 +4277,7 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
         class="menu-item"
         onclick="location.href='wallet.html'"
     >
-        💰 Fund Wallet
+        <span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 9h18M16 14h2"/></svg></span> Fund Wallet
     </div>
 
 
@@ -4283,7 +4285,7 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
         class="menu-item"
         onclick="location.href='transactions.html'"
     >
-        📜 Transactions
+        <span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg></span> Transactions
     </div>
 
 
@@ -4291,7 +4293,7 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
         class="menu-item"
         onclick="location.href='purchases.html'"
     >
-        🛒 My Purchases
+        <span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h2l2 11h10l2-8H7"/><circle cx="10" cy="20" r="1"/><circle cx="17" cy="20" r="1"/></svg></span> My Purchases
     </div>
 
 
@@ -4299,7 +4301,7 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
         class="menu-item"
         onclick="location.href='pending.html'"
     >
-        ⏳ Pending Orders
+        <span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span> Pending Orders
     </div>
 
 
@@ -4307,19 +4309,19 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
         class="menu-item"
         onclick="location.href='settings.html'"
     >
-        ⚙️ Settings
+        <span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19 13v-2l2-1-2-4-2 1-2-1V4H9v2L7 7 5 6 3 10l2 1v2l-2 1 2 4 2-1 2 1v2h6v-2l2-1 2 1 2-4z"/></svg></span> Settings
     </div>
 
 
-    <div class="menu-item" onclick="location.href='sociallogs.html'">🧰 All Services</div>
-    <div class="menu-item" onclick="location.href='refer.html'">🎁 Refer &amp; Earn</div>
-    <div class="menu-item" onclick="location.href='notification.html'">🔔 Notifications</div>
-    <div class="menu-item menu-logout" onclick="logoutFromDashboard()">🚪 Sign out</div>
+    <div class="menu-item" onclick="location.href='sociallogs.html'"><span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg></span> All Services</div>
+    <div class="menu-item" onclick="location.href='refer.html'"><span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><path d="M3 20a6 6 0 0 1 12 0M16 15a4 4 0 0 1 5 4"/></svg></span> Refer &amp; Earn</div>
+    <div class="menu-item" onclick="location.href='notification.html'"><span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></span> Notifications</div>
+    <div class="menu-item menu-logout" onclick="logoutFromDashboard()"><span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10"/></svg></span> Sign out</div>
     <div
         class="menu-item"
         onclick="openContactSupport()"
     >
-        📞 Contact Support
+        <span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4zM8 9h8M8 12h5"/></svg></span> Contact Support
     </div>
 
 
@@ -4328,7 +4330,7 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
         style="color:#b00020"
         onclick="closeMenu()"
     >
-        ✖ Close
+        <span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 12 12M18 6 6 18"/></svg></span> Close
     </div>
 
 
@@ -4834,10 +4836,10 @@ function toggleBalance(){
 
     document
         .querySelector(".eye")
-        .textContent =
+        .innerHTML =
             balanceHidden
-            ? "🙈"
-            : "👁";
+            ? '<svg class="balance-eye-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6 0 9.5 7 9.5 7a15 15 0 0 1-3 3.8M6.2 6.2C3.8 7.8 2.5 12 2.5 12s3.5 7 9.5 7c1.2 0 2.3-.2 3.3-.6"/></svg>'
+            : '<svg class="balance-eye-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.5"/></svg>';
 
 
     showBalance();
