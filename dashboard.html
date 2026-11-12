@@ -6204,7 +6204,7 @@ function renderCategories(){
     button.onclick=()=>selectCategory(category.name);
     const icon=document.createElement("div");
     icon.className="cat-icon";
-    icon.textContent=existingIcons[category.name]||category.icon||"📁";
+    icon.innerHTML=dashboardIcon(category.name,"dashboard-line-icon");
     const name=document.createElement("div");
     name.className="cat-name";
     name.textContent=category.name;
@@ -6312,10 +6312,10 @@ main{max-width:1160px!important;margin:0 auto!important;padding:20px clamp(14px,
 /* Five compact horizontal category shortcuts: four live categories plus More */
 #categoryGrid.grid{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:7px!important}
 #categoryGrid .cat{min-width:0!important;min-height:91px!important;padding:9px 3px!important;gap:7px!important;border:1px solid #302d25!important;border-radius:11px!important;background:#191a1e!important}
-#categoryGrid .cat-icon{width:35px!important;height:35px!important;flex:0 0 35px!important;font-size:19px!important;border-radius:10px!important}
+#categoryGrid .cat-icon{width:35px!important;height:35px!important;flex:0 0 35px!important;font-size:0!important;border-radius:10px!important;display:grid!important;place-items:center!important}#categoryGrid .cat-icon .dashboard-line-icon{width:21px!important;height:21px!important;display:block!important}
 #categoryGrid .cat-name{font-size:clamp(9px,1.1vw,12px)!important;line-height:1.2!important;overflow-wrap:anywhere!important}
 #categoryGrid .cat-more{border-color:#66542e!important;background:#211c11!important}
-#categoryGrid .cat-more .cat-icon{background:#302611!important;border-color:#806735!important;color:#e5c16c!important;font-size:22px!important}
+#categoryGrid .cat-more .cat-icon{background:#302611!important;border-color:#806735!important;color:#e5c16c!important;font-size:0!important}
 #categoryGrid .cat-more .cat-name{color:#e5c16c!important}
-@media(max-width:390px){#categoryGrid.grid{gap:5px!important}#categoryGrid .cat{min-height:83px!important;padding:7px 2px!important}#categoryGrid .cat-icon{width:31px!important;height:31px!important;flex-basis:31px!important;font-size:17px!important}#categoryGrid .cat-name{font-size:9px!important}}
+@media(max-width:390px){#categoryGrid.grid{gap:5px!important}#categoryGrid .cat{min-height:83px!important;padding:7px 2px!important}#categoryGrid .cat-icon{width:31px!important;height:31px!important;flex-basis:31px!important}#categoryGrid .cat-icon .dashboard-line-icon{width:19px!important;height:19px!important}#categoryGrid .cat-name{font-size:9px!important}}
 </style>
