@@ -308,6 +308,7 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
   <button class="btn btn-dark" onclick="goBack()">← Back</button>
   <h2 style="margin-top:15px">Confirm Purchase</h2>
   <div id="purchaseSummary" class="notice"></div>
+  <div id="telegramActivationNotice" class="notice" style="display:none;margin-top:12px"></div>
   <p class="small muted">Make sure your wallet has enough funds before continuing.</p>
   <div id="confirmMessage" class="message"></div>
   <button id="confirmPurchaseBtn" class="btn btn-gold full" onclick="purchaseNumber()">Purchase Number</button>
@@ -979,6 +980,22 @@ function chooseOption(index){
    <div style="margin-top:6px"><strong>Option:</strong> ${escapeHTML(optionLabel(selectedOption))}</div>
    <div style="margin-top:8px"><strong>Price:</strong> ${escapeHTML(money(price))}</div>
    <div style="margin-top:6px"><strong>Wallet balance:</strong> ${escapeHTML(money(walletBalance))}</div>`;
+ const telegramNotice=$("telegramActivationNotice");
+ const telegramSelected=String(selectedService?.name||"").toLowerCase().includes("telegram")||String(serviceCode(selectedService)||"").toLowerCase().includes("telegram");
+ if(telegramNotice&&telegramSelected){
+  const isUSA=String(selectedCountry?.code||"").toUpperCase()==="US";
+  telegramNotice.innerHTML=
+   `<strong>📢 IMPORTANT NOTICE – TELEGRAM ACTIVATION</strong>
+    <p style="margin:8px 0 5px"><strong>Telegram Not Going through?</strong></p>
+    <p style="margin:5px 0">We recommend using a reliable paid VPN, such as Private Internet Access (PIA) or ExpressVPN. Set your VPN location to the same country as the phone number you are purchasing.</p>
+    ${isUSA?'<p style="margin:5px 0">🇺🇸 For USA numbers: We recommend setting your VPN location to Washington, USA.</p>':""}
+    <p style="margin:5px 0"><strong>Important:</strong> If Telegram is still not working, uninstall the Telegram app from your device, reinstall it, reconnect your VPN to the recommended location, and try again.</p>
+    <p style="margin:5px 0 0">For the best results, make sure your VPN location matches the country of the number you selected.</p>`;
+  telegramNotice.style.display="block";
+ }else if(telegramNotice){
+  telegramNotice.innerHTML="";
+  telegramNotice.style.display="none";
+ }
  showMessage("confirmMessage","");
  setSection("confirmSection");
 }
