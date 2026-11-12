@@ -6193,37 +6193,70 @@ document.addEventListener("visibilitychange", () => {
 </script>
 
 <script>
+let allCategoriesExpanded = false;
 function renderCategories(){
   const grid=document.getElementById("categoryGrid");
   if(!grid)return;
   grid.innerHTML="";
-  categories.slice(0,4).forEach(category=>{
+  grid.classList.toggle("category-expanded",allCategoriesExpanded);
+  const visibleCategories=allCategoriesExpanded?categories:categories.slice(0,4);
+  visibleCategories.forEach(category=>{
     const button=document.createElement("button");
     button.type="button";
-    button.className="cat";
+    button.className=allCategoriesExpanded?"dv-category-service-card":"cat";
     button.onclick=()=>selectCategory(category.name);
-    const icon=document.createElement("div");
-    icon.className="cat-icon";
+    const icon=document.createElement("span");
+    icon.className=allCategoriesExpanded?"dv-category-service-icon":"cat-icon";
     icon.innerHTML=dashboardIcon(category.name,"dashboard-line-icon");
-    const name=document.createElement("div");
-    name.className="cat-name";
-    name.textContent=category.name;
-    button.append(icon,name);
+    const copy=document.createElement("span");
+    if(allCategoriesExpanded){
+      copy.className="dv-category-service-copy";
+      const name=document.createElement("strong");
+      name.textContent=category.name;
+      const description=document.createElement("small");
+      description.textContent="Explore "+category.name+" services and available options.";
+      copy.append(name,description);
+      const arrow=document.createElement("span");
+      arrow.className="dv-category-service-arrow";
+      arrow.textContent="›";
+      button.append(icon,copy,arrow);
+    }else{
+      copy.className="cat-name";
+      copy.textContent=category.name;
+      button.append(icon,copy);
+    }
     grid.appendChild(button);
   });
-  const more=document.createElement("button");
-  more.type="button";
-  more.className="cat cat-more";
-  more.setAttribute("aria-label","View all categories");
-  more.onclick=()=>{ location.href="categories.html"; };
-  const moreIcon=document.createElement("div");
-  moreIcon.className="cat-icon";
-  moreIcon.textContent="＋";
-  const moreName=document.createElement("div");
-  moreName.className="cat-name";
-  moreName.textContent="More";
-  more.append(moreIcon,moreName);
-  grid.appendChild(more);
+  if(categories.length>4){
+    const more=document.createElement("button");
+    more.type="button";
+    more.className=allCategoriesExpanded?"dv-category-more-card":"cat cat-more";
+    more.setAttribute("aria-expanded",String(allCategoriesExpanded));
+    more.setAttribute("aria-label",allCategoriesExpanded?"Show fewer categories":"View all categories");
+    more.onclick=()=>{
+      allCategoriesExpanded=!allCategoriesExpanded;
+      renderCategories();
+    };
+    const moreIcon=document.createElement("span");
+    moreIcon.className=allCategoriesExpanded?"dv-category-service-icon":"cat-icon";
+    moreIcon.innerHTML=allCategoriesExpanded
+      ? '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg>'
+      : '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+    const moreCopy=document.createElement("span");
+    if(allCategoriesExpanded){
+      moreCopy.className="dv-category-service-copy";
+      moreCopy.innerHTML="<strong>Show Less</strong><small>Return to the main dashboard view</small>";
+      const arrow=document.createElement("span");
+      arrow.className="dv-category-service-arrow";
+      arrow.textContent="⌃";
+      more.append(moreIcon,moreCopy,arrow);
+    }else{
+      moreCopy.className="cat-name";
+      moreCopy.textContent="More";
+      more.append(moreIcon,moreCopy);
+    }
+    grid.appendChild(more);
+  }
 }
 </script><script>
 (function(){const section=document.getElementById('dvDashboardBannerSection'),track=document.getElementById('dvBannerTrack'),dots=document.getElementById('dvBannerDots'),viewport=document.getElementById('dvBannerViewport');if(!section||!track||!window.supabase)return;const client=window.supabase.createClient('https://hkfhehbhmucymusaytoe.supabase.co','sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_');let items=[],index=0,timer=null,startX=0;const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function show(){track.style.transform='translateX(-'+index*100+'%)';dots.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('active',i===index))}function go(n){if(!items.length)return;index=(n+items.length)%items.length;show();restart()}function restart(){clearInterval(timer);if(items.length>1)timer=setInterval(()=>{index=(index+1)%items.length;show()},3000)}function render(){if(!items.length){section.hidden=true;clearInterval(timer);return}section.hidden=false;track.innerHTML=items.map(b=>'<a class="dv-banner-slide" href="'+esc(b.destination_url)+'" target="_blank" rel="noopener noreferrer" aria-label="'+esc(b.alt_text||'Promotional banner')+'"><img src="'+esc(b.image_url)+'" alt="'+esc(b.alt_text||'Promotional banner')+'" loading="lazy">'+(b.button_text?'<span class="dv-banner-cta">'+esc(b.button_text)+'</span>':'')+'</a>').join('');dots.innerHTML=items.length>1?items.map((_,i)=>'<button type="button" class="dv-banner-dot'+(i===0?' active':'')+'" aria-label="Show banner '+(i+1)+'" data-index="'+i+'"></button>').join(''):'';dots.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>go(Number(b.dataset.index))));index=0;show();restart()}async function load(){const {data,error}=await client.from('dashboard_banners').select('id,image_url,destination_url,button_text,alt_text,display_order').eq('is_active',true).is('deleted_at',null).order('display_order',{ascending:true}).order('created_at',{ascending:false});if(error){console.warn('Dashboard banners unavailable:',error.message);return}items=data||[];render()}document.getElementById('dvBannerPrev')?.addEventListener('click',()=>go(index-1));document.getElementById('dvBannerNext')?.addEventListener('click',()=>go(index+1));viewport?.addEventListener('touchstart',e=>{startX=e.changedTouches[0].clientX},{passive:true});viewport?.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-startX;if(Math.abs(dx)>45)go(index+(dx<0?1:-1))},{passive:true});document.addEventListener('visibilitychange',()=>{if(document.hidden)clearInterval(timer);else restart()});load()})();
@@ -6303,6 +6336,19 @@ main{max-width:1160px!important;margin:0 auto!important;padding:20px clamp(14px,
  .dv-banner-section{margin:17px 0!important}.dv-banner-slide{aspect-ratio:2.5/1!important;min-height:108px!important}
 }
 @media(max-width:370px){.dv-feature-link{gap:8px!important;padding:11px!important}.dv-feature-copy strong{font-size:14px!important}.dv-feature-copy small{font-size:10.5px!important}}
+</style>
+<style id="dv-category-service-cards">
+#categoryGrid.category-expanded{display:flex!important;flex-direction:column!important;gap:11px!important}
+#categoryGrid .dv-category-service-card,#categoryGrid .dv-category-more-card{width:100%!important;min-height:82px!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;gap:15px!important;padding:14px 17px!important;text-align:left!important;border:1px solid #393326!important;border-radius:16px!important;background:linear-gradient(105deg,#252016,#191a1e 58%,#14161b)!important;color:#eee9dd!important}
+#categoryGrid .dv-category-service-icon{width:48px!important;height:48px!important;flex:0 0 48px!important;display:grid!important;place-items:center!important;border:1px solid #514329!important;border-radius:13px!important;background:#302611!important;color:#e2c16d!important}
+#categoryGrid .dv-category-service-icon svg{width:23px!important;height:23px!important;display:block!important}
+#categoryGrid .dv-category-service-copy{min-width:0!important;flex:1!important;display:flex!important;flex-direction:column!important;gap:5px!important}
+#categoryGrid .dv-category-service-copy strong{font-size:15px!important;line-height:1.3!important;font-weight:750!important;color:#f4efe3!important}
+#categoryGrid .dv-category-service-copy small{font-size:12px!important;line-height:1.45!important;color:#b4ad9f!important}
+#categoryGrid .dv-category-service-arrow{width:30px!important;height:30px!important;flex:0 0 30px!important;display:grid!important;place-items:center!important;border:1px solid #514329!important;border-radius:50%!important;color:#e1bf69!important;font-size:22px!important}
+#categoryGrid .dv-category-more-card{border-color:#66542e!important;background:#211c11!important}
+#categoryGrid .dv-category-more-card .dv-category-service-icon{color:#e5c16c!important}
+@media(max-width:600px){#categoryGrid .dv-category-service-card,#categoryGrid .dv-category-more-card{min-height:76px!important;padding:12px!important;gap:11px!important;border-radius:14px!important}#categoryGrid .dv-category-service-icon{width:43px!important;height:43px!important;flex-basis:43px!important}#categoryGrid .dv-category-service-copy strong{font-size:14px!important}#categoryGrid .dv-category-service-copy small{font-size:11px!important}}
 </style>
 </body>
 
