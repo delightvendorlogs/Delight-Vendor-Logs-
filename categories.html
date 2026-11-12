@@ -16,18 +16,18 @@
 .brand{display:flex;align-items:center;gap:10px;font-weight:800}.brand img{width:38px;height:38px;object-fit:contain}
 main{max-width:1050px;margin:0 auto;padding:27px 22px 50px}.eyebrow{color:#d4af37;font-size:12px;font-weight:800;letter-spacing:.15em;text-transform:uppercase}
 h1{font-size:clamp(25px,4vw,36px);margin:8px 0}.intro{color:#b8ad8d;line-height:1.6;margin:0 0 22px}
-.category-list{display:flex;flex-direction:column;gap:11px}
-.category-row{position:relative;display:flex;align-items:center;gap:14px;width:100%;min-height:94px;padding:16px 18px;border:1px solid #403823;border-radius:15px;background:#17181b;color:#f4efe3;text-decoration:none;transition:border-color .15s,background .15s;overflow:hidden}
+.category-list{display:flex;flex-direction:column;gap:12px}
+.category-row{position:relative;display:flex;align-items:center;gap:18px;width:100%;min-height:112px;padding:20px 24px;border:1px solid #393326;border-left:5px solid #c5a04b;border-radius:24px;background:#17181b;color:#f4efe3;text-decoration:none;transition:border-color .15s,background .15s;overflow:hidden}
+.category-row:nth-child(even){border-left-color:#8e82ad}
 .category-row:hover{border-color:#8a713b;background:#1b1c20}
-.category-icon{width:48px;height:48px;flex:0 0 48px;display:grid;place-items:center;border-radius:13px;background:#242016;border:1px solid #514329;color:#e5c36d}
-.category-icon svg{width:23px;height:23px;display:block}
-.category-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:5px}
-.category-name{font-size:clamp(15px,1.8vw,18px);line-height:1.3;font-weight:750;color:#f4efe3}
-.category-desc{font-size:12px;line-height:1.45;color:#b4ad9f}
-.arrow{width:31px;height:31px;flex:0 0 31px;display:grid;place-items:center;border:1px solid #514329;border-radius:50%;color:#e1bf69;font-size:21px}
+.category-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:9px}
+.category-name{font-size:clamp(18px,2.3vw,22px);line-height:1.3;font-weight:800;color:#f4efe3}
+.category-desc{font-size:clamp(14px,1.7vw,17px);line-height:1.5;color:#b4ad9f}
+.arrow{width:54px;height:54px;flex:0 0 54px;display:grid;place-items:center;border:1px solid #514329;border-radius:50%;color:#e1bf69;font-size:29px}
+.category-row:nth-child(even) .arrow{border-color:#494155;color:#c9bce5}
 .state{padding:22px;border:1px solid #493b1c;border-radius:14px;color:#b8ad8d;background:#111}
-@media(min-width:760px){.category-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}}
-@media(max-width:480px){.topbar{padding:14px;gap:10px}.brand{font-size:13px}.brand img{width:32px;height:32px}main{padding:22px 14px 35px}.category-row{min-height:82px;padding:12px;gap:11px}.category-icon{width:43px;height:43px;flex-basis:43px}.category-name{font-size:14px}.category-desc{font-size:11px}}
+@media(min-width:760px){.category-list{display:flex;flex-direction:column}}
+@media(max-width:480px){.topbar{padding:14px;gap:10px}.brand{font-size:13px}.brand img{width:32px;height:32px}main{padding:22px 14px 35px}.category-row{min-height:88px;padding:15px 16px;gap:10px;border-radius:17px;border-left-width:4px}.category-copy{gap:6px}.category-name{font-size:16px}.category-desc{font-size:13px}.arrow{width:40px;height:40px;flex-basis:40px;font-size:23px}}
 </style>
 </head>
 <body>
@@ -68,7 +68,7 @@ async function load(){
  const extra=[{name:"Email / Gmail",description:"Browse available Gmail services",href:"gmail.html"},{name:"All Country Numbers",description:"Choose a country and get a number for verification",href:"virtualnumber.html"},{name:"All Social Logs",description:"Explore social logs, testing apps, streaming and more",href:"sociallogs.html"}];
  extra.forEach(c=>{const key=c.name.toLowerCase().replace(/[^a-z0-9]/g,"");if(!have.has(key)){rows.push(c);have.add(key)}});
  if(!rows.length){box.innerHTML='<div class="state">No active categories are available right now.</div>';return}
- box.innerHTML=rows.map(c=>'<a class="category-row" href="'+esc(c.href)+'"><span class="category-icon">'+svgIcon(c.name)+'</span><span class="category-copy"><strong class="category-name">'+esc(c.name)+'</strong><small class="category-desc">'+esc(c.description)+'</small></span><span class="arrow" aria-hidden="true">›</span></a>').join("");
+ box.innerHTML=rows.map(c=>'<a class="category-row" href="'+esc(c.href)+'"><span class="category-copy"><strong class="category-name">'+esc(c.name)+'</strong><small class="category-desc">'+esc(c.description)+'</small></span><span class="arrow" aria-hidden="true">→</span></a>').join("");
 }
 document.addEventListener("click",e=>{if(e.target.closest("a.category-row"))sessionStorage.setItem("dvOpenedFromCategories","1")});
 load();
