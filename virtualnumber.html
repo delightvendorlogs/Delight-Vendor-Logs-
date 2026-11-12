@@ -1194,10 +1194,10 @@ function normalizeStatus(o){
  // actual OTP or SMS body has been saved and can be shown on the order card.
  const code=getCode(o);
  const sms=getSms(o);
- if(code||o.code_received_at)return "received";
- const providerState=String(o.provider_state||"").toLowerCase().replace(/[\s_-]/g,"");
  const providerKey=String(o.provider_key||o.provider||"").toLowerCase();
  const isVirtualSms=providerKey.includes("virtualsms")||providerKey.includes("virtual-sms");
+ if(code||(o.code_received_at&&!isVirtualSms))return "received";
+ const providerState=String(o.provider_state||"").toLowerCase().replace(/[\s_-]/g,"");
  if(providerKey==="fetchsms"&&["expired","timeout","timedout"].includes(providerState))return "expired";
  if(isVirtualSms&&!sms){
   const raw=String(o.status||"").toLowerCase().trim();
