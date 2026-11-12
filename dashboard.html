@@ -6193,68 +6193,37 @@ document.addEventListener("visibilitychange", () => {
 </script>
 
 <script>
-let allCategoriesExpanded = false;
 function renderCategories(){
   const grid=document.getElementById("categoryGrid");
   if(!grid)return;
   grid.innerHTML="";
-  grid.classList.toggle("category-expanded",allCategoriesExpanded);
-  const visibleCategories=allCategoriesExpanded?categories:categories.slice(0,4);
-  visibleCategories.forEach(category=>{
+  categories.slice(0,4).forEach(category=>{
     const button=document.createElement("button");
     button.type="button";
-    button.className=allCategoriesExpanded?"dv-category-service-card":"cat";
+    button.className="cat";
     button.onclick=()=>selectCategory(category.name);
     const icon=document.createElement("span");
-    icon.className=allCategoriesExpanded?"dv-category-service-icon":"cat-icon";
+    icon.className="cat-icon";
     icon.innerHTML=dashboardIcon(category.name,"dashboard-line-icon");
-    const copy=document.createElement("span");
-    if(allCategoriesExpanded){
-      copy.className="dv-category-service-copy";
-      const name=document.createElement("strong");
-      name.textContent=category.name;
-      const description=document.createElement("small");
-      description.textContent="Explore "+category.name+" services and available options.";
-      copy.append(name,description);
-      const arrow=document.createElement("span");
-      arrow.className="dv-category-service-arrow";
-      arrow.textContent="›";
-      button.append(icon,copy,arrow);
-    }else{
-      copy.className="cat-name";
-      copy.textContent=category.name;
-      button.append(icon,copy);
-    }
+    const name=document.createElement("span");
+    name.className="cat-name";
+    name.textContent=category.name;
+    button.append(icon,name);
     grid.appendChild(button);
   });
   if(categories.length>4){
     const more=document.createElement("button");
     more.type="button";
-    more.className=allCategoriesExpanded?"dv-category-more-card":"cat cat-more";
-    more.setAttribute("aria-expanded",String(allCategoriesExpanded));
-    more.setAttribute("aria-label",allCategoriesExpanded?"Show fewer categories":"View all categories");
-    more.onclick=()=>{
-      allCategoriesExpanded=!allCategoriesExpanded;
-      renderCategories();
-    };
-    const moreIcon=document.createElement("span");
-    moreIcon.className=allCategoriesExpanded?"dv-category-service-icon":"cat-icon";
-    moreIcon.innerHTML=allCategoriesExpanded
-      ? '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg>'
-      : '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
-    const moreCopy=document.createElement("span");
-    if(allCategoriesExpanded){
-      moreCopy.className="dv-category-service-copy";
-      moreCopy.innerHTML="<strong>Show Less</strong><small>Return to the main dashboard view</small>";
-      const arrow=document.createElement("span");
-      arrow.className="dv-category-service-arrow";
-      arrow.textContent="⌃";
-      more.append(moreIcon,moreCopy,arrow);
-    }else{
-      moreCopy.className="cat-name";
-      moreCopy.textContent="More";
-      more.append(moreIcon,moreCopy);
-    }
+    more.className="cat cat-more";
+    more.setAttribute("aria-label","More categories");
+    more.onclick=()=>{window.location.href="categories.html";};
+    const plus=document.createElement("span");
+    plus.className="cat-icon";
+    plus.innerHTML='<svg class="dashboard-line-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+    const label=document.createElement("span");
+    label.className="cat-name";
+    label.textContent="More";
+    more.append(plus,label);
     grid.appendChild(more);
   }
 }
@@ -6337,19 +6306,7 @@ main{max-width:1160px!important;margin:0 auto!important;padding:20px clamp(14px,
 }
 @media(max-width:370px){.dv-feature-link{gap:8px!important;padding:11px!important}.dv-feature-copy strong{font-size:14px!important}.dv-feature-copy small{font-size:10.5px!important}}
 </style>
-<style id="dv-category-service-cards">
-#categoryGrid.category-expanded{display:flex!important;flex-direction:column!important;gap:11px!important}
-#categoryGrid .dv-category-service-card,#categoryGrid .dv-category-more-card{width:100%!important;min-height:82px!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;gap:15px!important;padding:14px 17px!important;text-align:left!important;border:1px solid #393326!important;border-radius:16px!important;background:linear-gradient(105deg,#252016,#191a1e 58%,#14161b)!important;color:#eee9dd!important}
-#categoryGrid .dv-category-service-icon{width:48px!important;height:48px!important;flex:0 0 48px!important;display:grid!important;place-items:center!important;border:1px solid #514329!important;border-radius:13px!important;background:#302611!important;color:#e2c16d!important}
-#categoryGrid .dv-category-service-icon svg{width:23px!important;height:23px!important;display:block!important}
-#categoryGrid .dv-category-service-copy{min-width:0!important;flex:1!important;display:flex!important;flex-direction:column!important;gap:5px!important}
-#categoryGrid .dv-category-service-copy strong{font-size:15px!important;line-height:1.3!important;font-weight:750!important;color:#f4efe3!important}
-#categoryGrid .dv-category-service-copy small{font-size:12px!important;line-height:1.45!important;color:#b4ad9f!important}
-#categoryGrid .dv-category-service-arrow{width:30px!important;height:30px!important;flex:0 0 30px!important;display:grid!important;place-items:center!important;border:1px solid #514329!important;border-radius:50%!important;color:#e1bf69!important;font-size:22px!important}
-#categoryGrid .dv-category-more-card{border-color:#66542e!important;background:#211c11!important}
-#categoryGrid .dv-category-more-card .dv-category-service-icon{color:#e5c16c!important}
-@media(max-width:600px){#categoryGrid .dv-category-service-card,#categoryGrid .dv-category-more-card{min-height:76px!important;padding:12px!important;gap:11px!important;border-radius:14px!important}#categoryGrid .dv-category-service-icon{width:43px!important;height:43px!important;flex-basis:43px!important}#categoryGrid .dv-category-service-copy strong{font-size:14px!important}#categoryGrid .dv-category-service-copy small{font-size:11px!important}}
-</style>
+
 </body>
 
 </html>
