@@ -1248,19 +1248,24 @@ function getSms(o){
 function extractCodeFromSms(value){
  const text=typeof value==="string"?value:JSON.stringify(value??"");
  if(!text)return "";
+ // Keep grouped codes such as 608-138 together; do not stop at the first 3 digits.
  const patterns=[
-  /(?:verification\s+code|sms\s+code|security\s+code|one[-\s]?time\s+(?:password|code)|otp|pin|code)\s*(?:is|:|=|-)?\s*["']?(\d{4,8})\b/i,
-  /(?:code|otp|pin)[^\d]{0,20}(\d{4,8})\b/i
+  /(?:verification\s+code|sms\s+code|security\s+code|one[-\s]?time\s+(?:password|code)|otp|pin|code)\s*(?:is|:|=|-)?\s*["']?([0-9]{3,8}(?:[- ][0-9]{2,8})?)\b/i,
+  /(?:code|otp|pin)[^\d]{0,20}([0-9]{3,8}(?:[- ][0-9]{2,8})?)\b/i
  ];
  for(const pattern of patterns){
   const match=text.match(pattern);
-  if(match)return match[1];
+  if(match)return match[1].trim();
  }
  return "";
 }
 function getCode(o){
+ // Prefer the code extracted from the actual SMS body over a truncated
+ // provider field (for example otp_code=608 while the SMS says 608-138).
+ const fromSms=extractCodeFromSms(getSms(o||{}));
+ if(fromSms)return fromSms;
  const saved=o?.otp_code??o?.code??o?.sms_code??o?.verification_code??"";
- return String(saved||"").trim()||extractCodeFromSms(getSms(o||{}));
+ return String(saved||"").trim();
 }
 function getPrice(o){
  const n=Number(o.customer_price_ngn??o.price_ngn??o.price??0);
