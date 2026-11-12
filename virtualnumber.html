@@ -1190,11 +1190,23 @@ async function loadOrders(){
 
 
 function normalizeStatus(o){
- // A saved OTP or a completed provider verification is authoritative.
- if(getCode(o)||o.code_received_at)return "received";
+ // Never tell a VirtualSMS customer that verification succeeded until the
+ // actual OTP or SMS body has been saved and can be shown on the order card.
+ const code=getCode(o);
+ const sms=getSms(o);
+ if(code||o.code_received_at)return "received";
  const providerState=String(o.provider_state||"").toLowerCase().replace(/[\s_-]/g,"");
  const providerKey=String(o.provider_key||o.provider||"").toLowerCase();
+ const isVirtualSms=providerKey.includes("virtualsms")||providerKey.includes("virtual-sms");
  if(providerKey==="fetchsms"&&["expired","timeout","timedout"].includes(providerState))return "expired";
+ if(isVirtualSms&&!sms){
+  const raw=String(o.status||"").toLowerCase().trim();
+  if(["refunded","refund_completed","cancelled_refunded","canceled_refunded","refunded_cancelled","refunded_canceled"].includes(raw))return "refunded";
+  if(["cancelled","canceled","order_cancelled","order_canceled"].includes(raw))return "cancelled";
+  if(["expired","timed_out","timeout"].includes(raw))return "expired";
+  if(["failed","error"].includes(raw))return "failed";
+  return "waiting";
+ }
  if(["verificationcompleted","received","completed","complete","success","successful","verified","smsreceived","finished"].includes(providerState))return "received";
  const s=String(o.status||o.provider_state||"waiting").toLowerCase().trim();
  if(["received","completed","complete","success","successful","verification_successful","sms_received"].includes(s))return "received";
@@ -1323,7 +1335,7 @@ function renderOrders(){
    received?"Verification Successful":
    cancelled?"Order Cancelled":expired?"Number Timed Out":failed?"Order Failed":"Refunded";
   const subtitle=pending?(number?"Waiting for verification code":searching?"We are checking availability. Your order will update here.":"Waiting for number confirmation"):
-   received?(code?"SMS received for this number":"Verification completed. Retrieving the code…"):
+   received?(code?"SMS received for this number":sms?"SMS received; full message is shown below":"SMS received for this number"):
    cancelled?"This number order has ended":
    expired?"The provider verification time ended and the refund was processed":
    failed?"This number order failed":"Your refund has been recorded";
@@ -1355,7 +1367,7 @@ function renderOrders(){
   if(received){
    html+=`<div class="sms-box">
     <div class="sms-heading">VERIFICATION CODE</div>
-    <div class="sms-code">${escapeHTML(code||"Retrieving verification code…")}</div>
+    <div class="sms-code">${escapeHTML(code||(sms?"Code not detected — full SMS below":"Waiting for SMS from provider…"))}</div>
     ${code?`<button class="copy-button" id="copy-code-${id}" onclick="copyOrderCode(${id})">▢ &nbsp; Copy Code</button>`:""}
     ${sms?`<hr><div class="order-line">${escapeHTML(sms)}</div>`:""}
    </div>`;
