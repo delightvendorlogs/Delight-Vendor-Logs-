@@ -1,30 +1,77 @@
-<head><script>document.documentElement.style.visibility="hidden";</script><script src="auth-guard.js"></script><style>.dve-banner-dots,#dvBannerDots{display:none!important}</style></head><!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#080808"><title>All Categories — Delight Vendor Logs</title><link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080808">
+<title>All Categories — Delight Vendor Logs</title>
+<link rel="icon" type="image/png" href="assets/dv-logo.png">
+<link rel="apple-touch-icon" href="assets/dv-logo.png">
+<link rel="stylesheet" href="site-theme.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-body{margin:0;min-height:100vh;background:radial-gradient(ellipse at top right,#211a08 0,transparent 42%),#080808;color:#f5f0df}.topbar{display:flex;align-items:center;gap:14px;max-width:1050px;margin:auto;padding:18px 22px;border-bottom:1px solid #30250e}.back{display:inline-flex;padding:10px 13px;border:1px solid #493b1c;border-radius:12px;color:#d4af37;text-decoration:none;white-space:nowrap}.brand{display:flex;align-items:center;gap:10px;font-weight:800}.brand img{width:38px;height:38px;object-fit:contain}main{max-width:1050px;margin:0 auto;padding:28px 22px 50px}.eyebrow{color:#d4af37;font-size:12px;font-weight:800;letter-spacing:.15em;text-transform:uppercase}h1{font-size:clamp(25px,4vw,38px);margin:8px 0}.intro{color:#b8ad8d;line-height:1.6;margin:0 0 22px}.category-list{display:flex;flex-direction:column;gap:10px}.category-row{display:grid;grid-template-columns:46px 1fr 22px;gap:14px;align-items:center;padding:15px;border:1px solid #352a12;border-radius:15px;background:linear-gradient(110deg,#15130d,#101010);color:#f5f0df;text-decoration:none;transition:border-color .15s,transform .15s}.category-row:hover{border-color:#d4af37;transform:translateY(-1px)}.category-icon{display:grid;place-items:center;width:44px;height:44px;border-radius:13px;background:#2a220e;font-size:22px}.category-name{font-weight:750}.category-desc{display:block;color:#b8ad8d;font-size:13px;margin-top:4px;line-height:1.45}.arrow{color:#d4af37;font-size:22px}.state{padding:22px;border:1px solid #493b1c;border-radius:14px;color:#b8ad8d;background:#111}@media(min-width:760px){.category-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}}@media(max-width:480px){.topbar{padding:14px;gap:10px}.brand{font-size:13px}.brand img{width:32px;height:32px}main{padding:22px 14px 35px}.category-row{padding:12px;gap:10px}.category-icon{width:40px;height:40px}}
-</style></head><body><header class="topbar"><a class="back" href="dashboard.html">← Dashboard</a><div class="brand"><img src="assets/dv-logo.png" alt="DV logo"><span>Delight Vendor Logs</span></div></header><main><div class="eyebrow">Explore services</div><h1>All Categories</h1><p class="intro">Choose a category to continue. Your existing category and product flow remains on the dashboard.</p><div id="categoryList" class="category-list"><div class="state">Loading categories…</div></div></main>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#080808;color:#f5f0df;font-family:Arial,Helvetica,sans-serif}
+.topbar{display:flex;align-items:center;gap:14px;max-width:1050px;margin:auto;padding:18px 22px;border-bottom:1px solid #30250e}
+.back{display:inline-flex;align-items:center;padding:10px 13px;border:1px solid #493b1c;border-radius:12px;color:#d4af37;text-decoration:none;white-space:nowrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800}.brand img{width:38px;height:38px;object-fit:contain}
+main{max-width:1050px;margin:0 auto;padding:27px 22px 50px}.eyebrow{color:#d4af37;font-size:12px;font-weight:800;letter-spacing:.15em;text-transform:uppercase}
+h1{font-size:clamp(25px,4vw,36px);margin:8px 0}.intro{color:#b8ad8d;line-height:1.6;margin:0 0 22px}
+.category-list{display:flex;flex-direction:column;gap:11px}
+.category-row{position:relative;display:flex;align-items:center;gap:14px;width:100%;min-height:94px;padding:16px 18px;border:1px solid #403823;border-radius:15px;background:#17181b;color:#f4efe3;text-decoration:none;transition:border-color .15s,background .15s;overflow:hidden}
+.category-row:hover{border-color:#8a713b;background:#1b1c20}
+.category-icon{width:48px;height:48px;flex:0 0 48px;display:grid;place-items:center;border-radius:13px;background:#242016;border:1px solid #514329;color:#e5c36d}
+.category-icon svg{width:23px;height:23px;display:block}
+.category-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:5px}
+.category-name{font-size:clamp(15px,1.8vw,18px);line-height:1.3;font-weight:750;color:#f4efe3}
+.category-desc{font-size:12px;line-height:1.45;color:#b4ad9f}
+.arrow{width:31px;height:31px;flex:0 0 31px;display:grid;place-items:center;border:1px solid #514329;border-radius:50%;color:#e1bf69;font-size:21px}
+.state{padding:22px;border:1px solid #493b1c;border-radius:14px;color:#b8ad8d;background:#111}
+@media(min-width:760px){.category-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}}
+@media(max-width:480px){.topbar{padding:14px;gap:10px}.brand{font-size:13px}.brand img{width:32px;height:32px}main{padding:22px 14px 35px}.category-row{min-height:82px;padding:12px;gap:11px}.category-icon{width:43px;height:43px;flex-basis:43px}.category-name{font-size:14px}.category-desc{font-size:11px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="dashboard.html">← Dashboard</a><div class="brand"><img src="assets/dv-logo.png" alt="DV logo"><span>Delight Vendor Logs</span></div></header>
+<main><div class="eyebrow">Explore services</div><h1>All Categories</h1><p class="intro">Choose a category to view its available services.</p><div id="categoryList" class="category-list"><div class="state">Loading categories…</div></div></main>
 <script>
 const client=window.supabase.createClient("https://hkfhehbhmucymusaytoe.supabase.co","sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_");
-const icons={"All Social Logs":"📱","Working Pictures":"🖼️","Working Picture":"🖼️","Formats":"📄","Working Picture Format":"📄","Working Links":"🔗","Voice Cloner/Fake Video Call":"🎙️","Voice Cloner / Fake Video Call":"🎙️","All Countries Number":"📞","All Country Numbers":"📞","Streaming & More":"📺","ESIMS":"📡","VPN":"🔐","Gmail":"✉️"};
-function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-async function load(){const box=document.getElementById("categoryList");const {data,error}=await client.from("service_categories").select("id,name,slug,icon,display_order,is_active").eq("is_active",true).order("display_order",{ascending:true});if(error){console.error(error);box.innerHTML='<div class="state">Could not load categories. Please return to the dashboard and try again.</div>';return}const shortcuts=[
-{name:"Email / Gmail",icon:"📧",desc:"Browse available Gmail services",href:"gmail.html"},
-{name:"All Country Numbers",icon:"📞",desc:"Order a number for verification",href:"virtualnumber.html"},
-{name:"Social Logs",icon:"📱",desc:"Explore social logs, testing apps and more",href:"sociallogs.html"}
-];
-const routeFor=name=>{
-const key=String(name||"").toLowerCase().replace(/[^a-z0-9]/g,"");
-if(key==="gmail"||key==="email")return "gmail.html";
-if(key==="allsociallogs"||key==="sociallogs")return "sociallogs.html";
-if(key==="allcountriesnumber"||key==="allcountrynumber"||key==="allcountrynumbers"||key==="countriesnumber")return "virtualnumber.html";
-return "dashboard.html?category="+encodeURIComponent(name);
+const iconPaths={
+"All Social Logs":'<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+"Working Pictures":'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/>',
+"Formats":'<path d="M7 3h7l5 5v13H7zM14 3v6h5M9 13h6M9 17h6"/>',
+"Working Links":'<path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/>',
+"Voice Cloner/Fake Video Call":'<rect x="3" y="7" width="13" height="10" rx="2"/><path d="m16 10 5-3v10l-5-3z"/>',
+"Voice Cloner / Fake Video Call":'<rect x="3" y="7" width="13" height="10" rx="2"/><path d="m16 10 5-3v10l-5-3z"/>',
+"All Countries Number":'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 6h6M9 18h6"/>',
+"All Country Numbers":'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 6h6M9 18h6"/>',
+"Streaming & More":'<rect x="3" y="4" width="18" height="13" rx="2"/><path d="m10 8 5 2.5-5 2.5zM8 21h8M12 17v4"/>',
+"ESIMS":'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 17h6"/>',
+"VPN":'<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
+"Gmail":'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>',
+"Email / Gmail":'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>'
 };
-const shortcutKeys=new Set(["gmail","email","allsociallogs","sociallogs","allcountriesnumber","allcountrynumber","allcountrynumbers","countriesnumber"]);
-const dynamic=(data||[]).filter(c=>c&&c.name&&!shortcutKeys.has(String(c.name).toLowerCase().replace(/[^a-z0-9]/g,""))).map(c=>({name:c.name,icon:icons[c.name]||c.icon||"📁",desc:"Browse available "+c.name+" services",href:routeFor(c.name)}));
-const rows=[...shortcuts,...dynamic];
-box.innerHTML=rows.map(c=>'<a class="category-row" href="'+c.href+'"><span class="category-icon">'+esc(c.icon)+'</span><span><span class="category-name">'+esc(c.name)+'</span><small class="category-desc">'+esc(c.desc)+'</small></span><span class="arrow">›</span></a>').join("")}
-document.addEventListener('click',function(e){const a=e.target.closest('a.category-row');if(!a)return;sessionStorage.setItem('dvOpenedFromCategories','1');});
+function svgIcon(name){const fallback='<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>';return '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+(iconPaths[name]||fallback)+'</svg>'}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function routeFor(name){
+ const key=String(name||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+ if(key==="gmail"||key==="email")return "gmail.html";
+ if(key==="allsociallogs"||key==="sociallogs")return "sociallogs.html";
+ if(key==="allcountriesnumber"||key==="allcountrynumber"||key==="allcountrynumbers"||key==="countriesnumber")return "virtualnumber.html";
+ return "dashboard.html?category="+encodeURIComponent(name);
+}
+async function load(){
+ const box=document.getElementById("categoryList");
+ const {data,error}=await client.from("service_categories").select("id,name,slug,display_order,is_active").eq("is_active",true).order("display_order",{ascending:true});
+ if(error){console.error(error);box.innerHTML='<div class="state">Could not load categories. Please return to the dashboard and try again.</div>';return}
+ const rows=(data||[]).filter(c=>c&&c.name).map(c=>({name:c.name,description:"Explore "+c.name+" services and available options.",href:routeFor(c.name)}));
+ const have=new Set(rows.map(c=>c.name.toLowerCase().replace(/[^a-z0-9]/g,"")));
+ const extra=[{name:"Email / Gmail",description:"Browse available Gmail services",href:"gmail.html"},{name:"All Country Numbers",description:"Choose a country and get a number for verification",href:"virtualnumber.html"},{name:"All Social Logs",description:"Explore social logs, testing apps, streaming and more",href:"sociallogs.html"}];
+ extra.forEach(c=>{const key=c.name.toLowerCase().replace(/[^a-z0-9]/g,"");if(!have.has(key)){rows.push(c);have.add(key)}});
+ if(!rows.length){box.innerHTML='<div class="state">No active categories are available right now.</div>';return}
+ box.innerHTML=rows.map(c=>'<a class="category-row" href="'+esc(c.href)+'"><span class="category-icon">'+svgIcon(c.name)+'</span><span class="category-copy"><strong class="category-name">'+esc(c.name)+'</strong><small class="category-desc">'+esc(c.description)+'</small></span><span class="arrow" aria-hidden="true">›</span></a>').join("");
+}
+document.addEventListener("click",e=>{if(e.target.closest("a.category-row"))sessionStorage.setItem("dvOpenedFromCategories","1")});
 load();
-</script><script src="branding.js"></script>
-<script src="assets/site-announcement.js" defer></script>
+</script>
+<script src="branding.js"></script><script src="assets/site-announcement.js" defer></script>
 </body></html>
