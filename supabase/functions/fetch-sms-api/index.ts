@@ -580,9 +580,9 @@ async function actionStatus(orderId: string, userId: string) {
   if (str(order.provider_state).toLowerCase() === AUTO_REFUND_MARKER) {
     return response({ success: true, order, refunded: true, hidden_failed_purchase: true });
   }
-  if (str(order.otp_code)) {
-    return response({ success: true, order: { ...order, status: "received" }, code_received: true });
-  }
+  // Always re-check the provider, even after a code has been saved.
+  // Fetch SMS can deliver multiple codes during the active verification window;
+  // the provider endpoint returns the most recent code.
 
   const current = str(order.status).toLowerCase();
   if (["refunded", "failed", "expired"].includes(current)) return response({ success: true, order });
