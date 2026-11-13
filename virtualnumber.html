@@ -1389,9 +1389,7 @@ function renderOrders(){
    html+=`<div class="detail-row"><span>Purchase price</span><strong>${escapeHTML(money(price))}</strong></div>`;
   }
   html+=`<div class="order-line"><strong>Order date:</strong> ${escapeHTML(orderDate(o))}</div>`;
-  if(!(received&&orderProvider(o)==="fetchsms")){
-   html+=`<div class="order-actions"><button class="btn btn-black" onclick="checkOrder(${id})">Refresh Status</button></div>`;
-  }
+  html+=`<div class="order-actions"><button class="btn btn-black" onclick="checkOrder(${id})">${received&&orderProvider(o)==="fetchsms"?"Refresh Code":"Refresh Status"}</button></div>`;
   html+=`</article>`;
   return html;
  }).join("");
