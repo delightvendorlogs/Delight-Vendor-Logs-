@@ -1095,10 +1095,13 @@ function extractTextVerifiedOtp(result: any, sms: any): string {
     }
   };
   collect(result); collect(sms);
+  // Capture complete provider OTP tokens; do not truncate contiguous six-digit codes.
   const patterns = [
-    /(?:verification|security|sms|login|one[- ]time|confirmation|whatsapp)?\s*(?:code|otp|pin)\s*(?:is|:|=|-)?\s*["']?(\d{3,4}(?:[\s-]\d{3,4})?)/i,
-    /(?:code|otp|pin)[^\d]{0,28}(\d{3,4}(?:[\s-]\d{3,4})?)/i,
-    /(\d{3,4}(?:[\s-]\d{3,4})?)\s*(?:is your|is the|for your)?\s*(?:verification|security|sms|login)?\s*(?:code|otp|pin)\b/i
+    /(?:verification|security|sms|login|one[- ]time|confirmation|whatsapp)?\s*(?:code|otp|pin)\s*(?:is|:|=|-)?\s*["']?((?<!\d)\d{4,8}(?!\d))/i,
+    /(?:code|otp|pin)[^\d]{0,28}((?<!\d)\d{4,8}(?!\d))/i,
+    /((?<!\d)\d{4,8}(?!\d))\s*(?:is your|is the|for your)?\s*(?:verification|security|sms|login)?\s*(?:code|otp|pin)\b/i,
+    /(?:code|otp|pin)[^\d]{0,28}((?<!\d)\d{3,4}(?:[\s-]\d{3,4})(?!\d))/i,
+    /((?<!\d)\d{3,4}(?:[\s-]\d{3,4})(?!\d))\s*(?:is your|is the|for your)?\s*(?:verification|security|sms|login)?\s*(?:code|otp|pin)\b/i
   ];
   for (const text of texts) for (const pattern of patterns) { const code = normalizeOtp(text.match(pattern)?.[1]); if (code) return code; }
   return "";
@@ -1151,7 +1154,7 @@ async function actionStatus(orderId:string,userId:string){
  const current=str(order.status).toLowerCase();
  if(["cancelled","canceled","refunded","expired","failed"].includes(current))return response({success:true,order});
  const received=Boolean(str(order.otp_code)||order.code_received_at||["received","completed","finished","success","successful"].includes(current)||isVerificationComplete(order.provider_state));
- if(received&&str(order.otp_code))return response({success:true,order:{...order,status:"received"},code_received:true});
+ // Always recheck provider data so a previously stored partial code can be corrected.
  const providerId=str(order.provider_order_id,order.provider_order);
  if(!providerId)return response({success:true,pending:true,order});
  const result=await tvRequest("/verifications/"+encodeURIComponent(providerId));
@@ -1293,7 +1296,7 @@ async function refreshWaitingTextVerifiedOrder(order:any,userId:string){
   const state=str(result?.status,result?.state,result?.data?.status,result?.verification?.status).toLowerCase();
   const received=Boolean(str(order.otp_code)||order.code_received_at||["received","completed","finished","success","successful"].includes(str(order.status).toLowerCase())||isVerificationComplete(order.provider_state));
   const updates:Record<string,unknown>={updated_at:new Date().toISOString()};
-  if(otp){updates.otp_code=str(order.otp_code)||otp;updates.code_received_at=order.code_received_at||new Date().toISOString();updates.status="received";}
+  if(otp){updates.otp_code=otp;updates.code_received_at=order.code_received_at||new Date().toISOString();updates.status="received";}
   else if(isVerificationComplete(state)){updates.status="received";}
   else if(!received&&/cancel/.test(state))updates.status="cancelled";
   else if(!received&&/expire|timeout|timed.?out/.test(state))updates.status="failed";
@@ -1323,7 +1326,7 @@ async function actionOrders(userId: string) {
   const waitingOrders = (initialOrders ?? [])
     .filter((order: any) =>
       ["waiting", "pending", "received", "completed", "success", "successful"].includes(str(order.status).toLowerCase()) &&
-      !str(order.otp_code) &&
+      (!str(order.otp_code) || (/tiktok/i.test(str(order.service_code, order.service_name)) && str(order.otp_code).length < 6)) &&
       str(order.provider_state).toLowerCase() !== AUTO_REFUNDED_PROVIDER_FAILURE &&
       str(order.provider_order_id, order.provider_order)
     )
