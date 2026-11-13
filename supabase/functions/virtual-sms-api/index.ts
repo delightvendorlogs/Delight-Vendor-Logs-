@@ -487,35 +487,119 @@ async function ownedOrder(orderId: string, userId: string) {
   return data;
 }
 
-function extractOtp(data: any): string {
-  const direct = str(
-    data?.otp,
-    data?.code,
-    data?.sms_code,
-    data?.verification_code,
-    data?.data?.otp,
-    data?.data?.code,
-    data?.sms?.code,
+function walkProviderPayload(root: any, visit: (value: any, key: string) => void): void {
+  const seen = new Set<object>();
+  const stack: Array<{ value: any; key: string; depth: number }> = [{ value: root, key: "", depth: 0 }];
+  while (stack.length) {
+    const current = stack.pop()!;
+    const value = current.value;
+    if (value == null || current.depth > 10) continue;
+    visit(value, current.key);
+    if (typeof value !== "object" || seen.has(value)) continue;
+    seen.add(value);
+    if (Array.isArray(value)) {
+      for (const child of value) stack.push({ value: child, key: current.key, depth: current.depth + 1 });
+    } else {
+      for (const [key, child] of Object.entries(value)) {
+        stack.push({ value: child, key: key.toLowerCase(), depth: current.depth + 1 });
+      }
+    }
+  }
+}
+
+function providerMessages(data: any): any[] {
+  const messages: any[] = [];
+  walkProviderPayload(data, (value, key) => {
+    if ((key === "messages" || key === "sms_messages" || key === "smsmessages" || key === "message_list") && Array.isArray(value)) {
+      messages.push(...value);
+    }
+  });
+  return messages;
+}
+
+function messageContent(message: any): string {
+  if (typeof message === "string") return message.trim();
+  return str(
+    message?.content, message?.text, message?.body, message?.message,
+    message?.sms, message?.sms_text, message?.smsText, message?.message_content,
   );
+}
 
-  if (direct) return direct;
+function extractSmsText(data: any): string {
+  const messages = providerMessages(data);
+  const messageText = messages.map((message: any) => {
+    const sender = typeof message === "object" && message
+      ? str(message?.sender, message?.from, message?.originator, message?.source)
+      : "";
+    const content = messageContent(message);
+    return [sender, content].filter(Boolean).join(": ");
+  }).filter(Boolean).join("\n");
+  if (messageText) return messageText;
 
-  const messages = [
-    ...(Array.isArray(data?.messages) ? data.messages : []),
-    ...(Array.isArray(data?.data?.messages) ? data.data.messages : []),
+  let found = "";
+  walkProviderPayload(data, (value, key) => {
+    if (found || typeof value !== "string") return;
+    if (["sms", "sms_text", "smstext", "sms_content", "message_body", "messagebody", "content", "message"].includes(key)) {
+      const candidate = value.trim();
+      if (candidate && candidate.length > 3) found = candidate;
+    }
+  });
+  return found;
+}
+
+function extractOtpFromText(value: unknown): string {
+  const raw = typeof value === "string"
+    ? value
+    : value == null
+      ? ""
+      : JSON.stringify(value);
+  if (!raw) return "";
+
+  // Provider messages can contain HTML-escaped punctuation and grouped codes.
+  const text = raw
+    .replace(/&#39;|&#x27;/gi, "'")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/[‐‑‒–—]/g, "-");
+
+  const patterns = [
+    /(?:verification\\s+code|sms\\s+code|security\\s+code|one[-\\s]?time\\s+(?:password|code)|passcode|otp|pin|code)\\s*(?:is|:|=|-)?\\s*["'“]?([0-9]{3,8}(?:[- ][0-9]{2,8})?)\\b/i,
+    /(?:code|otp|pin)[^0-9]{0,24}([0-9]{3,8}(?:[- ][0-9]{2,8})?)\\b/i,
   ];
 
-  for (const message of messages) {
-    const explicit = str(message?.otp, message?.code, message?.sms_code);
-    if (explicit) return explicit;
-
-    const content = str(message?.content, message?.text, message?.body);
-    const match = content.match(/\b(\d{4,8})\b/);
-
-    if (match) return match[1];
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match) return match[1].trim();
   }
 
-  return "";
+  // Some providers send only the code without a label.
+  const standalone = text.match(/(?:^|[^0-9])([0-9]{4,8})(?![0-9])/);
+  return standalone?.[1] ?? "";
+}
+
+function extractOtp(data: any): string {
+  if (typeof data === "string") return extractOtpFromText(data);
+
+  const messages = providerMessages(data);
+  const candidates = messages.map(messageContent).filter(Boolean);
+  const smsText = extractSmsText(data);
+  if (smsText) candidates.push(smsText);
+
+  // Search every available SMS representation, not just the first populated
+  // provider field. Some VirtualSMS responses include both messages[] and sms.
+  for (const content of candidates) {
+    const code = extractOtpFromText(content);
+    if (code) return code;
+  }
+
+  let explicit = "";
+  walkProviderPayload(data, (value, key) => {
+    if (explicit || value == null || typeof value === "object") return;
+    if (["otp", "code", "sms_code", "smscode", "verification_code", "verificationcode", "pin", "one_time_code", "onetimecode"].includes(key)) {
+      const candidate = str(value);
+      if (/^\\d{3,10}$/.test(candidate)) explicit = candidate;
+    }
+  });
+  return explicit;
 }
 
 async function markAutomaticProviderRefund(orderId: string) {
@@ -794,166 +878,290 @@ async function actionBuy(body: any, userId: string, req: Request) {
   }
 }
 
-async function actionStatus(orderId:string,userId:string){
- const order=await ownedOrder(orderId,userId);
- if(order.provider_state===AUTOMATIC_REFUND_MARKER)return response({success:true,order,automatic_provider_refund:true});
- const current=str(order.status).toLowerCase();
- if(["cancelled","canceled","refunded","expired"].includes(current))return response({success:true,order});
- const providerId=str(order.provider_order_id,order.provider_order);
- if(!providerId)return response({success:true,order});
- const result=await providerRequest("/customer/order/"+encodeURIComponent(providerId));
- const otp=extractOtp(result)||str(order.otp_code);
- const smsText=typeof result?.sms==="string"?result.sms:str(result?.sms?.content,result?.sms?.text,result?.sms?.body,result?.message_body,result?.sms_text);
- const state=str(result?.status,result?.state,result?.data?.status,result?.order?.status,result?.data?.order?.status).toLowerCase();
- const expiry=extractProviderExpiry(result)??order.provider_expires_at??null;
- const expired=Boolean(expiry&&Date.parse(String(expiry))<=Date.now());
- const already=Boolean(order.otp_code)||["received","completed","finished","success","successful"].includes(current);
- const updates:Record<string,unknown>={updated_at:new Date().toISOString()};
- if(expiry)updates.provider_expires_at=expiry;
- if(otp){if(!order.otp_code){updates.otp_code=otp;updates.code_received_at=new Date().toISOString();}updates.status="received";}
- else if(already&&!order.otp_code)updates.status="waiting";
- else if(!already&&/cancel/.test(state))updates.status="cancelled";
- else if(!already&&(/expired|timeout|timed.?out/.test(state)||expired)){updates.status="failed";updates.provider_state="expired";}
- if(smsText)updates.full_sms=smsText;
- if(state)updates.provider_state=/expired|timeout|timed.?out/.test(state)?"expired":state;
- const {data,error}=await supabase.from("virtual_number_orders").update(updates).eq("id",orderId).eq("user_id",userId).select().single();
- if(error){console.error("VirtualSMS status update failed:",error.message);throw new Error("Unable to update order status.");}
- if(!otp&&!already&&(/expired|timeout|timed.?out/.test(state)||expired)){
-  const {data:rd,error:re}=await supabase.rpc("process_virtual_number_refund",{p_order_id:Number(orderId),p_provider_key:"virtualsms",p_reason:"Virtual number timed out - automatic refund"});
-  const refund=Array.isArray(rd)?rd[0]:rd;
-  if(re||!(refund?.success===true||refund?.already_refunded===true))return response({success:true,order:data,expired:true,refund_pending:true},202);
-  const {data:eo,error:ee}=await supabase.from("virtual_number_orders").update({status:"expired",provider_state:"expired",updated_at:new Date().toISOString()}).eq("id",orderId).eq("user_id",userId).select().single();
-  if(ee)throw new Error("Refund succeeded, but timeout status could not be saved.");
-  return response({success:true,order:eo,expired:true,refunded:true});
- }
- return response({success:true,order:data,code_received:Boolean(otp)});
-}
-async function actionCancel(orderId: string, userId: string) {
+async function actionStatus(orderId: string, userId: string) {
   const order = await ownedOrder(orderId, userId);
-
   if (order.provider_state === AUTOMATIC_REFUND_MARKER) {
-    return response({
-      success: true,
-      order,
-      message: "This failed purchase has already been refunded.",
-    });
+    return response({ success: true, order, automatic_provider_refund: true });
   }
 
   const providerId = str(order.provider_order_id, order.provider_order);
+  if (!providerId) return response({ success: true, order });
 
-  if (!providerId) {
-    throw new Error("This order does not have a provider order ID.");
+  const current = str(order.status).toLowerCase();
+  const savedProviderState = str(order.provider_state).toLowerCase();
+  const locallyFinal = ["cancelled", "canceled", "refunded", "expired", "failed"].includes(current);
+  const providerPreviouslyCompleted = /complete|received|success|verified|finished/.test(savedProviderState);
+
+  // A locally cancelled/refunded order must still be checked if the provider
+  // had already marked it completed. This recovers an SMS that arrived late
+  // and prevents the provider's successful order being mistaken for a timeout.
+  if (locallyFinal && !providerPreviouslyCompleted) {
+    return response({ success: true, order });
   }
 
-  if (
-    ["cancelled", "canceled", "completed", "refunded"].includes(
-      String(order.status ?? "").toLowerCase(),
-    )
-  ) {
-    return response({
-      success: true,
-      order,
-      message: "This order is already finalized.",
-    });
-  }
-
-  // CORRECTED: cancellation takes the provider order ID in the URL.
-  const result = await providerRequest(
-    `/customer/cancel/${encodeURIComponent(providerId)}`,
-    { method: "POST" },
-  );
-
-  const status = str(
-    result?.status,
-    result?.data?.status,
-    result?.message,
+  const result = await providerRequest("/customer/order/" + encodeURIComponent(providerId));
+  const otp = extractOtp(result) || extractOtpFromText(order.full_sms) || str(order.otp_code);
+  const smsText = extractSmsText(result) || str(order.full_sms);
+  const state = str(
+    result?.status, result?.state, result?.data?.status,
+    result?.order?.status, result?.data?.order?.status,
+    result?.result?.status,
   ).toLowerCase();
+  const expiry = extractProviderExpiry(result) ?? order.provider_expires_at ?? null;
+  const now = new Date().toISOString();
+  const hasMessages = providerMessages(result).length > 0 || Boolean(smsText);
+  const providerCompleted = Boolean(otp || hasMessages) ||
+    /^(completed|complete|finished|success|successful|verified|verification_completed|sms_received|received)$/.test(state);
 
-  if (/cannot|failed|error|already.*complete/.test(status)) {
-    return fail(
-      str(result?.message, "The provider did not confirm cancellation."),
-      409,
-    );
+  const updates: Record<string, unknown> = {
+    updated_at: now,
+  };
+  if (expiry) updates.provider_expires_at = expiry;
+  if (otp) {
+    updates.otp_code = otp;
+    updates.code_received_at = order.code_received_at || now;
+  }
+  if (smsText) updates.full_sms = smsText;
+
+  if (providerCompleted) {
+    // A completed provider order is never eligible for an automatic timeout
+    // refund, even if the local expiry timestamp has elapsed or the provider
+    // has not yet exposed the parsed code field.
+    updates.status = "received";
+    updates.provider_state = state || "completed";
+  } else if (/cancelled|canceled/.test(state)) {
+    updates.status = "cancelled";
+    updates.provider_state = state;
+  } else if (/^(expired|timeout|timed_out|timed out)$/.test(state)) {
+    updates.status = "failed";
+    updates.provider_state = "expired";
+  } else if (state) {
+    updates.provider_state = state;
   }
 
   const { data, error } = await supabase
     .from("virtual_number_orders")
-    .update({
-      status: "cancelled",
-      updated_at: new Date().toISOString(),
-    })
+    .update(updates)
     .eq("id", orderId)
     .eq("user_id", userId)
+    .eq("provider_key", "virtualsms")
     .select()
     .single();
 
   if (error) {
-    throw new Error(
-      "Cancellation was received but the order could not be updated.",
-    );
+    console.error("VirtualSMS status update failed:", error.message);
+    throw new Error("Unable to update order status.");
   }
 
-  const { data: refundData, error: refundError } = await supabase.rpc(
-    "process_virtual_number_refund",
-    {
-      p_order_id: orderId,
-      p_provider_key: "virtualsms",
-      p_reason: "VirtualSMS order cancelled",
-    },
-  );
-
-  if (refundError) {
-    console.error("Cancellation refund needs review:", refundError.message);
-
-    return response(
+  // Only an explicit provider expiry is refundable. A local countdown reaching
+  // zero is not enough evidence to refund an order whose provider says completed.
+  if (!providerCompleted && /^(expired|timeout|timed_out|timed out)$/.test(state)) {
+    const { data: refundData, error: refundError } = await supabase.rpc(
+      "process_virtual_number_refund",
       {
-        success: true,
-        order: data,
-        refund_pending: true,
-        message:
-          "Order cancelled. The refund could not be confirmed and needs support review.",
+        p_order_id: Number(orderId),
+        p_provider_key: "virtualsms",
+        p_reason: "VirtualSMS provider confirmed order expiry - automatic refund",
       },
-      202,
     );
-  }
+    const refund = Array.isArray(refundData) ? refundData[0] : refundData;
+    if (refundError || !(refund?.success === true || refund?.already_refunded === true)) {
+      return response({ success: true, order: data, expired: true, refund_pending: true }, 202);
+    }
 
-  const refundResult = Array.isArray(refundData)
-    ? refundData[0]
-    : refundData;
-
-  if (
-    refundResult?.success !== true &&
-    refundResult?.already_refunded !== true
-  ) {
-    return response(
-      {
-        success: true,
-        order: data,
-        refund_pending: true,
-        message:
-          "Order cancelled. The refund could not be confirmed and needs support review.",
-      },
-      202,
-    );
+    const { data: expiredOrder, error: saveError } = await supabase
+      .from("virtual_number_orders")
+      .update({ status: "expired", provider_state: "expired", updated_at: new Date().toISOString() })
+      .eq("id", orderId)
+      .eq("user_id", userId)
+      .select()
+      .single();
+    if (saveError) throw new Error("The confirmed expiry refund was processed, but the order status could not be saved.");
+    return response({ success: true, order: expiredOrder, expired: true, refunded: true });
   }
 
   return response({
     success: true,
     order: data,
-    refunded: true,
-    message: "Order cancelled and refund confirmed.",
+    code_received: Boolean(otp),
+    verification_completed: providerCompleted,
   });
 }
+async function actionCancel(orderId: string, userId: string) {
+  const order = await ownedOrder(orderId, userId);
+  if (order.provider_state === AUTOMATIC_REFUND_MARKER) {
+    return response({ success: true, order, message: "This failed purchase has already been refunded." });
+  }
 
+  const providerId = str(order.provider_order_id, order.provider_order);
+  if (!providerId) throw new Error("This order does not have a provider order ID.");
+
+  const savedState = str(order.provider_state).toLowerCase();
+  if (str(order.otp_code) || order.code_received_at ||
+      /complete|received|success|verified|finished/.test(savedState) ||
+      ["received", "completed", "complete", "success", "successful"].includes(str(order.status).toLowerCase())) {
+    // Refresh the delivered SMS, but never cancel/refund a provider-completed order.
+    try { await actionStatus(orderId, userId); } catch (error) {
+      console.error("Completed VirtualSMS order recovery failed:", String(error));
+    }
+    return fail("Verification has already been completed by the provider. This order cannot be cancelled or refunded.", 409, {
+      error_code: "VERIFICATION_ALREADY_COMPLETED",
+    });
+  }
+
+  // Verify provider state immediately before cancellation to close the race
+  // where an SMS arrives after the customer opens the cancel flow.
+  let latest: any;
+  try {
+    latest = await providerRequest("/customer/order/" + encodeURIComponent(providerId));
+  } catch (error) {
+    console.error("VirtualSMS pre-cancel status check failed:", String(error));
+    return response({
+      success: true,
+      pending: true,
+      order,
+      message: "We could not confirm the provider status, so no cancellation or refund was processed. Refresh the order shortly.",
+    }, 202);
+  }
+
+  const latestOtp = extractOtp(latest);
+  const latestSms = extractSmsText(latest);
+  const latestState = str(
+    latest?.status, latest?.state, latest?.data?.status,
+    latest?.order?.status, latest?.data?.order?.status,
+  ).toLowerCase();
+  const latestCompleted = Boolean(latestOtp || latestSms || providerMessages(latest).length) ||
+    /^(completed|complete|finished|success|successful|verified|verification_completed|sms_received|received)$/.test(latestState);
+
+  if (latestCompleted) {
+    const now = new Date().toISOString();
+    const updates: Record<string, unknown> = {
+      status: "received",
+      provider_state: latestState || "completed",
+      updated_at: now,
+    };
+    if (latestOtp) {
+      updates.otp_code = latestOtp;
+      updates.code_received_at = order.code_received_at || now;
+    }
+    if (latestSms) updates.full_sms = latestSms;
+    const { error } = await supabase.from("virtual_number_orders")
+      .update(updates).eq("id", order.id).eq("user_id", userId).eq("provider_key", "virtualsms");
+    if (error) throw new Error("Verification completed, but the SMS could not be saved. Please refresh or contact support.");
+    return fail("Verification has already been completed by the provider. The order cannot be cancelled or refunded.", 409, {
+      error_code: "VERIFICATION_ALREADY_COMPLETED",
+    });
+  }
+
+  const result = await providerRequest(
+    "/customer/cancel/" + encodeURIComponent(providerId),
+    { method: "POST" },
+  );
+  const cancelState = str(result?.status, result?.state, result?.data?.status, result?.message, result?.data?.message).toLowerCase();
+  const cancelConfirmed = /cancelled|canceled/.test(cancelState) ||
+    result?.cancelled === true || result?.canceled === true ||
+    result?.data?.cancelled === true || result?.data?.canceled === true;
+
+  const responseOtp = extractOtp(result);
+  const responseSms = extractSmsText(result);
+  const responseCompleted = Boolean(responseOtp || responseSms || providerMessages(result).length) ||
+    /^(completed|complete|finished|success|successful|verified|verification_completed|sms_received|received)$/.test(cancelState);
+
+  if (responseCompleted) {
+    const now = new Date().toISOString();
+    const updates: Record<string, unknown> = {
+      status: "received",
+      provider_state: cancelState || "completed",
+      updated_at: now,
+    };
+    if (responseOtp) {
+      updates.otp_code = responseOtp;
+      updates.code_received_at = order.code_received_at || now;
+    }
+    if (responseSms) updates.full_sms = responseSms;
+    const { error } = await supabase.from("virtual_number_orders")
+      .update(updates).eq("id", order.id).eq("user_id", userId).eq("provider_key", "virtualsms");
+    if (error) throw new Error("The provider completed this verification, but saving its SMS needs support review.");
+    return fail("The provider completed this verification. The order was not cancelled or refunded.", 409, {
+      error_code: "VERIFICATION_ALREADY_COMPLETED",
+    });
+  }
+
+  if (!cancelConfirmed) {
+    return response({
+      success: true,
+      pending: true,
+      order,
+      message: "The provider did not clearly confirm cancellation. No refund was processed; refresh the order or contact support.",
+    }, 202);
+  }
+
+  const { data, error } = await supabase
+    .from("virtual_number_orders")
+    .update({ status: "cancelled", provider_state: "cancelled", updated_at: new Date().toISOString() })
+    .eq("id", orderId)
+    .eq("user_id", userId)
+    .eq("provider_key", "virtualsms")
+    .select()
+    .single();
+
+  if (error) throw new Error("Cancellation was received but the order could not be updated.");
+
+  const { data: refundData, error: refundError } = await supabase.rpc(
+    "process_virtual_number_refund",
+    { p_order_id: orderId, p_provider_key: "virtualsms", p_reason: "VirtualSMS order cancellation confirmed by provider" },
+  );
+  const refundResult = Array.isArray(refundData) ? refundData[0] : refundData;
+
+  if (refundError || (refundResult?.success !== true && refundResult?.already_refunded !== true)) {
+    console.error("Cancellation refund needs review:", refundError?.message || refundResult);
+    return response({
+      success: true,
+      order: data,
+      refund_pending: true,
+      message: "Order cancelled by the provider. The refund could not be confirmed and needs support review.",
+    }, 202);
+  }
+
+  return response({ success: true, order: data, refunded: true, message: "Order cancellation and refund were confirmed." });
+}
 async function refreshWaitingProviderOrder(order: any, userId: string) {
+  const savedProviderState = str(order?.provider_state).toLowerCase();
+  const completedButUnparsed = /complete|received|success|verified|finished/.test(savedProviderState);
   if (
     !order ||
     String(order.user_id) !== userId ||
     String(order.provider_key).toLowerCase() !== "virtualsms" ||
     order.provider_state === AUTOMATIC_REFUND_MARKER ||
-    !["waiting", "pending", "received", "completed", "success", "successful"].includes(String(order.status ?? "").toLowerCase()) ||
+    (!["waiting", "pending", "received", "completed", "success", "successful"].includes(String(order.status ?? "").toLowerCase()) && !completedButUnparsed) ||
     str(order.otp_code)
   ) return;
+
+  // Recover an OTP from the SMS already stored on the order before asking
+  // the provider again. This fixes older orders where full_sms was saved but
+  // otp_code was left empty.
+  const savedSmsOtp = extractOtpFromText(order.full_sms);
+  if (savedSmsOtp) {
+    const now = new Date().toISOString();
+    const { error } = await supabase
+      .from("virtual_number_orders")
+      .update({
+        otp_code: savedSmsOtp,
+        status: "received",
+        code_received_at: order.code_received_at || now,
+        updated_at: now,
+      })
+      .eq("id", order.id)
+      .eq("user_id", userId)
+      .eq("provider_key", "virtualsms");
+    if (error) {
+      console.error("VirtualSMS saved-SMS OTP recovery failed:", {
+        order_id: order.id,
+        message: error.message,
+      });
+    }
+    return;
+  }
 
   const providerId = str(order.provider_order_id, order.provider_order);
   if (!providerId || !API_KEY) return;
@@ -963,51 +1171,33 @@ async function refreshWaitingProviderOrder(order: any, userId: string) {
       `/customer/order/${encodeURIComponent(providerId)}`,
     );
     const otp = extractOtp(result);
+    const smsText = extractSmsText(result);
     const providerStatus = str(
-      result?.status,
-      result?.state,
-      result?.data?.status,
-      result?.order?.status,
-      result?.data?.order?.status,
+      result?.status, result?.state, result?.data?.status,
+      result?.order?.status, result?.data?.order?.status,
+      result?.result?.status,
     ).toLowerCase();
+    const providerCompleted = Boolean(otp || smsText || providerMessages(result).length) ||
+      /^(completed|complete|finished|success|successful|verified|verification_completed|sms_received|received)$/.test(providerStatus);
 
-    const updates: Record<string, unknown> = {
-      updated_at: new Date().toISOString(),
-    };
-
+    const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
     if (otp) {
       updates.otp_code = otp;
-      updates.code_received_at = new Date().toISOString();
-      if (!/cancel|expire/.test(providerStatus)) updates.status = "received";
+      updates.code_received_at = order.code_received_at || new Date().toISOString();
     }
+    if (smsText) updates.full_sms = smsText;
 
-    if (/cancel/.test(providerStatus)) updates.status = "cancelled";
-    else if (/expired|timeout/.test(providerStatus)) updates.status = "failed";
-    else if (/complete|received|success/.test(providerStatus) && otp) {
+    if (providerCompleted) {
       updates.status = "received";
-    }
-
-    const messages = [
-      ...(Array.isArray(result?.messages) ? result.messages : []),
-      ...(Array.isArray(result?.data?.messages) ? result.data.messages : []),
-      ...(Array.isArray(result?.order?.messages) ? result.order.messages : []),
-      ...(Array.isArray(result?.data?.order?.messages) ? result.data.order.messages : []),
-    ];
-
-    if (messages.length) {
-      updates.full_sms = JSON.stringify(messages);
-    } else if (result?.sms !== undefined) {
-      updates.full_sms = typeof result.sms === "string"
-        ? result.sms
-        : JSON.stringify(result.sms);
-    } else if (result?.data?.sms !== undefined) {
-      updates.full_sms = typeof result.data.sms === "string"
-        ? result.data.sms
-        : JSON.stringify(result.data.sms);
-    } else if (result?.order?.sms !== undefined) {
-      updates.full_sms = typeof result.order.sms === "string"
-        ? result.order.sms
-        : JSON.stringify(result.order.sms);
+      updates.provider_state = providerStatus || "completed";
+    } else if (/cancelled|canceled/.test(providerStatus)) {
+      updates.status = "cancelled";
+      updates.provider_state = providerStatus;
+    } else if (/^(expired|timeout|timed_out|timed out)$/.test(providerStatus)) {
+      updates.status = "failed";
+      updates.provider_state = "expired";
+    } else if (providerStatus) {
+      updates.provider_state = providerStatus;
     }
 
     const { error } = await supabase
@@ -1019,9 +1209,7 @@ async function refreshWaitingProviderOrder(order: any, userId: string) {
 
     if (error) {
       console.error("VirtualSMS waiting-order refresh DB update failed:", {
-        order_id: order.id,
-        message: error.message,
-        code: error.code,
+        order_id: order.id, message: error.message, code: error.code,
       });
     }
   } catch (error) {
@@ -1031,7 +1219,6 @@ async function refreshWaitingProviderOrder(order: any, userId: string) {
     });
   }
 }
-
 async function actionOrders(userId: string) {
   const { data: initialOrders, error: initialError } = await supabase
     .from("virtual_number_orders")
@@ -1045,12 +1232,16 @@ async function actionOrders(userId: string) {
   // Refresh a small batch of active orders so new SMS codes appear when
   // the dashboard requests the order list. This does not create purchases.
   const waitingOrders = (initialOrders ?? [])
-    .filter((order: any) =>
-      ["waiting", "pending", "received", "completed", "success", "successful"].includes(String(order.status ?? "").toLowerCase()) &&
-      !str(order.otp_code) &&
-      order.provider_state !== AUTOMATIC_REFUND_MARKER &&
-      str(order.provider_order_id, order.provider_order)
-    )
+    .filter((order: any) => {
+      const status = String(order.status ?? "").toLowerCase();
+      const providerState = String(order.provider_state ?? "").toLowerCase();
+      const active = ["waiting", "pending", "received", "completed", "success", "successful"].includes(status);
+      const completedButUnparsed = /complete|received|success|verified|finished/.test(providerState);
+      return (active || completedButUnparsed) &&
+        !str(order.otp_code) &&
+        order.provider_state !== AUTOMATIC_REFUND_MARKER &&
+        str(order.provider_order_id, order.provider_order);
+    })
     .slice(0, 10);
 
   for (const order of waitingOrders) {
