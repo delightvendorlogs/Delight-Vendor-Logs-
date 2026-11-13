@@ -1099,9 +1099,9 @@ function extractTextVerifiedOtp(result: any, sms: any): string {
   const patterns = [
     /(?:verification|security|sms|login|one[- ]time|confirmation|whatsapp)?\s*(?:code|otp|pin)\s*(?:is|:|=|-)?\s*["']?((?<!\d)\d{4,8}(?!\d))/i,
     /(?:code|otp|pin)[^\d]{0,28}((?<!\d)\d{4,8}(?!\d))/i,
-    /((?<!\d)\d{4,8}(?!\d))\s*(?:is your|is the|for your)?\s*(?:verification|security|sms|login)?\s*(?:code|otp|pin)\b/i,
+    /((?<!\d)\d{4,8}(?!\d))\s*(?:is your|is the|for your|as your)?\s*(?:verification|security|sms|login)?\s*(?:code|otp|pin)\b/i,
     /(?:code|otp|pin)[^\d]{0,28}((?<!\d)\d{3,4}(?:[\s-]\d{3,4})(?!\d))/i,
-    /((?<!\d)\d{3,4}(?:[\s-]\d{3,4})(?!\d))\s*(?:is your|is the|for your)?\s*(?:verification|security|sms|login)?\s*(?:code|otp|pin)\b/i
+    /((?<!\d)\d{3,4}(?:[\s-]\d{3,4})(?!\d))\s*(?:is your|is the|for your|as your)?\s*(?:verification|security|sms|login)?\s*(?:code|otp|pin)\b/i
   ];
   for (const text of texts) for (const pattern of patterns) { const code = normalizeOtp(text.match(pattern)?.[1]); if (code) return code; }
   return "";
