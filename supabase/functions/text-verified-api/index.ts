@@ -472,35 +472,51 @@ function normalizeService(item: any) {
   };
 }
 
-async function listServiceNames() {
+// Keep the provider catalogue briefly in the Edge Function isolate. Reopening
+// the picker or loading purchase history should not repeatedly hit TextVerified.
+let textVerifiedServiceCatalogCache: any[] | null = null;
+let textVerifiedServiceCatalogCachedAt = 0;
+const TEXTVERIFIED_SERVICE_CATALOG_TTL_MS = 45_000;
+
+async function getTextVerifiedServiceCatalog() {
+  if (
+    textVerifiedServiceCatalogCache &&
+    Date.now() - textVerifiedServiceCatalogCachedAt < TEXTVERIFIED_SERVICE_CATALOG_TTL_MS
+  ) {
+    return textVerifiedServiceCatalogCache;
+  }
+
   const result = await tvRequest(
     "/services?numberType=mobile&reservationType=verification",
   );
-  return getRows(result)
+  const services = getRows(result)
     .map(normalizeService)
-    .filter((item) => item.name)
-    .map(({ name, service_name, service_code, capability }) => ({
-      name,
-      service_name,
-      service_code,
-      capability,
-    }));
+    .filter((item) => item.name);
+
+  if (!services.length) {
+    throw new Error("TextVerified returned an empty service catalogue.");
+  }
+
+  textVerifiedServiceCatalogCache = services;
+  textVerifiedServiceCatalogCachedAt = Date.now();
+  return services;
+}
+
+async function listServiceNames() {
+  const services = await getTextVerifiedServiceCatalog();
+  return services.map(({ name, service_name, service_code, capability }) => ({
+    name,
+    service_name,
+    service_code,
+    capability,
+  }));
 }
 
 async function listServices() {
-  const result = await tvRequest(
-    "/services?numberType=mobile&reservationType=verification",
-  );
-  const services = getRows(result).map(normalizeService).filter((item) => item.name);
-  return await mapWithConcurrency(services, 3, async (item) => {
-    try {
-      const quote = await getQuote(item.name, item.capability || "sms");
-      return { ...item, price: quote.price, price_ngn: quote.price, currency: "NGN" };
-    } catch (error) {
-      logSafeError("textverified-service-price", error);
-      return { ...item, price: null, price_ngn: null };
-    }
-  });
+  // Do not request a quote for every service before displaying the catalogue.
+  // That creates dozens of provider requests and can trigger TextVerified 429s.
+  // The storefront fetches the actual price/options only after a service is chosen.
+  return await getTextVerifiedServiceCatalog();
 }
 
 /* =========================================================
