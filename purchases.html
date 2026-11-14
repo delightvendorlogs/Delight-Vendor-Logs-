@@ -744,7 +744,7 @@ async function resolvePurchaseVirtualServiceNames(orders){
   const code=String(order.service_code||"").trim();
   const saved=String(order.service_name||"").trim();
   const canonicalName=canonicalPurchaseVirtualServiceName(code);
-  if(canonicalName&&canonicalName.toLowerCase()!==code.toLowerCase())order.display_service_name=canonicalName;
+  if(canonicalName&&canonicalName!==code)order.display_service_name=canonicalName;
   if(!code||!provider|| (saved&&saved.toLowerCase()!==code.toLowerCase()&&saved.length>3))return;
   if(!PURCHASE_VIRTUAL_SERVICE_FUNCTIONS[provider])return;
   const country=provider==="virtualsms"?String(order.country_code||order.country_key||order.country_id||""):"";
