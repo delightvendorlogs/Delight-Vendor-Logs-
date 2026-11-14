@@ -726,6 +726,11 @@ function purchaseServiceIcon(service){
     const [,slug,color]=brand;
     return '<img class="purchase-service-logo" src="https://cdn.simpleicons.org/'+slug+'/'+color+'" alt="" loading="lazy" onerror="this.replaceWith(document.createTextNode(\'📱\'))">';
 }
+const PURCHASE_VIRTUAL_SERVICE_CODE_NAMES={wa:"WhatsApp",whatsapp:"WhatsApp",tg:"Telegram",telegram:"Telegram",bw:"Signal",signal:"Signal",gr_sg:"Signal",fb:"Facebook",facebook:"Facebook",fu:"Snapchat",snapchat:"Snapchat",lf:"TikTok",tiktok:"TikTok",ig:"Instagram",instagram:"Instagram",tw:"Twitter / X",twitter:"Twitter / X",wx:"Apple",apple:"Apple",textplus:"TextPlus"};
+function canonicalPurchaseVirtualServiceName(value){
+ const raw=String(value??"").trim();
+ return PURCHASE_VIRTUAL_SERVICE_CODE_NAMES[raw.toLowerCase()]||raw;
+}
 const PURCHASE_VIRTUAL_SERVICE_FUNCTIONS={
  virtualsms:"https://hkfhehbhmucymusaytoe.supabase.co/functions/v1/virtual-sms-api",
  textverified:"https://hkfhehbhmucymusaytoe.supabase.co/functions/v1/text-verified-api",
@@ -738,6 +743,8 @@ async function resolvePurchaseVirtualServiceNames(orders){
   const provider=String(order.provider_key||"").toLowerCase().replace(/-/g,"");
   const code=String(order.service_code||"").trim();
   const saved=String(order.service_name||"").trim();
+  const canonicalName=canonicalPurchaseVirtualServiceName(code);
+  if(canonicalName&&canonicalName.toLowerCase()!==code.toLowerCase())order.display_service_name=canonicalName;
   if(!code||!provider|| (saved&&saved.toLowerCase()!==code.toLowerCase()&&saved.length>3))return;
   if(!PURCHASE_VIRTUAL_SERVICE_FUNCTIONS[provider])return;
   const country=provider==="virtualsms"?String(order.country_code||order.country_key||order.country_id||""):"";
@@ -768,7 +775,7 @@ async function resolvePurchaseVirtualServiceNames(orders){
     const rows=Array.isArray(body)?body:Array.isArray(body.services)?body.services:Array.isArray(body.data)?body.data:[];
     return new Map(rows.map(item=>{
      const code=String(item?.service_code??item?.serviceCode??item?.code??item?.id??item?.service??item?.key??item?.name??"").trim().toLowerCase();
-     const name=String(item?.service_name??item?.serviceName??item?.name??item?.title??item?.service??"").trim();
+     const name=canonicalPurchaseVirtualServiceName(item?.service_name??item?.serviceName??item?.name??item?.title??item?.service??"");
      return [code,name];
     }).filter(([code,name])=>code&&name));
    })();
