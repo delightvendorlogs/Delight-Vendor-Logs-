@@ -726,6 +726,77 @@ function purchaseServiceIcon(service){
     const [,slug,color]=brand;
     return '<img class="purchase-service-logo" src="https://cdn.simpleicons.org/'+slug+'/'+color+'" alt="" loading="lazy" onerror="this.replaceWith(document.createTextNode(\'📱\'))">';
 }
+const PURCHASE_VIRTUAL_SERVICE_CODE_NAMES={wa:"WhatsApp",whatsapp:"WhatsApp",tg:"Telegram",telegram:"Telegram",bw:"Signal",signal:"Signal",gr_sg:"Signal",fb:"Facebook",facebook:"Facebook",fu:"Snapchat",snapchat:"Snapchat",lf:"TikTok",tiktok:"TikTok",ig:"Instagram",instagram:"Instagram",tw:"Twitter / X",twitter:"Twitter / X",wx:"Apple",apple:"Apple",textplus:"TextPlus"};
+function canonicalPurchaseVirtualServiceName(value){
+ const raw=String(value??"").trim();
+ return PURCHASE_VIRTUAL_SERVICE_CODE_NAMES[raw.toLowerCase()]||raw;
+}
+const PURCHASE_VIRTUAL_SERVICE_FUNCTIONS={
+ virtualsms:"https://hkfhehbhmucymusaytoe.supabase.co/functions/v1/virtual-sms-api",
+ textverified:"https://hkfhehbhmucymusaytoe.supabase.co/functions/v1/text-verified-api",
+ fetchsms:"https://hkfhehbhmucymusaytoe.supabase.co/functions/v1/fetch-sms-api"
+};
+const purchaseVirtualServiceCatalogCache=new Map();
+async function resolvePurchaseVirtualServiceNames(orders){
+ const groups=new Map();
+ (orders||[]).forEach(order=>{
+  const provider=String(order.provider_key||"").toLowerCase().replace(/-/g,"");
+  const code=String(order.service_code||"").trim();
+  const saved=String(order.service_name||"").trim();
+  const canonicalName=canonicalPurchaseVirtualServiceName(code);
+  if(canonicalName&&canonicalName!==code)order.display_service_name=canonicalName;
+  if(!code||!provider|| (saved&&saved.toLowerCase()!==code.toLowerCase()&&saved.length>3))return;
+  if(!PURCHASE_VIRTUAL_SERVICE_FUNCTIONS[provider])return;
+  const country=provider==="virtualsms"?String(order.country_code||order.country_key||order.country_id||""):"";
+  const key=provider+"|"+country;
+  if(!groups.has(key))groups.set(key,{provider,country,order});
+ });
+ const {data:{session}}=await supabaseClient.auth.getSession();
+ if(!session?.access_token)return;
+ await Promise.all([...groups.values()].map(async group=>{
+  const {provider,country,order}=group,key=provider+"|"+country;
+  let request=purchaseVirtualServiceCatalogCache.get(key);
+  if(!request){
+   request=(async()=>{
+    const payload={action:"services"};
+    if(provider==="virtualsms"){
+     if(country)payload.country=country;
+     if(order.country_id)payload.countryId=order.country_id;
+    }else if(provider==="textverified"){
+     payload.numberType="mobile";payload.reservationType="verification";
+    }
+    const response=await fetch(PURCHASE_VIRTUAL_SERVICE_FUNCTIONS[provider],{
+     method:"POST",
+     headers:{"Content-Type":"application/json","apikey":"sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_","Authorization":"Bearer "+session.access_token},
+     body:JSON.stringify(payload)
+    });
+    if(!response.ok)throw new Error("Service catalogue request failed ("+response.status+")");
+    const body=await response.json();
+    const rows=Array.isArray(body)?body:Array.isArray(body.services)?body.services:Array.isArray(body.data)?body.data:[];
+    return new Map(rows.map(item=>{
+     const code=String(item?.service_code??item?.serviceCode??item?.code??item?.id??item?.service??item?.key??item?.name??"").trim().toLowerCase();
+     const name=canonicalPurchaseVirtualServiceName(item?.service_name??item?.serviceName??item?.name??item?.title??item?.service??"");
+     return [code,name];
+    }).filter(([code,name])=>code&&name));
+   })();
+   purchaseVirtualServiceCatalogCache.set(key,request);
+  }
+  try{
+   const map=await request;
+   (orders||[]).forEach(item=>{
+    const itemProvider=String(item.provider_key||"").toLowerCase().replace(/-/g,"");
+    const itemCountry=itemProvider==="virtualsms"?String(item.country_code||item.country_key||item.country_id||""):"";
+    if(itemProvider!==provider||itemCountry!==country)return;
+    const resolved=map.get(String(item.service_code||"").trim().toLowerCase());
+    if(resolved)item.display_service_name=resolved;
+   });
+  }catch(error){
+   purchaseVirtualServiceCatalogCache.delete(key);
+   console.warn("Could not resolve virtual-number purchase service names:",error);
+  }
+ }));
+}
+
 
 // =====================================================
 // CREATE VIRTUAL NUMBER CARD
@@ -895,7 +966,7 @@ function createVirtualNumberCard(order){
         "virtual-number-card";
 
 
-    const serviceName = cleanVirtualCustomerText(order.service_name || "Virtual Number") || "Virtual Number";
+    const serviceName = cleanVirtualCustomerText(order.display_service_name || order.service_name || order.service_code || "Virtual Number") || "Virtual Number";
     const countryName = String(order.country_name || order.country_code || "Unknown country");
     const countryFlag = purchaseCountryFlag({name:countryName,code:order.country_code});
 
@@ -1075,7 +1146,9 @@ async function loadPurchases(){
                     "numpool_order_id",
                     "service_code",
                     "service_name",
+                    "provider_key",
                     "country_id",
+                    "country_key",
                     "country_name",
                     "number",
                     "provider_cost_usd",
@@ -1243,6 +1316,10 @@ async function loadPurchases(){
             (virtualData || []).filter(
                 order => !isAutomaticProviderRefund(order)
             );
+
+        // Resolve legacy service codes such as "WA" to the provider's current
+        // customer-facing service name so the existing brand icon can render.
+        await resolvePurchaseVirtualServiceNames(visibleVirtualData);
 
 
         // =================================================
