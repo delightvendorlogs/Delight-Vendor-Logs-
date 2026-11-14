@@ -762,8 +762,6 @@ async function resolvePurchaseVirtualServiceNames(orders){
     if(provider==="virtualsms"){
      if(country)payload.country=country;
      if(order.country_id)payload.countryId=order.country_id;
-    }else if(provider==="textverified"){
-     payload.numberType="mobile";payload.reservationType="verification";
     }
     const controller=new AbortController();
     const timeoutId=setTimeout(()=>controller.abort(),8000);
