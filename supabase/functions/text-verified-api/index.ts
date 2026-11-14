@@ -421,6 +421,25 @@ async function mapWithConcurrency<T, R>(items: T[], limit: number, worker: (item
 
 
 
+function normalizeVerificationCapability(value: unknown): string {
+  const raw = str(value).toLowerCase().replace(/[^a-z]/g, "");
+  if (!raw || ["sms", "text", "textmessage", "smsverification"].includes(raw)) return "sms";
+  if (["voice", "call", "voicecall", "voiceverification"].includes(raw)) return "voice";
+  if ([
+    "smsandvoicecombo",
+    "smsandvoice",
+    "smsvoicecombo",
+    "smsvoice",
+    "voiceandsms",
+    "voiceandsmscombo",
+    "both",
+  ].includes(raw)) return "smsAndVoiceCombo";
+
+  // This storefront sells SMS verification numbers by default. Unknown provider
+  // labels are normalized to SMS instead of breaking the entire service catalogue.
+  return "sms";
+}
+
 function normalizeService(item: any) {
   const name = str(
     item?.serviceName,
@@ -432,15 +451,40 @@ function normalizeService(item: any) {
   return {
     name,
     service_name: name,
+    service_code: str(
+      item?.service_code,
+      item?.serviceCode,
+      item?.code,
+      item?.id,
+      item?.service,
+      item?.key,
+      item?.name,
+      name,
+    ),
     description: str(
       item?.description,
       item?.displayName,
       item?.display_name,
       name,
     ),
-    capability: str(item?.capability, item?.defaultCapability, "sms"),
+    capability: normalizeVerificationCapability(item?.capability ?? item?.defaultCapability),
     provider_data: item,
   };
+}
+
+async function listServiceNames() {
+  const result = await tvRequest(
+    "/services?numberType=mobile&reservationType=verification",
+  );
+  return getRows(result)
+    .map(normalizeService)
+    .filter((item) => item.name)
+    .map(({ name, service_name, service_code, capability }) => ({
+      name,
+      service_name,
+      service_code,
+      capability,
+    }));
 }
 
 async function listServices() {
@@ -1413,6 +1457,13 @@ Deno.serve(async (req: Request) => {
         return response({
           success: true,
           services: await listServices(),
+        });
+
+      case "service-names":
+      case "list-service-names":
+        return response({
+          success: true,
+          services: await listServiceNames(),
         });
 
       case "quote":
