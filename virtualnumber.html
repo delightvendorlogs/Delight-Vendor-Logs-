@@ -589,6 +589,11 @@ function normalizeServices(payload){
 function serviceCode(s){
  return String(s?.service_code??s?.serviceCode??s?.code??s?.id??s?.service??s?.key??s?.name??"");
 }
+const VIRTUAL_SERVICE_CODE_NAMES={wa:"WhatsApp",whatsapp:"WhatsApp",tg:"Telegram",telegram:"Telegram",bw:"Signal",signal:"Signal",gr_sg:"Signal",fb:"Facebook",facebook:"Facebook",fu:"Snapchat",snapchat:"Snapchat",lf:"TikTok",tiktok:"TikTok",ig:"Instagram",instagram:"Instagram",tw:"Twitter / X",twitter:"Twitter / X",wx:"Apple",apple:"Apple",textplus:"TextPlus"};
+function canonicalVirtualServiceName(value){
+ const raw=String(value??"").trim();
+ return VIRTUAL_SERVICE_CODE_NAMES[raw.toLowerCase()]||raw;
+}
 const orderServiceCatalogCache=new Map();
 async function resolveOrderServiceNames(orders){
  const groups=new Map();
@@ -596,6 +601,8 @@ async function resolveOrderServiceNames(orders){
   const provider=String(order.provider_key||order.provider||"").toLowerCase().replace(/-/g,"");
   const code=String(order.service_code||"").trim();
   const saved=String(order.service_name||"").trim();
+  const canonicalName=canonicalVirtualServiceName(code);
+  if(canonicalName&&canonicalName.toLowerCase()!==code.toLowerCase())order.display_service_name=canonicalName;
   if(!provider||!code|| (saved&&saved.toLowerCase()!==code.toLowerCase()&&saved.length>3))return;
   if(!["virtualsms","textverified","fetchsms"].includes(provider))return;
   const country=provider==="virtualsms"?String(order.country_code||order.country_key||order.country_id||""):"";
@@ -614,7 +621,7 @@ async function resolveOrderServiceNames(orders){
     const rows=normalizeServices(response);
     return new Map(rows.flatMap(item=>{
      const code=serviceCode(item).trim().toLowerCase();
-     const name=cleanCustomerLabel(item.name||item.service_name||"");
+     const name=cleanCustomerLabel(canonicalVirtualServiceName(item.name||item.service_name||""));
      return code&&name&&name!=="Unknown"?[[code,name]]:[];
     }));
    })();
