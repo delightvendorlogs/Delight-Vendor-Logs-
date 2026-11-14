@@ -602,7 +602,7 @@ async function resolveOrderServiceNames(orders){
   const code=String(order.service_code||"").trim();
   const saved=String(order.service_name||"").trim();
   const canonicalName=canonicalVirtualServiceName(code);
-  if(canonicalName&&canonicalName.toLowerCase()!==code.toLowerCase())order.display_service_name=canonicalName;
+  if(canonicalName&&canonicalName!==code)order.display_service_name=canonicalName;
   if(!provider||!code|| (saved&&saved.toLowerCase()!==code.toLowerCase()&&saved.length>3))return;
   if(!["virtualsms","textverified","fetchsms"].includes(provider))return;
   const country=provider==="virtualsms"?String(order.country_code||order.country_key||order.country_id||""):"";
