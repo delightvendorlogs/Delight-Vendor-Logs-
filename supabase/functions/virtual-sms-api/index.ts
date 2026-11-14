@@ -971,7 +971,7 @@ async function actionStatus(orderId: string, userId: string) {
 
     const { data: expiredOrder, error: saveError } = await supabase
       .from("virtual_number_orders")
-      .update({ status: "expired", provider_state: "expired", updated_at: new Date().toISOString() })
+      .update({ status: "failed", provider_state: "expired", updated_at: new Date().toISOString() })
       .eq("id", orderId)
       .eq("user_id", userId)
       .select()
