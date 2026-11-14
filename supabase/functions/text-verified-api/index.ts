@@ -1231,7 +1231,7 @@ async function actionStatus(orderId:string,userId:string){
  if(!received&&(/expire|timeout|timed.?out/.test(state)||expired)){
   const refund=await refundTextVerifiedOrder(orderId,"TextVerified number timed out - automatic refund");
   if(!refund.confirmed)return response({success:true,order:saved,expired:true,refund_pending:true},202);
-  const {data:eo,error:ee}=await supabase.from("virtual_number_orders").update({status:"expired",provider_state:"expired",updated_at:new Date().toISOString()}).eq("id",orderId).eq("user_id",userId).eq("provider_key","textverified").select().single();
+  const {data:eo,error:ee}=await supabase.from("virtual_number_orders").update({status:"failed",provider_state:"expired",updated_at:new Date().toISOString()}).eq("id",orderId).eq("user_id",userId).eq("provider_key","textverified").select().single();
   if(ee)throw new Error("Refund succeeded, but timeout status could not be saved.");
   return response({success:true,order:eo,expired:true,refunded:true});
  }
