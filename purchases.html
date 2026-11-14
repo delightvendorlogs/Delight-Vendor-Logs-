@@ -758,18 +758,24 @@ async function resolvePurchaseVirtualServiceNames(orders){
   let request=purchaseVirtualServiceCatalogCache.get(key);
   if(!request){
    request=(async()=>{
-    const payload={action:"services"};
+    const payload={action:provider==="textverified"?"service-names":"services"};
     if(provider==="virtualsms"){
      if(country)payload.country=country;
      if(order.country_id)payload.countryId=order.country_id;
-    }else if(provider==="textverified"){
-     payload.numberType="mobile";payload.reservationType="verification";
     }
-    const response=await fetch(PURCHASE_VIRTUAL_SERVICE_FUNCTIONS[provider],{
-     method:"POST",
-     headers:{"Content-Type":"application/json","apikey":"sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_","Authorization":"Bearer "+session.access_token},
-     body:JSON.stringify(payload)
-    });
+    const controller=new AbortController();
+    const timeoutId=setTimeout(()=>controller.abort(),8000);
+    let response;
+    try{
+     response=await fetch(PURCHASE_VIRTUAL_SERVICE_FUNCTIONS[provider],{
+      method:"POST",
+      headers:{"Content-Type":"application/json","apikey":"sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_","Authorization":"Bearer "+session.access_token},
+      body:JSON.stringify(payload),
+      signal:controller.signal
+     });
+    }finally{
+     clearTimeout(timeoutId);
+    }
     if(!response.ok)throw new Error("Service catalogue request failed ("+response.status+")");
     const body=await response.json();
     const rows=Array.isArray(body)?body:Array.isArray(body.services)?body.services:Array.isArray(body.data)?body.data:[];
@@ -1688,7 +1694,7 @@ loadPurchases();
   .purchase-delivery{padding:9px!important}
 }
 </style>
-\n
+
 <style id="dv-purchases-sms-full-display">
 .virtual-number-card .sms-box{max-height:none!important;height:auto!important;overflow:visible!important;white-space:pre-wrap!important;overflow-wrap:anywhere!important;background:transparent!important;border:0!important;padding:2px 0!important;margin-top:7px!important;border-radius:0!important;font-size:13px!important;line-height:1.5!important;color:#e8e4da!important}
 </style>
