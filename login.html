@@ -557,7 +557,7 @@ body {
 
         <div class="register-text">
             Don't have an account?
-            <a href="register.html">Create Account</a>
+            <a href="register.html?redirect=dashboard.html">Create Account</a>
         </div>
 
     </div>
@@ -756,7 +756,7 @@ showMessage(
 
             setTimeout(function() {
                 const requestedPage = new URLSearchParams(window.location.search).get("redirect");
-                const allowedPages = ["support-chat.html", "admin-live-chat.html"];
+                const allowedPages = ["dashboard.html", "support-chat.html", "admin-live-chat.html"];
                 window.location.href = allowedPages.includes(requestedPage) ? requestedPage : "dashboard.html";
             }, 500);
 
@@ -784,6 +784,9 @@ showMessage(
         loginButton.textContent = "Continue";
     }
 }
+
+/* Skip the login form if this visitor already has an active session. */
+(async function redirectExistingSession(){try{const client=await getSupabaseClient();const {data}=await client.auth.getSession();if(data&&data.session){const requestedPage=new URLSearchParams(window.location.search).get("redirect");const allowedPages=["dashboard.html","support-chat.html","admin-live-chat.html"];window.location.replace(allowedPages.includes(requestedPage)?requestedPage:"dashboard.html");}}catch(error){console.warn("Could not check the existing session:",error);}})();
 
 /* ENTER KEY: MOVE FROM EMAIL TO PASSWORD */
 
