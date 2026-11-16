@@ -110,7 +110,7 @@
       display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       align-items: center; gap: 32px;
     }
-    .hero-content { position: relative; z-index: 1; max-width: 100%; min-width: 0; }
+    .hero-content { position: relative; z-index: 1; max-width: 760px; min-width: 0; }
     .eyebrow {
       display: inline-flex; align-items: center; gap: 8px; padding: 8px 13px;
       border: 1px solid var(--border); border-radius: 999px;
@@ -317,6 +317,12 @@
         animation-iteration-count: 1 !important; transition-duration: .01ms !important;
       }
     }
+  
+    .number-preview{display:grid;gap:5px;max-width:330px;margin-top:20px;padding:16px 18px;border:1px solid rgba(212,175,55,.35);border-radius:13px;background:#090909}
+    .number-preview span{font-size:9px;letter-spacing:1.5px;color:var(--gold-light);font-weight:800}
+    .number-preview strong{font-size:clamp(20px,4vw,28px);letter-spacing:2px;color:#fff}
+    .number-preview small{font-size:10px;color:#999}
+    @media(max-width:600px){.number-preview{max-width:100%}}
   </style>
 <link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css"></head>
 
@@ -353,11 +359,7 @@
             </div>
             <p class="hero-note">All is for educational purposes.</p>
           </div>
-          <div class="hero-image-wrap">
-            <img class="hero-image" src="assets/hero-image.png"
-              alt="Digital marketplace illustration featuring virtual numbers, eSIM, streaming and VPN services"
-              width="1648" height="928" fetchpriority="high">
-          </div>
+
         </div>
       </div>
     </section>
@@ -366,11 +368,16 @@
       <div class="container">
         <div class="number-banner">
           <div>
-            <div class="section-kicker">Explore more possibilities</div>
-            <h2>Get All Country Numbers</h2>
-            <p>Explore available country-number services and other digital resources from your Delight Vendor Logs dashboard.</p>
+            <div class="section-kicker">Virtual numbers • SMS services</div>
+            <h2>Get a number. Receive your code.</h2>
+            <p>Explore available country-number options for supported services. Choose from the options listed in your dashboard.</p>
+            <div class="number-preview" aria-label="Illustrative sample virtual number card">
+              <span>ILLUSTRATIVE NUMBER PREVIEW</span>
+              <strong>+1&nbsp; •••&nbsp; •••&nbsp; 044</strong>
+              <small>Sample display only · Availability varies</small>
+            </div>
           </div>
-          <a class="btn btn-gold" href="register.html">Get Started <span aria-hidden="true">→</span></a>
+          <a class="btn btn-gold" href="register.html">Explore Numbers <span aria-hidden="true">→</span></a>
         </div>
       </div>
     </section>
@@ -405,6 +412,8 @@
           <p>A convenient place to explore digital services and manage your activity.</p>
         </div>
         <div class="feature-grid">
+          <article class="feature-card"><div class="category-icon" aria-hidden="true">🌍</div><h3>eSIM for Your Travels</h3><p>Explore available eSIM options for supported destinations and devices.</p></article>
+          <article class="feature-card"><div class="category-icon" aria-hidden="true">📩</div><h3>Virtual Number Services</h3><p>Browse country-number and SMS-related options available on the platform.</p></article>
           <article class="feature-card"><div class="category-icon" aria-hidden="true">✨</div><h3>Multiple Categories</h3><p>Explore different digital-service categories from one marketplace.</p></article>
           <article class="feature-card"><div class="category-icon" aria-hidden="true">👤</div><h3>Your Own Account</h3><p>Create an account to access the dashboard and manage your activity.</p></article>
           <article class="feature-card"><div class="category-icon" aria-hidden="true">💬</div><h3>Support Available</h3><p>Contact our support channels when you need assistance with the platform.</p></article>
