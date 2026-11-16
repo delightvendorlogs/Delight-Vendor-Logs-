@@ -36,7 +36,7 @@ footer{text-align:center;color:#777368;font-size:12px;padding:18px 16px 24px}
 <body>
 <header class="topbar">
 <a class="brand" href="index.html" aria-label="Delight Vendor Logs home"><img src="assets/dv-logo.png" alt="DV Logo"><span>Delight Vendor Logs</span></a>
-<a class="top-link" href="login.html">Sign in</a>
+<a class="top-link" href="login.html?redirect=dashboard.html">Sign in</a>
 </header>
 <main>
 <div class="layout">
@@ -134,10 +134,12 @@ createButton.addEventListener("click", async () => {
     if (data && data.session) {
       void notifyAdminAuthActivity("signup");
       showMessage("Account created successfully. Redirecting…", "success");
-      setTimeout(() => window.location.replace("dashboard.html"), 500);
+      const requestedPage = new URLSearchParams(window.location.search).get("redirect");
+      const destination = requestedPage === "dashboard.html" ? requestedPage : "dashboard.html";
+      setTimeout(() => window.location.replace(destination), 500);
     } else {
       showMessage("Account created successfully. Please sign in to continue.", "success");
-      setTimeout(() => window.location.replace("login.html"), 1000);
+      setTimeout(() => window.location.replace("login.html?redirect=dashboard.html"), 1000);
     }
   } catch (error) {
     console.error("Signup error:", error);
