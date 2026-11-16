@@ -319,66 +319,34 @@
     }
   
 
-    /* Landing-page marketplace preview */
-    .hero-visual {
-      position: relative; min-height: 360px; display: grid; place-items: center;
-      isolation: isolate;
+    /* Virtual number and SMS notification preview */
+    .hero-layout { grid-template-columns: minmax(0, 1fr); }
+    .hero-content { max-width: 780px; }
+    .number-notifications {
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:13px 16px;margin-top:22px;max-width:720px;
     }
-    .hero-visual::before {
-      content: ""; position: absolute; width: 310px; height: 310px;
-      border-radius: 50%; border: 1px solid rgba(212,175,55,.22);
-      box-shadow: 0 0 0 24px rgba(212,175,55,.025), 0 0 0 50px rgba(212,175,55,.018);
-      z-index: -1;
-    }
-    .marketplace-panel {
-      width: min(100%, 420px); padding: 25px; border: 1px solid rgba(212,175,55,.38);
-      border-radius: 22px; background: linear-gradient(145deg,rgba(31,27,15,.97),rgba(10,10,10,.98));
-      box-shadow: 0 28px 75px rgba(0,0,0,.55), inset 0 1px rgba(255,255,255,.06);
-      transform: perspective(900px) rotateY(-5deg) rotateX(2deg);
-    }
-    .marketplace-top { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-    .marketplace-brand { display:flex; align-items:center; gap:10px; }
-    .marketplace-mark { width:39px;height:39px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#090909;font-weight:1000;font-size:18px; }
-    .marketplace-brand strong { display:block;font-size:13px;letter-spacing:.2px; }
-    .marketplace-brand small { display:block;color:#aaa;font-size:10px;letter-spacing:1.4px; }
-    .live-pill { padding:6px 9px;border:1px solid rgba(93,196,133,.3);border-radius:99px;color:#8fe0aa;font-size:9px;font-weight:900;letter-spacing:1px; }
-    .marketplace-welcome { margin:27px 0 18px; }
-    .marketplace-welcome small { color:var(--gold-light);font-size:10px;font-weight:900;letter-spacing:2px; }
-    .marketplace-welcome h3 { margin-top:6px;font-size:clamp(22px,3vw,30px);line-height:1.12;letter-spacing:-.8px; }
-    .marketplace-welcome p { margin-top:9px;color:#aaa;font-size:12px;line-height:1.7; }
-    .marketplace-tiles { display:grid;grid-template-columns:repeat(3,1fr);gap:9px; }
-    .marketplace-tile { padding:13px 9px;border:1px solid rgba(212,175,55,.18);border-radius:12px;background:rgba(255,255,255,.035); }
-    .marketplace-tile span { display:block;font-size:18px;margin-bottom:5px; }
-    .marketplace-tile strong { display:block;font-size:10px; }
-    .marketplace-tile small { display:block;color:#999;font-size:9px;margin-top:3px; }
-    .marketplace-foot { margin-top:17px;padding-top:13px;border-top:1px solid rgba(255,255,255,.09);display:flex;justify-content:space-between;gap:10px;color:#999;font-size:10px; }
-    .marketplace-foot b { color:var(--gold-light);font-weight:800; }
-    .number-notifications { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-top:22px;max-width:680px; }
     .number-notice {
-      position:relative;display:flex;align-items:flex-start;gap:11px;min-width:0;padding:15px;
-      border:1px solid rgba(212,175,55,.28);border-radius:14px;
-      background:linear-gradient(145deg,#191919,#0b0b0b);
-      box-shadow:0 12px 28px rgba(0,0,0,.28);
+      position:relative;display:flex;align-items:center;gap:12px;min-width:0;
+      padding:14px 16px;border:1px solid rgba(212,175,55,.28);border-radius:13px;
+      background:linear-gradient(145deg,#1b1b1b,#0b0b0b);
+      box-shadow:0 10px 25px rgba(0,0,0,.24);
     }
-    .number-notice:nth-child(1){transform:rotate(-2deg) translateY(3px);}
-    .number-notice:nth-child(2){transform:rotate(2deg) translateY(-3px);}
-    .notice-icon { width:35px;height:35px;flex:0 0 35px;display:grid;place-items:center;border-radius:11px;background:rgba(212,175,55,.13);font-size:17px; }
-    .notice-copy { min-width:0; }
-    .notice-copy strong { display:block;color:#fff;font-size:12px;line-height:1.4; }
-    .notice-copy p { margin-top:4px;color:#c6c6c6;font-size:11px;line-height:1.5;overflow-wrap:anywhere; }
-    .notice-copy small { display:block;margin-top:7px;color:#8fe0aa;font-size:9px;font-weight:900;letter-spacing:.8px;text-transform:uppercase; }
-    .notice-demo { display:block;margin-top:12px;color:#888;font-size:9px;letter-spacing:.7px; }
-    .number-banner .number-preview { display:none; }
-    @media(max-width:768px){
-      .hero-visual{min-height:320px}
-      .marketplace-panel{transform:none}
+    .number-notice:nth-child(odd){transform:rotate(-1deg);}
+    .number-notice:nth-child(even){transform:rotate(1deg);}
+    .notice-icon {
+      width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;
+      border-radius:11px;background:rgba(212,175,55,.12);font-size:18px;
     }
+    .notice-copy{min-width:0;flex:1}
+    .notice-copy strong{display:block;color:#fff;font-size:12px;line-height:1.4}
+    .notice-copy p{margin-top:4px;color:#bdbdbd;font-size:11px;line-height:1.5;overflow-wrap:anywhere}
+    .notice-code{color:var(--gold-light);font-size:17px!important;font-weight:900;letter-spacing:3px}
+    .notice-copy small{display:block;margin-top:5px;color:#8fe0aa;font-size:9px;font-weight:900;letter-spacing:.8px;text-transform:uppercase}
+    .notice-demo{display:block;margin-top:12px;color:#777;font-size:9px;letter-spacing:.6px}
     @media(max-width:600px){
-      .number-notifications{grid-template-columns:1fr;gap:12px}
-      .number-notice:nth-child(1),.number-notice:nth-child(2){transform:none}
-      .marketplace-panel{padding:20px}
-      .marketplace-tiles{gap:7px}
-      .marketplace-tile{padding:11px 7px}
+      .number-notifications{grid-template-columns:1fr;gap:11px}
+      .number-notice:nth-child(odd),.number-notice:nth-child(even){transform:none}
     }
 
     .number-preview{display:grid;gap:5px;max-width:330px;margin-top:20px;padding:16px 18px;border:1px solid rgba(212,175,55,.35);border-radius:13px;background:#090909}
@@ -410,8 +378,8 @@
       <div class="container">
         <div class="hero-layout">
           <div class="hero-content">
-            <div class="eyebrow"><span class="eyebrow-dot"></span>Welcome to the marketplace</div>
-            <h1>Your digital world.<br><span>All in one place.</span></h1>
+            <div class="eyebrow"><span class="eyebrow-dot"></span>Your digital marketplace</div>
+            <h1>Everything you need.<br><span>One platform.</span></h1>
             <p class="hero-description">
               Why go far when you can get all in our site? Explore digital services,
               resources, numbers and more with Delight Vendor Logs — your digital marketplace.
@@ -421,28 +389,6 @@
               <a class="btn btn-outline" href="#categories">Explore Services</a>
             </div>
             <p class="hero-note">All is for educational purposes.</p>
-          </div>
-          <div class="hero-visual" aria-label="Illustration of the Delight Vendor Logs marketplace dashboard">
-            <div class="marketplace-panel">
-              <div class="marketplace-top">
-                <div class="marketplace-brand">
-                  <div class="marketplace-mark">D</div>
-                  <div><strong>Delight Vendor Logs</strong><small>DIGITAL MARKETPLACE</small></div>
-                </div>
-                <span class="live-pill">● MARKETPLACE</span>
-              </div>
-              <div class="marketplace-welcome">
-                <small>WELCOME TO YOUR MARKETPLACE</small>
-                <h3>Everything you need,<br><span style="color:var(--gold)">within reach.</span></h3>
-                <p>Explore digital services, virtual numbers and useful resources from one convenient platform.</p>
-              </div>
-              <div class="marketplace-tiles">
-                <div class="marketplace-tile"><span>📱</span><strong>Virtual Numbers</strong><small>Country options</small></div>
-                <div class="marketplace-tile"><span>🌍</span><strong>eSIM Services</strong><small>Stay connected</small></div>
-                <div class="marketplace-tile"><span>✨</span><strong>Digital Tools</strong><small>Explore more</small></div>
-              </div>
-              <div class="marketplace-foot"><span>YOUR DIGITAL MARKETPLACE</span><b>EXPLORE · DISCOVER · CONNECT</b></div>
-            </div>
           </div>
         </div>
       </div>
@@ -455,25 +401,41 @@
             <div class="section-kicker">Virtual numbers • SMS services</div>
             <h2>Get a number. Receive your code.</h2>
             <p>Explore available country-number options for supported services. Choose from the options listed in your dashboard.</p>
-            <div class="number-notifications" aria-label="Illustrative virtual number and verification notifications">
+            <div class="number-notifications" aria-label="Sample virtual number and SMS code notifications">
+              <article class="number-notice">
+                <div class="notice-icon" aria-hidden="true">📱</div>
+                <div class="notice-copy">
+                  <strong>USA · Number received</strong>
+                  <p>+1 (202) 555-0112</p>
+                  <small>✓ Number received</small>
+                </div>
+              </article>
               <article class="number-notice">
                 <div class="notice-icon" aria-hidden="true">🟢</div>
                 <div class="notice-copy">
-                  <strong>WhatsApp · Number received</strong>
-                  <p>USA number: +1 (202) 555-0112</p>
-                  <small>✓ Number received</small>
+                  <strong>WhatsApp verification code</strong>
+                  <p class="notice-code">482 916</p>
+                  <small>✓ Code received</small>
                 </div>
               </article>
               <article class="number-notice">
                 <div class="notice-icon" aria-hidden="true">✈️</div>
                 <div class="notice-copy">
-                  <strong>Telegram · Code received</strong>
-                  <p>Verification code: <b style="color:var(--gold-light);letter-spacing:2px">••••••</b></p>
-                  <small>✓ Verification successful</small>
+                  <strong>Telegram verification code</strong>
+                  <p class="notice-code">731 405</p>
+                  <small>✓ Code received</small>
                 </div>
               </article>
-              <span class="notice-demo">DEMO PREVIEW ONLY · NOT LIVE NUMBERS OR VERIFICATION MESSAGES</span>
-            </div>
+              <article class="number-notice">
+                <div class="notice-icon" aria-hidden="true">🔐</div>
+                <div class="notice-copy">
+                  <strong>Signal verification code</strong>
+                  <p class="notice-code">295 864</p>
+                  <small>✓ Code received</small>
+                </div>
+              </article>
+              <span class="notice-demo">SAMPLE DISPLAY · CODES SHOWN ARE FICTIONAL</span>
+            </div>            </div>
           </div>
           <a class="btn btn-gold" href="register.html">Explore Numbers <span aria-hidden="true">→</span></a>
         </div>
