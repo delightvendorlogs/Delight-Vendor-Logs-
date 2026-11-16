@@ -557,7 +557,7 @@ body {
 
         <div class="register-text">
             Don't have an account?
-            <a href="register.html">Create Account</a>
+            <a id="createAccountLink" href="register.html">Create Account</a>
         </div>
 
     </div>
@@ -757,7 +757,19 @@ showMessage(
             setTimeout(function() {
                 const requestedPage = new URLSearchParams(window.location.search).get("redirect");
                 const allowedPages = ["support-chat.html", "admin-live-chat.html"];
-                window.location.href = allowedPages.includes(requestedPage) ? requestedPage : "dashboard.html";
+                const allowedCategories = ["All Social Logs","Working Pictures","Formats","Working Links","Gmail","All Countries Number","Streaming & More","ESIMS","VPN","Voice Cloner / Fake Video Call"];
+                let destination = "dashboard.html";
+                if (allowedPages.includes(requestedPage)) destination = requestedPage;
+                else if (requestedPage) {
+                    try {
+                        const parsed = new URL(requestedPage, window.location.origin);
+                        const category = parsed.searchParams.get("category");
+                        if (parsed.origin === window.location.origin && parsed.pathname.endsWith("/dashboard.html") && category && allowedCategories.includes(category)) {
+                            destination = "dashboard.html?category=" + encodeURIComponent(category);
+                        }
+                    } catch (_) {}
+                }
+                window.location.href = destination;
             }, 500);
 
         } else {
@@ -819,5 +831,10 @@ document.addEventListener("keydown", function(event) {
 
 </script>
 
-<script src="branding.js"></script></body>
+<script src="branding.js"></script><script>
+(function(){
+ const redirect=new URLSearchParams(window.location.search).get("redirect");
+ if(redirect) document.getElementById("createAccountLink")?.setAttribute("href","register.html?redirect="+encodeURIComponent(redirect));
+})();
+</script></body>
 </html>
