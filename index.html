@@ -319,34 +319,51 @@
     }
   
 
-    /* Virtual number and SMS notification preview */
+    /* Layered SMS code showcase */
     .hero-layout { grid-template-columns: minmax(0, 1fr); }
     .hero-content { max-width: 780px; }
-    .number-notifications {
-      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:13px 16px;margin-top:22px;max-width:720px;
+    .number-banner { display:block; }
+    .number-showcase {
+      position:relative;display:grid;grid-template-columns:1.12fr .88fr;
+      align-items:center;gap:18px;margin:28px 0 6px;padding:18px 8px 20px;
+      isolation:isolate;
     }
-    .number-notice {
-      position:relative;display:flex;align-items:center;gap:12px;min-width:0;
-      padding:14px 16px;border:1px solid rgba(212,175,55,.28);border-radius:13px;
-      background:linear-gradient(145deg,#1b1b1b,#0b0b0b);
-      box-shadow:0 10px 25px rgba(0,0,0,.24);
+    .number-showcase::before {
+      content:"";position:absolute;inset:8% 12%;z-index:-1;
+      background:radial-gradient(ellipse,rgba(212,175,55,.12),transparent 68%);
+      filter:blur(12px);
     }
-    .number-notice:nth-child(odd){transform:rotate(-1deg);}
-    .number-notice:nth-child(even){transform:rotate(1deg);}
-    .notice-icon {
-      width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;
-      border-radius:11px;background:rgba(212,175,55,.12);font-size:18px;
+    .sms-card {
+      position:relative;min-width:0;padding:22px;border-radius:22px;
+      border:1px solid rgba(212,175,55,.35);
+      background:linear-gradient(145deg,#1b1a16,#090909 78%);
+      box-shadow:0 22px 50px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.06);
     }
-    .notice-copy{min-width:0;flex:1}
-    .notice-copy strong{display:block;color:#fff;font-size:12px;line-height:1.4}
-    .notice-copy p{margin-top:4px;color:#bdbdbd;font-size:11px;line-height:1.5;overflow-wrap:anywhere}
-    .notice-code{color:var(--gold-light);font-size:17px!important;font-weight:900;letter-spacing:3px}
-    .notice-copy small{display:block;margin-top:5px;color:#8fe0aa;font-size:9px;font-weight:900;letter-spacing:.8px;text-transform:uppercase}
-    .notice-demo{display:block;margin-top:12px;color:#777;font-size:9px;letter-spacing:.6px}
+    .sms-card-primary {grid-column:1 / -1;transform:rotate(-1deg);padding:22px 25px;}
+    .sms-card-telegram {transform:rotate(2deg) translate(4px,-5px);background:linear-gradient(140deg,#35258e,#171044);}
+    .sms-card-signal {transform:rotate(-2deg) translate(-3px,5px);background:linear-gradient(140deg,#292929,#111);}
+    .sms-card-top {display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .sms-service {display:flex;align-items:center;gap:13px;min-width:0;}
+    .sms-app-icon {width:48px;height:48px;flex:0 0 48px;display:grid;place-items:center;border-radius:14px;background:rgba(212,175,55,.13);font-size:24px;}
+    .sms-service strong {display:block;color:#fff;font-size:19px;line-height:1.2;}
+    .sms-service small {display:block;margin-top:5px;color:#b9b9b9;font-size:13px;}
+    .sms-status {padding:7px 12px;border-radius:9px;background:rgba(68,190,135,.13);color:#7ce0b0;font-size:10px;font-weight:900;letter-spacing:1px;}
+    .sms-code-line {display:flex;align-items:center;justify-content:space-between;gap:15px;margin-top:22px;padding:17px 19px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(255,255,255,.055);}
+    .sms-code-line span {color:#b9b9b9;font-size:14px;}
+    .sms-code-line strong {color:var(--gold-light);font-size:clamp(23px,4vw,34px);font-weight:500;letter-spacing:5px;white-space:nowrap;}
+    .sms-card-label {color:#f3e7bd;font-size:11px;font-weight:900;letter-spacing:2px;}
+    .sms-card-code {margin-top:13px;color:#fff;font-size:clamp(30px,5vw,43px);font-weight:800;letter-spacing:5px;line-height:1.2;}
+    .sms-card-bottom {display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:15px;color:rgba(255,255,255,.78);font-size:11px;}
+    .sms-card-bottom b {color:#a8efc5;font-size:10px;letter-spacing:.8px;}
     @media(max-width:600px){
-      .number-notifications{grid-template-columns:1fr;gap:11px}
-      .number-notice:nth-child(odd),.number-notice:nth-child(even){transform:none}
+      .number-showcase{grid-template-columns:1fr;gap:14px;padding:12px 2px}
+      .sms-card-primary{grid-column:auto;transform:none;padding:17px}
+      .sms-card-telegram,.sms-card-signal{transform:none}
+      .sms-service strong{font-size:16px}
+      .sms-code-line{padding:14px;gap:8px}
+      .sms-code-line span{font-size:12px}
+      .sms-code-line strong{font-size:23px;letter-spacing:3px}
+      .sms-card{padding:18px}
     }
 
     .number-preview{display:grid;gap:5px;max-width:330px;margin-top:20px;padding:16px 18px;border:1px solid rgba(212,175,55,.35);border-radius:13px;background:#090909}
@@ -401,40 +418,30 @@
             <div class="section-kicker">Virtual numbers • SMS services</div>
             <h2>Get a number. Receive your code.</h2>
             <p>Explore available country-number options for supported services. Choose from the options listed in your dashboard.</p>
-            <div class="number-notifications" aria-label="Sample virtual number and SMS code notifications">
-              <article class="number-notice">
-                <div class="notice-icon" aria-hidden="true">📱</div>
-                <div class="notice-copy">
-                  <strong>USA · Number received</strong>
-                  <p>+1 (202) 555-0112</p>
-                  <small>✓ Number received</small>
+            <div class="number-showcase" aria-label="Virtual number and SMS verification code display">
+              <article class="sms-card sms-card-primary">
+                <div class="sms-card-top">
+                  <div class="sms-service">
+                    <div class="sms-app-icon" aria-hidden="true">🟢</div>
+                    <div><strong>WhatsApp</strong><small>United States (+1)</small></div>
+                  </div>
+                  <span class="sms-status">SUCCESS</span>
+                </div>
+                <div class="sms-code-line">
+                  <span>Code received:</span>
+                  <strong>829-102</strong>
                 </div>
               </article>
-              <article class="number-notice">
-                <div class="notice-icon" aria-hidden="true">🟢</div>
-                <div class="notice-copy">
-                  <strong>WhatsApp verification code</strong>
-                  <p class="notice-code">482 916</p>
-                  <small>✓ Code received</small>
-                </div>
+              <article class="sms-card sms-card-telegram">
+                <div class="sms-card-label">SMS CODE · TELEGRAM</div>
+                <div class="sms-card-code">482 913</div>
+                <div class="sms-card-bottom"><span>United Kingdom (+44)</span><b>● CODE RECEIVED</b></div>
               </article>
-              <article class="number-notice">
-                <div class="notice-icon" aria-hidden="true">✈️</div>
-                <div class="notice-copy">
-                  <strong>Telegram verification code</strong>
-                  <p class="notice-code">731 405</p>
-                  <small>✓ Code received</small>
-                </div>
+              <article class="sms-card sms-card-signal">
+                <div class="sms-card-label">SMS CODE · SIGNAL</div>
+                <div class="sms-card-code">295 864</div>
+                <div class="sms-card-bottom"><span>United States (+1)</span><b>● CODE RECEIVED</b></div>
               </article>
-              <article class="number-notice">
-                <div class="notice-icon" aria-hidden="true">🔐</div>
-                <div class="notice-copy">
-                  <strong>Signal verification code</strong>
-                  <p class="notice-code">295 864</p>
-                  <small>✓ Code received</small>
-                </div>
-              </article>
-              <span class="notice-demo">SAMPLE DISPLAY · CODES SHOWN ARE FICTIONAL</span>
             </div>            </div>
           </div>
           <a class="btn btn-gold" href="register.html">Explore Numbers <span aria-hidden="true">→</span></a>
