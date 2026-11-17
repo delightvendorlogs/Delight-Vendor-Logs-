@@ -61,8 +61,8 @@ main{max-width:1150px;margin:24px auto;padding:0 14px 60px}h1{font-size:24px;mar
   <section id="servers" class="section">
    <div class="panel"><h2>Server Availability and Display</h2><p class="muted small">Control which live servers are selectable, assign an admin tier and limit how many server choices customers see.</p>
     <div class="grid" style="margin-top:12px"><div class="field"><label for="serverCountry">Country</label><select id="serverCountry"></select></div><div class="field"><label for="serverService">Service</label><select id="serverService"></select></div></div>
-    <div class="grid" style="margin-top:12px"><div class="field"><label for="maxServers">Maximum servers to display</label><input id="maxServers" type="number" min="1" max="100" value="10"></div><div class="field"><label for="preferredTier">Preferred tier (optional)</label><input id="preferredTier" placeholder="e.g. premium"></div></div>
-    <div class="actions"><button class="btn primary" id="saveDisplayBtn">Save Display Settings</button><button class="btn" id="refreshServersBtn">Refresh Live Servers</button><button class="btn" id="resetDisplayBtn">Reset Display Settings</button></div>
+    <div class="grid" style="margin-top:12px"><div class="field"><label for="maxServers">Global maximum servers (all countries and services)</label><input id="maxServers" type="number" min="1" max="100" value="100"><span class="muted small">Saved once and applied to every SMSBower country and service. Set to 100 to show the maximum available.</span></div><div class="field"><label for="preferredTier">Preferred tier for selected country/service (optional)</label><input id="preferredTier" placeholder="e.g. premium"></div></div>
+    <div class="actions"><button class="btn primary" id="saveDisplayBtn">Save Global Maximum</button><button class="btn" id="refreshServersBtn">Refresh Live Servers</button><button class="btn" id="resetDisplayBtn">Reset Selected Tier Preference</button></div>
     <div class="muted" id="usdNgnRateInfo" style="margin:10px 0;font-size:12px">Loading USD/NGN reference rate…</div><div class="table-wrap"><table><thead><tr><th>Server</th><th>Server ID</th><th>Live stock</th><th>Cost (USD)</th><th>Approx. cost (NGN)</th><th>Admin tier</th><th>Availability</th><th>Action</th></tr></thead><tbody id="serversBody"><tr><td colspan="8" class="empty">Choose a country and service.</td></tr></tbody></table></div>
    </div>
   </section>
@@ -326,6 +326,12 @@ function selectedCatalogItem(selectId,items,key){
  if(!option||!option.value)return null;
  return key==="id"?{id:value,name:option.textContent.trim()}:{code:value,name:option.textContent.trim()};
 }
+async function loadGlobalDisplaySetting(){
+ const result=await api("list_display_settings");
+ const settings=list(result,"settings");
+ const globalSetting=settings.find(x=>String(x.country_id)==="*"&&String(x.service_code)==="*");
+ $("maxServers").value=globalSetting?.max_servers??100;
+}
 async function loadServers(){
  const generation=++serverLoadGeneration;
  const country=selectedCatalogItem("serverCountry",countries,"id");
@@ -336,7 +342,7 @@ async function loadServers(){
   const [r,s]=await Promise.all([api("admin_servers",{country_id:Number(country.id),country_name:country.name,service_code:String(service.code)}),api("list_server_settings")]);
   if(generation!==serverLoadGeneration)return;
   liveServers=list(r,"servers");serverSettings=list(s,"settings");
-  const display=r.display_settings||null;$("maxServers").value=display?.max_servers??10;$("preferredTier").value=display?.preferred_tier??"";
+  const display=r.display_settings||null;$("preferredTier").value=display?.preferred_tier??"";
   renderLiveServers();
   if(r.warning)notice(r.warning,"info");
  }catch(e){$("serversBody").innerHTML='<tr><td colspan="7" class="empty">'+esc(e.message)+'</td></tr>';notice(e.message,"error");}
@@ -372,16 +378,20 @@ async function saveServerTier(serverId){
 }
 async function saveDisplaySettings(){
  const country=selectedCatalogItem("serverCountry",countries,"id"),service=selectedCatalogItem("serverService",services,"code");
- if(!country||!service){notice("Choose a country and service first.","error");return;}
  const maxServers=Number($("maxServers").value);
- if(!Number.isInteger(maxServers)||maxServers<1||maxServers>100){notice("Maximum servers must be a whole number from 1 to 100.","error");return;}
+ if(!Number.isInteger(maxServers)||maxServers<1||maxServers>100){notice("Global maximum must be a whole number from 1 to 100.","error");return;}
  try{
-  rememberServerSelection();
-  const result=await api("save_display_setting",{country_id:String(country.id),service_code:service.code,max_servers:maxServers,preferred_tier:$("preferredTier").value.trim()||null});
-  if(Number(result?.setting?.max_servers)!==maxServers)throw new Error("The server limit was not confirmed by the database. Please try saving again.");
-  await loadServers();
-  if(Number($("maxServers").value)!==maxServers)throw new Error("The setting was saved, but the selected country/service did not reload with the saved value.");
-  notice("Server display settings saved and verified.","ok");
+  if(country&&service)rememberServerSelection();
+  const globalResult=await api("save_display_setting",{country_id:"*",service_code:"*",max_servers:maxServers,preferred_tier:null});
+  if(Number(globalResult?.setting?.max_servers)!==maxServers||String(globalResult?.setting?.country_id)!=="*"||String(globalResult?.setting?.service_code)!=="*")throw new Error("The global server limit was not confirmed by the database. Please try saving again.");
+  if(country&&service){
+   const scopedResult=await api("save_display_setting",{country_id:String(country.id),service_code:service.code,max_servers:maxServers,preferred_tier:$("preferredTier").value.trim()||null});
+   if(Number(scopedResult?.setting?.max_servers)!==maxServers)throw new Error("The global limit was saved, but the selected tier preference could not be confirmed.");
+  }
+  await loadGlobalDisplaySetting();
+  if(Number($("maxServers").value)!==maxServers)throw new Error("The global maximum did not remain saved after reloading.");
+  if(country&&service)await loadServers();
+  notice("Global maximum saved and verified for all countries and services.","ok");
  }catch(e){notice(e.message,"error");}
 }
 async function resetDisplaySettings(){
@@ -393,7 +403,7 @@ async function resetDisplaySettings(){
 }
 async function refreshAll(){try{clearNotice();await loadCatalogs();await Promise.all([loadRules(),loadServiceSettings()]);}catch(e){notice(e.message,"error");}}
 async function login(){try{const {error}=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;await start();}catch(e){notice(e.message,"error");}}
-async function start(){try{if(!(await verifyAdmin()))return;refreshUsdNgnRate();if(!usdNgnRefreshTimer)usdNgnRefreshTimer=setInterval(refreshUsdNgnRate,60*60*1000);await loadCatalogs();await Promise.all([loadRules(),loadServiceSettings(),loadServers()]);}catch(e){notice(e.message,"error");}}
+async function start(){try{if(!(await verifyAdmin()))return;refreshUsdNgnRate();if(!usdNgnRefreshTimer)usdNgnRefreshTimer=setInterval(refreshUsdNgnRate,60*60*1000);await loadCatalogs();await Promise.all([loadGlobalDisplaySetting(),loadRules(),loadServiceSettings(),loadServers()]);}catch(e){notice(e.message,"error");}}
 document.addEventListener("click",async event=>{
  const button=event.target.closest("[data-sms-action]");
  if(!button)return;
