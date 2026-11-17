@@ -973,7 +973,7 @@ async function loadServices(){
   const payload=provider==="textverified"
    ?{numberType:"mobile",reservationType:"verification"}
    :provider==="fetchsms"
-    ?{country:"US",countryId:187}
+    ?{country:selectedCountry?.code||"US",countryId:selectedCountry?.id??187}
     :provider==="smsbower"
      ?{country_id:selectedCountry?.id,country_name:selectedCountry?.name,version:"V1"}
      :{country:selectedCountry?.code,countryId:selectedCountry?.id};
