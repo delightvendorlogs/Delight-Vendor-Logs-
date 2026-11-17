@@ -62,7 +62,7 @@ main{max-width:1150px;margin:24px auto;padding:0 14px 60px}h1{font-size:24px;mar
    <div class="panel"><h2>Server Availability and Display</h2><p class="muted small">Control which live servers are selectable, assign an admin tier and limit how many server choices customers see.</p>
     <div class="grid" style="margin-top:12px"><div class="field"><label for="serverCountry">Country</label><select id="serverCountry"></select></div><div class="field"><label for="serverService">Service</label><select id="serverService"></select></div></div>
     <div class="grid" style="margin-top:12px"><div class="field"><label for="maxServers">Maximum servers to display</label><input id="maxServers" type="number" min="1" max="100" value="10"></div><div class="field"><label for="preferredTier">Preferred tier (optional)</label><input id="preferredTier" placeholder="e.g. premium"></div></div>
-    <div class="actions"><button class="btn primary" id="saveDisplayBtn">Save Display Settings</button><button class="btn" id="refreshServersBtn">Refresh Live Servers</button></div>
+    <div class="actions"><button class="btn primary" id="saveDisplayBtn">Save Display Settings</button><button class="btn" id="refreshServersBtn">Refresh Live Servers</button><button class="btn" id="resetDisplayBtn">Reset Display Settings</button></div>
     <div class="table-wrap"><table><thead><tr><th>Server</th><th>Server ID</th><th>Live stock</th><th>Cost (USD)</th><th>Admin tier</th><th>Availability</th><th>Action</th></tr></thead><tbody id="serversBody"><tr><td colspan="7" class="empty">Choose a country and service.</td></tr></tbody></table></div>
    </div>
   </section>
@@ -196,15 +196,25 @@ async function savePriceRule(){
 function editRule(id){const r=rules.find(x=>String(x.id)===String(id));if(!r)return;$("priceCountry").value=r.country_key||"";$("priceService").value=r.service_code||"";refreshSearchableSelect("priceCountry");refreshSearchableSelect("priceService");loadPricingServers().then(()=>{$("priceServer").value=r.server_id||"";refreshSearchableSelect("priceServer");});$("pricingMode").value=r.pricing_mode||"markup";$("markupPercent").value=r.markup_percent??100;$("fixedPrice").value=r.fixed_price_ngn??"";togglePricingFields();window.scrollTo({top:0,behavior:"smooth"});}
 async function deleteRule(id){if(!confirm("Permanently delete this SMSBower pricing rule?"))return;try{await api("delete_price_rule",{id});notice("Pricing rule deleted.","ok");await loadRules();}catch(e){notice(e.message,"error");}}
 async function loadServiceSettings(){
- const countryId=$("serviceCountry").value;if(!countryId){$("servicesBody").innerHTML='<tr><td colspan="4" class="empty">Choose a country.</td></tr>';return;}
- const r=await api("list_service_settings");serviceSettings=list(r,"settings");
- const q=$("serviceSearch").value.trim().toLowerCase();
- const rows=services.filter(s=>!q||String(s.name).toLowerCase().includes(q)||String(s.code).toLowerCase().includes(q));
- $("servicesBody").innerHTML=rows.map(s=>{
-  const saved=serviceSettings.find(x=>String(x.country_id)===String(countryId)&&String(x.service_code)===String(s.code));
-  const active=saved?saved.is_active!==false:true;
-  return '<tr><td>'+esc(s.name)+'</td><td>'+esc(s.code)+'</td><td><span class="pill '+(active?"on":"off")+'">'+(active?"Enabled":"Disabled")+'</span></td><td><button class="btn small '+(active?"danger":"primary")+'" onclick="toggleService('+JSON.stringify(String(s.code))+','+(!active)+')">'+(active?"Disable":"Enable")+'</button></td></tr>';
- }).join("")||'<tr><td colspan="4" class="empty">No matching services.</td></tr>';
+ const countryId=$("serviceCountry").value;
+ if(!countryId){$("servicesBody").innerHTML='<tr><td colspan="4" class="empty">Choose a country.</td></tr>';return;}
+ try{
+  const r=await api("list_service_settings");serviceSettings=list(r,"settings");
+  const q=$("serviceSearch").value.trim().toLowerCase();
+  const rows=services.filter(s=>!q||String(s.name).toLowerCase().includes(q)||String(s.code).toLowerCase().includes(q));
+  $("servicesBody").innerHTML=rows.map(service=>{
+   const saved=serviceSettings.find(x=>String(x.country_id)===String(countryId)&&String(x.service_code)===String(service.code));
+   const active=saved?saved.is_active!==false:true;
+   return '<tr><td>'+esc(service.name)+'</td><td>'+esc(service.code)+'</td><td><span class="pill '+(active?"on":"off")+'">'+(active?"Enabled":"Disabled")+'</span></td><td><button class="btn small '+(active?"danger":"primary")+'" onclick="toggleService('+JSON.stringify(String(service.code))+','+(!active)+')">'+(active?"Disable":"Enable")+'</button> '+(saved?'<button class="btn small" onclick="clearServiceSetting('+JSON.stringify(String(service.code))+')">Reset override</button>':'')+'</td></tr>';
+  }).join("")||'<tr><td colspan="4" class="empty">No matching services.</td></tr>';
+ }catch(e){notice(e.message,"error");$("servicesBody").innerHTML='<tr><td colspan="4" class="empty">'+esc(e.message)+'</td></tr>';}
+}
+async function clearServiceSetting(code){
+ const country=findCountry($("serviceCountry").value);
+ if(!country){notice("Choose a country first.","error");return;}
+ if(!confirm("Remove the saved availability override for this service? It will return to its default enabled state."))return;
+ try{await api("delete_service_setting",{country_id:String(country.id),service_code:code});notice("Service override removed. Default availability restored.","ok");await loadServiceSettings();}
+ catch(e){notice(e.message,"error");}
 }
 async function toggleService(code,active){
  const country=findCountry($("serviceCountry").value),service=findService(code);if(!country||!service){notice("Choose a country and service first.","error");return;}
@@ -221,7 +231,8 @@ async function loadServers(){
   $("serversBody").innerHTML=liveServers.map(server=>{
    const active=server.is_active!==false;
    const tier=server.admin_tier||"";
-   return '<tr><td>'+esc(server.server_name||("Server "+server.server_id))+'</td><td>'+esc(server.server_id)+'</td><td>'+esc(server.stock??0)+'</td><td>'+esc(server.provider_cost_usd==null?"—":"$"+Number(server.provider_cost_usd).toFixed(4))+'</td><td><input aria-label="Admin tier" id="tier-'+esc(server.server_id)+'" value="'+esc(tier)+'" placeholder="optional" style="min-width:90px;padding:7px"></td><td><span class="pill '+(active?"on":"off")+'">'+(active?"Enabled":"Disabled")+'</span></td><td><button class="btn small '+(active?"danger":"primary")+'" onclick="toggleServer('+JSON.stringify(String(server.server_id))+','+(!active)+')">'+(active?"Disable":"Enable")+'</button> <button class="btn small" onclick="saveServerTier('+JSON.stringify(String(server.server_id))+')">Save tier</button></td></tr>';
+   const saved=serverSettings.find(x=>String(x.country_id)===String(country.id)&&String(x.service_code)===String(service.code)&&String(x.server_id)===String(server.server_id));
+   return '<tr><td>'+esc(server.server_name||("Server "+server.server_id))+'</td><td>'+esc(server.server_id)+'</td><td>'+esc(server.stock??0)+'</td><td>'+esc(server.provider_cost_usd==null?"—":"$"+Number(server.provider_cost_usd).toFixed(4))+'</td><td><input aria-label="Admin tier" id="tier-'+esc(server.server_id)+'" value="'+esc(tier)+'" placeholder="optional" style="min-width:90px;padding:7px"></td><td><span class="pill '+(active?"on":"off")+'">'+(active?"Enabled":"Disabled")+'</span></td><td><button class="btn small '+(active?"danger":"primary")+'" onclick="toggleServer('+JSON.stringify(String(server.server_id))+','+(!active)+')">'+(active?"Disable":"Enable")+'</button> <button class="btn small" onclick="saveServerTier('+JSON.stringify(String(server.server_id))+')">Save tier</button> '+(saved?'<button class="btn small" onclick="clearServerSetting('+JSON.stringify(String(server.server_id))+')">Reset</button>':'')+'</td></tr>';
   }).join("")||'<tr><td colspan="7" class="empty">'+esc(r.warning||"No live servers are available for this country/service.")+'</td></tr>';
   if(r.warning)notice(r.warning,"info");
  }catch(e){$("serversBody").innerHTML='<tr><td colspan="7" class="empty">'+esc(e.message)+'</td></tr>';notice(e.message,"error");}
@@ -229,6 +240,13 @@ async function loadServers(){
 async function toggleServer(serverId,active){
  const country=findCountry($("serverCountry").value),service=findService($("serverService").value),server=liveServers.find(x=>String(x.server_id)===String(serverId));if(!country||!service||!server){notice("Choose a country and service first.","error");return;}
  try{await api("save_server_setting",{country_id:String(country.id),service_code:service.code,server_id:serverId,server_name:server.server_name||("Server "+serverId),is_active:active,admin_tier:server.admin_tier||null});notice("Server "+serverId+" "+(active?"enabled":"disabled")+".","ok");await loadServers();}catch(e){notice(e.message,"error");}
+}
+async function clearServerSetting(serverId){
+ const country=findCountry($("serverCountry").value),service=findService($("serverService").value);
+ if(!country||!service){notice("Choose a country and service first.","error");return;}
+ if(!confirm("Remove this server's saved settings and restore its default availability?"))return;
+ try{await api("delete_server_setting",{country_id:String(country.id),service_code:service.code,server_id:serverId});notice("Server override removed.","ok");await loadServers();}
+ catch(e){notice(e.message,"error");}
 }
 async function saveServerTier(serverId){
  const country=findCountry($("serverCountry").value),service=findService($("serverService").value),server=liveServers.find(x=>String(x.server_id)===String(serverId));if(!country||!service||!server)return;
@@ -239,6 +257,13 @@ async function saveDisplaySettings(){
  const country=findCountry($("serverCountry").value),service=findService($("serverService").value);if(!country||!service)return;
  try{await api("save_display_setting",{country_id:String(country.id),service_code:service.code,max_servers:Number($("maxServers").value),preferred_tier:$("preferredTier").value.trim()||null});notice("Server display settings saved.","ok");await loadServers();}catch(e){notice(e.message,"error");}
 }
+async function resetDisplaySettings(){
+ const country=findCountry($("serverCountry").value),service=findService($("serverService").value);
+ if(!country||!service){notice("Choose a country and service first.","error");return;}
+ if(!confirm("Remove saved display settings for this country and service?"))return;
+ try{await api("delete_display_setting",{country_id:String(country.id),service_code:service.code});notice("Display settings reset to defaults.","ok");await loadServers();}
+ catch(e){notice(e.message,"error");}
+}
 async function refreshAll(){try{clearNotice();await loadCatalogs();await Promise.all([loadRules(),loadServiceSettings(),loadServers()]);}catch(e){notice(e.message,"error");}}
 async function login(){try{const {error}=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;await start();}catch(e){notice(e.message,"error");}}
 async function start(){try{if(!(await verifyAdmin()))return;await loadCatalogs();await Promise.all([loadRules(),loadServiceSettings(),loadServers()]);}catch(e){notice(e.message,"error");}}
@@ -246,7 +271,7 @@ document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()
 $("loginBtn").addEventListener("click",login);$("savePriceBtn").addEventListener("click",savePriceRule);$("resetPriceBtn").addEventListener("click",resetPriceForm);$("refreshPriceBtn").addEventListener("click",loadRules);
 $("priceCountry").addEventListener("change",loadPricingServers);$("priceService").addEventListener("change",loadPricingServers);$("pricingMode").addEventListener("change",togglePricingFields);
 $("serviceCountry").addEventListener("change",loadServiceSettings);$("serviceSearch").addEventListener("input",loadServiceSettings);
-$("serverCountry").addEventListener("change",loadServers);$("serverService").addEventListener("change",loadServers);$("refreshServersBtn").addEventListener("click",loadServers);$("saveDisplayBtn").addEventListener("click",saveDisplaySettings);
+$("serverCountry").addEventListener("change",loadServers);$("serverService").addEventListener("change",loadServers);$("refreshServersBtn").addEventListener("click",loadServers);$("saveDisplayBtn").addEventListener("click",saveDisplaySettings);$("resetDisplayBtn").addEventListener("click",resetDisplaySettings);
 (async()=>{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);await start();sb.auth.onAuthStateChange(()=>start());})();
 </script>
 </body>
