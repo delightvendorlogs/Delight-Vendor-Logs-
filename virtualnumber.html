@@ -428,16 +428,26 @@ function setActiveTab(tab){
 function formatError(error,fallback){
  const raw=String(error?.message||"");
  const m=raw.toLowerCase();
+ const code=String(error?.code||error?.data?.error||"").toUpperCase();
+ const details=error?.data&&typeof error.data==="object"?error.data:{};
 
- if(/insufficient funds|insufficient balance|not enough funds|low balance|balance too low/.test(m)){
-  if(/customer|wallet|your balance|user balance|add ₦|user wallet/.test(m)){
-   const amount=raw.match(/₦\s?[\d,.]+/);
-   return "Insufficient funds. Please add "+(amount?amount[0]:"the required amount")+".";
-  }
-  return "Insufficient funds. Please contact support.";
+ if(code==="PROVIDER_INSUFFICIENT_FUNDS"||code==="SMSBOWER_PROVIDER_INSUFFICIENT_FUNDS"||/\\bNO_BALANCE\\b/.test(code)){
+  return "Insufficient fund. Please contact support.";
  }
- if(/provider.(balance|fund)|(?:balance|fund).(provider|account)|account balance too low|not enough credit|out of credit|credit exhausted|funds exhausted/.test(m)){
-  return "Insufficient funds. Please contact support.";
+ if(code==="INSUFFICIENT_FUNDS"){
+  const shortfall=Number(details.shortfall);
+  const amount=Number.isFinite(shortfall)&&shortfall>0?money(shortfall):(raw.match(/₦\\s?[\\d,.]+/)||[])[0]||"the required amount";
+  return "Insufficient fund. Please add "+amount+" to your wallet.";
+ }
+ if(/insufficient funds|insufficient balance|not enough funds|low balance|balance too low|no_balance/.test(m)){
+  if(/customer|wallet|your balance|user balance|add ₦|user wallet/.test(m)){
+   const amount=raw.match(/₦\\s?[\\d,.]+/);
+   return "Insufficient fund. Please add "+(amount?amount[0]:"the required amount")+" to your wallet.";
+  }
+  return "Insufficient fund. Please contact support.";
+ }
+ if(/provider[\\s_-]*(balance|fund)|(?:balance|fund)[\\s_-]*(provider|account)|account balance too low|not enough credit|out of credit|credit exhausted|funds exhausted/.test(m)){
+  return "Insufficient fund. Please contact support.";
  }
  if(/jwt|unauthori[sz]ed|session expired|invalid token/.test(m)){
   return "Your session has expired. Please sign in again.";
@@ -449,8 +459,8 @@ function formatError(error,fallback){
  }
  const safeFallback=fallback||"The request could not be completed. Please try again.";
  if(!raw)return safeFallback;
- if(/provider|varsha|text\s*verified|textverified|text\s*provider|virtual\s*sms|virtualsms|numpool|api key|api_key|internal server|stack trace|exception|sql|postgres|supabase/.test(m))return safeFallback;
- if(raw.length>140||/[{}[\]]/.test(raw))return safeFallback;
+ if(/provider|varsha|text\\s*verified|textverified|text\\s*provider|virtual\\s*sms|virtualsms|numpool|api key|api_key|internal server|stack trace|exception|sql|postgres|supabase/.test(m))return safeFallback;
+ if(raw.length>140||/[{}[\\]]/.test(raw))return safeFallback;
  return raw;
 }
 
@@ -473,8 +483,12 @@ async function invoke(provider,action,extra={}){
  let body={};
  try{body=await response.json();}catch{}
  if(!response.ok||body?.error||body?.success===false){
-  const message=body?.error||body?.message||"Request failed.";
-  throw new Error(typeof message==="string"?message:"Request failed.");
+  const code=typeof body?.error==="string"?body.error:(body?.code||"");
+  const message=typeof body?.message==="string"?body.message:(typeof body?.error==="string"?body.error:"Request failed.");
+  const failure=new Error(message);
+  failure.code=String(code||"");
+  failure.data=body;
+  throw failure;
  }
  return body;
 }
@@ -1148,7 +1162,7 @@ async function purchaseNumber(){
  }
  const price=servicePrice(selectedOption);
  if(price===null||price<0){showMessage("confirmMessage","The selected option has an invalid price.","error");return;}
- if(walletBalance<price){showMessage("confirmMessage","Insufficient funds. Please add "+money(price-walletBalance)+".","error");return;}
+ if(walletBalance<price){showMessage("confirmMessage","Insufficient fund. Please add "+money(price-walletBalance)+" to your wallet.","error");return;}
 
  const button=$("confirmPurchaseBtn");
  button.disabled=true;
