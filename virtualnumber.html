@@ -867,8 +867,11 @@ async function retryCountries(){countryLoading=false;await loadCountries();}
 function countryMatches(c,q){
  const name=String(c.name||"").toLowerCase();
  const code=String(c.code||"").toLowerCase();
+ const id=Number(c.id??c.country_id??c.countryId);
  if(!q)return true;
  if(name.includes(q)||code.includes(q))return true;
+ if(["usa","us","united states","united states of america","america"].includes(q)&&(id===12||id===187||code==="US"||name.includes("united states")||name==="usa"))return true;
+ if(["uk","gb","england","united kingdom","great britain"].includes(q)&&(id===16||code==="GB"||["uk","england","united kingdom","great britain"].some(x=>name.includes(x))))return true;
  const aliases={
   "us":["usa","united states","united states of america","america"],
   "usa":["us","united states","united states of america","america"],
