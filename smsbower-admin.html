@@ -159,7 +159,7 @@ async function loadCatalogs(){
   else if(Number(id)===16||["uk","gb","great britain","england"].includes(key))name="United Kingdom";
   return {id,name,raw};
  }).filter(x=>x.id!==null);
- services=list(s,"services").map(x=>({code:x.code??x.service_code,name:x.name??x.service_name??x.code})).filter(x=>x.code);
+ services=list(s,"services").map(x=>({code:x.code??x.service_code??x.serviceCode??x.id??x.key??x.service,name:x.name??x.service_name??x.title??x.label??x.code??x.service_code??x.id})).filter(x=>x.code!==undefined&&x.code!==null&&String(x.code).trim()!=="");
  fillSelect($("priceCountry"),countries,"All countries","");
  fillSelect($("serviceCountry"),countries,"Choose country","");
  fillSelect($("serverCountry"),countries,"Choose country","");
