@@ -730,12 +730,12 @@ async function init(){
   await refreshOrders();
   if(generation!==initGeneration)return;
 
-  setSection(null);
-  setActiveTab("");
+  // The USA tab is the default landing view; users can still switch tabs normally.
   if(poller)clearInterval(poller);
   poller=setInterval(()=>{if(currentUser)refreshOrders();},30000);
   if(fetchSmsPoller)clearInterval(fetchSmsPoller);
   fetchSmsPoller=setInterval(()=>{if(currentUser)refreshFetchSmsOrders();},5000);
+  await openUSA();
  }catch(e){
   console.error("Page initialization failed:",e);
   if(generation!==initGeneration)return;
@@ -900,8 +900,10 @@ function renderCountries(list){
 async function selectCountry(index){
  if(index<0||index>=countryList.length)return;
  selectedCountry=countryList[index];
- chosenProvider=selectedCountry._provider==="fetchsms" ||
-  String(selectedCountry.code||"").toUpperCase()==="US" ? "fetchsms" : "virtualsms";
+ // Keep the provider belonging to the selected tab. All Countries 2 must
+ // continue using SMSBower even when the selected country is the United States.
+ chosenProvider=selectedCountry._provider ||
+  (String(selectedCountry.code||"").toUpperCase()==="US" ? "fetchsms" : "virtualsms");
  if(!selectedCountry.code&&selectedCountry.id==null){
   showMessage("allMessage","This country is not available right now. Please choose another country.","error");
   return;
