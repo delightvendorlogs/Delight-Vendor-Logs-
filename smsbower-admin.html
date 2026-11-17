@@ -113,11 +113,43 @@ async function api(action,payload={}){
 }
 function setTab(name){document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===name));}
 function fillSelect(el,rows,firstLabel,firstValue="",getValue=x=>x.id,getLabel=x=>x.name){el.innerHTML='<option value="'+esc(firstValue)+'">'+esc(firstLabel)+'</option>'+rows.map(x=>'<option value="'+esc(getValue(x))+'">'+esc(getLabel(x))+'</option>').join("");}
+function normalizeSearchText(value){
+ return String(value||"").toLowerCase()
+  .replace(/[🇺🇸🇬🇧]/gu,"")
+  .replace(/[()]/g," ")
+  .replace(/[^a-z0-9]+/g," ")
+  .replace(/\s+/g," ").trim();
+}
 function searchableAliases(value){
- const v=String(value||"").toLowerCase().replace(/[🇺🇸🇬🇧]/gu,"").replace(/\s*\([^)]*\)\s*/g," ").trim();
- if(v.includes("united states")||v.includes("usa"))return ["usa","us","united states","united states of america","united states virtual","usa virtual"];
- if(v.includes("united kingdom")||v==="england"||v==="uk")return ["uk","gb","great britain","england","united kingdom"];
+ const v=normalizeSearchText(value);
+ if(v.includes("united states")||v.includes("usa")||v==="us")return ["usa","us","united states","united states of america","america","usa virtual","united states virtual"];
+ if(v.includes("united kingdom")||v==="england"||v==="uk"||v==="gb")return ["uk","gb","great britain","england","united kingdom"];
  return [];
+}
+function renderSearchableOptions(select,wrap,query=""){
+ const menu=wrap.querySelector(".searchable-menu"),q=normalizeSearchText(query);
+ const isCountry=/country/i.test(select.id);
+ const options=[...select.options].filter(o=>{
+  const label=String(o.textContent||"");
+  const normalizedLabel=normalizeSearchText(label);
+  const value=String(o.value||"").toLowerCase();
+  const id=String(o.value||"");
+  const isUs= id==="12"||id==="187"||normalizedLabel.includes("united states")||normalizedLabel==="usa"||normalizedLabel==="america";
+  const isUsVirtual= id==="12"||normalizedLabel.includes("virtual");
+  if(!q)return true;
+  if(isCountry&&["us","usa","united states","united states of america","america"].includes(q))return isUs;
+  if(isCountry&&["usa virtual","united states virtual"].includes(q))return isUs&&isUsVirtual;
+  if(isCountry&&["uk","gb","united kingdom","great britain","england"].includes(q)){
+   return id==="16"||["uk","gb","united kingdom","great britain","england"].some(term=>normalizedLabel.includes(term));
+  }
+  const aliases=searchableAliases(label).map(normalizeSearchText);
+  return normalizedLabel.includes(q)||value.includes(q)||aliases.some(alias=>alias.includes(q));
+ });
+ menu.innerHTML=options.length?options.map(o=>'<button type="button" class="searchable-option" data-value="'+esc(o.value)+'">'+esc(o.textContent)+'</button>').join(""):'<div class="searchable-empty">No matching options</div>';
+ menu.querySelectorAll("[data-value]").forEach(button=>button.addEventListener("click",()=>{
+  select.value=button.dataset.value;refreshSearchableSelect(select.id);menu.classList.remove("open");wrap.querySelector("input").setAttribute("aria-expanded","false");select.dispatchEvent(new Event("change",{bubbles:true}));
+ }));
+ menu.classList.add("open");wrap.querySelector("input").setAttribute("aria-expanded","true");
 }
 function refreshSearchableSelect(id){
  const select=$(id),wrap=document.querySelector('[data-search-select="'+id+'"]');if(!select||!wrap)return;
@@ -167,6 +199,23 @@ document.addEventListener("click",event=>{
 
 function findCountry(id){return countries.find(c=>String(c.id)===String(id));}
 function findService(code){return services.find(s=>String(s.code)===String(code));}
+const SERVER_SELECTION_STORAGE_KEY="dv_smsbower_server_selection_v1";
+function rememberServerSelection(){
+ try{
+  const countryId=$("serverCountry")?.value||"",serviceCode=$("serverService")?.value||"";
+  if(countryId&&serviceCode)localStorage.setItem(SERVER_SELECTION_STORAGE_KEY,JSON.stringify({countryId,serviceCode}));
+ }catch{}
+}
+function restoreServerSelection(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(SERVER_SELECTION_STORAGE_KEY)||"null");
+  if(!saved)return;
+  if(saved.countryId&&countries.some(x=>String(x.id)===String(saved.countryId)))$("serverCountry").value=String(saved.countryId);
+  if(saved.serviceCode&&services.some(x=>String(x.code)===String(saved.serviceCode)))$("serverService").value=String(saved.serviceCode);
+  refreshSearchableSelect("serverCountry");
+  refreshSearchableSelect("serverService");
+ }catch{}
+}
 async function verifyAdmin(){
  const {data,error}=await sb.auth.getSession();if(error)throw error;session=data?.session||null;
  if(!session){$("loginPanel").classList.remove("hidden");$("appPanel").classList.add("hidden");return false;}
@@ -196,6 +245,13 @@ async function loadCatalogs(){
   }
   return {id,name,raw};
  }).filter(x=>x.id!==null);
+ const hasNormalUs=countries.some(x=>{
+  const id=Number(x.id),name=String(x.raw||x.name||"").toLowerCase();
+  return id===187||(id!==12&&!name.includes("virtual")&&["usa","us","united states","united states of america"].includes(name));
+ });
+ const hasVirtualUs=countries.some(x=>Number(x.id)===12||String(x.raw||x.name||"").toLowerCase().includes("virtual"));
+ if(!hasNormalUs)countries.push({id:187,name:"🇺🇸 United States",raw:"United States"});
+ if(!hasVirtualUs)countries.push({id:12,name:"🇺🇸 United States (Virtual)",raw:"United States Virtual"});
  services=list(s,"services").map(x=>({code:x.code??x.service_code??x.serviceCode??x.id??x.key??x.service,name:x.name??x.service_name??x.title??x.label??x.code??x.service_code??x.id})).filter(x=>x.code!==undefined&&x.code!==null&&String(x.code).trim()!=="");
  fillSelect($("priceCountry"),countries,"All countries","");
  fillSelect($("serviceCountry"),countries,"Choose country","");
@@ -203,6 +259,7 @@ async function loadCatalogs(){
  fillSelect($("priceService"),services,"All services","",x=>String(x.code),x=>x.name);
  fillSelect($("serverService"),services,"Choose service","",x=>String(x.code),x=>x.name);
  initSearchableSelects();
+ restoreServerSelection();
 }
 async function loadRules(){
  const r=await api("list_price_rules");rules=list(r,"rules");
@@ -299,8 +356,18 @@ async function saveServerTier(serverId){
  try{await api("save_server_setting",{country_id:String(country.id),service_code:service.code,server_id:serverId,server_name:server.server_name||("Server "+serverId),is_active:server.is_active!==false,admin_tier:tier});notice("Server tier saved.","ok");await loadServers();}catch(e){notice(e.message,"error");}
 }
 async function saveDisplaySettings(){
- const country=selectedCatalogItem("serverCountry",countries,"id"),service=selectedCatalogItem("serverService",services,"code");if(!country||!service)return;
- try{await api("save_display_setting",{country_id:String(country.id),service_code:service.code,max_servers:Number($("maxServers").value),preferred_tier:$("preferredTier").value.trim()||null});notice("Server display settings saved.","ok");await loadServers();}catch(e){notice(e.message,"error");}
+ const country=selectedCatalogItem("serverCountry",countries,"id"),service=selectedCatalogItem("serverService",services,"code");
+ if(!country||!service){notice("Choose a country and service first.","error");return;}
+ const maxServers=Number($("maxServers").value);
+ if(!Number.isInteger(maxServers)||maxServers<1||maxServers>100){notice("Maximum servers must be a whole number from 1 to 100.","error");return;}
+ try{
+  rememberServerSelection();
+  const result=await api("save_display_setting",{country_id:String(country.id),service_code:service.code,max_servers:maxServers,preferred_tier:$("preferredTier").value.trim()||null});
+  if(Number(result?.setting?.max_servers)!==maxServers)throw new Error("The server limit was not confirmed by the database. Please try saving again.");
+  await loadServers();
+  if(Number($("maxServers").value)!==maxServers)throw new Error("The setting was saved, but the selected country/service did not reload with the saved value.");
+  notice("Server display settings saved and verified.","ok");
+ }catch(e){notice(e.message,"error");}
 }
 async function resetDisplaySettings(){
  const country=selectedCatalogItem("serverCountry",countries,"id"),service=selectedCatalogItem("serverService",services,"code");
@@ -331,7 +398,7 @@ document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()
 $("loginBtn").addEventListener("click",login);$("savePriceBtn").addEventListener("click",savePriceRule);$("resetPriceBtn").addEventListener("click",resetPriceForm);$("refreshPriceBtn").addEventListener("click",loadRules);
 $("priceCountry").addEventListener("change",loadPricingServers);$("priceService").addEventListener("change",loadPricingServers);$("pricingMode").addEventListener("change",togglePricingFields);
 $("serviceCountry").addEventListener("change",loadServiceSettings);$("serviceSearch").addEventListener("input",loadServiceSettings);
-$("serverCountry").addEventListener("change",loadServers);$("serverService").addEventListener("change",loadServers);$("refreshServersBtn").addEventListener("click",loadServers);$("saveDisplayBtn").addEventListener("click",saveDisplaySettings);$("resetDisplayBtn").addEventListener("click",resetDisplaySettings);
+$("serverCountry").addEventListener("change",()=>{rememberServerSelection();loadServers();});$("serverService").addEventListener("change",()=>{rememberServerSelection();loadServers();});$("refreshServersBtn").addEventListener("click",loadServers);$("saveDisplayBtn").addEventListener("click",saveDisplaySettings);$("resetDisplayBtn").addEventListener("click",resetDisplaySettings);
 (async()=>{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);await start();sb.auth.onAuthStateChange(()=>start());})();
 </script>
 </body>
