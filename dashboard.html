@@ -5715,6 +5715,22 @@ function showTxEmpty(message){
    LOAD TRANSACTIONS
 ========================================================= */
 
+function customerTransactionLabel(transaction){
+ const raw=String(transaction?.type||transaction?.transaction_type||'').toLowerCase();
+ if(/refund|revers/.test(raw))return 'Refund';
+ if(/deposit|fund|credit|top.?up/.test(raw))return 'Wallet funding';
+ if(/withdraw/.test(raw))return 'Withdrawal';
+ if(/virtual.?number|sms|otp|number.?purchase/.test(raw))return 'Virtual number purchase';
+ return 'Service purchase';
+}
+function customerTransactionStatus(value){
+ const raw=String(value||'').toLowerCase();
+ if(/refund|revers/.test(raw))return 'Refunded';
+ if(/fail|reject|declin/.test(raw))return 'Failed';
+ if(/cancel|expire/.test(raw))return 'Cancelled';
+ if(/pend|process|wait/.test(raw))return 'Pending';
+ return 'Completed';
+}
 async function loadTransactions(){
 
     const loading =
@@ -5871,9 +5887,7 @@ async function loadTransactions(){
                             '<strong>' +
 
                                 escapeHTML(
-                                    transaction.description ||
-                                    transaction.type ||
-                                    "Transaction"
+                                    customerTransactionLabel(transaction)
                                 ) +
 
                             '</strong>' +
@@ -5928,8 +5942,7 @@ async function loadTransactions(){
                         '<div class="tx-status">' +
 
                             escapeHTML(
-                                transaction.status ||
-                                "completed"
+                                customerTransactionStatus(transaction.status)
                             ) +
 
                         '</div>' +
