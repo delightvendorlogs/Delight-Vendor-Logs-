@@ -972,8 +972,8 @@ function createVirtualNumberCard(order){
         "virtual-number-card";
 
 
-    const serviceName = cleanVirtualCustomerText(order.display_service_name || order.service_name || order.service_code || "Virtual Number") || "Virtual Number";
-    const countryName = String(order.country_name || order.country_code || "Unknown country");
+    const serviceName = cleanCustomerFacingLabel(cleanVirtualCustomerText(order.display_service_name || order.service_name || order.service_code || "Virtual Number")) || "Virtual Number";
+    const countryName = cleanCustomerFacingLabel(order.country_name || order.country_code || "Unknown country") || "Unknown country";
     const countryFlag = purchaseCountryFlag({name:countryName,code:order.country_code});
 
     card.innerHTML = `
@@ -1070,6 +1070,9 @@ function serviceDeliveryText(value){
 // CREATE NORMAL PURCHASE CARD
 // =====================================================
 
+function cleanCustomerFacingLabel(value){
+ return String(value??'').replace(/\\b(?:logsplug|logs\\s*plug|thegiftunc|giftunc|gift\\s*unc|exclusive|varsha\\s*sms|varsha|text\\s*verified|textverified|fetch\\s*sms|fetchsms|virtual\\s*sms|virtualsms|sms\\s*bower|smsbower|grizzly\\s*sms|grizzlysms|grizzly|5sim)\\b/gi,'').replace(/\\s{2,}/g,' ').trim();
+}
 function createNormalPurchaseCard(purchase){
     const status=String(purchase.status||"pending").toLowerCase().trim();
     const content=String(purchase.content??"");
@@ -1078,7 +1081,7 @@ function createNormalPurchaseCard(purchase){
     const date=formatDate(purchase.created_at);
     const purchaseBox=document.createElement("div");
     purchaseBox.className="purchase";
-    purchaseBox.innerHTML='<div class="purchase-head"><div><div class="purchase-eyebrow">Purchase details</div><div class="name">'+esc(purchase.product_name||"Purchase")+'</div><div class="date">'+esc(date)+'</div></div><div class="amount">₦'+formatMoney(purchase.amount)+'</div></div><div class="status">'+(status==="completed"||status==="complete"||status==="success"||status==="successful"||status==="approved"||status==="delivered"?'<span class="badge badge-received">Completed</span>':status==="cancelled"||status==="canceled"||status==="refunded"||status==="rejected"||status==="failed"?'<span class="badge badge-cancelled">Cancelled</span>':'<span class="badge badge-waiting">'+esc(purchase.status||"Pending")+'</span>')+'</div>'+(content.trim()?'<section class="purchase-delivery"><div class="delivery-heading"><strong>Delivery information</strong><span>Saved for later access</span></div><div class="content">'+safeContent+'</div>'+copyButton+'</section>':"");
+    purchaseBox.innerHTML='<div class="purchase-head"><div><div class="purchase-eyebrow">Purchase details</div><div class="name">'+esc(cleanCustomerFacingLabel(purchase.product_name||"Purchase")||"Purchase")+'</div><div class="date">'+esc(date)+'</div></div><div class="amount">₦'+formatMoney(purchase.amount)+'</div></div><div class="status">'+(status==="completed"||status==="complete"||status==="success"||status==="successful"||status==="approved"||status==="delivered"?'<span class="badge badge-received">Completed</span>':status==="cancelled"||status==="canceled"||status==="refunded"||status==="rejected"||status==="failed"?'<span class="badge badge-cancelled">Cancelled</span>':'<span class="badge badge-waiting">'+esc(purchase.status||"Pending")+'</span>')+'</div>'+(content.trim()?'<section class="purchase-delivery"><div class="delivery-heading"><strong>Delivery information</strong><span>Saved for later access</span></div><div class="content">'+safeContent+'</div>'+copyButton+'</section>':"");
     const copy=purchaseBox.querySelector("[data-copy-delivery]");
     if(copy)copy.addEventListener("click",()=>copyContent(copy,content));
     return purchaseBox;
