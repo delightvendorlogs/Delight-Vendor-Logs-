@@ -589,7 +589,7 @@ async function invoke(provider,action,extra={}){
 function getList(payload){
  if(Array.isArray(payload))return payload;
  if(!payload||typeof payload!=="object")return [];
- for(const k of ["data","services","countries","results","items","orders","options","available"]){
+ for(const k of ["data","services","countries","results","items","orders","options","servers","available"]){
   if(Array.isArray(payload[k]))return payload[k];
   if(payload[k]&&typeof payload[k]==="object"){
    for(const n of ["data","items","results","countries","services","options"]){
@@ -1236,7 +1236,7 @@ async function purchaseNumber(){
   }
   showMessage("confirmMessage","Purchase request submitted. Refreshing your orders…","success");
   await Promise.allSettled([refreshWallet(),loadOrders()]);
-  const boughtOrder=allOrders.find(o=>String(o.id)===String(purchaseResult?.order?.id)) || allOrders.find(o=>orderProvider(o)===chosenProvider&&getOrderNumber(o));
+  const boughtOrder=purchaseResult?.order?.id?{...purchaseResult.order,provider_key:purchaseResult.order.provider_key||chosenProvider}:allOrders.find(o=>String(o.id)===String(purchaseResult?.order?.id)) || allOrders.find(o=>orderProvider(o)===chosenProvider&&getOrderNumber(o));
   if(boughtOrder)await createVirtualNotification("purchase",boughtOrder);
   setSection(chosenProvider==="textverified"?"usaSection":"allSection");
   showGlobal("Purchase request submitted. Check My Number Orders for its current status.","success");
@@ -1272,11 +1272,13 @@ async function refreshFetchSmsOrders(){
    .limit(10);
   if(error)throw error;
   if(currentUser?.id!==userId || !data?.length)return;
+  const codesBefore=new Map(allOrders.map(o=>[String(o.id),getCode(o)]));
   await Promise.allSettled(data.map(o=>
    invoke("fetchsms","status",orderActionPayload(o))
   ));
   if(currentUser?.id===userId){
    await Promise.allSettled([loadOrders(),refreshWallet()]);
+   for(const updated of allOrders){const previous=codesBefore.get(String(updated.id))||"";if(!previous&&getCode(updated))await createVirtualNotification("otp",updated);}
   }
  }catch(e){
   console.warn("Fetch SMS automatic status refresh failed:",e);
