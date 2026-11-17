@@ -851,10 +851,14 @@ async function loadCountries(){
    countryList=normalized.map(c=>{
     const id=Number(c.id??c.country_id??c.countryId);
     const name=String(c.name||"").trim().toLowerCase();
-    if(id===187||["usa","us","united states","united states of america"].includes(name))
+    if(id===187)
      return {...c,name:"United States",code:"US",id:187,country_id:187,_provider:"smsbower"};
-    if(id===12||["usa virtual","united states virtual","united states (virtual)"].includes(name))
+    if(id===12)
      return {...c,name:"United States Virtual",code:"US",id:12,country_id:12,_provider:"smsbower"};
+    if(["usa","us","united states","united states of america"].includes(name))
+     return {...c,name:"United States",code:"US",_provider:"smsbower"};
+    if(["usa virtual","united states virtual","united states (virtual)"].includes(name))
+     return {...c,name:"United States Virtual",code:"US",_provider:"smsbower"};
     return {...c,_provider:"smsbower"};
    });
    const hasNormalUs=countryList.some(c=>{
