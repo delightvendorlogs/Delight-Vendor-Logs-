@@ -403,7 +403,6 @@ main{
 <script>
 const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
 const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
-const PAYSTACK_PUBLIC_KEY="pk_live_404fd9834a0f367328c2fb55a2256e406ed6b43f";
 
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
@@ -455,8 +454,8 @@ async function continuePayment(){
 const amount=Number(document.getElementById("amount").value);
 const button=document.getElementById("continueButton");
 
-if(!Number.isFinite(amount)||amount<100){
-message("Please enter at least ₦100.","red");
+if(!Number.isSafeInteger(amount)||amount<100||amount>1000000){
+message("Please enter a whole amount of at least ₦100 and no more than ₦1,000,000.","red");
 return;
 }
 
@@ -467,76 +466,29 @@ location.href="login.html";
 return;
 }
 
-if(!user.email){
-message("Your account has no email address.","red");
-return;
-}
-
 button.disabled=true;
-button.textContent="Opening payment...";
-message("Opening Paystack...");
+button.textContent="Preparing payment...";
+message("Securely preparing your Paystack checkout...");
 
 try{
-const oldBalance=await getWalletBalance();
-
-if(oldBalance===null){
-button.disabled=false;
-button.textContent="Continue";
-return;
-}
-
-const paystack=new PaystackPop();
-
-paystack.newTransaction({
-key:PAYSTACK_PUBLIC_KEY,
-email:user.email,
-amount:Math.round(amount*100),
-currency:"NGN",
-metadata:{
-user_id:user.id,
-purpose:"wallet_funding"
-},
-
-onSuccess:async(transaction)=>{
-message("Payment successful. Waiting for wallet confirmation...","green");
-button.textContent="Confirming...";
-
-for(let i=0;i<10;i++){
-await new Promise(resolve=>setTimeout(resolve,3000));
-
-const newBalance=await loadWallet();
-
-if(newBalance!==null&&newBalance>oldBalance){
-message("Payment successful! Wallet balance updated.","green");
-document.getElementById("amount").value="";
-button.disabled=false;
-button.textContent="Continue";
-return;
-}
-}
-
-message("Payment was successful, but wallet balance has not updated yet. Please wait and refresh.","#cc6600");
-button.disabled=false;
-button.textContent="Continue";
-},
-
-onCancel:()=>{
-message("Payment cancelled.","#cc6600");
-button.disabled=false;
-button.textContent="Continue";
-},
-
-onError:(error)=>{
-console.error(error);
-message(error?.message||"Payment failed.","red");
-button.disabled=false;
-button.textContent="Continue";
-}
+const {data,error}=await supabaseClient.functions.invoke("paystack_init_payment",{
+body:{amount}
 });
 
+if(error){
+console.error("Paystack initialization failed:",error);
+throw new Error(data?.error||"Could not start payment. Please try again.");
+}
+
+if(!data?.success||typeof data.authorization_url!=="string"||!data.authorization_url.startsWith("https://")){
+throw new Error(data?.error||"Paystack did not return a valid checkout link.");
+}
+
+message("Opening secure Paystack checkout...","#cc9900");
+location.assign(data.authorization_url);
 }catch(error){
 console.error(error);
-message("Unable to open Paystack payment.","red");
+message(error?.message||"Unable to open Paystack payment.","red");
 button.disabled=false;
 button.textContent="Continue";
 }
