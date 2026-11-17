@@ -1071,7 +1071,7 @@ function serviceDeliveryText(value){
 // =====================================================
 
 function cleanCustomerFacingLabel(value){
- return String(value??'').replace(/\\b(?:logsplug|logs\\s*plug|thegiftunc|giftunc|gift\\s*unc|exclusive|varsha\\s*sms|varsha|text\\s*verified|textverified|fetch\\s*sms|fetchsms|virtual\\s*sms|virtualsms|sms\\s*bower|smsbower|grizzly\\s*sms|grizzlysms|grizzly|5sim)\\b/gi,'').replace(/\\s{2,}/g,' ').trim();
+ return String(value??'').replace(/\b(?:logsplug|logs\s*plug|thegiftunc|giftunc|gift\s*unc|exclusive|varsha\s*sms|varsha|text\s*verified|textverified|fetch\s*sms|fetchsms|virtual\s*sms|virtualsms|sms\s*bower|smsbower|grizzly\s*sms|grizzlysms|grizzly|5sim)\b/gi,'').replace(/\s{2,}/g,' ').trim();
 }
 function createNormalPurchaseCard(purchase){
     const status=String(purchase.status||"pending").toLowerCase().trim();
