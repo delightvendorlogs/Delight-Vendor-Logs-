@@ -237,7 +237,7 @@ async function loadServers(){
  if(!country||!service){$("serversBody").innerHTML='<tr><td colspan="7" class="empty">Choose a country and service to load servers.</td></tr>';liveServers=[];return;}
  $("serversBody").innerHTML='<tr><td colspan="7" class="empty">Loading live servers…</td></tr>';
  try{
-  const [r,s]=await Promise.all([api("admin_servers",{country_id:Number(country.id),country_name:country.name,service_code:String(service.code)}),api("list_server_settings"),api("list_display_settings")]);
+  const [r,s]=await Promise.all([api("admin_servers",{country_id:Number(country.id),country_name:country.name,service_code:String(service.code)}),api("list_server_settings")]);
   if(generation!==serverLoadGeneration)return;
   liveServers=list(r,"servers");serverSettings=list(s,"settings");
   const display=r.display_settings||null;$("maxServers").value=display?.max_servers??10;$("preferredTier").value=display?.preferred_tier??"";
@@ -262,16 +262,16 @@ async function clearServerSetting(serverId){
  catch(e){notice(e.message,"error");}
 }
 async function saveServerTier(serverId){
- const country=findCountry($("serverCountry").value),service=findService($("serverService").value),server=liveServers.find(x=>String(x.server_id)===String(serverId));if(!country||!service||!server)return;
+ const country=selectedCatalogItem("serverCountry",countries,"id"),service=selectedCatalogItem("serverService",services,"code"),server=liveServers.find(x=>String(x.server_id)===String(serverId));if(!country||!service||!server)return;
  const tier=$("tier-"+serverId)?.value.trim()||null;
  try{await api("save_server_setting",{country_id:String(country.id),service_code:service.code,server_id:serverId,server_name:server.server_name||("Server "+serverId),is_active:server.is_active!==false,admin_tier:tier});notice("Server tier saved.","ok");await loadServers();}catch(e){notice(e.message,"error");}
 }
 async function saveDisplaySettings(){
- const country=findCountry($("serverCountry").value),service=findService($("serverService").value);if(!country||!service)return;
+ const country=selectedCatalogItem("serverCountry",countries,"id"),service=selectedCatalogItem("serverService",services,"code");if(!country||!service)return;
  try{await api("save_display_setting",{country_id:String(country.id),service_code:service.code,max_servers:Number($("maxServers").value),preferred_tier:$("preferredTier").value.trim()||null});notice("Server display settings saved.","ok");await loadServers();}catch(e){notice(e.message,"error");}
 }
 async function resetDisplaySettings(){
- const country=findCountry($("serverCountry").value),service=findService($("serverService").value);
+ const country=selectedCatalogItem("serverCountry",countries,"id"),service=selectedCatalogItem("serverService",services,"code");
  if(!country||!service){notice("Choose a country and service first.","error");return;}
  if(!confirm("Remove saved display settings for this country and service?"))return;
  try{await api("delete_display_setting",{country_id:String(country.id),service_code:service.code});notice("Display settings reset to defaults.","ok");await loadServers();}
