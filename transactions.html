@@ -493,10 +493,7 @@ main{max-width:900px!important;padding:12px 14px 55px!important}
 
             <div class="transaction-type">
               ${escapeHTML(
-                removeProviderNames(
-                  transaction.type ||
-                  "Transaction"
-                )
+                customerTransactionLabel(transaction)
               )}
             </div>
 
@@ -515,16 +512,14 @@ main{max-width:900px!important;padding:12px 14px 55px!important}
 
           <div class="status">
             ${escapeHTML(
-              removeProviderNames(transaction.status || "completed")
+              customerTransactionStatus(transaction.status)
             )}
           </div>
 
 
           <div class="description">
             ${escapeHTML(
-              removeProviderNames(
-                transaction.description || ""
-              )
+              customerTransactionLabel(transaction)
             )}
           </div>
 
@@ -556,7 +551,23 @@ main{max-width:900px!important;padding:12px 14px 55px!important}
    * or database logic is changed here.
    */
 
-  function removeProviderNames(value) {
+  function customerTransactionLabel(transaction){
+ const raw=String(transaction?.type||transaction?.transaction_type||'').toLowerCase();
+ if(/refund|revers/.test(raw))return 'Refund';
+ if(/deposit|fund|credit|top.?up/.test(raw))return 'Wallet funding';
+ if(/withdraw/.test(raw))return 'Withdrawal';
+ if(/virtual.?number|sms|otp|number.?purchase/.test(raw))return 'Virtual number purchase';
+ return 'Service purchase';
+}
+function customerTransactionStatus(value){
+ const raw=String(value||'').toLowerCase();
+ if(/refund|revers/.test(raw))return 'Refunded';
+ if(/fail|reject|declin/.test(raw))return 'Failed';
+ if(/cancel|expire/.test(raw))return 'Cancelled';
+ if(/pend|process|wait/.test(raw))return 'Pending';
+ return 'Completed';
+}
+function removeProviderNames(value) {
 
     return String(value)
 
