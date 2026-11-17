@@ -112,6 +112,11 @@ p{line-height:1.5}
 .section{display:none}
 .section.active{display:block}
 .notice{border:1px solid var(--border);background:rgba(212,175,55,.07);color:#e8dba9;padding:13px;border-radius:11px;font-size:13px;line-height:1.6}
+.important-notice{border:1px solid rgba(212,175,55,.55);background:rgba(212,175,55,.09);color:#f0e4bd;padding:14px;border-radius:12px;margin:14px 0;font-size:13px;line-height:1.65}
+.important-notice strong.notice-heading{display:block;color:#f6d979;font-size:14px;margin-bottom:6px}
+.important-notice p{margin:6px 0}
+.important-notice .notice-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.important-notice .notice-link{border:1px solid rgba(246,217,121,.5);background:rgba(212,175,55,.12);color:#ffe28a;border-radius:8px;padding:6px 10px;font:inherit;font-weight:800;text-decoration:underline;cursor:pointer}
 .message{padding:12px;border-radius:10px;margin:12px 0;font-size:13px;line-height:1.5;display:none;overflow-wrap:anywhere}
 .message.show{display:block}
 .message.error{background:#351818;color:#ffb6b6}
@@ -268,6 +273,12 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
  <div class="panel">
   <h2>🇺🇸 United States</h2>
   <p class="muted small">Search and select the service you need.</p>
+  <div class="important-notice" role="note" aria-label="Important virtual number notice">
+   <strong class="notice-heading">⚠️ Important Notice</strong>
+   <p>For a smoother verification experience, we recommend using <strong>USA</strong> or <strong>All Countries</strong> (standard) where available. All Countries 2 has lower estimated success rates: approximately <strong>50% for WhatsApp</strong> and <strong>70% for other services</strong>. Actual results vary, and these figures are estimates, not guarantees.</p>
+   <p>For best compatibility, if you use a VPN, set it to the same country as the number you are purchasing before requesting a verification code. Some apps may reject virtual numbers or impose restrictions or bans under their own rules. We cannot guarantee acceptance by third-party apps or prevent restrictions they impose.</p>
+   <div class="notice-links"><button type="button" class="notice-link" onclick="openAll()">All Countries</button><button type="button" class="notice-link" onclick="openSmsBower()">All Countries 2</button></div>
+  </div>
   <div class="search-picker" id="usaPicker">
    <input id="usaServiceSearch" class="field" placeholder="Select a service or search…" autocomplete="off" onfocus="openPicker('usaServiceMenu')" onclick="openPicker('usaServiceMenu')" oninput="filterServices('usa')">
    <div id="usaServiceMenu" class="picker-menu"></div>
@@ -281,6 +292,13 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
  <div class="panel">
   <h2 id="allSectionTitle">🌍 All Country Numbers</h2>
   <div id="allMessage" class="message"></div>
+  <div id="smsbowerImportantNotice" class="important-notice" role="note" aria-label="Important All Countries 2 notice" style="display:none">
+   <strong class="notice-heading">⚠️ Important Notice — Please Read Before Purchasing</strong>
+   <p>All Countries 2 is a lower-reliability option. Estimated success rates are approximately <strong>50% for WhatsApp</strong> and <strong>70% for other services</strong>. Actual results vary, and these figures are estimates, not guarantees.</p>
+   <p>For a better chance of a smooth verification, we highly recommend choosing <strong>USA</strong> or <strong>All Countries</strong> (standard) instead, especially if you are purchasing for WhatsApp. If you use a VPN, set it to the same country as the number you are purchasing before requesting the code.</p>
+   <p>Some apps may reject virtual numbers or impose restrictions or bans under their own rules. We cannot guarantee acceptance by third-party apps or prevent restrictions they impose. Please check the app's rules before purchasing.</p>
+   <div class="notice-links"><button type="button" class="notice-link" onclick="openUSA()">USA</button><button type="button" class="notice-link" onclick="openAll()">All Countries</button></div>
+  </div>
   <div class="picker-label">COUNTRY</div>
   <div class="search-picker" id="countryPicker">
    <input id="countrySearch" class="field" placeholder="Select a country or search…" autocomplete="off" onfocus="openPicker('countryMenu')" onclick="openPicker('countryMenu')" oninput="filterCountries()">
@@ -807,6 +825,7 @@ async function openUSA(){
 async function openAll(){
  flow="all";
  chosenProvider="virtualsms";
+ $("smsbowerImportantNotice").style.display="none";
  $("allSectionTitle").textContent="🌍 All Country Numbers";
  selectedCountry=null;
  selectedService=null;
@@ -830,6 +849,7 @@ async function openAll(){
 async function openSmsBower(){
  flow="all";
  chosenProvider="smsbower";
+ $("smsbowerImportantNotice").style.display="block";
  selectedCountry=null;
  selectedService=null;
  selectedOption=null;
