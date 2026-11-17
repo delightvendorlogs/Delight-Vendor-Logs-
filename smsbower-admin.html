@@ -90,9 +90,9 @@ async function api(action,payload={}){
 function setTab(name){document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===name));}
 function fillSelect(el,rows,firstLabel,firstValue="",getValue=x=>x.id,getLabel=x=>x.name){el.innerHTML='<option value="'+esc(firstValue)+'">'+esc(firstLabel)+'</option>'+rows.map(x=>'<option value="'+esc(getValue(x))+'">'+esc(getLabel(x))+'</option>').join("");}
 function searchableAliases(value){
- const v=String(value||"").toLowerCase();
- if(v==="united states")return ["usa","us","united states of america"];
- if(v==="united kingdom")return ["uk","gb","great britain","england"];
+ const v=String(value||"").toLowerCase().replace(/\s*\([^)]*\)\s*/g," ").trim();
+ if(v==="united states"||v==="united states virtual"||v==="usa virtual")return ["usa","us","united states","united states of america","united states virtual","usa virtual"];
+ if(v==="united kingdom"||v==="england"||v==="uk")return ["uk","gb","great britain","england","united kingdom"];
  return [];
 }
 function refreshSearchableSelect(id){
@@ -154,9 +154,14 @@ async function loadCatalogs(){
  countries=list(c,"countries").map(x=>{
   const id=x.id??x.country_id,raw=String(x.name??x.eng??x.country_name??String(id)).trim(),key=raw.toLowerCase();
   let name=raw;
-  if(Number(id)===187||["usa","us","united states of america"].includes(key))name="United States";
-  else if(Number(id)===12)name="United States (Virtual)";
-  else if(Number(id)===16||["uk","gb","great britain","england"].includes(key))name="United Kingdom";
+  if(Number(id)===187||["usa","us","united states of america"].includes(key))name="🇺🇸 United States";
+  else if(Number(id)===12||key==="usa virtual"||key==="united states virtual")name="🇺🇸 United States (Virtual)";
+  else if(Number(id)===16||["uk","gb","great britain","england"].includes(key))name="🇬🇧 United Kingdom";
+  else {
+   const iso=String(x.code??x.iso2??x.iso??x.country_code??"").toUpperCase();
+   const flag=/^[A-Z]{2}$/.test(iso)?String.fromCodePoint(...[...iso].map(ch=>127397+ch.charCodeAt(0))):"";
+   name=(flag?flag+" ":"")+name;
+  }
   return {id,name,raw};
  }).filter(x=>x.id!==null);
  services=list(s,"services").map(x=>({code:x.code??x.service_code??x.serviceCode??x.id??x.key??x.service,name:x.name??x.service_name??x.title??x.label??x.code??x.service_code??x.id})).filter(x=>x.code!==undefined&&x.code!==null&&String(x.code).trim()!=="");
