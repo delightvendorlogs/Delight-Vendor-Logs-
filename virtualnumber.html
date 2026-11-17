@@ -379,7 +379,7 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
  <div class="cancel-modal">
   <div class="cancel-icon">⚠️</div>
   <h2 id="cancelTitle">Cancel Number Order?</h2>
-  <p class="cancel-description">Are you sure you want to request cancellation for this order? Cancellation and any refund must be confirmed by the provider and saved order record.</p>
+  <p class="cancel-description">Are you sure you want to request cancellation for this order? Cancellation and any refund must be confirmed by the number service and saved order record.</p>
   <div id="cancelDetails" class="cancel-details"></div>
   <div class="cancel-buttons">
    <button id="cancelDismissBtn" class="cancel-dismiss" type="button" onclick="closeCancelPopup()">Keep Order</button>
@@ -916,7 +916,7 @@ async function openSmsBower(){
  $("countrySearch").value="";
  $("countrySearch").placeholder="Select a country or search…";
  $("countrySelected").style.display="none";
- $("countryMenu").innerHTML='<div class="picker-placeholder">Loading SMSBower countries…</div>';
+ $("countryMenu").innerHTML='<div class="picker-placeholder">Loading countries…</div>';
  $("allServiceSearch").value="";
  $("allServiceSearch").disabled=true;
  $("allServiceSearch").placeholder="Select a country first…";
@@ -1563,7 +1563,7 @@ function renderOrders(){
   const subtitle=pending?(number?"Waiting for verification code":searching?"We are checking availability. Your order will update here.":"Waiting for number confirmation"):
    received?(code?"SMS received for this number":sms?"SMS received; full message is shown below":"SMS received for this number"):
    cancelled?"This number order has ended":
-   expired?"The provider verification time ended and the refund was processed":
+   expired?"The verification time ended and the refund was processed":
    failed?"This number order failed":"Your refund has been recorded";
 
   let html=`<article class="order-card" data-order-id="${escapeHTML(o.id)}">
@@ -1593,7 +1593,7 @@ function renderOrders(){
   if(received){
    html+=`<div class="sms-box">
     <div class="sms-heading">VERIFICATION CODE</div>
-    <div class="sms-code">${escapeHTML(code||(sms?"Code not detected — full SMS below":"Waiting for SMS from provider…"))}</div>
+    <div class="sms-code">${escapeHTML(code||(sms?"Code not detected — full SMS below":"Waiting for verification SMS…"))}</div>
     ${code?`<button class="copy-button" id="copy-code-${id}" onclick="copyOrderCode(${id})">▢ &nbsp; Copy Code</button>`:""}
     ${sms?`<hr><div class="order-line">${escapeHTML(sms)}</div>`:""}
    </div>`;
@@ -1630,7 +1630,7 @@ function updateCountdowns(){
   if(label)label.textContent=left===null?"Expiry information":"Time remaining";
   if(note)note.textContent=hold>0
     ?"Cancellation unlocks in "+countdownText(hold)
-    :left===null?"Waiting for the exact expiry time from the provider":"Countdown uses the provider expiry time";
+    :left===null?"Waiting for the exact expiry time":"Countdown uses the saved expiry time";
   if(cancelButton){
     cancelButton.disabled=hold>0;
     cancelButton.textContent=hold>0?"Cancel Locked":"⊗  Cancel Order";
@@ -1715,7 +1715,7 @@ async function checkOrder(id){
  }
  const provider=orderProvider(o);
  if(!provider){
-  showMessage("ordersMessage","The saved order does not identify a supported provider. Contact support before trying again.","error");
+  showMessage("ordersMessage","The saved order could not be matched to a number service. Contact support before trying again.","error");
   return;
  }
  showMessage("ordersMessage","Checking order status…","info");
@@ -1752,7 +1752,7 @@ function cancelOrder(id){
  const hold=cancelHoldSeconds(o);
  if(hold>0){showMessage("ordersMessage","Bashua SMS cancellation is locked for the first 2 minutes after purchase. Try again in "+countdownText(hold)+".","error");return;}
  if(!orderProvider(o)){
-  showMessage("ordersMessage","The saved order does not identify a supported provider. Contact support before trying to cancel it.","error");
+  showMessage("ordersMessage","The saved order could not be matched to a number service. Contact support before trying to cancel it.","error");
   return;
  }
  cancellationOrderId=String(o.id);
@@ -1806,7 +1806,7 @@ async function confirmCancelOrder(){
  if(hold>0){closeCancelPopup();showMessage("ordersMessage","Bashua SMS cancellation is locked for the first 2 minutes after purchase. Try again in "+countdownText(hold)+".","error");return;}
  const provider=orderProvider(o);
  if(!provider){
-  $("cancelPopupStatus").textContent="Provider could not be identified. No cancellation request was sent.";
+  $("cancelPopupStatus").textContent="Number service could not be identified. No cancellation request was sent.";
   $("cancelPopupStatus").className="cancel-status show";
   return;
  }
