@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#090909">
+<title>SMSBower Server Admin — Delight Vendor Logs</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="icon" href="assets/dv-logo.png">
+<style>
+:root{color-scheme:dark;--bg:#090909;--panel:#151515;--panel2:#202020;--border:#353535;--text:#f7f7f7;--muted:#aaa;--gold:#e0c15a;--green:#9be0a5;--red:#ff8585}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}button,input,select{font:inherit}button,a{cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}
+header{padding:15px 16px;background:#111;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5}.head{max-width:1150px;margin:auto;display:flex;align-items:center;gap:12px}.head img{width:38px;height:38px;object-fit:contain}.head strong{display:block;font-size:16px}.head small{color:var(--muted)}
+main{max-width:1150px;margin:24px auto;padding:0 14px 60px}h1{font-size:24px;margin:0 0 4px}h2{font-size:17px;margin:0 0 6px}p{margin:5px 0}.muted{color:var(--muted)}.small{font-size:12px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px;margin-top:15px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.tab,.btn{border:1px solid var(--border);background:var(--panel2);color:var(--text);padding:10px 13px;border-radius:9px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:7px}.tab.active,.btn.primary{background:var(--gold);color:#111;border-color:var(--gold);font-weight:800}.btn.danger{color:var(--red);border-color:#653737}.btn.small{padding:6px 9px;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:5px;min-width:0}.field label{font-size:12px;color:#ccc}input,select{width:100%;min-width:0;padding:11px;border:1px solid #444;border-radius:9px;background:#0d0d0d;color:#fff}input:focus,select:focus{outline:2px solid #9c853b;border-color:transparent}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.notice{display:none;padding:11px 13px;border-radius:9px;margin:12px 0;font-size:13px}.notice.show{display:block}.notice.error{background:#321919;color:#ffbdbd}.notice.ok{background:#182a1c;color:#b9f0c1}.notice.info{background:#292512;color:#f6e6a8}
+.table-wrap{overflow:auto;margin-top:12px}table{width:100%;border-collapse:collapse;min-width:650px}th,td{text-align:left;padding:10px;border-bottom:1px solid #303030;font-size:12px}th{color:var(--gold);font-weight:700;background:#1d1d1d}.pill{display:inline-block;padding:3px 8px;border-radius:20px;background:#333;font-size:11px}.pill.on{background:#17321e;color:#b8edbf}.pill.off{background:#3a2020;color:#ffb8b8}.empty{text-align:center;padding:25px;color:var(--muted)}
+.hidden{display:none!important}.section{display:none}.section.active{display:block}.summary{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.stat{background:#101010;border:1px solid var(--border);border-radius:10px;padding:8px 12px}.stat strong{display:block;font-size:19px}.inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+@media(max-width:650px){.grid{grid-template-columns:1fr}.panel{padding:13px}h1{font-size:21px}header{padding:11px}}
+</style>
+</head>
+<body>
+<header><div class="head"><img src="assets/dv-logo.png" alt=""><div><strong>Delight Vendor Logs</strong><small>Admin · SMSBower Server Management</small></div></div></header>
+<main>
+ <div class="summary"><div><h1>SMSBower Server Admin</h1><p class="muted small">Manage selling prices, available services and the servers customers can select under All Countries 2.</p></div><a class="btn" href="override-price.html">← Virtual Number Markups</a></div>
+ <div id="notice" class="notice" role="status"></div>
+ <section id="loginPanel" class="panel hidden">
+  <h2>Admin sign-in required</h2><p class="muted small">Sign in with your existing Delight Vendor Logs admin account.</p>
+  <div class="grid" style="margin-top:12px"><div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="username"></div><div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password"></div></div>
+  <div class="actions"><button class="btn primary" id="loginBtn">Sign in</button></div>
+ </section>
+ <section id="appPanel" class="hidden">
+  <div class="tabs">
+   <button class="tab active" data-tab="pricing">Pricing Rules</button>
+   <button class="tab" data-tab="services">Service Management</button>
+   <button class="tab" data-tab="servers">Server Management</button>
+  </div>
+  <section id="pricing" class="section active">
+   <div class="panel">
+    <div class="summary"><div><h2>Customer Selling Price</h2><p class="muted small">Set global, country, service, country + service, or individual server pricing.</p></div><div class="stat"><span class="muted small">Saved rules</span><strong id="ruleCount">0</strong></div></div>
+    <div class="grid" style="margin-top:14px">
+     <div class="field"><label for="priceCountry">Country scope</label><select id="priceCountry"><option value="">All countries</option></select></div>
+     <div class="field"><label for="priceService">Service scope</label><select id="priceService"><option value="">All services</option></select></div>
+     <div class="field"><label for="priceServer">Server scope (optional)</label><select id="priceServer"><option value="">All servers</option></select></div>
+     <div class="field"><label for="pricingMode">Pricing mode</label><select id="pricingMode"><option value="markup">Percentage markup</option><option value="fixed">Fixed NGN selling price</option></select></div>
+     <div class="field" id="markupField"><label for="markupPercent">Markup percentage (%)</label><input id="markupPercent" type="number" min="0" step="0.01" value="100"></div>
+     <div class="field hidden" id="fixedField"><label for="fixedPrice">Fixed customer price (₦)</label><input id="fixedPrice" type="number" min="1" step="1" placeholder="e.g. 2500"></div>
+    </div>
+    <div class="actions"><button class="btn primary" id="savePriceBtn">Save Pricing Rule</button><button class="btn" id="resetPriceBtn">Clear</button><button class="btn" id="refreshPriceBtn">Refresh Rules</button></div>
+   </div>
+   <div class="panel"><h2>Saved Pricing Rules</h2><div class="table-wrap"><table><thead><tr><th>Country</th><th>Service</th><th>Server</th><th>Mode</th><th>Value</th><th>Status</th><th>Action</th></tr></thead><tbody id="rulesBody"><tr><td colspan="7" class="empty">Loading rules…</td></tr></tbody></table></div></div>
+  </section>
+  <section id="services" class="section">
+   <div class="panel"><h2>Service Availability</h2><p class="muted small">Enable or disable individual SMSBower services for each country. Disabled services will not be offered to customers.</p>
+    <div class="grid" style="margin-top:12px"><div class="field"><label for="serviceCountry">Country</label><select id="serviceCountry"></select></div><div class="field"><label for="serviceSearch">Search services</label><input id="serviceSearch" placeholder="Search by service name or code"></div></div>
+    <div class="table-wrap"><table><thead><tr><th>Service</th><th>Code</th><th>Availability</th><th>Action</th></tr></thead><tbody id="servicesBody"><tr><td colspan="4" class="empty">Choose a country.</td></tr></tbody></table></div>
+   </div>
+  </section>
+  <section id="servers" class="section">
+   <div class="panel"><h2>Server Availability and Display</h2><p class="muted small">Control which live servers are selectable, assign an admin tier and limit how many server choices customers see.</p>
+    <div class="grid" style="margin-top:12px"><div class="field"><label for="serverCountry">Country</label><select id="serverCountry"></select></div><div class="field"><label for="serverService">Service</label><select id="serverService"></select></div></div>
+    <div class="grid" style="margin-top:12px"><div class="field"><label for="maxServers">Maximum servers to display</label><input id="maxServers" type="number" min="1" max="100" value="10"></div><div class="field"><label for="preferredTier">Preferred tier (optional)</label><input id="preferredTier" placeholder="e.g. premium"></div></div>
+    <div class="actions"><button class="btn primary" id="saveDisplayBtn">Save Display Settings</button><button class="btn" id="refreshServersBtn">Refresh Live Servers</button></div>
+    <div class="table-wrap"><table><thead><tr><th>Server</th><th>Server ID</th><th>Live stock</th><th>Cost (USD)</th><th>Admin tier</th><th>Availability</th><th>Action</th></tr></thead><tbody id="serversBody"><tr><td colspan="7" class="empty">Choose a country and service.</td></tr></tbody></table></div>
+   </div>
+  </section>
+ </section>
+</main>
+<script>
+"use strict";
+const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
+const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+const FUNCTION_URL=SUPABASE_URL+"/functions/v1/smsbower-api";
+const $=id=>document.getElementById(id);
+let sb=null,session=null,countries=[],services=[],rules=[],serviceSettings=[],serverSettings=[],liveServers=[];
+let serviceCountryCache=null,serverCountryCache=null;
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function notice(message,type="info"){const e=$("notice");e.textContent=message;e.className="notice show "+type;}
+function clearNotice(){$("notice").className="notice";$("notice").textContent="";}
+function list(value,key){if(Array.isArray(value))return value;if(Array.isArray(value?.[key]))return value[key];if(Array.isArray(value?.data))return value.data;return [];}
+async function api(action,payload={}){
+ const {data,error}=await sb.auth.getSession();if(error)throw error;const active=data?.session;if(!active?.access_token)throw new Error("Your session expired. Sign in again.");
+ const response=await fetch(FUNCTION_URL,{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_KEY,"Authorization":"Bearer "+active.access_token},body:JSON.stringify({action,...payload})});
+ let result={};try{result=await response.json()}catch{}
+ if(!response.ok||result.error||result.success===false)throw new Error(result.error||result.message||"Request failed.");
+ return result;
+}
+function setTab(name){document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===name));}
+function fillSelect(el,rows,firstLabel,firstValue="",getValue=x=>x.id,getLabel=x=>x.name){el.innerHTML='<option value="'+esc(firstValue)+'">'+esc(firstLabel)+'</option>'+rows.map(x=>'<option value="'+esc(getValue(x))+'">'+esc(getLabel(x))+'</option>').join("");}
+function findCountry(id){return countries.find(c=>String(c.id)===String(id));}
+function findService(code){return services.find(s=>String(s.code)===String(code));}
+async function verifyAdmin(){
+ const {data,error}=await sb.auth.getSession();if(error)throw error;session=data?.session||null;
+ if(!session){$("loginPanel").classList.remove("hidden");$("appPanel").classList.add("hidden");return false;}
+ let isAdmin=false;try{const r=await sb.rpc("is_admin");isAdmin=r.data===true||r.data==="true"||(Array.isArray(r.data)&&r.data.some(x=>x===true));}catch{}
+ if(!isAdmin){const {data:row}=await sb.from("admin_users").select("user_id").eq("user_id",session.user.id).maybeSingle();isAdmin=!!row;}
+ if(!isAdmin)throw new Error("This account does not have admin permission.");
+ $("loginPanel").classList.add("hidden");$("appPanel").classList.remove("hidden");return true;
+}
+async function loadCatalogs(){
+ const [c,s]=await Promise.all([api("admin_countries"),api("admin_services")]);
+ countries=list(c,"countries").map(x=>({id:x.id??x.country_id,name:x.name??x.eng??x.country_name??String(x.id)})).filter(x=>x.id!==null);
+ services=list(s,"services").map(x=>({code:x.code??x.service_code,name:x.name??x.service_name??x.code})).filter(x=>x.code);
+ fillSelect($("priceCountry"),countries,"All countries","");
+ fillSelect($("serviceCountry"),countries,"Choose country","");
+ fillSelect($("serverCountry"),countries,"Choose country","");
+ fillSelect($("priceService"),services,"All services","");
+ fillSelect($("serverService"),services,"Choose service","");
+}
+async function loadRules(){
+ const r=await api("list_price_rules");rules=list(r,"rules");
+ $("ruleCount").textContent=String(rules.length);
+ $("rulesBody").innerHTML=rules.length?rules.map(rule=>{
+  const c=findCountry(rule.country_key),s=findService(rule.service_code);
+  const scopeCountry=c?.name||(rule.country_key?"Country "+rule.country_key:"All countries");
+  const scopeService=s?.name||(rule.service_code||"All services");
+  const scopeServer=rule.server_id||"All servers";
+  const value=rule.pricing_mode==="fixed"?"₦"+Number(rule.fixed_price_ngn||0).toLocaleString("en-NG") : Number(rule.markup_percent||0)+"%";
+  return '<tr><td>'+esc(scopeCountry)+'</td><td>'+esc(scopeService)+'</td><td>'+esc(scopeServer)+'</td><td>'+esc(rule.pricing_mode||"markup")+'</td><td>'+esc(value)+'</td><td><span class="pill '+(rule.is_active?"on":"off")+'">'+(rule.is_active?"Active":"Disabled")+'</span></td><td><button class="btn small" onclick="editRule('+JSON.stringify(String(rule.id))+')">Edit</button> <button class="btn small danger" onclick="deleteRule('+JSON.stringify(String(rule.id))+')">Delete</button></td></tr>';
+ }).join(""):'<tr><td colspan="7" class="empty">No SMSBower pricing rules saved.</td></tr>';
+}
+async function loadPricingServers(){
+ const countryId=$("priceCountry").value,serviceCode=$("priceService").value;
+ const select=$("priceServer");select.innerHTML='<option value="">All servers</option>';
+ if(!countryId||!serviceCode)return;
+ const country=findCountry(countryId);
+ try{const r=await api("admin_servers",{country_id:Number(countryId),country_name:country?.name||"",service_code:serviceCode});list(r,"servers").forEach(s=>select.add(new Option((s.server_name||("Server "+s.server_id))+" · "+s.server_id,s.server_id)));}catch(e){notice(e.message,"error");}
+}
+function resetPriceForm(){$("priceCountry").value="";$("priceService").value="";$("priceServer").innerHTML='<option value="">All servers</option>';$("pricingMode").value="markup";$("markupPercent").value="100";$("fixedPrice").value="";togglePricingFields();}
+function togglePricingFields(){const fixed=$("pricingMode").value==="fixed";$("fixedField").classList.toggle("hidden",!fixed);$("markupField").classList.toggle("hidden",fixed);}
+async function savePriceRule(){
+ const mode=$("pricingMode").value,markup=Number($("markupPercent").value),fixed=Number($("fixedPrice").value);
+ const payload={country_key:$("priceCountry").value||null,service_code:$("priceService").value||null,server_id:$("priceServer").value||null,pricing_mode:mode,markup_percent:markup,fixed_price_ngn:fixed};
+ try{await api("save_price_rule",payload);notice("SMSBower pricing rule saved.","ok");resetPriceForm();await loadRules();}catch(e){notice(e.message,"error");}
+}
+function editRule(id){const r=rules.find(x=>String(x.id)===String(id));if(!r)return;$("priceCountry").value=r.country_key||"";$("priceService").value=r.service_code||"";loadPricingServers().then(()=>$("priceServer").value=r.server_id||"");$("pricingMode").value=r.pricing_mode||"markup";$("markupPercent").value=r.markup_percent??100;$("fixedPrice").value=r.fixed_price_ngn??"";togglePricingFields();window.scrollTo({top:0,behavior:"smooth"});}
+async function deleteRule(id){if(!confirm("Disable this SMSBower pricing rule?"))return;try{await api("delete_price_rule",{id});notice("Pricing rule disabled.","ok");await loadRules();}catch(e){notice(e.message,"error");}}
+async function loadServiceSettings(){
+ const countryId=$("serviceCountry").value;if(!countryId){$("servicesBody").innerHTML='<tr><td colspan="4" class="empty">Choose a country.</td></tr>';return;}
+ const r=await api("list_service_settings");serviceSettings=list(r,"settings");
+ const q=$("serviceSearch").value.trim().toLowerCase();
+ const rows=services.filter(s=>!q||String(s.name).toLowerCase().includes(q)||String(s.code).toLowerCase().includes(q));
+ $("servicesBody").innerHTML=rows.map(s=>{
+  const saved=serviceSettings.find(x=>String(x.country_id)===String(countryId)&&String(x.service_code)===String(s.code));
+  const active=saved?saved.is_active!==false:true;
+  return '<tr><td>'+esc(s.name)+'</td><td>'+esc(s.code)+'</td><td><span class="pill '+(active?"on":"off")+'">'+(active?"Enabled":"Disabled")+'</span></td><td><button class="btn small '+(active?"danger":"primary")+'" onclick="toggleService('+JSON.stringify(String(s.code))+','+(!active)+')">'+(active?"Disable":"Enable")+'</button></td></tr>';
+ }).join("")||'<tr><td colspan="4" class="empty">No matching services.</td></tr>';
+}
+async function toggleService(code,active){
+ const country=findCountry($("serviceCountry").value),service=findService(code);if(!country||!service)return;
+ try{await api("save_service_setting",{country_id:String(country.id),country_name:country.name,service_code:code,service_name:service.name,is_active:active});notice(service.name+" "+(active?"enabled":"disabled")+" for "+country.name+".","ok");await loadServiceSettings();}catch(e){notice(e.message,"error");}
+}
+async function loadServers(){
+ const country=findCountry($("serverCountry").value),service=findService($("serverService").value);
+ if(!country||!service){$("serversBody").innerHTML='<tr><td colspan="7" class="empty">Choose a country and service.</td></tr>';return;}
+ $("serversBody").innerHTML='<tr><td colspan="7" class="empty">Loading live servers…</td></tr>';
+ try{
+  const [r,s]=await Promise.all([api("admin_servers",{country_id:Number(country.id),country_name:country.name,service_code:service.code}),api("list_server_settings"),api("list_display_settings")]);
+  liveServers=list(r,"servers");serverSettings=list(s,"settings");
+  const display=r.display_settings||null;$("maxServers").value=display?.max_servers??10;$("preferredTier").value=display?.preferred_tier??"";
+  $("serversBody").innerHTML=liveServers.map(server=>{
+   const active=server.is_active!==false;
+   const tier=server.admin_tier||"";
+   return '<tr><td>'+esc(server.server_name||("Server "+server.server_id))+'</td><td>'+esc(server.server_id)+'</td><td>'+esc(server.stock??0)+'</td><td>'+esc(server.provider_cost_usd==null?"—":"$"+Number(server.provider_cost_usd).toFixed(4))+'</td><td><input aria-label="Admin tier" id="tier-'+esc(server.server_id)+'" value="'+esc(tier)+'" placeholder="optional" style="min-width:90px;padding:7px"></td><td><span class="pill '+(active?"on":"off")+'">'+(active?"Enabled":"Disabled")+'</span></td><td><button class="btn small '+(active?"danger":"primary")+'" onclick="toggleServer('+JSON.stringify(String(server.server_id))+','+(!active)+')">'+(active?"Disable":"Enable")+'</button> <button class="btn small" onclick="saveServerTier('+JSON.stringify(String(server.server_id))+')">Save tier</button></td></tr>';
+  }).join("")||'<tr><td colspan="7" class="empty">'+esc(r.warning||"No live servers are available for this country/service.")+'</td></tr>';
+  if(r.warning)notice(r.warning,"info");
+ }catch(e){$("serversBody").innerHTML='<tr><td colspan="7" class="empty">'+esc(e.message)+'</td></tr>';notice(e.message,"error");}
+}
+async function toggleServer(serverId,active){
+ const country=findCountry($("serverCountry").value),service=findService($("serverService").value),server=liveServers.find(x=>String(x.server_id)===String(serverId));if(!country||!service||!server)return;
+ try{await api("save_server_setting",{country_id:String(country.id),service_code:service.code,server_id:serverId,server_name:server.server_name||("Server "+serverId),is_active:active,admin_tier:server.admin_tier||null});notice("Server "+serverId+" "+(active?"enabled":"disabled")+".","ok");await loadServers();}catch(e){notice(e.message,"error");}
+}
+async function saveServerTier(serverId){
+ const country=findCountry($("serverCountry").value),service=findService($("serverService").value),server=liveServers.find(x=>String(x.server_id)===String(serverId));if(!country||!service||!server)return;
+ const tier=$("tier-"+serverId)?.value.trim()||null;
+ try{await api("save_server_setting",{country_id:String(country.id),service_code:service.code,server_id:serverId,server_name:server.server_name||("Server "+serverId),is_active:server.is_active!==false,admin_tier:tier});notice("Server tier saved.","ok");await loadServers();}catch(e){notice(e.message,"error");}
+}
+async function saveDisplaySettings(){
+ const country=findCountry($("serverCountry").value),service=findService($("serverService").value);if(!country||!service)return;
+ try{await api("save_display_setting",{country_id:String(country.id),service_code:service.code,max_servers:Number($("maxServers").value),preferred_tier:$("preferredTier").value.trim()||null});notice("Server display settings saved.","ok");await loadServers();}catch(e){notice(e.message,"error");}
+}
+async function refreshAll(){try{clearNotice();await loadCatalogs();await Promise.all([loadRules(),loadServiceSettings(),loadServers()]);}catch(e){notice(e.message,"error");}}
+async function login(){try{const {error}=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;await start();}catch(e){notice(e.message,"error");}}
+async function start(){try{if(!(await verifyAdmin()))return;await loadCatalogs();await Promise.all([loadRules(),loadServiceSettings(),loadServers()]);}catch(e){notice(e.message,"error");}}
+document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.tab)));
+$("loginBtn").addEventListener("click",login);$("savePriceBtn").addEventListener("click",savePriceRule);$("resetPriceBtn").addEventListener("click",resetPriceForm);$("refreshPriceBtn").addEventListener("click",loadRules);
+$("priceCountry").addEventListener("change",loadPricingServers);$("priceService").addEventListener("change",loadPricingServers);$("pricingMode").addEventListener("change",togglePricingFields);
+$("serviceCountry").addEventListener("change",loadServiceSettings);$("serviceSearch").addEventListener("input",loadServiceSettings);
+$("serverCountry").addEventListener("change",loadServers);$("serverService").addEventListener("change",loadServers);$("refreshServersBtn").addEventListener("click",loadServers);$("saveDisplayBtn").addEventListener("click",saveDisplaySettings);
+(async()=>{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);await start();sb.auth.onAuthStateChange(()=>start());})();
+</script>
+</body>
+</html>
