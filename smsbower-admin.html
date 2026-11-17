@@ -74,7 +74,7 @@ const SUPABASE_URL="https://hkfhehbhmucymusaytoe.supabase.co";
 const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 const FUNCTION_URL=SUPABASE_URL+"/functions/v1/smsbower-api";
 const $=id=>document.getElementById(id);
-let sb=null,session=null,countries=[],services=[],rules=[],serviceSettings=[],serverSettings=[],liveServers=[];
+let sb=null,session=null,countries=[],services=[],rules=[],serviceSettings=[],serverSettings=[],liveServers=[],editingRuleId=null;
 let serviceCountryCache=null,serverCountryCache=null;
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function notice(message,type="info"){const e=$("notice");e.textContent=message;e.className="notice show "+type;}
@@ -186,14 +186,14 @@ async function loadPricingServers(){
  const country=findCountry(countryId);
  try{const r=await api("admin_servers",{country_id:Number(countryId),country_name:country?.name||"",service_code:serviceCode});list(r,"servers").forEach(s=>select.add(new Option((s.server_name||("Server "+s.server_id))+" · "+s.server_id,s.server_id)));refreshSearchableSelect("priceServer");}catch(e){notice(e.message,"error");}
 }
-function resetPriceForm(){$("priceCountry").value="";$("priceService").value="";$("priceServer").innerHTML='<option value="">All servers</option>';["priceCountry","priceService","priceServer"].forEach(refreshSearchableSelect);$("pricingMode").value="markup";$("markupPercent").value="100";$("fixedPrice").value="";togglePricingFields();}
+function resetPriceForm(){editingRuleId=null;$("savePriceBtn").textContent="Save Pricing Rule";$("priceCountry").value="";$("priceService").value="";$("priceServer").innerHTML='<option value="">All servers</option>';["priceCountry","priceService","priceServer"].forEach(refreshSearchableSelect);$("pricingMode").value="markup";$("markupPercent").value="100";$("fixedPrice").value="";togglePricingFields();}
 function togglePricingFields(){const fixed=$("pricingMode").value==="fixed";$("fixedField").classList.toggle("hidden",!fixed);$("markupField").classList.toggle("hidden",fixed);}
 async function savePriceRule(){
  const mode=$("pricingMode").value,markup=Number($("markupPercent").value),fixed=Number($("fixedPrice").value);
- const payload={country_key:$("priceCountry").value||null,service_code:$("priceService").value||null,server_id:$("priceServer").value||null,pricing_mode:mode,markup_percent:markup,fixed_price_ngn:fixed};
+ const payload={id:editingRuleId||undefined,country_key:$("priceCountry").value||null,service_code:$("priceService").value||null,server_id:$("priceServer").value||null,pricing_mode:mode,markup_percent:markup,fixed_price_ngn:fixed};
  try{$("savePriceBtn").disabled=true;await api("save_price_rule",payload);notice("SMSBower pricing rule saved.","ok");resetPriceForm();await loadRules();}catch(e){notice(e.message,"error");}finally{$("savePriceBtn").disabled=false;}
 }
-function editRule(id){const r=rules.find(x=>String(x.id)===String(id));if(!r)return;$("priceCountry").value=r.country_key||"";$("priceService").value=r.service_code||"";refreshSearchableSelect("priceCountry");refreshSearchableSelect("priceService");loadPricingServers().then(()=>{$("priceServer").value=r.server_id||"";refreshSearchableSelect("priceServer");});$("pricingMode").value=r.pricing_mode||"markup";$("markupPercent").value=r.markup_percent??100;$("fixedPrice").value=r.fixed_price_ngn??"";togglePricingFields();window.scrollTo({top:0,behavior:"smooth"});}
+function editRule(id){const r=rules.find(x=>String(x.id)===String(id));if(!r)return;editingRuleId=String(r.id);$("savePriceBtn").textContent="Update Pricing Rule";$("priceCountry").value=r.country_key||"";$("priceService").value=r.service_code||"";refreshSearchableSelect("priceCountry");refreshSearchableSelect("priceService");loadPricingServers().then(()=>{$("priceServer").value=r.server_id||"";refreshSearchableSelect("priceServer");});$("pricingMode").value=r.pricing_mode||"markup";$("markupPercent").value=r.markup_percent??100;$("fixedPrice").value=r.fixed_price_ngn??"";togglePricingFields();window.scrollTo({top:0,behavior:"smooth"});}
 async function deleteRule(id){if(!confirm("Permanently delete this SMSBower pricing rule?"))return;try{await api("delete_price_rule",{id});notice("Pricing rule deleted.","ok");await loadRules();}catch(e){notice(e.message,"error");}}
 async function loadServiceSettings(){
  const countryId=$("serviceCountry").value;
