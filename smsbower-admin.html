@@ -63,7 +63,7 @@ main{max-width:1150px;margin:24px auto;padding:0 14px 60px}h1{font-size:24px;mar
     <div class="grid" style="margin-top:12px"><div class="field"><label for="serverCountry">Country</label><select id="serverCountry"></select></div><div class="field"><label for="serverService">Service</label><select id="serverService"></select></div></div>
     <div class="grid" style="margin-top:12px"><div class="field"><label for="maxServers">Maximum servers to display</label><input id="maxServers" type="number" min="1" max="100" value="10"></div><div class="field"><label for="preferredTier">Preferred tier (optional)</label><input id="preferredTier" placeholder="e.g. premium"></div></div>
     <div class="actions"><button class="btn primary" id="saveDisplayBtn">Save Display Settings</button><button class="btn" id="refreshServersBtn">Refresh Live Servers</button><button class="btn" id="resetDisplayBtn">Reset Display Settings</button></div>
-    <div class="table-wrap"><table><thead><tr><th>Server</th><th>Server ID</th><th>Live stock</th><th>Cost (USD)</th><th>Admin tier</th><th>Availability</th><th>Action</th></tr></thead><tbody id="serversBody"><tr><td colspan="7" class="empty">Choose a country and service.</td></tr></tbody></table></div>
+    <div class="muted" id="usdNgnRateInfo" style="margin:10px 0;font-size:12px">Loading USD/NGN reference rate…</div><div class="table-wrap"><table><thead><tr><th>Server</th><th>Server ID</th><th>Live stock</th><th>Cost (USD)</th><th>Approx. cost (NGN)</th><th>Admin tier</th><th>Availability</th><th>Action</th></tr></thead><tbody id="serversBody"><tr><td colspan="8" class="empty">Choose a country and service.</td></tr></tbody></table></div>
    </div>
   </section>
  </section>
@@ -75,8 +75,32 @@ const SUPABASE_KEY="sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 const FUNCTION_URL=SUPABASE_URL+"/functions/v1/smsbower-api";
 const $=id=>document.getElementById(id);
 let sb=null,session=null,countries=[],services=[],rules=[],serviceSettings=[],serverSettings=[],liveServers=[],editingRuleId=null;
+let usdNgnRate=null,usdNgnLastUpdated=null,usdNgnRefreshTimer=null;
 let serviceCountryCache=null,serverCountryCache=null;
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+async function refreshUsdNgnRate(){
+ const info=$("usdNgnRateInfo");
+ try{
+  const response=await fetch("https://open.er-api.com/v6/latest/USD",{cache:"no-store"});
+  if(!response.ok)throw new Error("Rate service returned HTTP "+response.status);
+  const data=await response.json(),rate=Number(data?.rates?.NGN);
+  if(data?.result!=="success"||!Number.isFinite(rate)||rate<=0)throw new Error("A valid NGN rate was not returned.");
+  usdNgnRate=rate;usdNgnLastUpdated=data.time_last_update_utc||null;
+  if(info)info.innerHTML="Reference rate: <strong>1 USD = ₦"+rate.toLocaleString("en-NG",{maximumFractionDigits:2})+"</strong>"+(usdNgnLastUpdated?" · Updated "+esc(usdNgnLastUpdated):"")+" · <a href='https://www.exchangerate-api.com' target='_blank' rel='noopener'>Rates By Exchange Rate API</a>";
+  if(liveServers.length)renderLiveServers();
+ }catch(error){
+  if(info)info.textContent=usdNgnRate?"Rate refresh failed; showing the last successfully fetched rate.":"USD/NGN rate unavailable. NGN estimates will appear when the rate service responds.";
+ }
+}
+function renderLiveServers(){
+ const country=selectedCatalogItem("serverCountry",countries,"id"),service=selectedCatalogItem("serverService",services,"code");
+ $("serversBody").innerHTML=liveServers.map(server=>{
+  const active=server.is_active!==false,tier=server.admin_tier||"";
+  const saved=serverSettings.find(x=>String(x.country_id)===String(country?.id)&&String(x.service_code)===String(service?.code)&&String(x.server_id)===String(server.server_id));
+  const usd=Number(server.provider_cost_usd),ngn=usdNgnRate!==null&&Number.isFinite(usd)?"₦"+(usd*usdNgnRate).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2}):"—";
+  return '<tr><td>'+esc(server.server_name||("Server "+server.server_id))+'</td><td>'+esc(server.server_id)+'</td><td>'+esc(server.stock??0)+'</td><td>'+esc(server.provider_cost_usd==null?"—":"$"+Number(server.provider_cost_usd).toFixed(4))+'</td><td>'+esc(ngn)+'</td><td><input aria-label="Admin tier" id="tier-'+esc(server.server_id)+'" value="'+esc(tier)+'" placeholder="optional" style="min-width:90px;padding:7px"></td><td><span class="pill '+(active?"on":"off")+'">'+(active?"Enabled":"Disabled")+'</span></td><td><button type="button" class="btn small '+(active?"danger":"primary")+'" data-sms-action="toggle-server" data-server-id="'+esc(String(server.server_id))+'" data-active="'+String(!active)+'">'+(active?"Disable":"Enable")+'</button> <button type="button" class="btn small" data-sms-action="save-server-tier" data-server-id="'+esc(String(server.server_id))+'">Save tier</button> '+(saved?'<button type="button" class="btn small" data-sms-action="clear-server" data-server-id="'+esc(String(server.server_id))+'">Reset</button>':'')+'</td></tr>';
+ }).join("")||'<tr><td colspan="8" class="empty">No live servers are available for this country/service.</td></tr>';
+}
 function notice(message,type="info"){const e=$("notice");e.textContent=message;e.className="notice show "+type;}
 function clearNotice(){$("notice").className="notice";$("notice").textContent="";}
 function list(value,key){if(Array.isArray(value))return value;if(Array.isArray(value?.[key]))return value[key];if(Array.isArray(value?.data))return value.data;return [];}
@@ -254,12 +278,7 @@ async function loadServers(){
   if(generation!==serverLoadGeneration)return;
   liveServers=list(r,"servers");serverSettings=list(s,"settings");
   const display=r.display_settings||null;$("maxServers").value=display?.max_servers??10;$("preferredTier").value=display?.preferred_tier??"";
-  $("serversBody").innerHTML=liveServers.map(server=>{
-   const active=server.is_active!==false;
-   const tier=server.admin_tier||"";
-   const saved=serverSettings.find(x=>String(x.country_id)===String(country.id)&&String(x.service_code)===String(service.code)&&String(x.server_id)===String(server.server_id));
-   return '<tr><td>'+esc(server.server_name||("Server "+server.server_id))+'</td><td>'+esc(server.server_id)+'</td><td>'+esc(server.stock??0)+'</td><td>'+esc(server.provider_cost_usd==null?"—":"$"+Number(server.provider_cost_usd).toFixed(4))+'</td><td><input aria-label="Admin tier" id="tier-'+esc(server.server_id)+'" value="'+esc(tier)+'" placeholder="optional" style="min-width:90px;padding:7px"></td><td><span class="pill '+(active?"on":"off")+'">'+(active?"Enabled":"Disabled")+'</span></td><td><button type="button" class="btn small '+(active?"danger":"primary")+'" data-sms-action="toggle-server" data-server-id="'+esc(String(server.server_id))+'" data-active="'+String(!active)+'">'+(active?"Disable":"Enable")+'</button> <button type="button" class="btn small" data-sms-action="save-server-tier" data-server-id="'+esc(String(server.server_id))+'">Save tier</button> '+(saved?'<button type="button" class="btn small" data-sms-action="clear-server" data-server-id="'+esc(String(server.server_id))+'">Reset</button>':'')+'</td></tr>';
-  }).join("")||'<tr><td colspan="7" class="empty">'+esc(r.warning||"No live servers are available for this country/service.")+'</td></tr>';
+  renderLiveServers();
   if(r.warning)notice(r.warning,"info");
  }catch(e){$("serversBody").innerHTML='<tr><td colspan="7" class="empty">'+esc(e.message)+'</td></tr>';notice(e.message,"error");}
 }
@@ -292,7 +311,7 @@ async function resetDisplaySettings(){
 }
 async function refreshAll(){try{clearNotice();await loadCatalogs();await Promise.all([loadRules(),loadServiceSettings()]);}catch(e){notice(e.message,"error");}}
 async function login(){try{const {error}=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;await start();}catch(e){notice(e.message,"error");}}
-async function start(){try{if(!(await verifyAdmin()))return;await loadCatalogs();await Promise.all([loadRules(),loadServiceSettings(),loadServers()]);}catch(e){notice(e.message,"error");}}
+async function start(){try{if(!(await verifyAdmin()))return;refreshUsdNgnRate();if(!usdNgnRefreshTimer)usdNgnRefreshTimer=setInterval(refreshUsdNgnRate,60*60*1000);await loadCatalogs();await Promise.all([loadRules(),loadServiceSettings(),loadServers()]);}catch(e){notice(e.message,"error");}}
 document.addEventListener("click",async event=>{
  const button=event.target.closest("[data-sms-action]");
  if(!button)return;
