@@ -845,18 +845,28 @@ async function loadCountries(){
   const isUnitedStates=c=>{
    const name=String(c?.name||"").trim().toLowerCase();
    const code=String(c?.code||"").trim().toUpperCase();
-   return code==="US" || name==="usa" || name==="united states" ||
-    name==="united states of america";
+   return code==="US"||code==="USA"||["usa","us","united states","united states of america","usa virtual","united states virtual","united states (virtual)"].includes(name);
   };
   if(provider==="smsbower"){
-   countryList=normalized.map(c=>({...c,_provider:"smsbower"}));
-   // SMSBower uses these established catalogue IDs for its two US number pools.
-   const hasUS=(id,names)=>countryList.some(c=>Number(c.id??c.country_id??c.countryId)===id||
-    names.includes(String(c.name||"").trim().toLowerCase()));
-   if(!hasUS(187,["usa","us","united states","united states of america"]))
-    countryList.push({name:"United States",code:"US",id:187,country_id:187,_provider:"smsbower",_original:null});
-   if(!hasUS(12,["usa virtual","united states virtual","united states (virtual)"]))
-    countryList.push({name:"United States Virtual",code:"US",id:12,country_id:12,_provider:"smsbower",_original:null});
+   countryList=normalized.map(c=>{
+    const id=Number(c.id??c.country_id??c.countryId);
+    const name=String(c.name||"").trim().toLowerCase();
+    if(id===187||["usa","us","united states","united states of america"].includes(name))
+     return {...c,name:"United States",code:"US",id:187,country_id:187,_provider:"smsbower"};
+    if(id===12||["usa virtual","united states virtual","united states (virtual)"].includes(name))
+     return {...c,name:"United States Virtual",code:"US",id:12,country_id:12,_provider:"smsbower"};
+    return {...c,_provider:"smsbower"};
+   });
+   const hasNormalUs=countryList.some(c=>{
+    const id=Number(c.id??c.country_id??c.countryId),name=String(c.name||"").trim().toLowerCase();
+    return id===187||(id!==12&&!name.includes("virtual")&&["usa","us","united states","united states of america"].includes(name));
+   });
+   const hasVirtualUs=countryList.some(c=>{
+    const id=Number(c.id??c.country_id??c.countryId),name=String(c.name||"").trim().toLowerCase();
+    return id===12||name.includes("virtual");
+   });
+   if(!hasNormalUs)countryList.push({name:"United States",code:"US",id:187,country_id:187,_provider:"smsbower",_original:null});
+   if(!hasVirtualUs)countryList.push({name:"United States Virtual",code:"US",id:12,country_id:12,_provider:"smsbower",_original:null});
   }else{
    countryList=normalized
     .filter(c=>!isUnitedStates(c))
@@ -882,15 +892,19 @@ async function loadCountries(){
 async function retryCountries(){countryLoading=false;await loadCountries();}
 
 function countryMatches(c,q){
- const name=String(c.name||"").toLowerCase();
- const code=String(c.code||"").toLowerCase();
+ const query=String(q||"").toLowerCase().trim().replace(/\s+/g," ");
+ const name=String(c.name||"").toLowerCase().trim();
+ const code=String(c.code||"").toLowerCase().trim();
  const id=Number(c.id??c.country_id??c.countryId);
- if(!q)return true;
- if(name.includes(q)||code.includes(q))return true;
- const normalized=name.replace(/[()]/g," ").replace(/\\s+/g," ").trim();
- if(["usa","us","united states","united states of america","america","usa virtual","united states virtual"].includes(q)&&
-  (id===12||id===187||code==="us"||normalized.includes("united states")||normalized==="usa"||normalized.startsWith("usa ")))return true;
- if(["uk","gb","england","united kingdom","great britain"].includes(q)&&(id===16||code==="GB"||["uk","england","united kingdom","great britain"].some(x=>name.includes(x))))return true;
+ const virtual=id===12||name.includes("virtual");
+ const us=id===12||id===187||code==="us"||code==="usa"||name==="usa"||name==="us"||name.includes("united states")||name==="america";
+ const uk=id===16||code==="gb"||["uk","england","united kingdom","great britain"].some(x=>name.includes(x));
+ if(!query)return true;
+ if(["us","usa","united states","united states of america","america"].includes(query))return us;
+ if(["usa virtual","united states virtual","united states (virtual)"].includes(query))return us&&virtual;
+ if(["uk","gb","england","united kingdom","great britain"].includes(query))return uk;
+ const normalized=name.replace(/[()]/g," ").replace(/\s+/g," ").trim();
+ if(normalized.includes(query)||code===query)return true;
  const aliases={
   "us":["usa","united states","united states of america","america"],
   "usa":["us","united states","united states of america","america"],
@@ -900,13 +914,10 @@ function countryMatches(c,q){
   "england":["uk","united kingdom","britain","great britain"]
  };
  for(const [key,values] of Object.entries(aliases)){
-  if(q===key||values.some(v=>q===v)){
-   if(name.includes(key)||values.some(v=>name.includes(v))||values.includes(code)||code===key)return true;
+  if(query===key||values.includes(query)){
+   if(normalized.includes(key)||values.some(v=>normalized.includes(v))||values.includes(code)||code===key)return true;
   }
  }
- if(q==="us"||q==="usa")return name.includes("united states")||code==="us";
- if(q==="uk")return name.includes("united kingdom")||name.includes("britain")||name==="england"||code==="gb";
- if(q==="england")return name.includes("united kingdom")||name==="england"||name.includes("britain")||code==="gb";
  return false;
 }
 function filterCountries(){
@@ -1065,7 +1076,7 @@ async function selectService(index){
   const payload=chosenProvider==="textverified"
    ?{service:code,serviceCode:code,numberType:"mobile",reservationType:"verification"}
    :chosenProvider==="fetchsms"
-    ?{service:code,serviceCode:code,country:"US",countryCode:"US",countryId:187}
+    ?{service:code,serviceCode:code,country:"US",countryCode:"US",countryId:selectedCountry?.id??187}
     :chosenProvider==="smsbower"
      ?{service_code:code,service_name:selectedService.name,country_id:selectedCountry.id,country_name:selectedCountry.name,version:"V1"}
      :{service:code,serviceCode:code,country:selectedCountry.code,countryCode:selectedCountry.code,countryId:selectedCountry.id};
