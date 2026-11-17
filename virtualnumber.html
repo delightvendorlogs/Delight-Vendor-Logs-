@@ -117,6 +117,8 @@ p{line-height:1.5}
 .important-notice p{margin:0}
 .important-notice .notice-inline-link{display:inline;padding:0;border:0;background:none;color:#ffe07a;font:inherit;font-weight:900;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px;cursor:pointer}
 .important-notice .notice-inline-link:focus-visible{outline:2px solid #ffe07a;outline-offset:3px;border-radius:2px}
+.important-notice p.notice-followup{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,224,122,.38);color:#fff;font-weight:700}
+.important-notice .notice-inline-link.notice-inline-link-strong{color:#ffe07a;font-weight:900}
 .message{padding:12px;border-radius:10px;margin:12px 0;font-size:13px;line-height:1.5;display:none;overflow-wrap:anywhere}
 .message.show{display:block}
 .message.error{background:#351818;color:#ffb6b6}
@@ -301,6 +303,7 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
   <div id="smsbowerImportantNotice" class="important-notice" role="note" aria-label="Important All Countries 2 notice" style="display:none">
    <strong class="notice-heading">⚠️ IMPORTANT — PLEASE READ BEFORE BUYING</strong>
    <p>All Countries 2 has estimated success rates of about <strong>50% for WhatsApp</strong> and <strong>70% for other services</strong> (estimates, not guarantees); for a better chance of verification, especially on WhatsApp, choose <button type="button" class="notice-inline-link" onclick="openUSA()" aria-label="Open USA numbers">USA</button> or <button type="button" class="notice-inline-link" onclick="openAll()" aria-label="Open standard All Countries numbers">All Countries</button> instead, set your VPN to the same country as the number, and remember that third-party apps may reject virtual numbers or restrict or ban accounts under their own rules, with any such rejection, restriction or ban being outside Delight Vendor Logs' control and responsibility.</p>
+<p class="notice-followup">If All Countries <button type="button" class="notice-inline-link notice-inline-link-strong" onclick="openSmsBower()" aria-label="Open All Countries 2">2</button> isn't working or isn't delivering your code, please use <button type="button" class="notice-inline-link" onclick="openAll()" aria-label="Open standard All Countries numbers">All Countries</button> or <button type="button" class="notice-inline-link" onclick="openUSA()" aria-label="Open USA numbers">USA</button> instead.</p>
   </div>
   </div>
   <div id="allSelected" class="selected-value" style="display:none"></div>
