@@ -178,13 +178,13 @@ async function verifyAdmin(){
 async function loadCatalogs(){
  const [c,s]=await Promise.all([api("admin_countries"),api("admin_services")]);
  countries=list(c,"countries").map(x=>{
-  const id=x.id??x.country_id,raw=String(x.name??x.eng??x.country_name??String(id)).trim(),key=raw.toLowerCase();
+  const id=x.id??x.country_id??x.countryId,raw=String(x.name??x.eng??x.country_name??x.countryName??x.country??x.country_label??x.countryLabel??String(id)).trim(),key=raw.toLowerCase();
   let name=raw;
   if(Number(id)===187||["usa","us","united states of america"].includes(key))name="🇺🇸 United States";
   else if(Number(id)===12||key==="usa virtual"||key==="united states virtual")name="🇺🇸 United States (Virtual)";
   else if(Number(id)===16||["uk","gb","great britain","england"].includes(key))name="🇬🇧 United Kingdom";
   else {
-   const iso=String(x.code??x.iso2??x.iso??x.country_code??x.countryCode??x.alpha2??x.alpha_2??x.alpha_2_code??x.alpha2_code??x.iso_code??x.isoCode??x.country_iso??x.country_iso_code??x.countryIsoCode??"").toUpperCase();
+   const iso=String(x.code??x.iso2??x.iso??x.country_code??x.countryCode??x.short_code??x.shortCode??x.alpha2??x.alpha_2??x.alpha_2_code??x.alpha2_code??x.iso_code??x.isoCode??x.country_iso??x.country_iso_code??x.countryIsoCode??x.country_iso2??x.countryIso2??x.country_code_2??x.countryCode2??"").trim().toUpperCase();
    const countryIso=({
     nigeria:"NG",ghana:"GH",kenya:"KE","south africa":"ZA",egypt:"EG",morocco:"MA",algeria:"DZ",tunisia:"TN",uganda:"UG",cameroon:"CM",senegal:"SN",ethiopia:"ET",rwanda:"RW",zambia:"ZM",zimbabwe:"ZW",
     canada:"CA",mexico:"MX",brazil:"BR",argentina:"AR",chile:"CL",colombia:"CO",peru:"PE",india:"IN",pakistan:"PK",bangladesh:"BD",indonesia:"ID",malaysia:"MY",singapore:"SG",philippines:"PH",thailand:"TH",vietnam:"VN",japan:"JP",china:"CN","south korea":"KR",turkey:"TR","saudi arabia":"SA",israel:"IL",qatar:"QA",
