@@ -867,7 +867,7 @@ async function loadCountries(){
    });
    const hasVirtualUs=countryList.some(c=>{
     const id=Number(c.id??c.country_id??c.countryId),name=String(c.name||"").trim().toLowerCase();
-    return id===12||name.includes("virtual");
+    return id===12||(id!==187&&name.includes("virtual"));
    });
    if(!hasNormalUs)countryList.push({name:"United States",code:"US",id:187,country_id:187,_provider:"smsbower",_original:null});
    if(!hasVirtualUs)countryList.push({name:"United States Virtual",code:"US",id:12,country_id:12,_provider:"smsbower",_original:null});
