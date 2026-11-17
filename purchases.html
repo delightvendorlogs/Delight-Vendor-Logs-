@@ -816,7 +816,7 @@ function createVirtualNumberCard(order){
 
 
     const number =
-        String(order.number || "");
+        String(order.number || order.phone_number || order.phone || order.phoneNumber || "");
 
 
     const sms = cleanVirtualSms(order.full_sms || "");
@@ -1160,6 +1160,7 @@ async function loadPurchases(){
                     "country_key",
                     "country_name",
                     "number",
+                    "phone_number",
                     "provider_cost_usd",
                     "exchange_rate",
                     "provider_cost_ngn",
@@ -1639,9 +1640,7 @@ async function loadPurchases(){
 
                 <br><br>
 
-                ${esc(
-                    error.message
-                )}
+                Please refresh the page and try again.
 
             </div>
 
