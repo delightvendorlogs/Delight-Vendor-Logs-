@@ -112,11 +112,11 @@ p{line-height:1.5}
 .section{display:none}
 .section.active{display:block}
 .notice{border:1px solid var(--border);background:rgba(212,175,55,.07);color:#e8dba9;padding:13px;border-radius:11px;font-size:13px;line-height:1.6}
-.important-notice{border:1px solid rgba(212,175,55,.55);background:rgba(212,175,55,.09);color:#f0e4bd;padding:14px;border-radius:12px;margin:14px 0;font-size:13px;line-height:1.65}
-.important-notice strong.notice-heading{display:block;color:#f6d979;font-size:14px;margin-bottom:6px}
-.important-notice p{margin:6px 0}
-.important-notice .notice-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.important-notice .notice-link{border:1px solid rgba(246,217,121,.5);background:rgba(212,175,55,.12);color:#ffe28a;border-radius:8px;padding:6px 10px;font:inherit;font-weight:800;text-decoration:underline;cursor:pointer}
+.important-notice{border:2px solid #f0b429;background:linear-gradient(135deg,rgba(255,190,50,.24),rgba(110,65,0,.24));color:#fff3d0;padding:16px;border-radius:13px;margin:16px 0;font-size:13px;line-height:1.75;box-shadow:0 0 0 2px rgba(240,180,41,.14),0 8px 24px rgba(0,0,0,.28)}
+.important-notice strong.notice-heading{display:block;color:#ffe07a;font-size:15px;font-weight:900;letter-spacing:.35px;margin-bottom:8px}
+.important-notice p{margin:0}
+.important-notice .notice-inline-link{display:inline;padding:0;border:0;background:none;color:#ffe07a;font:inherit;font-weight:900;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px;cursor:pointer}
+.important-notice .notice-inline-link:focus-visible{outline:2px solid #ffe07a;outline-offset:3px;border-radius:2px}
 .message{padding:12px;border-radius:10px;margin:12px 0;font-size:13px;line-height:1.5;display:none;overflow-wrap:anywhere}
 .message.show{display:block}
 .message.error{background:#351818;color:#ffb6b6}
@@ -299,11 +299,9 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
    <div id="allServiceMenu" class="picker-menu"></div>
   </div>
   <div id="smsbowerImportantNotice" class="important-notice" role="note" aria-label="Important All Countries 2 notice" style="display:none">
-   <strong class="notice-heading">⚠️ Important Notice — Please Read Before Purchasing</strong>
-   <p>All Countries 2 is a lower-reliability option. Estimated success rates are approximately <strong>50% for WhatsApp</strong> and <strong>70% for other services</strong>. Actual results vary, and these figures are estimates, not guarantees.</p>
-   <p>For a better chance of a smooth verification, we highly recommend choosing <strong>USA</strong> or <strong>All Countries</strong> (standard) instead, especially if you are purchasing for WhatsApp. We recommend using a VPN set to the same country as the number you are purchasing before requesting the code.</p>
-   <p>Some apps may reject virtual numbers or impose restrictions or bans under their own rules. We cannot guarantee acceptance by third-party apps. Delight Vendor Logs is not responsible for account restrictions or bans imposed by third-party apps. Please check the app's rules before purchasing.</p>
-   <div class="notice-links"><button type="button" class="notice-link" onclick="openUSA()">USA</button><button type="button" class="notice-link" onclick="openAll()">All Countries</button></div>
+   <strong class="notice-heading">⚠️ IMPORTANT — PLEASE READ BEFORE BUYING</strong>
+   <p>All Countries 2 has estimated success rates of about <strong>50% for WhatsApp</strong> and <strong>70% for other services</strong> (estimates, not guarantees); for a better chance of verification, especially on WhatsApp, choose <button type="button" class="notice-inline-link" onclick="openUSA()" aria-label="Open USA numbers">USA</button> or <button type="button" class="notice-inline-link" onclick="openAll()" aria-label="Open standard All Countries numbers">All Countries</button> instead, set your VPN to the same country as the number, and remember that third-party apps may reject virtual numbers or restrict or ban accounts under their own rules, with any such rejection, restriction or ban being outside Delight Vendor Logs' control and responsibility.</p>
+  </div>
   </div>
   <div id="allSelected" class="selected-value" style="display:none"></div>
  </div>
