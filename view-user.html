@@ -1297,6 +1297,15 @@ th{background:#211b10!important;color:#f3d36b!important}
         0
       );
 
+    const sourceKey = String(order.provider || order.provider_key || order.provider_id || "").trim().toLowerCase();
+    const providerName = ({
+      textverified: "TextVerified",
+      fetchsms: "Fetch SMS",
+      virtualsms: "Virtual SMS",
+      smsbower: "SMSBower",
+      numpool: "NumPool",
+      "thegiftunc": "TheGiftUNC"
+    })[sourceKey] || (sourceKey || "Not recorded");
 
     return `
 
@@ -1389,10 +1398,7 @@ th{background:#211b10!important;color:#f3d36b!important}
             </small>
 
             ${escapeHtml(
-              order.provider ||
-              order.provider_key ||
-              order.provider_id ||
-              "Not recorded"
+              providerName
             )}
 
           </div>
