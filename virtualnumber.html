@@ -171,29 +171,7 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
 #allServicesWrap{display:block!important}
 #selectedCountryTitle{font-size:15px}
 .orders-panel{margin-top:18px}
-#virtualNotificationToast{position:fixed;top:max(12px,env(safe-area-inset-top));left:14px;right:14px;z-index:12000;display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 14px;background:rgba(248,248,252,.96);color:#17171b;border:1px solid rgba(255,255,255,.65);border-radius:21px;box-shadow:0 12px 38px rgba(0,0,0,.28);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);opacity:0;transform:translateY(-145%);pointer-events:none;transition:transform .32s cubic-bezier(.2,.8,.2,1),opacity .25s ease}
-#virtualNotificationToast.show{opacity:1;transform:translateY(0);pointer-events:auto}
-.vnt-icon{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:#dce7ff;color:#245bd6;font-size:23px;overflow:hidden}
-.vnt-icon img{width:100%;height:100%;object-fit:contain;padding:5px}
-.vnt-copy{min-width:0}
-.vnt-top{display:flex;gap:8px;align-items:center;justify-content:space-between}
-.vnt-title{font-size:14px;font-weight:800;line-height:1.2;color:#17171b}
-.vnt-time{font-size:11px;color:#85858c;white-space:nowrap}
-.vnt-message{font-size:13px;line-height:1.35;color:#45454d;margin-top:4px;overflow-wrap:anywhere}
-.vnt-action{border:0;border-radius:999px;padding:8px 11px;background:#e7edff;color:#245bd6;font-size:12px;font-weight:800;white-space:nowrap}
-.vnt-close{position:absolute;right:7px;top:5px;border:0;background:transparent;color:#888;font-size:17px;padding:1px 5px}
-.notification-toolbar{display:flex;gap:8px;align-items:center}
-.notification-count{display:inline-flex;min-width:19px;height:19px;align-items:center;justify-content:center;border-radius:99px;background:#d8b64d;color:#111;font-size:11px;font-weight:800;padding:0 5px}
-.notification-center{margin:13px 0;padding:12px;background:#111;border:1px solid var(--border);border-radius:13px}
-.notification-center-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
-.notification-item{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:9px;align-items:center;padding:10px 2px;border-bottom:1px solid #292929}
-.notification-item:last-child{border-bottom:0}
-.notification-item.unread .notification-title{color:var(--gold-light)}
-.notification-item-icon{width:32px;height:32px;border-radius:10px;background:#242424;display:grid;place-items:center}
-.notification-title{font-size:13px;font-weight:800;color:#f3f0e8}
-.notification-message{font-size:12px;color:#aaa;overflow-wrap:anywhere;margin-top:2px}
-.notification-copy{font-size:11px;padding:7px 9px;border-radius:8px;background:#242424;color:#f3d36b;border:1px solid #51452b}
-@media(max-width:420px){#virtualNotificationToast{left:9px;right:9px;padding:11px;grid-template-columns:38px minmax(0,1fr) auto;gap:8px}.vnt-icon{width:38px;height:38px}.vnt-title{font-size:13px}.vnt-message{font-size:12px}.vnt-action{padding:7px 8px;font-size:11px}}
+
 .back-dashboard-btn{display:inline-flex;align-items:center;gap:7px;margin:0 0 14px;padding:9px 12px;color:var(--gold-light);background:#151515;border:1px solid var(--border);border-radius:9px;text-decoration:none;font-size:13px;font-weight:700}
 .back-dashboard-btn:hover{background:#222}
 .fund-wallet-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:10px;padding:9px 10px;background:var(--gold);color:#080808;border-radius:9px;text-decoration:none;text-align:center;font-size:12px;font-weight:800}
@@ -278,12 +256,10 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
 <p class="muted small">Choose a number service, search for a country or service, then manage your numbers below.</p>
 <div id="globalMessage" class="message"></div>
 
-<div id="virtualNotificationToast" role="status" aria-live="polite"></div>
-
 <div class="tabs">
- <button class="tab" id="usaTab" onclick="openUSA()">🇺🇸 USA Numbers</button>
- <button class="tab" id="allTab" onclick="openAll()">🌍 All Country Numbers</button>
- <button class="tab" id="smsbowerTab" onclick="openSmsBower()">🌐 All Countries 2</button>
+ <button class="tab" id="usaTab" onclick="openUSA()">USA</button>
+ <button class="tab" id="allTab" onclick="openAll()">All Countries</button>
+ <button class="tab" id="smsbowerTab" onclick="openSmsBower()">All Countries 2</button>
 </div>
 
 <section id="usaSection" class="section">
@@ -344,10 +320,9 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
 <section class="panel orders-panel">
  <div class="row between">
   <h2>My Number Orders</h2>
-  <div class="notification-toolbar"><button class="btn btn-dark" type="button" onclick="toggleNotificationCenter()">Notifications <span id="notificationCount" class="notification-count">0</span></button><button class="btn btn-dark" onclick="refreshOrders()">Refresh</button></div>
+  <button class="btn btn-dark" onclick="refreshOrders()">Refresh</button>
  </div>
- <div id="notificationCenter" class="notification-center hidden"><div class="notification-center-head"><strong>Notifications</strong><button class="btn btn-dark smallbtn" type="button" onclick="loadVirtualNotifications()">Refresh</button></div><div id="notificationList"><div class="empty">Loading notifications…</div></div></div>
- <p class="muted small">Your pending, successful, cancelled, and refunded orders appear below.</p>
+  <p class="muted small">Your pending, successful, cancelled, and refunded orders appear below.</p>
  <div id="ordersMessage" class="message"></div>
  <div id="ordersList"><div class="loading">Checking your session…</div></div>
 </section>
@@ -410,7 +385,6 @@ let visibleServices=[],filteredServices=[],countryList=[],allOrders=[];
 let poller=null,fetchSmsPoller=null,fetchSmsRefreshing=false,countdownTimer=null,countryLoading=false;
 let currentSection=null,optionsCache=[],initGeneration=0,servicesGeneration=0;
 let cancellationOrderId=null,cancellationBusy=false,refreshingOrders=false;
-let notificationToastTimer=null,virtualNotifications=[];
 const statusRefreshTimes=new Map();
 
 function escapeHTML(v){
@@ -449,88 +423,6 @@ function setActiveTab(tab){
  $("smsbowerTab").classList.toggle("active",tab==="smsbower");
 }
 
-
-async function createVirtualNotification(eventType,order){
- if(!currentUser||!order?.id)return;
- const number=String(getOrderNumber(order)||"").trim();
- const code=String(getCode(order)||"").trim();
- const sms=String(getSms(order)||"").trim();
- if(eventType==="purchase"&&!number)return;
- if(eventType==="otp"&&!code&&!sms)return;
- const service=cleanCustomerLabel(order.display_service_name||order.service_name||order.service_code||"Virtual Number")||"Virtual Number";
- const country=String(order.country_name||order.country||"Unknown country");
- const flag=countryFlag({name:country,code:order.country_code||order.country_key});
- const title=eventType==="purchase"?`Your number is ready! ${flag}`:`${service} verification code`;
- const message=eventType==="purchase"?`${service} number: ${number}`:(sms?`${sms}\nPlease do not share this code with others.`:`Your ${service} verification code is ${code}. Please do not share this code with others.`);
- const row={user_id:currentUser.id,order_id:Number(order.id),event_type:eventType,title,message,phone_number:number||null,otp_code:code||null,sms_text:sms||null,service_name:service,country_name:country};
- try{
-  const {error}=await sb.from("virtual_number_notifications").upsert(row,{onConflict:"order_id,event_type"});
-  if(error)throw error;
-  await loadVirtualNotifications();
- }catch(e){console.warn("Could not save virtual-number notification:",e);}
- showVirtualNotification(eventType,{...order,service_name:service,country_name:country,number,otp_code:code,full_sms:sms});
-}
-function showVirtualNotification(eventType,order){
- const host=$("virtualNotificationToast");if(!host)return;
- const service=cleanCustomerLabel(order.service_name||order.service_code||"Virtual Number")||"Virtual Number";
- const country=String(order.country_name||"Unknown country");
- const flag=countryFlag({name:country,code:order.country_code||order.country_key});
- const number=String(getOrderNumber(order)||"");
- const code=String(getCode(order)||"");
- const sms=String(getSms(order)||"");
- const isPurchase=eventType==="purchase";
- const title=isPurchase?`Your number is ready! ${flag}`:`${service} verification code`;
- const message=isPurchase?`${service} · ${number}`:(sms?`${sms}\nPlease do not share this code with others.`:`Your ${service} verification code is ${code}. Please do not share this code with others.`);
- const value=isPurchase?number:code;
- const action=isPurchase?"Copy Number":"Copy Code";
- host.innerHTML=`<div class="vnt-icon"><img src="assets/dv-logo.png" alt=""></div><div class="vnt-copy"><div class="vnt-top"><strong class="vnt-title">${escapeHTML(title)}</strong><span class="vnt-time">now</span></div><div class="vnt-message">${escapeHTML(message)}</div></div><button class="vnt-action" type="button" onclick="copyNotificationValue('${escapeHTML(value).replace(/'/g,"&#39;")}')">${action}</button><button class="vnt-close" type="button" aria-label="Close notification" onclick="hideVirtualNotification()">×</button>`;
- host.classList.add("show");
- if(notificationToastTimer)clearTimeout(notificationToastTimer);
- notificationToastTimer=setTimeout(hideVirtualNotification,4000);
-}
-function hideVirtualNotification(){
- const host=$("virtualNotificationToast");if(host)host.classList.remove("show");
- if(notificationToastTimer)clearTimeout(notificationToastTimer);
- notificationToastTimer=null;
-}
-async function copyNotificationValue(value){
- if(!value)return;
- let copied=false;
- try{await navigator.clipboard.writeText(String(value));copied=true;}catch{
-  const t=document.createElement("textarea");t.value=String(value);t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();
-  try{copied=document.execCommand("copy");}catch{}t.remove();
- }
- showMessage("ordersMessage",copied?"Copied to clipboard.":"Could not copy automatically. Please select the text and copy it.","info");
-}
-async function loadVirtualNotifications(){
- if(!currentUser)return;
- const {data,error}=await sb.from("virtual_number_notifications").select("*").eq("user_id",currentUser.id).order("created_at",{ascending:false}).limit(30);
- if(error){console.warn("Virtual-number notifications could not load:",error);return;}
- virtualNotifications=data||[];
- renderVirtualNotifications();
-}
-function renderVirtualNotifications(){
- const list=$("notificationList");if(!list)return;
- const unread=virtualNotifications.filter(n=>!n.read_at).length;
- $("notificationCount").textContent=String(unread);
- if(!virtualNotifications.length){list.innerHTML='<div class="empty">No notifications yet. Number purchases and received codes will appear here.</div>';return;}
- list.innerHTML=virtualNotifications.map(n=>{
-  const isOtp=n.event_type==="otp";
-  const value=isOtp?(n.otp_code||""):(n.phone_number||"");
-  const copyLabel=isOtp?"Copy code":"Copy number";
-  return `<div class="notification-item ${n.read_at?"":"unread"}"><div class="notification-item-icon">${isOtp?"🔐":"📱"}</div><div><div class="notification-title">${escapeHTML(n.title)}</div><div class="notification-message">${escapeHTML(n.message)}</div><div class="notification-message">${escapeHTML(new Date(n.created_at).toLocaleString())}</div></div><div style="display:grid;gap:5px"><button class="notification-copy" type="button" onclick="copyNotificationValue('${escapeHTML(value).replace(/'/g,"&#39;")}')">${copyLabel}</button>${!n.read_at?`<button class="notification-copy" type="button" onclick="markVirtualNotificationRead('${n.id}')">Mark read</button>`:""}</div></div>`;
- }).join("");
-}
-function toggleNotificationCenter(){
- const panel=$("notificationCenter");if(!panel)return;
- panel.classList.toggle("hidden");
- if(!panel.classList.contains("hidden"))loadVirtualNotifications();
-}
-async function markVirtualNotificationRead(id){
- const {error}=await sb.from("virtual_number_notifications").update({read_at:new Date().toISOString()}).eq("id",id).eq("user_id",currentUser.id);
- if(error){showMessage("ordersMessage","Could not update this notification.","error");return;}
- await loadVirtualNotifications();
-}
 
 function formatError(error,fallback){
  const raw=String(error?.message||"");
@@ -837,7 +729,7 @@ async function init(){
   clearMessages();
   await refreshOrders();
   if(generation!==initGeneration)return;
-  await loadVirtualNotifications();
+
   setSection(null);
   setActiveTab("");
   if(poller)clearInterval(poller);
@@ -1238,7 +1130,7 @@ async function purchaseNumber(){
   showMessage("confirmMessage","Purchase request submitted. Refreshing your orders…","success");
   await Promise.allSettled([refreshWallet(),loadOrders()]);
   const boughtOrder=purchaseResult?.order?.id?{...purchaseResult.order,provider_key:purchaseResult.order.provider_key||chosenProvider}:allOrders.find(o=>String(o.id)===String(purchaseResult?.order?.id)) || allOrders.find(o=>orderProvider(o)===chosenProvider&&getOrderNumber(o));
-  if(boughtOrder)await createVirtualNotification("purchase",boughtOrder);
+
   setSection(chosenProvider==="textverified"?"usaSection":"allSection");
   showGlobal("Purchase request submitted. Check My Number Orders for its current status.","success");
  }catch(e){
@@ -1279,7 +1171,7 @@ async function refreshFetchSmsOrders(){
   ));
   if(currentUser?.id===userId){
    await Promise.allSettled([loadOrders(),refreshWallet()]);
-   for(const updated of allOrders){const previous=codesBefore.get(String(updated.id))||"";if(!previous&&getCode(updated))await createVirtualNotification("otp",updated);}
+   
   }
  }catch(e){
   console.warn("Fetch SMS automatic status refresh failed:",e);
@@ -1321,10 +1213,7 @@ async function refreshOrders(){
   // Fetch from Supabase again after provider checks so new OTPs are displayed.
   if(currentUser?.id!==userId)return;
   await Promise.allSettled([loadOrders(),refreshWallet()]);
-  for(const updated of allOrders){
-   const previousCode=codesBefore.get(String(updated.id))||"";
-   if(!previousCode&&getCode(updated))await createVirtualNotification("otp",updated);
-  }
+  
  }finally{
   refreshingOrders=false;
  }
@@ -1732,7 +1621,6 @@ async function checkOrder(id){
   await invoke(provider,statusActionForProvider(provider),orderActionPayload(o));
   await Promise.allSettled([loadOrders(),refreshWallet()]);
   const updated=allOrders.find(x=>String(x.id)===String(id));
-  if(updated&&!oldCode&&getCode(updated))await createVirtualNotification("otp",updated);
   const status=updated?normalizeStatus(updated):"waiting";
   if(status==="received")showMessage("ordersMessage","Verification code received. Check the order card.","success");
   else if(status==="cancelled")showMessage("ordersMessage","The saved order status now confirms cancellation.","success");
