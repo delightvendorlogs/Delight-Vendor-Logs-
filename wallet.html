@@ -494,7 +494,43 @@ button.textContent="Continue";
 }
 }
 
-loadWallet();
+async function checkReturnedPayment(){
+const params=new URLSearchParams(location.search);
+const reference=params.get("reference")||params.get("trxref");
+if(!reference)return;
+
+const {data:{user},error}=await supabaseClient.auth.getUser();
+if(error||!user)return;
+
+message("Payment received. Confirming your wallet credit...","#cc9900");
+for(let attempt=0;attempt<20;attempt++){
+const {data,error:txError}=await supabaseClient
+.from("transactions")
+.select("status,reference")
+.eq("user_id",user.id)
+.eq("reference",reference)
+.eq("type","wallet_funding")
+.maybeSingle();
+
+if(txError){
+console.error("Wallet payment status check failed:",txError);
+break;
+}
+if(data?.status==="completed"){
+await loadWallet();
+message("Payment confirmed! Your wallet has been credited.","green");
+const url=new URL(location.href);
+url.searchParams.delete("reference");
+url.searchParams.delete("trxref");
+history.replaceState({},document.title,url.toString());
+return;
+}
+await new Promise(resolve=>setTimeout(resolve,3000));
+}
+message("Your payment is awaiting webhook confirmation. Please do not pay again immediately. Refresh your wallet and check your balance shortly.","#cc9900");
+}
+
+loadWallet().then(checkReturnedPayment);
 </script>
 
 <script src="branding.js"></script>
