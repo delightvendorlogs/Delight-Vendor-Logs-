@@ -251,11 +251,11 @@ async function loadServers(){
  }catch(e){$("serversBody").innerHTML='<tr><td colspan="7" class="empty">'+esc(e.message)+'</td></tr>';notice(e.message,"error");}
 }
 async function toggleServer(serverId,active){
- const country=findCountry($("serverCountry").value),service=findService($("serverService").value),server=liveServers.find(x=>String(x.server_id)===String(serverId));if(!country||!service||!server){notice("Choose a country and service first.","error");return;}
+ const country=selectedCatalogItem("serverCountry",countries,"id"),service=selectedCatalogItem("serverService",services,"code"),server=liveServers.find(x=>String(x.server_id)===String(serverId));if(!country||!service||!server){notice("Choose a country and service first.","error");return;}
  try{await api("save_server_setting",{country_id:String(country.id),service_code:service.code,server_id:serverId,server_name:server.server_name||("Server "+serverId),is_active:active,admin_tier:server.admin_tier||null});notice("Server "+serverId+" "+(active?"enabled":"disabled")+".","ok");await loadServers();}catch(e){notice(e.message,"error");}
 }
 async function clearServerSetting(serverId){
- const country=findCountry($("serverCountry").value),service=findService($("serverService").value);
+ const country=selectedCatalogItem("serverCountry",countries,"id"),service=selectedCatalogItem("serverService",services,"code");
  if(!country||!service){notice("Choose a country and service first.","error");return;}
  if(!confirm("Remove this server's saved settings and restore its default availability?"))return;
  try{await api("delete_server_setting",{country_id:String(country.id),service_code:service.code,server_id:serverId});notice("Server override removed.","ok");await loadServers();}
