@@ -176,8 +176,8 @@ async function loadCatalogs(){
  fillSelect($("priceCountry"),countries,"All countries","");
  fillSelect($("serviceCountry"),countries,"Choose country","");
  fillSelect($("serverCountry"),countries,"Choose country","");
- fillSelect($("priceService"),services,"All services","");
- fillSelect($("serverService"),services,"Choose service","");
+ fillSelect($("priceService"),services,"All services","",x=>String(x.code),x=>x.name);
+ fillSelect($("serverService"),services,"Choose service","",x=>String(x.code),x=>x.name);
  initSearchableSelects();
 }
 async function loadRules(){
