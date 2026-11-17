@@ -161,7 +161,13 @@ async function loadCatalogs(){
   else if(Number(id)===16||["uk","gb","great britain","england"].includes(key))name="🇬🇧 United Kingdom";
   else {
    const iso=String(x.code??x.iso2??x.iso??x.country_code??"").toUpperCase();
-   const flag=/^[A-Z]{2}$/.test(iso)?String.fromCodePoint(...[...iso].map(ch=>127397+ch.charCodeAt(0))):"";
+   const countryIso=({
+    nigeria:"NG",ghana:"GH",kenya:"KE","south africa":"ZA",egypt:"EG",morocco:"MA",algeria:"DZ",tunisia:"TN",uganda:"UG",cameroon:"CM",senegal:"SN",ethiopia:"ET",rwanda:"RW",zambia:"ZM",zimbabwe:"ZW",
+    canada:"CA",mexico:"MX",brazil:"BR",argentina:"AR",chile:"CL",colombia:"CO",peru:"PE",india:"IN",pakistan:"PK",bangladesh:"BD",indonesia:"ID",malaysia:"MY",singapore:"SG",philippines:"PH",thailand:"TH",vietnam:"VN",japan:"JP",china:"CN","south korea":"KR",turkey:"TR","saudi arabia":"SA",israel:"IL",qatar:"QA",
+    australia:"AU","new zealand":"NZ",france:"FR",germany:"DE",italy:"IT",spain:"ES",portugal:"PT",netherlands:"NL",belgium:"BE",switzerland:"CH",austria:"AT",ireland:"IE",poland:"PL",ukraine:"UA",russia:"RU",sweden:"SE",norway:"NO",denmark:"DK",finland:"FI",greece:"GR",romania:"RO",bulgaria:"BG",hungary:"HU",croatia:"HR",serbia:"RS",slovakia:"SK",slovenia:"SI"
+   })[raw.toLowerCase()];
+   const flagCode=/^[A-Z]{2}$/.test(iso)?iso:countryIso;
+   const flag=/^[A-Z]{2}$/.test(flagCode||"")?String.fromCodePoint(...[...flagCode].map(ch=>127397+ch.charCodeAt(0))):"";
    name=(flag?flag+" ":"")+name;
   }
   return {id,name,raw};
