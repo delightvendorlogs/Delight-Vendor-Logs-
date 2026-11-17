@@ -220,12 +220,25 @@ async function toggleService(code,active){
  const country=findCountry($("serviceCountry").value),service=findService(code);if(!country||!service){notice("Choose a country and service first.","error");return;}
  try{await api("save_service_setting",{country_id:String(country.id),country_name:country.name,service_code:code,service_name:service.name,is_active:active});notice(service.name+" "+(active?"enabled":"disabled")+" for "+country.name+".","ok");await loadServiceSettings();}catch(e){notice(e.message,"error");}
 }
+let serverLoadGeneration=0;
+function selectedCatalogItem(selectId,items,key){
+ const select=$(selectId),value=String(select&&select.value||"").trim();
+ if(!value)return null;
+ const found=items.find(item=>String(item&&item[key]!==undefined?item[key]:"").trim()===value);
+ if(found)return found;
+ const option=select.options&&select.options[select.selectedIndex];
+ if(!option||!option.value)return null;
+ return key==="id"?{id:value,name:option.textContent.trim()}:{code:value,name:option.textContent.trim()};
+}
 async function loadServers(){
- const country=findCountry($("serverCountry").value),service=findService($("serverService").value);
- if(!country||!service){$("serversBody").innerHTML='<tr><td colspan="7" class="empty">Choose a country and service.</td></tr>';return;}
+ const generation=++serverLoadGeneration;
+ const country=selectedCatalogItem("serverCountry",countries,"id");
+ const service=selectedCatalogItem("serverService",services,"code");
+ if(!country||!service){$("serversBody").innerHTML='<tr><td colspan="7" class="empty">Choose a country and service to load servers.</td></tr>';liveServers=[];return;}
  $("serversBody").innerHTML='<tr><td colspan="7" class="empty">Loading live servers…</td></tr>';
  try{
-  const [r,s]=await Promise.all([api("admin_servers",{country_id:Number(country.id),country_name:country.name,service_code:service.code}),api("list_server_settings"),api("list_display_settings")]);
+  const [r,s]=await Promise.all([api("admin_servers",{country_id:Number(country.id),country_name:country.name,service_code:String(service.code)}),api("list_server_settings"),api("list_display_settings")]);
+  if(generation!==serverLoadGeneration)return;
   liveServers=list(r,"servers");serverSettings=list(s,"settings");
   const display=r.display_settings||null;$("maxServers").value=display?.max_servers??10;$("preferredTier").value=display?.preferred_tier??"";
   $("serversBody").innerHTML=liveServers.map(server=>{
@@ -264,7 +277,7 @@ async function resetDisplaySettings(){
  try{await api("delete_display_setting",{country_id:String(country.id),service_code:service.code});notice("Display settings reset to defaults.","ok");await loadServers();}
  catch(e){notice(e.message,"error");}
 }
-async function refreshAll(){try{clearNotice();await loadCatalogs();await Promise.all([loadRules(),loadServiceSettings(),loadServers()]);}catch(e){notice(e.message,"error");}}
+async function refreshAll(){try{clearNotice();await loadCatalogs();await Promise.all([loadRules(),loadServiceSettings()]);}catch(e){notice(e.message,"error");}}
 async function login(){try{const {error}=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;await start();}catch(e){notice(e.message,"error");}}
 async function start(){try{if(!(await verifyAdmin()))return;await loadCatalogs();await Promise.all([loadRules(),loadServiceSettings(),loadServers()]);}catch(e){notice(e.message,"error");}}
 document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.tab)));
