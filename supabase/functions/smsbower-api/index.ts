@@ -1233,14 +1233,22 @@ function parseServiceList(
         code:
           cleanString(
             service?.code ??
-            service?.service_code,
+            service?.service_code ??
+            service?.serviceCode ??
+            service?.id ??
+            service?.key ??
+            service?.service,
           ),
 
         name:
           cleanString(
             service?.name ??
             service?.service_name ??
-            service?.title,
+            service?.title ??
+            service?.label ??
+            service?.code ??
+            service?.service_code ??
+            service?.id,
           ),
       }),
     )
