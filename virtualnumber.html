@@ -108,6 +108,7 @@ p{line-height:1.5}
 .selected-value .choice-line{display:inline-flex;vertical-align:middle}
 .purchase-choice{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .country-meta,.service-button small,.option-button small{display:block;margin-top:5px;color:var(--muted);font-size:12px}
+.server-availability{font-weight:800;letter-spacing:.1px}.server-availability.available{color:#83edac}.server-availability.unavailable{color:#ffaaaa}.option-button:disabled{opacity:.58;cursor:not-allowed;border-color:#303030}
 .section{display:none}
 .section.active{display:block}
 .notice{border:1px solid var(--border);background:rgba(212,175,55,.07);color:#e8dba9;padding:13px;border-radius:11px;font-size:13px;line-height:1.6}
@@ -1116,7 +1117,15 @@ async function selectService(index){
 function renderOptions(options){
  $("optionsList").innerHTML=options.map((o,i)=>{
   const price=servicePrice(o);
-  return `<button type="button" class="option-button" onclick="chooseOption(${i})"><div class="row between"><strong>${escapeHTML(optionLabel(o))}</strong><strong>${price===null?"Price unavailable":escapeHTML(money(price))}</strong></div><small>${escapeHTML(o?.description||o?.availability||"Select this option to continue")}</small></button>`;
+  const hasServerStock=chosenProvider==="smsbower"&&o&&typeof o==="object"&&Object.prototype.hasOwnProperty.call(o,"stock");
+  const stock=hasServerStock?Number(o.stock):NaN;
+  const hasStockValue=hasServerStock&&Number.isFinite(stock);
+  const available=hasStockValue&&stock>0&&o.available!==false;
+  const availabilityLine=hasStockValue
+   ? `<small class="server-availability ${available?"available":"unavailable"}">${available?"● "+stock+" number"+(stock===1?"":"s")+" available":"● Currently unavailable"}</small>`
+   : `<small>${escapeHTML(o?.description||o?.availability||"Select this option to continue")}</small>`;
+  const disabled=hasStockValue&&!available;
+  return `<button type="button" class="option-button" ${disabled?"disabled":""} onclick="${disabled?"":"chooseOption("+i+")"}"><div class="row between"><strong>${escapeHTML(optionLabel(o))}</strong><strong>${price===null?"Price unavailable":escapeHTML(money(price))}</strong></div>${availabilityLine}</button>`;
  }).join("");
 }
 
