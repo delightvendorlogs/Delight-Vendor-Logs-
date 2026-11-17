@@ -90,9 +90,9 @@ async function api(action,payload={}){
 function setTab(name){document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===name));}
 function fillSelect(el,rows,firstLabel,firstValue="",getValue=x=>x.id,getLabel=x=>x.name){el.innerHTML='<option value="'+esc(firstValue)+'">'+esc(firstLabel)+'</option>'+rows.map(x=>'<option value="'+esc(getValue(x))+'">'+esc(getLabel(x))+'</option>').join("");}
 function searchableAliases(value){
- const v=String(value||"").toLowerCase().replace(/\s*\([^)]*\)\s*/g," ").trim();
- if(v==="united states"||v==="united states virtual"||v==="usa virtual")return ["usa","us","united states","united states of america","united states virtual","usa virtual"];
- if(v==="united kingdom"||v==="england"||v==="uk")return ["uk","gb","great britain","england","united kingdom"];
+ const v=String(value||"").toLowerCase().replace(/[🇺🇸🇬🇧]/gu,"").replace(/\s*\([^)]*\)\s*/g," ").trim();
+ if(v.includes("united states")||v.includes("usa"))return ["usa","us","united states","united states of america","united states virtual","usa virtual"];
+ if(v.includes("united kingdom")||v==="england"||v==="uk")return ["uk","gb","great britain","england","united kingdom"];
  return [];
 }
 function refreshSearchableSelect(id){
@@ -103,9 +103,11 @@ function refreshSearchableSelect(id){
 function renderSearchableOptions(select,wrap,query=""){
  const menu=wrap.querySelector(".searchable-menu"),q=String(query||"").trim().toLowerCase();
  const options=[...select.options].filter(o=>{
-  const label=String(o.textContent||"").toLowerCase(),value=String(o.value||"").toLowerCase();
+  const label=String(o.textContent||"").toLowerCase().replace(/[🇺🇸🇬🇧]/gu,"");
+  const value=String(o.value||"").toLowerCase();
   const alias=searchableAliases(label).join(" ");
-  return !q||label.includes(q)||value.includes(q)||alias.includes(q);
+  const query=q.replace(/[🇺🇸🇬🇧]/gu,"");
+  return !query||label.includes(query)||value.includes(query)||alias.includes(query);
  });
  menu.innerHTML=options.length?options.map(o=>'<button type="button" class="searchable-option" data-value="'+esc(o.value)+'">'+esc(o.textContent)+'</button>').join(""):'<div class="searchable-empty">No matching options</div>';
  menu.querySelectorAll("[data-value]").forEach(button=>button.addEventListener("click",()=>{
