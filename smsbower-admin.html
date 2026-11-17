@@ -251,7 +251,7 @@ async function loadCatalogs(){
   const id=Number(x.id),name=String(x.raw||x.name||"").toLowerCase();
   return id===187||(id!==12&&!name.includes("virtual")&&["usa","us","united states","united states of america"].includes(name));
  });
- const hasVirtualUs=countries.some(x=>Number(x.id)===12||String(x.raw||x.name||"").toLowerCase().includes("virtual"));
+ const hasVirtualUs=countries.some(x=>Number(x.id)===12||(Number(x.id)!==187&&String(x.raw||x.name||"").toLowerCase().includes("virtual")));
  if(!hasNormalUs)countries.push({id:187,name:"🇺🇸 United States",raw:"United States"});
  if(!hasVirtualUs)countries.push({id:12,name:"🇺🇸 United States (Virtual)",raw:"United States Virtual"});
  services=list(s,"services").map(x=>({code:x.code??x.service_code??x.serviceCode??x.id??x.key??x.service,name:x.name??x.service_name??x.title??x.label??x.code??x.service_code??x.id})).filter(x=>x.code!==undefined&&x.code!==null&&String(x.code).trim()!=="");
