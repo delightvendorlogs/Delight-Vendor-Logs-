@@ -420,6 +420,40 @@
     .number-preview strong{font-size:clamp(20px,4vw,28px);letter-spacing:2px;color:#fff}
     .number-preview small{font-size:10px;color:#999}
     @media(max-width:600px){.number-preview{max-width:100%}}
+  
+    /* Premium landing-page refinement */
+    .hero{position:relative;overflow:hidden;padding:clamp(62px,8vw,112px) 0 76px;background:radial-gradient(ellipse at 76% 38%,rgba(212,175,55,.13),transparent 38%),linear-gradient(180deg,#0b0b0b 0%,#050505 100%)}
+    .hero-layout{display:grid;grid-template-columns:minmax(0,.92fr) minmax(340px,1.08fr);align-items:center;gap:clamp(28px,5vw,70px)}
+    .hero-content{position:relative;z-index:2;max-width:610px}
+    .hero-content h1{font-size:clamp(42px,6vw,70px);line-height:1.04;letter-spacing:-.045em}
+    .hero-content h1 span{color:var(--gold-light);text-shadow:0 0 34px rgba(212,175,55,.15)}
+    .hero-description{max-width:560px;font-size:clamp(15px,1.5vw,18px);line-height:1.8;color:#c1c1c1}
+    .hero-buttons{gap:12px;flex-wrap:wrap}
+    .btn-gold{box-shadow:0 9px 26px rgba(212,175,55,.17)}
+    .dv-hero-showcase{position:relative;min-height:390px;display:flex;align-items:center;justify-content:center;isolation:isolate}
+    .dv-showcase-glow{position:absolute;inset:12% 8%;z-index:-1;background:radial-gradient(ellipse,rgba(212,175,55,.2),transparent 68%);filter:blur(22px)}
+    .dv-preview-card{position:absolute;border:1px solid rgba(212,175,55,.32);border-radius:20px;background:linear-gradient(145deg,#1c1b17,#0b0c0d 75%);box-shadow:0 28px 65px rgba(0,0,0,.55),inset 0 1px rgba(255,255,255,.06);color:#fff}
+    .dv-number-card{z-index:2;width:min(82%,390px);padding:23px 24px;transform:rotate(-4deg) translate(-5px,-20px)}
+    .dv-preview-top,.dv-number-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:9px;font-weight:900;letter-spacing:1.5px;color:#c9c1aa}
+    .dv-preview-top b{padding:5px 8px;border-radius:7px;background:#d4af3720;color:var(--gold-light);font-size:8px}
+    .dv-number-country{display:flex;align-items:center;gap:12px;margin:25px 0 17px}
+    .dv-country-flag{width:43px;height:43px;display:grid;place-items:center;border-radius:13px;background:#fff1;font-size:23px}
+    .dv-number-country strong,.dv-number-country small{display:block}.dv-number-country strong{font-size:15px}.dv-number-country small{font-size:11px;color:#aaa;margin-top:3px}
+    .dv-number-value{padding:17px 13px;border:1px solid #ffffff18;border-radius:12px;background:#ffffff09;color:var(--gold-light);font-size:clamp(19px,3vw,27px);font-weight:800;letter-spacing:1.8px;text-align:center}
+    .dv-number-foot{margin-top:17px;font-size:9px;letter-spacing:.2px;color:#aaa}.dv-number-foot b{color:var(--gold-light);font-size:16px}
+    .dv-message-card{z-index:3;width:min(66%,300px);right:0;bottom:8px;padding:17px;transform:rotate(5deg);background:linear-gradient(145deg,#17221b,#0d1110)}
+    .dv-message-head{display:flex;align-items:center;gap:9px}.dv-whatsapp-mark{width:33px;height:33px;display:grid;place-items:center;border-radius:10px;background:#1e5737;color:#9df2b9;font-size:18px}
+    .dv-message-head strong,.dv-message-head small{display:block}.dv-message-head strong{font-size:12px}.dv-message-head small{font-size:9px;color:#9fa99f}.dv-message-head>b{margin-left:auto;color:#aaa}
+    .dv-message-bubble{margin-top:14px;padding:12px;border-radius:11px;background:#ffffff0b;border:1px solid #ffffff12}.dv-message-bubble small,.dv-message-bubble strong,.dv-message-bubble span{display:block}.dv-message-bubble small{font-size:8px;letter-spacing:1px;color:#b6c5b9}.dv-message-bubble strong{font-size:22px;letter-spacing:4px;color:var(--gold-light);margin:4px 0}.dv-message-bubble span{font-size:9px;color:#a9b0aa}
+    .dv-float-pill{position:absolute;z-index:4;display:flex;align-items:center;gap:8px;padding:11px 14px;border:1px solid #d4af3755;border-radius:12px;background:#171612;box-shadow:0 12px 30px #0009;font-size:10px;color:#e8e1cd}.dv-float-pill b{color:var(--gold-light);font-size:14px}.dv-esim-pill{top:35px;right:3%}.dv-social-pill{left:0;bottom:42px}
+    .categories{align-items:stretch}.category-card{height:100%;min-height:220px;padding:24px 22px;background:linear-gradient(155deg,#171717,#0d0d0d);border:1px solid rgba(212,175,55,.22);box-shadow:0 12px 30px #0003;transition:transform .22s,border-color .22s,box-shadow .22s}.category-card:hover{transform:translateY(-5px);border-color:rgba(241,215,122,.72);box-shadow:0 18px 38px rgba(0,0,0,.45),0 0 25px rgba(212,175,55,.08)}.category-icon{border:1px solid rgba(212,175,55,.28);background:rgba(212,175,55,.09)}.category-card h3{letter-spacing:-.02em}.category-card p{line-height:1.7;color:#bcbcbc}
+    .how-card{position:relative;border:1px solid rgba(212,175,55,.22);background:linear-gradient(145deg,#171717,#0d0d0d);border-radius:18px;padding:25px;overflow:hidden}.how-number{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:13px;background:#d4af3718;border:1px solid #d4af3744;color:var(--gold-light);font-weight:900}.how-card h3{margin-top:18px}
+    .faq-mini details{border:1px solid rgba(212,175,55,.2);border-radius:13px;background:#111;margin:9px 0;padding:17px 19px}.faq-mini summary{font-weight:700;color:#f4e7c2;cursor:pointer}.faq-mini details[open]{border-color:#d4af3766;background:#15140f}.faq-mini details p{color:#bdbdbd;line-height:1.75}
+    .cta-panel{border:1px solid rgba(212,175,55,.35);background:radial-gradient(ellipse at 50% 0%,rgba(212,175,55,.14),transparent 60%),linear-gradient(145deg,#171612,#0b0b0b);box-shadow:0 22px 55px #0006}
+    .site-footer{border-top:1px solid rgba(212,175,55,.2)}
+    @media(max-width:850px){.hero-layout{grid-template-columns:1fr;gap:25px}.hero-content{max-width:720px}.dv-hero-showcase{min-height:340px;max-width:590px;width:100%;margin:0 auto}.hero{padding-top:55px}}
+    @media(max-width:520px){.hero-content h1{font-size:clamp(39px,12vw,54px)}.dv-hero-showcase{min-height:300px}.dv-number-card{width:86%;padding:18px;transform:rotate(-3deg) translate(-4px,-13px)}.dv-message-card{width:69%;right:-1%;bottom:0;padding:13px}.dv-esim-pill{top:12px;right:0}.dv-social-pill{left:-2px;bottom:20px;padding:9px 10px;font-size:9px}.category-card{min-height:0;padding:20px}.hero-buttons .btn{min-height:48px}}
+
   </style>
 <link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css"></head>
 
@@ -455,6 +489,21 @@
               <a class="btn btn-outline" href="#categories">Explore Services</a>
             </div>
             
+          </div>
+          <div class="dv-hero-showcase" aria-label="Illustrative preview of virtual number, SMS and digital services">
+            <div class="dv-showcase-glow"></div>
+            <article class="dv-preview-card dv-number-card">
+              <div class="dv-preview-top"><span>VIRTUAL NUMBER</span><b>PREVIEW</b></div>
+              <div class="dv-number-country"><span class="dv-country-flag">🇺🇸</span><div><strong>United States</strong><small>Ready to explore</small></div></div>
+              <div class="dv-number-value">+1 (•••) •••-0198</div>
+              <div class="dv-number-foot"><span>Secure dashboard access</span><b>↗</b></div>
+            </article>
+            <article class="dv-preview-card dv-message-card">
+              <div class="dv-message-head"><span class="dv-whatsapp-mark">◉</span><div><strong>SMS inbox</strong><small>Illustrative message preview</small></div><b>•••</b></div>
+              <div class="dv-message-bubble"><small>VERIFICATION CODE</small><strong>••• •••</strong><span>Code details appear in your dashboard.</span></div>
+            </article>
+            <div class="dv-float-pill dv-esim-pill"><b>eSIM</b><span>Stay connected</span></div>
+            <div class="dv-float-pill dv-social-pill"><b>✦</b><span>Social &amp; digital tools</span></div>
           </div>
         </div>
       </div>
