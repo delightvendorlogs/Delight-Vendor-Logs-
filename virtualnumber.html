@@ -461,7 +461,7 @@ async function createVirtualNotification(eventType,order){
  const country=String(order.country_name||order.country||"Unknown country");
  const flag=countryFlag({name:country,code:order.country_code||order.country_key});
  const title=eventType==="purchase"?`Your number is ready! ${flag}`:`${service} verification code`;
- const message=eventType==="purchase"?`${service} number: ${number}`:(sms||`Your ${service} verification code is ${code}. Please do not share this code with others.`);
+ const message=eventType==="purchase"?`${service} number: ${number}`:(sms?`${sms}\nPlease do not share this code with others.`:`Your ${service} verification code is ${code}. Please do not share this code with others.`);
  const row={user_id:currentUser.id,order_id:Number(order.id),event_type:eventType,title,message,phone_number:number||null,otp_code:code||null,sms_text:sms||null,service_name:service,country_name:country};
  try{
   const {error}=await sb.from("virtual_number_notifications").upsert(row,{onConflict:"order_id,event_type"});
@@ -480,7 +480,7 @@ function showVirtualNotification(eventType,order){
  const sms=String(getSms(order)||"");
  const isPurchase=eventType==="purchase";
  const title=isPurchase?`Your number is ready! ${flag}`:`${service} verification code`;
- const message=isPurchase?`${service} · ${number}`:(sms||`Your verification code is ${code}. Please do not share this code with others.`);
+ const message=isPurchase?`${service} · ${number}`:(sms?`${sms}\nPlease do not share this code with others.`:`Your ${service} verification code is ${code}. Please do not share this code with others.`);
  const value=isPurchase?number:code;
  const action=isPurchase?"Copy Number":"Copy Code";
  host.innerHTML=`<div class="vnt-icon"><img src="assets/dv-logo.png" alt=""></div><div class="vnt-copy"><div class="vnt-top"><strong class="vnt-title">${escapeHTML(title)}</strong><span class="vnt-time">now</span></div><div class="vnt-message">${escapeHTML(message)}</div></div><button class="vnt-action" type="button" onclick="copyNotificationValue('${escapeHTML(value).replace(/'/g,"&#39;")}')">${action}</button><button class="vnt-close" type="button" aria-label="Close notification" onclick="hideVirtualNotification()">×</button>`;
@@ -717,8 +717,8 @@ async function resolveOrderServiceNames(orders){
   const canonicalName=canonicalVirtualServiceName(code);
   if(canonicalName&&canonicalName!==code)order.display_service_name=canonicalName;
   if(!provider||!code|| (saved&&saved.toLowerCase()!==code.toLowerCase()&&saved.length>3))return;
-  if(!["virtualsms","textverified","fetchsms"].includes(provider))return;
-  const country=provider==="virtualsms"?String(order.country_code||order.country_key||order.country_id||""):"";
+  if(!["virtualsms","textverified","fetchsms","smsbower"].includes(provider))return;
+  const country=(provider==="virtualsms"||provider==="smsbower")?String(order.country_code||order.country_key||order.country_id||""):"";
   const key=provider+"|"+country;
   if(!groups.has(key))groups.set(key,{provider,country,order});
  });
@@ -729,6 +729,7 @@ async function resolveOrderServiceNames(orders){
   if(!catalog){
    catalog=(async()=>{
     const payload=provider==="virtualsms"?{country:country||undefined,countryId:order.country_id||undefined}:
+      provider==="smsbower"?{country_id:Number(order.country_id||country),country_name:order.country_name||"",version:"V1"}:
       provider==="textverified"?{numberType:"mobile",reservationType:"verification"}:{};
     const response=await invoke(provider,"services",payload);
     const rows=normalizeServices(response);
@@ -744,7 +745,7 @@ async function resolveOrderServiceNames(orders){
    const map=await catalog;
    (orders||[]).forEach(item=>{
     const itemProvider=String(item.provider_key||item.provider||"").toLowerCase().replace(/-/g,"");
-    const itemCountry=itemProvider==="virtualsms"?String(item.country_code||item.country_key||item.country_id||""):"";
+    const itemCountry=(itemProvider==="virtualsms"||itemProvider==="smsbower")?String(item.country_code||item.country_key||item.country_id||""):"";
     if(itemProvider!==provider||itemCountry!==country)return;
     const code=String(item.service_code||"").trim().toLowerCase();
     const resolved=map.get(code);
@@ -1358,7 +1359,9 @@ async function loadOrders(){
   const automaticRefundMarkers = [
    "provider_insufficient_funds_refunded",
    "virtualsms_insufficient_funds_refunded",
-   "fetchsms_purchase_failed_refunded"
+   "fetchsms_purchase_failed_refunded",
+   "smsbower_insufficient_funds_refunded",
+   "smsbower_purchase_failed_refunded"
   ];
 
   allOrders=(data||[]).filter(o=>{
@@ -1377,6 +1380,11 @@ async function loadOrders(){
     o.provider_order_id ||
     o.provider_order ||
     o.numpool_order_id ||
+    o.activation_id ||
+    o.provider_activation_id ||
+    o.phone_number ||
+    o.phone ||
+    o.phoneNumber ||
     o.number ||
     o.otp_code
    );
@@ -1698,7 +1706,7 @@ function orderProvider(o){
  return null;
 }
 function providerOrderId(o){
- return o.provider_order_id??o.providerOrderId??o.virtualsms_order_id??o.textverified_order_id??o.numpool_order_id??null;
+ return o.provider_order_id??o.providerOrderId??o.activation_id??o.provider_activation_id??o.virtualsms_order_id??o.textverified_order_id??o.numpool_order_id??null;
 }
 function orderActionPayload(o){
  const providerId=providerOrderId(o);
