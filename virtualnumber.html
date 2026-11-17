@@ -496,24 +496,33 @@ function getList(payload){
 function getName(x){
  if(typeof x==="string")return x;
  if(!x||typeof x!=="object")return "Unknown";
- return String(x.name??x.service_name??x.serviceName??x.title??x.country_name??x.countryName??x.label??"Unknown");
+ return String(x.name??x.country_name??x.countryName??x.country??x.countryname??x.country_label??x.countryLabel??x.service_name??x.serviceName??x.title??x.label??"Unknown");
 }
 function getCountryCode(c){
- return String(c?.code??c?.iso2??c?.iso??c?.country_code??c?.countryCode??c?.short_code??c?.shortCode??"").trim();
+ const source=c?._original&&typeof c._original==="object"?c._original:c;
+ const value=source?.code??source?.iso2??source?.iso??source?.country_code??source?.countryCode??
+  source?.short_code??source?.shortCode??source?.alpha2??source?.alpha_2??source?.alpha_2_code??
+  source?.alpha2_code??source?.iso_code??source?.isoCode??source?.country_iso??source?.country_iso_code??
+  source?.countryIsoCode??source?.country_iso2??source?.countryIso2??source?.country_code_2??source?.countryCode2??"";
+ return String(value).trim().toUpperCase();
 }
 function getCountryId(c){return c?.country_id??c?.countryId??c?.id??null;}
 
 function countryFlag(country){
  const rawName=String(country?.name??country?.country_name??country?.countryName??country??"").trim();
  const name=rawName.toLowerCase().replace(/&/g,"and").replace(/[’']/g,"").replace(/[^a-z0-9]+/g," ").trim().replace(/\s+/g," ");
- let code=String(country?.code??country?.iso2??country?.iso??country?.country_code??country?.countryCode??country?.alpha2??country?.alpha_2??country?.alpha_2_code??country?.alpha2_code??country?.iso_code??country?.isoCode??country?.country_iso??country?.country_iso_code??country?.countryIsoCode??"").trim().toUpperCase();
+ const source=country?._original&&typeof country._original==="object"?country._original:country;
+ let code=String(country?.code??source?.code??source?.iso2??source?.iso??source?.country_code??source?.countryCode??
+  source?.alpha2??source?.alpha_2??source?.alpha_2_code??source?.alpha2_code??source?.iso_code??source?.isoCode??
+  source?.country_iso??source?.country_iso_code??source?.countryIsoCode??source?.country_iso2??source?.countryIso2??
+  source?.country_code_2??source?.countryCode2??"").trim().toUpperCase();
  if(!code){
   const id=Number(country?.id??country?.country_id??country?.countryId);
   if(id===12||id===187)code="US";
   else if(id===16)code="GB";
  }
  const aliases={
-  "usa":"US","us":"US","usa virtual":"US","united states virtual":"US","united states":"US","united states of america":"US","america":"US",
+  "usa":"US","us":"US","usa virtual":"US","united states virtual":"US","united states (virtual)":"US","united states":"US","united states of america":"US","america":"US",
   "uk":"GB","gb":"GB","united kingdom":"GB","great britain":"GB","england":"GB","scotland":"GB","wales":"GB",
   "south korea":"KR","republic of korea":"KR","korea south":"KR","north korea":"KP","viet nam":"VN","vietnam":"VN",
   "russia":"RU","russian federation":"RU","iran":"IR","iran islamic republic of":"IR","syria":"SY","taiwan":"TW",
@@ -841,11 +850,19 @@ async function loadCountries(){
   };
   if(provider==="smsbower"){
    countryList=normalized.map(c=>({...c,_provider:"smsbower"}));
+   // SMSBower uses these established catalogue IDs for its two US number pools.
+   const hasUS=(id,names)=>countryList.some(c=>Number(c.id??c.country_id??c.countryId)===id||
+    names.includes(String(c.name||"").trim().toLowerCase()));
+   if(!hasUS(187,["usa","us","united states","united states of america"]))
+    countryList.push({name:"United States",code:"US",id:187,country_id:187,_provider:"smsbower",_original:null});
+   if(!hasUS(12,["usa virtual","united states virtual","united states (virtual)"]))
+    countryList.push({name:"United States Virtual",code:"US",id:12,country_id:12,_provider:"smsbower",_original:null});
   }else{
    countryList=normalized
     .filter(c=>!isUnitedStates(c))
     .map(c=>({...c,_provider:"virtualsms"}));
    countryList.push({name:"United States",code:"US",id:187,_provider:"fetchsms",_original:null});
+   countryList.push({name:"United States Virtual",code:"US",id:12,_provider:"fetchsms",_original:null});
   }
   countryList.sort((a,b)=>a.name.localeCompare(b.name));
   if(!countryList.length){
@@ -871,7 +888,8 @@ function countryMatches(c,q){
  if(!q)return true;
  if(name.includes(q)||code.includes(q))return true;
  const normalized=name.replace(/[()]/g," ").replace(/\\s+/g," ").trim();
- if(["usa","us","united states","united states of america","america"].includes(q)&&(id===12||id===187||code==="us"||normalized.includes("united states")||normalized==="usa"||normalized.startsWith("usa ")))return true;
+ if(["usa","us","united states","united states of america","america","usa virtual","united states virtual"].includes(q)&&
+  (id===12||id===187||code==="us"||normalized.includes("united states")||normalized==="usa"||normalized.startsWith("usa ")))return true;
  if(["uk","gb","england","united kingdom","great britain"].includes(q)&&(id===16||code==="GB"||["uk","england","united kingdom","great britain"].some(x=>name.includes(x))))return true;
  const aliases={
   "us":["usa","united states","united states of america","america"],
