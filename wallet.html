@@ -502,8 +502,31 @@ if(!reference)return;
 const {data:{user},error}=await supabaseClient.auth.getUser();
 if(error||!user)return;
 
-message("Payment received. Confirming your wallet credit...","#cc9900");
-for(let attempt=0;attempt<20;attempt++){
+message("Payment received. Verifying directly with Paystack...","#cc9900");
+
+try{
+const {data:verification,error:verificationError}=await supabaseClient.functions.invoke("verify_logs_paystack_payment",{
+body:{reference}
+});
+
+if(verificationError){
+console.error("Direct Paystack verification failed:",verificationError);
+}else if(verification?.success){
+await loadWallet();
+message("Payment confirmed! Your wallet has been credited.","green");
+const url=new URL(location.href);
+url.searchParams.delete("reference");
+url.searchParams.delete("trxref");
+history.replaceState({},document.title,url.toString());
+return;
+}else if(verification?.error){
+console.error("Paystack verification response:",verification.error);
+}
+}catch(error){
+console.error("Payment verification error:",error);
+}
+
+for(let attempt=0;attempt<10;attempt++){
 const {data,error:txError}=await supabaseClient
 .from("transactions")
 .select("status,reference")
@@ -525,9 +548,10 @@ url.searchParams.delete("trxref");
 history.replaceState({},document.title,url.toString());
 return;
 }
-await new Promise(resolve=>setTimeout(resolve,3000));
+await new Promise(resolve=>setTimeout(resolve,2000));
 }
-message("Your payment is awaiting webhook confirmation. Please do not pay again immediately. Refresh your wallet and check your balance shortly.","#cc9900");
+
+message("We have not received final confirmation yet. Please do not pay again. Your payment reference is saved in this page; contact support if your balance does not update shortly.","#cc9900");
 }
 
 loadWallet().then(checkReturnedPayment);
