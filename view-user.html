@@ -1385,6 +1385,39 @@ th{background:#211b10!important;color:#f3d36b!important}
           <div class="virtual-field">
 
             <small>
+              Purchase Source (admin only)
+            </small>
+
+            ${escapeHtml(
+              order.provider ||
+              order.provider_key ||
+              order.provider_id ||
+              "Not recorded"
+            )}
+
+          </div>
+
+
+          <div class="virtual-field">
+
+            <small>
+              Server
+            </small>
+
+            ${escapeHtml(
+              order.server_name ||
+              order.server_label ||
+              order.server_id ||
+              order.server ||
+              "—"
+            )}
+
+          </div>
+
+
+          <div class="virtual-field">
+
+            <small>
               Provider Order ID
             </small>
 
