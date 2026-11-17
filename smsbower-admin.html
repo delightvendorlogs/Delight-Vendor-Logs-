@@ -342,8 +342,21 @@ async function loadServers(){
  }catch(e){$("serversBody").innerHTML='<tr><td colspan="7" class="empty">'+esc(e.message)+'</td></tr>';notice(e.message,"error");}
 }
 async function toggleServer(serverId,active){
- const country=selectedCatalogItem("serverCountry",countries,"id"),service=selectedCatalogItem("serverService",services,"code"),server=liveServers.find(x=>String(x.server_id)===String(serverId));if(!country||!service||!server){notice("Choose a country and service first.","error");return;}
- try{await api("save_server_setting",{country_id:String(country.id),service_code:service.code,server_id:serverId,server_name:server.server_name||("Server "+serverId),is_active:active,admin_tier:server.admin_tier||null});notice("Server "+serverId+" "+(active?"enabled":"disabled")+".","ok");await loadServers();}catch(e){notice(e.message,"error");}
+ const country=selectedCatalogItem("serverCountry",countries,"id"),service=selectedCatalogItem("serverService",services,"code"),server=liveServers.find(x=>String(x.server_id)===String(serverId));
+ if(!country||!service||!server){notice("Choose a country and service first.","error");return;}
+ const desired=Boolean(active);
+ try{
+  rememberServerSelection();
+  const result=await api("save_server_setting",{
+   country_id:String(country.id),service_code:String(service.code),server_id:String(serverId),
+   server_name:server.server_name||("Server "+serverId),is_active:desired,admin_tier:server.admin_tier||null
+  });
+  if(result?.setting?.is_active!==desired)throw new Error("The server status was not confirmed as saved. Please try again.");
+  await loadServers();
+  const refreshed=liveServers.find(x=>String(x.server_id)===String(serverId));
+  if(!refreshed||Boolean(refreshed.is_active)!==desired)throw new Error("The server status did not remain saved after reloading. Please try again.");
+  notice("Server "+serverId+" "+(desired?"enabled":"disabled")+" and verified.","ok");
+ }catch(e){notice(e.message,"error");}
 }
 async function clearServerSetting(serverId){
  const country=selectedCatalogItem("serverCountry",countries,"id"),service=selectedCatalogItem("serverService",services,"code");
