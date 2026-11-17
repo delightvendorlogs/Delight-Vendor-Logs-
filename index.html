@@ -238,6 +238,12 @@
       .help-panel { align-items: flex-start; flex-direction: column; }
     }
 
+    .support-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; }
+    .support-card { display:block; min-width:0; transition:transform .2s ease,border-color .2s ease; }
+    .support-card:hover { transform:translateY(-4px); border-color:var(--gold); }
+    .support-card .category-link { display:inline-block; margin-top:14px; color:var(--gold-light); font-size:13px; font-weight:800; }
+    @media(max-width:900px) { .support-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media(max-width:600px) { .support-grid { grid-template-columns:1fr; } }
     .final-cta { padding: 76px 0; text-align: center; }
     .cta-panel {
       padding: 45px 25px; border: 1px solid rgba(212, 175, 55, .3);
@@ -481,8 +487,7 @@
             <div class="eyebrow"><span class="eyebrow-dot"></span>Your digital marketplace</div>
             <h1>Everything you need.<br><span>One platform.</span></h1>
             <p class="hero-description">
-              Explore virtual numbers, SMS services, digital resources and useful online tools
-              in one place. Find the category you need and review the available options.
+              Explore virtual numbers, SMS services, digital resources and useful online tools — all in one place. Find what you need and get it done from your dashboard.
             </p>
             <div class="hero-buttons">
               <a class="btn btn-gold" href="register.html">Get Started <span aria-hidden="true">→</span></a>
@@ -589,14 +594,14 @@
     <section class="section" id="how-it-works">
       <div class="container">
         <div class="section-heading">
-          <div class="section-kicker">Simple steps</div>
+          <div class="section-kicker">How It Works</div>
           <h2>How It <span style="color:var(--gold)">Works</span></h2>
-          <p>Getting started is straightforward. Review each listing before you choose.</p>
+          <p>Getting started is simple and straightforward.</p>
         </div>
         <div class="how-grid">
-          <article class="how-card"><span class="how-number">01</span><h3>Create an account</h3><p>Register or sign in to access your marketplace dashboard.</p></article>
-          <article class="how-card"><span class="how-number">02</span><h3>Explore available options</h3><p>Choose a category, review the listing details and check availability.</p></article>
-          <article class="how-card"><span class="how-number">03</span><h3>Get help when needed</h3><p>Contact support if you have questions about an option or your account.</p></article>
+          <article class="how-card"><span class="how-number">01</span><h3>Create an account</h3><p>Register with your email and password to access your personal dashboard.</p></article>
+          <article class="how-card"><span class="how-number">02</span><h3>Explore available options</h3><p>Browse categories, review the details of each listing, and choose what you need.</p></article>
+          <article class="how-card"><span class="how-number">03</span><h3>Get help when needed</h3><p>Contact support anytime if you have questions about an option or your account.</p></article>
         </div>
       </div>
     </section>
@@ -622,10 +627,26 @@
       </div>
     </section>
 
+    <section class="section" id="support">
+      <div class="container">
+        <div class="section-heading">
+          <div class="section-kicker">We’re Here to Help</div>
+          <h2>Contact <span style="color:var(--gold)">Support</span></h2>
+          <p>Choose Live Chat, WhatsApp, Telegram, or email to reach our support team quickly.</p>
+        </div>
+        <div class="support-grid">
+          <a class="feature-card support-card" href="support-chat.html"><div class="category-icon" aria-hidden="true">💬</div><h3>Live Chat</h3><p>Chat with our support team directly on the website.</p><span class="category-link">Start Live Chat →</span></a>
+          <a class="feature-card support-card" href="https://wa.me/2347015908401" target="_blank" rel="noopener noreferrer"><div class="category-icon" aria-hidden="true">☏</div><h3>WhatsApp</h3><p>Reach our team through WhatsApp.</p><span class="category-link">Open WhatsApp →</span></a>
+          <a class="feature-card support-card" href="https://t.me/DelightVendorLogsSupportBot" target="_blank" rel="noopener noreferrer"><div class="category-icon" aria-hidden="true">➤</div><h3>Telegram</h3><p>Get assistance through our Telegram support bot.</p><span class="category-link">Open Telegram →</span></a>
+          <a class="feature-card support-card" href="mailto:delightvendorlogs@gmail.com"><div class="category-icon" aria-hidden="true">✉</div><h3>Email</h3><p>Send your questions to our support team.</p><span class="category-link">Send Email →</span></a>
+        </div>
+      </div>
+    </section>
+
     <section class="final-cta">
       <div class="container">
         <div class="cta-panel">
-          <div class="section-kicker">Join the marketplace</div>
+          <div class="section-kicker">JOIN THE MARKETPLACE</div>
           <h2>Ready to Get Started?</h2>
           <p>Create your Delight Vendor Logs account and explore the services available on the platform.</p>
           <div class="hero-buttons">
