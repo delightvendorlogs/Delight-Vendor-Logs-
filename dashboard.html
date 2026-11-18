@@ -3216,7 +3216,7 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
              SPECIAL SERVICE CARDS
         ====================================================== -->
 
-        <section class="dv-dashboard-section dv-featured-section"><div class="section-head"><h2>Featured Offers</h2><span class="dv-featured-note">Promotional slider</span></div><section id="dvDashboardBannerSection" class="dv-banner-section" hidden aria-label="Featured offers"><div class="dv-banner-viewport" id="dvBannerViewport"><div class="dv-banner-track" id="dvBannerTrack"></div><button class="dv-banner-arrow dv-banner-prev" id="dvBannerPrev" type="button" aria-label="Previous banner">‹</button><button class="dv-banner-arrow dv-banner-next" id="dvBannerNext" type="button" aria-label="Next banner">›</button></div><div class="dv-banner-dots" id="dvBannerDots"></div></section></section>
+        <section class="dv-dashboard-section dv-featured-section"><div class="section-head"><h2>Featured Offers</h2></div><section id="dvDashboardBannerSection" class="dv-banner-section" hidden aria-label="Featured offers"><div class="dv-banner-viewport" id="dvBannerViewport"><div class="dv-banner-track" id="dvBannerTrack"></div><button class="dv-banner-arrow dv-banner-prev" id="dvBannerPrev" type="button" aria-label="Previous banner">‹</button><button class="dv-banner-arrow dv-banner-next" id="dvBannerNext" type="button" aria-label="Next banner">›</button></div><div class="dv-banner-dots" id="dvBannerDots"></div></section></section>
 
 
         <!-- RECENT TRANSACTIONS -->
@@ -3267,7 +3267,15 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
 
         </section>
 
-        <section class="dv-dashboard-section dv-need-help"><div class="dv-help-copy"><span class="dv-help-icon" aria-hidden="true">?</span><span><strong>Need Help?</strong><small>We’re here if you need assistance with your orders or wallet.</small></span></div><button type="button" onclick="openContactSupport()">Contact Support <span>→</span></button></section>
+        <section class="dv-dashboard-section dv-need-help">
+  <div class="dv-help-copy"><span class="dv-help-icon" aria-hidden="true">?</span><span><strong>Need Help?</strong><small>Contact our support team through any of these channels.</small></span></div>
+  <div class="dv-help-channels">
+    <a href="support-chat.html" class="dv-help-channel">Live Chat</a>
+    <a href="https://wa.me/2347015908401" target="_blank" rel="noopener noreferrer" class="dv-help-channel">WhatsApp</a>
+    <a href="https://t.me/DelightVendorLogsSupportBot" target="_blank" rel="noopener noreferrer" class="dv-help-channel">Telegram</a>
+    <a href="mailto:delightvendorlogs@gmail.com?subject=Delight%20Vendor%20Logs%20Support" class="dv-help-channel">Email</a>
+  </div>
+</section>
 
     </div>
 
@@ -4994,7 +5002,7 @@ function renderCategories(){
     grid.innerHTML = "";
 
     // Dashboard preview layout: seven live category shortcuts plus a More tile.
-    categories.slice(0, 7).forEach(category => {
+    categories.forEach(category => {
         const button = document.createElement("button");
         button.type = "button";
         button.className = "cat";
@@ -6303,4 +6311,12 @@ main{width:100%!important;max-width:760px!important;margin:0 auto!important;padd
  .dv-feature-copy small{font-size:9px!important}
  #categoryGrid .cat-name{font-size:8px!important}
 }
+</style>
+
+
+<style id="dv-dashboard-support-channels">
+.dv-need-help{gap:12px!important}
+.dv-help-channels{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.dv-help-channel{display:flex;align-items:center;justify-content:center;min-height:38px;padding:8px 10px;border:1px solid #493b1c;border-radius:11px;background:#211a0c;color:#e5bd52!important;text-decoration:none;font-size:12px;font-weight:700}
+@media(max-width:600px){.dv-help-channels{gap:7px}.dv-help-channel{min-height:35px;font-size:11px;padding:7px}}
 </style>
