@@ -548,170 +548,123 @@
         font-size: 11px;
       }
     }
+
+    /* APPROVED COMPACT PROFILE LAYOUT */
+    body{padding:0 0 calc(100px + env(safe-area-inset-bottom));background:#080808}
+    .profile-page{width:min(100% - 28px,560px);margin:0 auto;padding:26px 0 20px}
+    .page-heading{margin:0 0 18px}
+    .page-heading h1{margin:0;color:#e5bd52;font-size:27px;line-height:1.2}
+    .page-heading p{margin:6px 0 0;color:#999;font-size:13px}
+    .identity-card{position:relative;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:18px;background:linear-gradient(135deg,#191407,#111);border:1px solid #57451f;border-radius:20px}
+    .avatar-mark{width:58px;height:58px;flex:0 0 58px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#d6ad50;color:#17120a;font-size:23px;font-weight:900;letter-spacing:-1px}
+    .identity-info{flex:1;min-width:0}
+    .identity-info h2{margin:0 0 4px;color:#fff;font-size:17px;overflow-wrap:anywhere}
+    .identity-info p{margin:0 0 8px;color:#b8b8b8;font-size:12px;overflow-wrap:anywhere}
+    .member-pill{display:inline-block;padding:4px 9px;border-radius:20px;background:#183321;color:#8be0a4;font-size:11px;font-weight:700}
+    .joined-date{width:100%;margin:0;padding-top:10px;border-top:1px solid #34302a;color:#aaa;font-size:11px}
+    .wallet-card{margin-top:16px;padding:18px;background:#171717;border:1px solid #343434;border-radius:18px}
+    .wallet-label{color:#d6ad50;font-size:11px;font-weight:800;letter-spacing:1px}
+    .wallet-balance{margin-top:8px;color:#fff;font-size:27px;font-weight:800}
+    .fund-wallet{margin-top:14px;padding:12px;border-radius:12px;background:#d6ad50;color:#17120a;font-size:14px;font-weight:800}
+    .details-card,.support-card{margin-top:16px;padding:17px;background:#171717;border:1px solid #343434;border-radius:18px}
+    .details-card h2,.support-card h2{margin:0 0 13px;color:#fff;font-size:16px}
+    .detail-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid #343434}
+    .detail-info{min-width:0;display:flex;flex-direction:column;gap:5px}
+    .detail-info span{color:#999;font-size:10px;font-weight:800;letter-spacing:.7px}
+    .detail-info strong{color:#fff;font-size:14px;overflow-wrap:anywhere}
+    .detail-symbol,.support-symbol{color:#d6ad50;font-size:23px}
+    .support-row{display:flex;align-items:center;gap:13px;padding:13px 0;border-top:1px solid #343434}
+    .support-copy{flex:1;color:#fff;font-size:14px;font-weight:700}
+    .support-copy small{display:block;margin-top:4px;color:#999;font-size:11px;font-weight:400}
+    .arrow{color:#999;font-size:25px}
+    .logout{width:100%;margin:18px 0 10px;padding:13px;border:1px solid #773d3d;border-radius:13px;background:transparent;color:#ff8585;font-size:14px;font-weight:800}
+    .back-dashboard{display:block;width:100%;margin:0;padding:9px 0;border:0;background:transparent;color:#d6ad50;text-align:center;text-decoration:none;font-size:13px;font-weight:700}
+    #message{margin:10px 0;color:#ff7777;text-align:center;overflow-wrap:anywhere}
+    .dv-bottom-nav{position:fixed;z-index:300;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:760px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:9px 12px calc(9px + env(safe-area-inset-bottom));background:rgba(15,16,19,.97);border-top:1px solid #57451f;box-shadow:0 -10px 30px #0008;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+    .dv-bottom-nav-item{min-width:0;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:11px;color:#aaa394;text-decoration:none;font-size:10px;font-weight:700;line-height:1.1}
+    .dv-bottom-nav-item svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+    .dv-bottom-nav-item.is-active{color:#e5bd52;background:#e5bd5212}
+    @media(min-width:761px){.dv-bottom-nav{bottom:14px;width:min(100% - 32px,560px);border:1px solid #57451f;border-radius:18px}}
+    @media(max-width:380px){.profile-page{width:calc(100% - 22px)}.identity-card{padding:15px}.wallet-balance{font-size:24px}}
+
   </style>
 <link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css"></head>
 
 <body>
 
-  <!-- PROFILE HEADER -->
-
-  <div class="profile-header">
-
-    <div class="dv-logo">
-      <img
-        src="assets/dv-logo.png"
-        alt="Delight Vendor Logs logo"
-        onerror="this.style.display='none';this.parentElement.textContent='DV';this.parentElement.style.fontSize='27px';this.parentElement.style.fontWeight='800';this.parentElement.style.color='#d4af37';"
-      >
+  <main class="profile-page">
+    <div class="page-heading">
+      <h1>My Profile</h1>
+      <p>Manage your Delight Vendor Logs account</p>
     </div>
 
-    <div class="header-text">
-      <h1>Delight Vendor Logs</h1>
-      <p id="memberSince">Member since...</p>
-    </div>
-
-  </div>
-
-
-  <!-- ACCOUNT INFORMATION -->
-
-  <section class="section">
-
-    <div class="section-title">
-      Account Information
-    </div>
-
-    <div class="card">
-
-      <div class="profile-row">
-
-        <div class="icon-box">👤</div>
-
-        <div class="row-info">
-          <div class="row-label">Full Name</div>
-          <div class="row-value" id="userName">Loading...</div>
-        </div>
-
+    <section class="identity-card">
+      <div class="avatar-mark" aria-label="Delight Vendor initials">DV</div>
+      <div class="identity-info">
+        <h2 id="userName">Loading...</h2>
+        <p id="userEmail">Loading...</p>
+        <span class="member-pill">DV Member</span>
       </div>
+      <p class="joined-date" id="memberSince">Member since...</p>
+    </section>
 
-      <div class="profile-row">
+    <section class="wallet-card">
+      <div class="wallet-label">MY WALLET</div>
+      <div class="wallet-balance" id="walletBalance">₦0.00</div>
+      <button class="fund-wallet" type="button" onclick="window.location.href='wallet.html'">Fund Wallet</button>
+    </section>
 
-        <div class="icon-box">✉️</div>
-
-        <div class="row-info">
-          <div class="row-label">Email</div>
-          <div class="row-value" id="userEmail">Loading...</div>
+    <section class="details-card">
+      <h2>Personal Details</h2>
+      <div class="detail-row">
+        <div class="detail-info">
+          <span>FULL NAME</span>
+          <strong id="detailName">Loading...</strong>
         </div>
-
+        <span class="detail-symbol" aria-hidden="true">♙</span>
       </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- WALLET -->
-
-  <section class="section">
-
-    <div class="section-title">
-      Wallet
-    </div>
-
-    <div class="wallet-card">
-
-      <div class="wallet-title">
-
-        <div class="wallet-icon">💳</div>
-
-        <div>
-          <div class="wallet-label">Available Wallet</div>
-          <div class="wallet-balance" id="walletBalance">₦0.00</div>
+      <div class="detail-row">
+        <div class="detail-info">
+          <span>EMAIL ADDRESS</span>
+          <strong id="detailEmail">Loading...</strong>
         </div>
-
+        <span class="detail-symbol" aria-hidden="true">✉</span>
       </div>
+    </section>
 
-      <button
-        class="fund-wallet"
-        type="button"
-        onclick="window.location.href='wallet.html'"
-      >
-        + Fund Wallet
-      </button>
-
-    </div>
-
-  </section>
-
-
-  <!-- SUPPORT -->
-
-  <section class="section">
-
-    <div class="section-title">
-      Support
-    </div>
-
-    <div class="card">
-
-      <div
-        class="profile-row clickable"
-        role="button"
-        tabindex="0"
+    <section class="support-card">
+      <h2>Help &amp; Support</h2>
+      <div class="support-row clickable" role="button" tabindex="0"
         onclick="openContactSupport()"
-        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openContactSupport();}"
-      >
-
-        <div class="icon-box">🎧</div>
-
-        <div class="row-info">
-          <div class="row-value">Help &amp; Support</div>
-          <div class="row-label" style="margin-top:5px;text-transform:none;">
-            Telegram, WhatsApp and Email
-          </div>
-        </div>
-
-        <div class="arrow">›</div>
-
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openContactSupport();}">
+        <span class="support-symbol" aria-hidden="true">☏</span>
+        <span class="support-copy">Contact Support<small>Get help with your account</small></span>
+        <span class="arrow" aria-hidden="true">›</span>
       </div>
+    </section>
 
-    </div>
+    <button class="logout" type="button" onclick="logout()">Log Out</button>
+    <a class="back-dashboard" href="dashboard.html">← Back to Dashboard</a>
+    <p id="message" role="alert"></p>
+  </main>
 
-  </section>
-
-
-  <!-- LOG OUT -->
-
-  <button
-    class="logout"
-    type="button"
-    onclick="logout()"
-  >
-    ⇥ &nbsp; Log Out
-  </button>
-
-
-  <!-- BACK TO DASHBOARD -->
-
-  <button
-    class="back-dashboard"
-    type="button"
-    onclick="window.location.href='dashboard.html'"
-  >
-    ← &nbsp; Back to Dashboard
-  </button>
-
-
-  <div class="support-text">
-    Need help? Contact us on WhatsApp 💬
-  </div>
-
-  <div class="member-badge" id="memberBadge">
-    DV Member since...
-  </div>
-
-  <p id="message" role="alert"></p>
-
+  <nav class="dv-bottom-nav" aria-label="Main navigation">
+    <a class="dv-bottom-nav-item" href="dashboard.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Home</span>
+    </a>
+    <a class="dv-bottom-nav-item" href="categories.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Categories</span>
+    </a>
+    <a class="dv-bottom-nav-item" href="wallet.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 9h18M16 15h2"/></svg><span>Wallet</span>
+    </a>
+    <a class="dv-bottom-nav-item" href="purchases.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-3-6 3z"/><path d="M9 8h6M9 12h6"/></svg><span>Orders</span>
+    </a>
+    <a class="dv-bottom-nav-item is-active" href="profile.html" aria-current="page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Profile</span>
+    </a>
+  </nav>
 
   <!-- CONTACT SUPPORT MODAL -->
 
@@ -876,14 +829,14 @@
         name = (firstName + " " + lastName).trim();
       }
 
-      document.getElementById("userName").textContent =
-        name || "Not set";
+      document.getElementById("userName").textContent = name || "Not set";
+      document.getElementById("detailName").textContent = name || "Not set";
 
 
       /* EMAIL */
 
-      document.getElementById("userEmail").textContent =
-        user.email || "Not available";
+      document.getElementById("userEmail").textContent = user.email || "Not available";
+      document.getElementById("detailEmail").textContent = user.email || "Not available";
 
 
       /* MEMBER SINCE */
