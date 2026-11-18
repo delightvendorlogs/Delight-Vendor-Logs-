@@ -460,7 +460,20 @@
     @media(min-width:761px){.dv-bottom-nav{bottom:14px;width:min(100% - 32px,560px);border:1px solid #57451f;border-radius:18px}}
     @media(max-width:380px){.profile-page{width:calc(100% - 22px)}.identity-card{padding:15px}.wallet-balance{font-size:24px}}
 
-  </style>
+  
+    /* ACCOUNT SETTINGS — same compact black-and-gold profile card style */
+    .account-action-card{margin-top:16px;padding:17px;background:#171717;border:1px solid #343434;border-radius:18px}
+    .account-action-card h2{margin:0 0 7px;color:#fff;font-size:16px}
+    .account-action-hint{margin:0 0 16px;color:#999;font-size:12px;line-height:1.5}
+    .account-action-label{display:block;margin:13px 0 7px;color:#d6ad50;font-size:11px;font-weight:800;letter-spacing:.7px;text-transform:uppercase}
+    .account-action-input{display:block;width:100%;min-height:46px;padding:12px 13px;border:1px solid #343434;border-radius:11px;background:#090909;color:#fff;font-family:inherit;font-size:14px;outline:none;transition:border-color .18s,box-shadow .18s}
+    .account-action-input::placeholder{color:#777}
+    .account-action-input:focus{border-color:#d6ad50;box-shadow:0 0 0 3px #d6ad5018}
+    .account-action-button{width:100%;min-height:46px;margin-top:16px;padding:12px 14px;border:0;border-radius:11px;background:#d6ad50;color:#17120a;font-size:14px;font-weight:800;cursor:pointer;transition:filter .18s,opacity .18s}
+    .account-action-button:hover{filter:brightness(1.08)}
+    .account-action-button:disabled{opacity:.65;cursor:wait}
+    .account-action-message{min-height:16px;margin:11px 0 0;color:#d6ad50;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+</style>
 <link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css"></head>
 
 <body>
@@ -506,15 +519,24 @@
     </section>
 
 
-    <section class="password-card" id="change-password">
+    <section class="account-action-card" id="edit-name">
+      <h2>Edit Name</h2>
+      <p class="account-action-hint">Update the name displayed on your account.</p>
+      <label class="account-action-label" for="editNameInput">Full Name</label>
+      <input class="account-action-input" id="editNameInput" type="text" placeholder="Enter your full name" autocomplete="name">
+      <button class="account-action-button" id="saveNameButton" type="button" onclick="saveProfileName()">Save Name</button>
+      <p class="account-action-message" id="nameMessage" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="account-action-card" id="change-password">
       <h2>Change Password</h2>
-      <p class="password-hint">Choose a new password for your account.</p>
-      <label class="password-label" for="newPassword">New Password</label>
-      <input class="password-input" id="newPassword" type="password" placeholder="Enter new password" autocomplete="new-password">
-      <label class="password-label" for="confirmPassword">Confirm New Password</label>
-      <input class="password-input" id="confirmPassword" type="password" placeholder="Confirm new password" autocomplete="new-password">
-      <button class="reset-password" type="button" onclick="changePassword()">Reset Password</button>
-      <p id="passwordMessage" role="status" aria-live="polite"></p>
+      <p class="account-action-hint">Enter your new password below to update your account password.</p>
+      <label class="account-action-label" for="newPassword">New Password</label>
+      <input class="account-action-input" id="newPassword" type="password" placeholder="Enter new password" autocomplete="new-password">
+      <label class="account-action-label" for="confirmPassword">Confirm New Password</label>
+      <input class="account-action-input" id="confirmPassword" type="password" placeholder="Confirm new password" autocomplete="new-password">
+      <button class="account-action-button" id="resetPasswordButton" type="button" onclick="changePassword()">Reset Password</button>
+      <p class="account-action-message" id="passwordMessage" role="status" aria-live="polite"></p>
     </section>
 
     <section class="support-card">
@@ -647,6 +669,7 @@
 
       document.getElementById("userName").textContent = name || "Not set";
       document.getElementById("detailName").textContent = name || "Not set";
+      document.getElementById("editNameInput").value = name || "";
 
 
       /* EMAIL */
@@ -703,12 +726,46 @@
 
 
 
+    /* SAVE PROFILE NAME */
+    async function saveProfileName() {
+      const input = document.getElementById("editNameInput");
+      const message = document.getElementById("nameMessage");
+      const button = document.getElementById("saveNameButton");
+      const name = input.value.trim();
+
+      message.textContent = "";
+      message.style.color = "#ff8585";
+
+      if (!name) {
+        message.textContent = "Please enter your name.";
+        input.focus();
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "Saving...";
+      const { error } = await supabaseClient.auth.updateUser({ data: { name } });
+      button.disabled = false;
+      button.textContent = "Save Name";
+
+      if (error) {
+        message.textContent = error.message;
+        return;
+      }
+
+      document.getElementById("userName").textContent = name;
+      document.getElementById("detailName").textContent = name;
+      message.style.color = "#8be0a4";
+      message.textContent = "Name updated successfully.";
+    }
+
+
     /* CHANGE PASSWORD */
     async function changePassword() {
       const passwordInput = document.getElementById("newPassword");
       const confirmInput = document.getElementById("confirmPassword");
       const message = document.getElementById("passwordMessage");
-      const button = document.querySelector(".reset-password");
+      const button = document.getElementById("resetPasswordButton");
       const password = passwordInput.value;
       const confirmPassword = confirmInput.value;
 
