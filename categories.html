@@ -19,7 +19,7 @@ h1{font-size:clamp(25px,4vw,36px);margin:8px 0}.intro{color:#b8ad8d;line-height:
 .category-list{display:flex;flex-direction:column;gap:12px}
 .category-row{position:relative;display:flex;align-items:center;gap:18px;width:100%;min-height:112px;padding:20px 24px;border:1px solid #393326;border-left:5px solid #c5a04b;border-radius:24px;background:#17181b;color:#f4efe3;text-decoration:none;transition:border-color .15s,background .15s;overflow:hidden}
 .category-row:nth-child(even){border-left-color:#8e82ad}
-.category-row:hover{border-color:#8a713b;background:#1b1c20}
+.category-row:hover{border-color:#8a713b;background:#1b1c20}\n.category-row[hidden]{display:none!important}
 .category-icon{width:76px;height:76px;flex:0 0 76px;display:grid;place-items:center;border-radius:19px;background:#2a2416;border:1px solid #514329;color:#e5c36d}
 .category-icon svg{display:block;width:38px;height:38px}
 .category-row:nth-child(even) .category-icon{background:#24212c;border-color:#494155;color:#c9bce5}
@@ -39,6 +39,7 @@ main{padding-bottom:125px!important}
 .dv-bottom-nav-item svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .dv-bottom-nav-item.is-active{color:#e5bd52;background:#e5bd5212}
 @media(min-width:761px){.dv-bottom-nav{bottom:14px;width:min(100% - 32px,560px);border:1px solid #57451f;border-radius:18px}}
+.category-row[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -47,7 +48,7 @@ main{padding-bottom:125px!important}
 <script>
 const client=window.supabase.createClient("https://hkfhehbhmucymusaytoe.supabase.co","sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_");
 const iconPaths={
-"All Social Logs":'<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+"Account Logs":'<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/>',
 "Working Pictures":'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/>',
 "Formats":'<path d="M7 3h7l5 5v13H7zM14 3v6h5M9 13h6M9 17h6"/>',
 "Working Links":'<path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/>',
@@ -76,14 +77,29 @@ async function load(){
  if(error){console.error(error);box.innerHTML='<div class="state">Could not load categories. Please return to the dashboard and try again.</div>';return}
  const rows=(data||[]).filter(c=>c&&c.name).map(c=>({name:c.name,description:"Explore "+c.name+" services and available options.",href:routeFor(c.name)}));
  const have=new Set(rows.map(c=>c.name.toLowerCase().replace(/[^a-z0-9]/g,"")));
- const extra=[{name:"All Country Numbers",description:"Choose a country and get a number for verification",href:"virtualnumber.html"},{name:"All Social Logs",description:"Explore social logs, testing apps, streaming and more",href:"sociallogs.html"}];
+ const extra=[{name:"All Country Numbers",description:"Choose a country and get a number for verification",href:"virtualnumber.html"},{name:"Account Logs",description:"Explore social logs, testing apps, streaming and more",href:"sociallogs.html"}];
  extra.forEach(c=>{const key=c.name.toLowerCase().replace(/[^a-z0-9]/g,"");if(!have.has(key)){rows.push(c);have.add(key)}});
  if(!rows.length){box.innerHTML='<div class="state">No active categories are available right now.</div>';return}
  box.innerHTML=rows.map(c=>'<a class="category-row" href="'+esc(c.href)+'"><span class="category-icon">'+svgIcon(c.name)+'</span><span class="category-copy"><strong class="category-name">'+esc(c.name)+'</strong><small class="category-desc">'+esc(c.description)+'</small></span><span class="arrow" aria-hidden="true">→</span></a>').join("");
 }
 document.addEventListener("click",e=>{if(e.target.closest("a.category-row"))sessionStorage.setItem("dvOpenedFromCategories","1")});
-load();
-document.getElementById("categorySearch").addEventListener("input",e=>{const q=e.target.value.trim().toLowerCase();document.querySelectorAll("#categoryList .category-row").forEach(row=>{row.hidden=!row.textContent.toLowerCase().includes(q);});});
+function filterCategories(){
+ const q=document.getElementById("categorySearch").value.trim().toLowerCase();
+ const box=document.getElementById("categoryList");
+ const rows=[...box.querySelectorAll(".category-row")];
+ let visible=0;
+ rows.forEach(row=>{
+  const match=!q||row.textContent.toLowerCase().includes(q);
+  row.hidden=!match;
+  if(match)visible++;
+ });
+ let empty=box.querySelector(".search-empty");
+ if(q&&rows.length&&visible===0){
+  if(!empty){empty=document.createElement("div");empty.className="state search-empty";empty.textContent="No matching categories found." ;box.appendChild(empty);}
+ }else if(empty){empty.remove();}
+}
+document.getElementById("categorySearch").addEventListener("input",filterCategories);
+load().then(filterCategories);
 </script>
 <script src="branding.js"></script><script src="assets/site-announcement.js" defer></script>
 <nav class="dv-bottom-nav" aria-label="Main navigation">
@@ -95,7 +111,7 @@ document.getElementById("categorySearch").addEventListener("input",e=>{const q=e
 </nav>
 </body></html>
 
-<style id="dv-categories-approved-preview">
+<style id="dv-categories-approved-preview">\n.category-row[hidden]{display:none!important}
 .topbar{max-width:1050px;padding:14px 18px;gap:10px;flex-wrap:nowrap;justify-content:space-between}
 .brand{margin:0;text-decoration:none;color:#f5f0df;font-size:17px;display:flex;align-items:center;gap:10px;font-weight:800}
 .brand img{width:44px;height:44px;object-fit:contain}
