@@ -5001,7 +5001,26 @@ function renderCategories(){
 
     grid.innerHTML = "";
 
-    // Dashboard preview layout: seven live category shortcuts plus a More tile.
+    // First shortcut: Virtual Numbers opens the existing virtualnumber.html page.
+    const virtualNumbers = document.createElement("button");
+    virtualNumbers.type = "button";
+    virtualNumbers.className = "cat";
+    virtualNumbers.setAttribute("aria-label", "Open Virtual Numbers");
+    virtualNumbers.onclick = () => { location.href = "virtualnumber.html"; };
+
+    const virtualIcon = document.createElement("div");
+    virtualIcon.className = "cat-icon";
+    virtualIcon.innerHTML = dashboardIcon("All Countries Number", "dashboard-line-icon");
+
+    const virtualName = document.createElement("div");
+    virtualName.className = "cat-name";
+    virtualName.textContent = "Virtual Numbers";
+
+    virtualNumbers.appendChild(virtualIcon);
+    virtualNumbers.appendChild(virtualName);
+    grid.appendChild(virtualNumbers);
+
+    // Keep all six existing active categories in their current order.
     categories.forEach(category => {
         const button = document.createElement("button");
         button.type = "button";
