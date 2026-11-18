@@ -505,6 +505,18 @@
       </div>
     </section>
 
+
+    <section class="password-card" id="change-password">
+      <h2>Change Password</h2>
+      <p class="password-hint">Choose a new password for your account.</p>
+      <label class="password-label" for="newPassword">New Password</label>
+      <input class="password-input" id="newPassword" type="password" placeholder="Enter new password" autocomplete="new-password">
+      <label class="password-label" for="confirmPassword">Confirm New Password</label>
+      <input class="password-input" id="confirmPassword" type="password" placeholder="Confirm new password" autocomplete="new-password">
+      <button class="reset-password" type="button" onclick="changePassword()">Reset Password</button>
+      <p id="passwordMessage" role="status" aria-live="polite"></p>
+    </section>
+
     <section class="support-card">
       <h2>Help &amp; Support</h2>
       <div class="support-row clickable" role="button" tabindex="0"
@@ -687,6 +699,53 @@
           minimumFractionDigits: 2,
           maximumFractionDigits: 2
         });
+    }
+
+
+
+    /* CHANGE PASSWORD */
+    async function changePassword() {
+      const passwordInput = document.getElementById("newPassword");
+      const confirmInput = document.getElementById("confirmPassword");
+      const message = document.getElementById("passwordMessage");
+      const button = document.querySelector(".reset-password");
+      const password = passwordInput.value;
+      const confirmPassword = confirmInput.value;
+
+      message.textContent = "";
+      message.style.color = "#ff8585";
+
+      if (!password) {
+        message.textContent = "Please enter a new password.";
+        passwordInput.focus();
+        return;
+      }
+      if (password.length < 6) {
+        message.textContent = "Password must be at least 6 characters.";
+        passwordInput.focus();
+        return;
+      }
+      if (password !== confirmPassword) {
+        message.textContent = "Passwords do not match.";
+        confirmInput.focus();
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "Resetting...";
+      const { error } = await supabaseClient.auth.updateUser({ password });
+      button.disabled = false;
+      button.textContent = "Reset Password";
+
+      if (error) {
+        message.textContent = error.message;
+        return;
+      }
+
+      passwordInput.value = "";
+      confirmInput.value = "";
+      message.style.color = "#8be0a4";
+      message.textContent = "Password changed successfully.";
     }
 
 
