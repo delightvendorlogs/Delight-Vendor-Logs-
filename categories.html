@@ -42,9 +42,8 @@ main{padding-bottom:125px!important}
 </style>
 </head>
 <body>
-<header class="topbar"><a class="brand" href="dashboard.html"><img src="assets/dv-logo.png" alt="DV logo"><span>Delight Vendor Logs</span></a></header>
-<div class="back-row"><a class="back" href="dashboard.html" aria-label="Back to Dashboard">← Back to Dashboard</a></div>
-<main><div class="eyebrow">Explore services</div><h1>All Categories</h1><p class="intro">Choose a category to view its available services.</p><div id="categoryList" class="category-list"><div class="state">Loading categories…</div></div></main>
+<header class="topbar"><a class="brand" href="dashboard.html"><img src="assets/dv-logo.png" alt="DV logo"><span>Delight Vendor Logs</span></a><button class="search-button" type="button" aria-label="Search categories" onclick="document.getElementById('categorySearch').focus();document.getElementById('categorySearch').scrollIntoView({behavior:'smooth',block:'center'})"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg></button></header><div class="back-row"><a class="back" href="dashboard.html" aria-label="Back to Dashboard">← Back to Dashboard</a></div>
+<main><div class="eyebrow">Explore services</div><h1>All Categories</h1><p class="intro">Choose a category to view its available services.</p><input id="categorySearch" type="search" placeholder="Find a category..." aria-label="Find a category"><div id="categoryList" class="category-list"><div class="state">Loading categories…</div></div></main>
 <script>
 const client=window.supabase.createClient("https://hkfhehbhmucymusaytoe.supabase.co","sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_");
 const iconPaths={
@@ -84,6 +83,7 @@ async function load(){
 }
 document.addEventListener("click",e=>{if(e.target.closest("a.category-row"))sessionStorage.setItem("dvOpenedFromCategories","1")});
 load();
+document.getElementById("categorySearch").addEventListener("input",e=>{const q=e.target.value.trim().toLowerCase();document.querySelectorAll("#categoryList .category-row").forEach(row=>{row.hidden=!row.textContent.toLowerCase().includes(q);});});
 </script>
 <script src="branding.js"></script><script src="assets/site-announcement.js" defer></script>
 <nav class="dv-bottom-nav" aria-label="Main navigation">
@@ -96,14 +96,18 @@ load();
 </body></html>
 
 <style id="dv-categories-approved-preview">
-.topbar{max-width:1050px;padding:14px 18px;gap:10px;justify-content:flex-start}
-.brand{margin:0;text-decoration:none;color:#f5f0df;font-size:17px}
-.brand img{width:44px;height:44px}
+.topbar{max-width:1050px;padding:14px 18px;gap:10px;flex-wrap:nowrap;justify-content:space-between}
+.brand{margin:0;text-decoration:none;color:#f5f0df;font-size:17px;display:flex;align-items:center;gap:10px;font-weight:800}
+.brand img{width:44px;height:44px;object-fit:contain}
+.search-button{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:14px;border:1px solid #8b6d20;background:#111;color:#d4af37;cursor:pointer}
+.search-button svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .back-row{max-width:1050px;margin:0 auto;padding:0 18px 8px}
 .back{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 12px;border:1px solid #493b1c;border-radius:11px;color:#d4af37;text-decoration:none;font-size:12px;font-weight:700;white-space:nowrap}
 main{max-width:900px;padding:24px 18px 42px}
 h1{font-size:clamp(23px,4vw,30px);margin:7px 0}
 .intro{font-size:14px;margin:0 0 18px}
+#categorySearch{display:block;width:100%;height:54px;margin:0 0 20px;padding:0 18px 0 48px;border:1px solid #302a1d;border-radius:15px;background:#191919 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='10.8' cy='10.8' r='6.8'/%3E%3Cpath d='m16 16 5 5'/%3E%3C/svg%3E") no-repeat 16px center;color:#f5f0df;font:inherit;outline:none}
+#categorySearch::placeholder{color:#999}
 .category-list{gap:9px}
 .category-row{min-height:76px;padding:12px 15px;gap:13px;border-radius:16px;border-left-width:4px}
 .category-icon{width:48px;height:48px;flex-basis:48px;border-radius:13px}
@@ -116,14 +120,15 @@ h1{font-size:clamp(23px,4vw,30px);margin:7px 0}
  .topbar{padding:14px 16px;gap:10px}
  .brand{width:auto;min-width:0;margin:0;font-size:17px;flex:1}
  .brand img{width:44px;height:44px}
+ .search-button{width:40px;height:40px;flex-basis:40px}
  .back-row{padding:0 16px 8px}
  .back{min-height:38px;padding:8px 12px;font-size:12px}
  main{padding:19px 13px 32px}
- .category-row{min-height:112px;padding:20px 24px;gap:18px;border-radius:24px}
- .category-icon{width:76px;height:76px;flex-basis:76px;border-radius:19px}
- .category-icon svg{width:38px;height:38px}
- .category-name{font-size:18px}
- .category-desc{font-size:14px}
- .arrow{width:54px;height:54px;flex-basis:54px;font-size:29px}
+ .category-row{min-height:76px;padding:12px 15px;gap:13px;border-radius:16px}
+ .category-icon{width:48px;height:48px;flex-basis:48px;border-radius:13px}
+ .category-icon svg{width:25px;height:25px}
+ .category-name{font-size:15px}
+ .category-desc{font-size:12px}
+ .arrow{width:36px;height:36px;flex-basis:36px;font-size:21px}
 }
 </style>
