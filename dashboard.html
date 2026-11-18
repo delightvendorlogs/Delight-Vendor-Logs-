@@ -3179,7 +3179,7 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
   </a>
   <a class="dv-feature-link dv-feature-social" href="sociallogs.html">
     <span class="dv-feature-icon" aria-hidden="true">▣</span>
-    <span class="dv-feature-copy"><strong>Social Logs</strong><small>Browse available accounts</small><span class="dv-feature-cta">Explore ›</span></span>
+    <span class="dv-feature-copy"><strong>Account Logs</strong><small>Browse available accounts</small><span class="dv-feature-cta">Explore ›</span></span>
     <span class="dv-feature-arrow" aria-hidden="true">→</span>
   </a>
 </div></section>
@@ -6029,6 +6029,25 @@ function renderCategories(){
   const grid=document.getElementById("categoryGrid");
   if(!grid)return;
   grid.innerHTML="";
+    // First shortcut: Virtual Numbers opens the existing virtualnumber.html page.
+    const virtualNumbers = document.createElement("button");
+    virtualNumbers.type = "button";
+    virtualNumbers.className = "cat";
+    virtualNumbers.setAttribute("aria-label", "Open Virtual Numbers");
+    virtualNumbers.onclick = () => { location.href = "virtualnumber.html"; };
+
+    const virtualIcon = document.createElement("div");
+    virtualIcon.className = "cat-icon";
+    virtualIcon.innerHTML = dashboardIcon("All Countries Number", "dashboard-line-icon");
+
+    const virtualName = document.createElement("div");
+    virtualName.className = "cat-name";
+    virtualName.textContent = "Virtual Numbers";
+
+    virtualNumbers.appendChild(virtualIcon);
+    virtualNumbers.appendChild(virtualName);
+    grid.appendChild(virtualNumbers);
+
   categories.forEach(category=>{
     const button=document.createElement("button");
     button.type="button";button.className="cat";
