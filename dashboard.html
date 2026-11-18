@@ -3162,7 +3162,7 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
 
 
             <div class="wallet-actions">
-                <button class="wallet-action fund" type="button" onclick="location.href='wallet.html'">⊕ Fund Wallet</button>
+                <button class="wallet-action fund" type="button" onclick="location.href='wallet.html'">+ Fund Wallet</button>
                 <span class="wallet-caption">Your wallet</span>
             </div>
 
@@ -6010,7 +6010,7 @@ function renderCategories(){
   const grid=document.getElementById("categoryGrid");
   if(!grid)return;
   grid.innerHTML="";
-  categories.slice(0,4).forEach(category=>{
+  categories.forEach(category=>{
     const button=document.createElement("button");
     button.type="button";button.className="cat";
     button.onclick=()=>selectCategory(category.name);
