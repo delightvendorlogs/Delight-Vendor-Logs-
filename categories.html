@@ -34,7 +34,7 @@ h1{font-size:clamp(25px,4vw,36px);margin:8px 0}.intro{color:#b8ad8d;line-height:
 </style>
 </head>
 <body>
-<header class="topbar"><a class="back" href="dashboard.html">← Dashboard</a><div class="brand"><img src="assets/dv-logo.png" alt="DV logo"><span>Delight Vendor Logs</span></div></header>
+<header class="topbar"><a class="back" href="dashboard.html">← Back to Dashboard</a><a class="home-link" href="dashboard.html" aria-label="Go to Home">⌂ Home</a><a class="brand" href="dashboard.html"><img src="assets/dv-logo.png" alt="DV logo"><span>Delight Vendor Logs</span></a></header>
 <main><div class="eyebrow">Explore services</div><h1>All Categories</h1><p class="intro">Choose a category to view its available services.</p><div id="categoryList" class="category-list"><div class="state">Loading categories…</div></div></main>
 <script>
 const client=window.supabase.createClient("https://hkfhehbhmucymusaytoe.supabase.co","sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_");
@@ -68,7 +68,7 @@ async function load(){
  if(error){console.error(error);box.innerHTML='<div class="state">Could not load categories. Please return to the dashboard and try again.</div>';return}
  const rows=(data||[]).filter(c=>c&&c.name).map(c=>({name:c.name,description:"Explore "+c.name+" services and available options.",href:routeFor(c.name)}));
  const have=new Set(rows.map(c=>c.name.toLowerCase().replace(/[^a-z0-9]/g,"")));
- const extra=[{name:"Email / Gmail",description:"Browse available Gmail services",href:"gmail.html"},{name:"All Country Numbers",description:"Choose a country and get a number for verification",href:"virtualnumber.html"},{name:"All Social Logs",description:"Explore social logs, testing apps, streaming and more",href:"sociallogs.html"}];
+ const extra=[{name:"All Country Numbers",description:"Choose a country and get a number for verification",href:"virtualnumber.html"},{name:"All Social Logs",description:"Explore social logs, testing apps, streaming and more",href:"sociallogs.html"}];
  extra.forEach(c=>{const key=c.name.toLowerCase().replace(/[^a-z0-9]/g,"");if(!have.has(key)){rows.push(c);have.add(key)}});
  if(!rows.length){box.innerHTML='<div class="state">No active categories are available right now.</div>';return}
  box.innerHTML=rows.map(c=>'<a class="category-row" href="'+esc(c.href)+'"><span class="category-icon">'+svgIcon(c.name)+'</span><span class="category-copy"><strong class="category-name">'+esc(c.name)+'</strong><small class="category-desc">'+esc(c.description)+'</small></span><span class="arrow" aria-hidden="true">→</span></a>').join("");
@@ -78,3 +78,34 @@ load();
 </script>
 <script src="branding.js"></script><script src="assets/site-announcement.js" defer></script>
 </body></html>
+
+<style id="dv-categories-approved-preview">
+.topbar{max-width:1050px;padding:14px 18px;gap:10px;flex-wrap:wrap}
+.back,.home-link{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 12px;border:1px solid #493b1c;border-radius:11px;color:#d4af37;text-decoration:none;font-size:12px;font-weight:700;white-space:nowrap}
+.home-link{background:#211a0c}
+.brand{margin-left:auto;text-decoration:none;color:#f5f0df;font-size:14px}
+main{max-width:900px;padding:24px 18px 42px}
+h1{font-size:clamp(23px,4vw,30px);margin:7px 0}
+.intro{font-size:14px;margin:0 0 18px}
+.category-list{gap:9px}
+.category-row{min-height:76px;padding:12px 15px;gap:13px;border-radius:16px;border-left-width:4px}
+.category-icon{width:48px;height:48px;flex-basis:48px;border-radius:13px}
+.category-icon svg{width:25px;height:25px}
+.category-copy{gap:4px}
+.category-name{font-size:15px;line-height:1.25}
+.category-desc{font-size:12px;line-height:1.35}
+.arrow{width:36px;height:36px;flex-basis:36px;font-size:21px}
+@media(max-width:480px){
+ .topbar{padding:12px;gap:7px}
+ .back,.home-link{min-height:35px;padding:7px 9px;font-size:11px}
+ .brand{width:100%;margin:4px 0 0;font-size:13px}
+ .brand img{width:30px;height:30px}
+ main{padding:19px 13px 32px}
+ .category-row{min-height:72px;padding:11px 12px;gap:10px;border-radius:14px}
+ .category-icon{width:44px;height:44px;flex-basis:44px;border-radius:12px}
+ .category-icon svg{width:23px;height:23px}
+ .category-name{font-size:14px}
+ .category-desc{font-size:11px}
+ .arrow{width:32px;height:32px;flex-basis:32px;font-size:19px}
+}
+</style>
