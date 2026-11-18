@@ -3179,7 +3179,7 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
 
         <!-- GET ALL COUNTRY NUMBERS -->
 
-        <section class="dv-feature-links" aria-label="Quick marketplace links">
+        <section class="dv-dashboard-section dv-quick-access"><div class="section-head"><h2>Quick Access</h2></div><div class="dv-feature-links" aria-label="Quick marketplace links">
   <a class="dv-feature-link dv-feature-virtual" href="virtualnumber.html">
     <span class="dv-feature-icon" aria-hidden="true">☎</span>
     <span class="dv-feature-copy"><strong>Get All Country Numbers</strong><small>Choose a country and get a number for verification</small></span>
@@ -3190,20 +3190,12 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
     <span class="dv-feature-copy"><strong>Get All Social Logs</strong><small>Explore social logs, testing apps, streaming and more</small></span>
     <span class="dv-feature-arrow" aria-hidden="true">→</span>
   </a>
-</section>
+</div></section>
 
 
         <!-- CATEGORIES -->
 
-        <section>
-
-            <div class="section-head">
-
-                <h2>
-                    Categories
-                </h2>
-
-            </div>
+        <section id="browse-categories" class="dv-dashboard-section dv-browse-section"><div class="section-head"><h2>Browse Categories</h2><a class="dv-view-all" href="categories.html">View All <span>→</span></a></div>
 
 
             <div class="categories">
@@ -3218,7 +3210,7 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
         </section>
 
         <!-- SOCIAL MEDIA BOOSTING PROMO -->
-        <a class="dv-boost-promo" href="boosting.html" aria-label="Open social media boosting">
+        <section class="dv-dashboard-section dv-social-section"><div class="section-head"><h2>Social Media Boosting</h2><a class="dv-view-all" href="boosting.html">View All <span>→</span></a></div><a class="dv-boost-promo" href="boosting.html" aria-label="Open social media boosting">
           <span class="dv-boost-promo-icon" aria-hidden="true">↗</span>
           <span class="dv-boost-promo-copy">
             <strong>Boost Your Social Media</strong>
@@ -3226,13 +3218,13 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
             <span class="dv-boost-promo-cta">Explore Boosting Services <b>→</b></span>
           </span>
           <span class="dv-boost-promo-arrow" aria-hidden="true">›</span>
-        </a>
+        </a></section>
 
         <!-- =====================================================
              SPECIAL SERVICE CARDS
         ====================================================== -->
 
-        <section id="dvDashboardBannerSection" class="dv-banner-section" hidden aria-label="Featured offers"><div class="dv-banner-viewport" id="dvBannerViewport"><div class="dv-banner-track" id="dvBannerTrack"></div><button class="dv-banner-arrow dv-banner-prev" id="dvBannerPrev" type="button" aria-label="Previous banner">‹</button><button class="dv-banner-arrow dv-banner-next" id="dvBannerNext" type="button" aria-label="Next banner">›</button></div><div class="dv-banner-dots" id="dvBannerDots"></div></section>
+        <section class="dv-dashboard-section dv-featured-section"><div class="section-head"><h2>Featured Offers</h2></div><section id="dvDashboardBannerSection" class="dv-banner-section" hidden aria-label="Featured offers"><div class="dv-banner-viewport" id="dvBannerViewport"><div class="dv-banner-track" id="dvBannerTrack"></div><button class="dv-banner-arrow dv-banner-prev" id="dvBannerPrev" type="button" aria-label="Previous banner">‹</button><button class="dv-banner-arrow dv-banner-next" id="dvBannerNext" type="button" aria-label="Next banner">›</button></div><div class="dv-banner-dots" id="dvBannerDots"></div></section></section>
 
 
         <!-- RECENT TRANSACTIONS -->
@@ -3283,6 +3275,7 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
 
         </section>
 
+        <section class="dv-dashboard-section dv-need-help"><div class="dv-help-copy"><span class="dv-help-icon" aria-hidden="true">?</span><span><strong>Need Help?</strong><small>We’re here if you need assistance with your orders or wallet.</small></span></div><button type="button" onclick="openContactSupport()">Contact Support <span>→</span></button></section>
 
     </div>
 
@@ -6065,33 +6058,19 @@ function renderCategories(){
   grid.innerHTML="";
   categories.slice(0,4).forEach(category=>{
     const button=document.createElement("button");
-    button.type="button";
-    button.className="cat";
+    button.type="button";button.className="cat";
     button.onclick=()=>selectCategory(category.name);
-    const icon=document.createElement("span");
-    icon.className="cat-icon";
+    const icon=document.createElement("span");icon.className="cat-icon";
     icon.innerHTML=dashboardIcon(category.name,"dashboard-line-icon");
-    const name=document.createElement("span");
-    name.className="cat-name";
-    name.textContent=category.name;
-    button.append(icon,name);
-    grid.appendChild(button);
+    const name=document.createElement("span");name.className="cat-name";name.textContent=category.name;
+    button.append(icon,name);grid.appendChild(button);
   });
-  if(categories.length>4){
-    const more=document.createElement("button");
-    more.type="button";
-    more.className="cat cat-more";
-    more.setAttribute("aria-label","More categories");
-    more.onclick=()=>{window.location.href="categories.html";};
-    const plus=document.createElement("span");
-    plus.className="cat-icon";
-    plus.innerHTML='<svg class="dashboard-line-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
-    const label=document.createElement("span");
-    label.className="cat-name";
-    label.textContent="More";
-    more.append(plus,label);
-    grid.appendChild(more);
-  }
+  const more=document.createElement("button");more.type="button";more.className="cat cat-more";
+  more.setAttribute("aria-label","More categories");more.onclick=()=>{window.location.href="categories.html";};
+  const plus=document.createElement("span");plus.className="cat-icon";
+  plus.innerHTML='<svg class="dashboard-line-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+  const label=document.createElement("span");label.className="cat-name";label.textContent="More";
+  more.append(plus,label);grid.appendChild(more);
 }
 </script><script>
 (function(){const section=document.getElementById('dvDashboardBannerSection'),track=document.getElementById('dvBannerTrack'),dots=document.getElementById('dvBannerDots'),viewport=document.getElementById('dvBannerViewport');if(!section||!track||!window.supabase)return;const client=window.supabase.createClient('https://hkfhehbhmucymusaytoe.supabase.co','sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_');let items=[],index=0,timer=null,startX=0;const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function show(){track.style.transform='translateX(-'+index*100+'%)';dots.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('active',i===index))}function go(n){if(!items.length)return;index=(n+items.length)%items.length;show();restart()}function restart(){clearInterval(timer);if(items.length>1)timer=setInterval(()=>{index=(index+1)%items.length;show()},3000)}function render(){if(!items.length){section.hidden=true;clearInterval(timer);return}section.hidden=false;track.innerHTML=items.map(b=>'<a class="dv-banner-slide" href="'+esc(b.destination_url)+'" target="_blank" rel="noopener noreferrer" aria-label="'+esc(b.alt_text||'Promotional banner')+'"><img src="'+esc(b.image_url)+'" alt="'+esc(b.alt_text||'Promotional banner')+'" loading="lazy">'+(b.button_text?'<span class="dv-banner-cta">'+esc(b.button_text)+'</span>':'')+'</a>').join('');dots.innerHTML=items.length>1?items.map((_,i)=>'<button type="button" class="dv-banner-dot'+(i===0?' active':'')+'" aria-label="Show banner '+(i+1)+'" data-index="'+i+'"></button>').join(''):'';dots.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>go(Number(b.dataset.index))));index=0;show();restart()}async function load(){const {data,error}=await client.from('dashboard_banners').select('id,image_url,destination_url,button_text,alt_text,display_order').eq('is_active',true).is('deleted_at',null).order('display_order',{ascending:true}).order('created_at',{ascending:false});if(error){console.warn('Dashboard banners unavailable:',error.message);return}items=data||[];render()}document.getElementById('dvBannerPrev')?.addEventListener('click',()=>go(index-1));document.getElementById('dvBannerNext')?.addEventListener('click',()=>go(index+1));viewport?.addEventListener('touchstart',e=>{startX=e.changedTouches[0].clientX},{passive:true});viewport?.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-startX;if(Math.abs(dx)>45)go(index+(dx<0?1:-1))},{passive:true});document.addEventListener('visibilitychange',()=>{if(document.hidden)clearInterval(timer);else restart()});load()})();
@@ -6209,28 +6188,35 @@ main{max-width:1160px!important;margin:0 auto!important;padding:20px clamp(14px,
 </style>
 
 <style id="dv-approved-dashboard-layout">
-/* Approved customer dashboard layout and fixed bottom navigation */
-.dv-bottom-nav{position:fixed;z-index:300;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:1320px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:9px 12px calc(9px + env(safe-area-inset-bottom));background:rgba(15,16,19,.96);border-top:1px solid #57451f;box-shadow:0 -10px 30px #0008;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
-.dv-bottom-nav-item{min-width:0;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:11px;color:#aaa394;text-decoration:none;font-size:10px;font-weight:700;line-height:1.1;transition:color .15s,background .15s}
-.dv-bottom-nav-item svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.dv-bottom-nav-item.is-active{color:#e5bd52;background:#e5bd5212}
-.dv-bottom-nav-item:focus-visible{outline:2px solid #e5bd52;outline-offset:2px}
-main{padding-bottom:125px!important}
+body{background:#080808;color:#f5f0df}
+header{position:relative;display:flex;align-items:center;gap:11px;padding:15px 16px 13px;border-bottom:1px solid #332916}
+header .brand{flex:1;min-width:0}header .brand h1{font-size:17px;line-height:1.25}header .brand p{font-size:11px}
+header .menu-btn,header .notification-btn{width:42px;height:42px;flex:0 0 42px;border-radius:13px;border:1px solid #73591e;background:#111;color:#e5bd52;display:grid;place-items:center}
+header .menu-btn svg,header .notification-btn svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+main{padding:15px 15px 120px!important;max-width:760px;margin:0 auto}
+.wallet{position:relative;overflow:hidden;margin:5px 0 19px;padding:19px 18px 15px!important;border:1px solid #8b6d20!important;border-radius:19px!important;background:linear-gradient(135deg,#1b180f,#111 58%,#17130a)!important;box-shadow:0 12px 30px #0005}
+.wallet:before{content:"";position:absolute;right:-40px;top:-58px;width:160px;height:160px;border:1px solid #b38a2d33;border-radius:50%;box-shadow:0 0 0 18px #b38a2d0d,0 0 0 38px #b38a2d08;pointer-events:none}
+.wallet-top{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px}.wallet-label{font-size:11px!important;letter-spacing:1.2px;color:#c4b58f!important;font-weight:700}
+.balance-row{position:relative;display:flex;align-items:center;gap:10px;margin:15px 0 16px}#walletBalance{font-size:30px!important;font-weight:800;letter-spacing:-.6px;color:#fff!important}.wallet .eye{color:#e5bd52!important}
+.wallet-actions{position:relative;border-top:1px solid #ffffff20;padding-top:13px;margin-top:3px}.wallet-action.fund{width:100%;min-height:44px;border-radius:12px;background:#e5bd52!important;color:#151108!important;font-weight:800}
+.dv-dashboard-section{margin:0 0 21px}.dv-dashboard-section .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px!important}.dv-dashboard-section .section-head h2{font-size:17px!important;font-weight:800;letter-spacing:-.2px}
+.dv-view-all{display:inline-flex;align-items:center;gap:6px;color:#e5bd52;text-decoration:none;font-size:11px;font-weight:800;white-space:nowrap}.dv-view-all span{font-size:15px}
+.dv-feature-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.dv-feature-link{min-width:0;min-height:112px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:10px;padding:13px!important;border:1px solid #493b1c!important;border-radius:15px!important;background:linear-gradient(145deg,#1a1812,#111)!important}
+.dv-feature-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:#33270e;color:#e5bd52;font-size:19px}.dv-feature-copy{display:flex;flex-direction:column;gap:4px;min-width:0}.dv-feature-copy strong{font-size:12px!important;color:#f5f0df}.dv-feature-copy small{font-size:10px!important;line-height:1.45;color:#aaa18a}.dv-feature-arrow{display:none}
+.dv-browse-section .categories{padding:0!important;background:transparent!important}#categoryGrid.grid{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:8px!important}
+#categoryGrid .cat{min-width:0!important;min-height:95px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:8px!important;padding:9px 4px!important;border:1px solid #39301d!important;border-radius:13px!important;background:#151515!important;color:#f5f0df!important}
+#categoryGrid .cat-icon{width:38px!important;height:38px!important;flex:0 0 38px!important;display:grid!important;place-items:center!important;border-radius:11px!important;background:#29210f!important;color:#e5bd52!important;font-size:19px!important}#categoryGrid .cat-icon svg{width:21px;height:21px}#categoryGrid .cat-name{font-size:10px!important;line-height:1.25;text-align:center;overflow-wrap:anywhere}#categoryGrid .cat-more{border-style:dashed!important;background:#111!important}
+.dv-boost-promo{display:flex!important;align-items:center;gap:12px;padding:15px!important;border:1px solid #80621f!important;border-radius:16px!important;background:linear-gradient(120deg,#241d0d,#121212 75%)!important}.dv-boost-promo-icon{width:43px;height:43px;flex:0 0 43px;display:grid;place-items:center;border-radius:13px;background:#3b2c0e;color:#e5bd52;font-size:22px}
+.dv-boost-promo-copy strong{font-size:13px!important;color:#f6e7bd}.dv-boost-promo-copy small{font-size:10px!important;line-height:1.5;color:#b9ad91}.dv-boost-promo-cta{font-size:10px!important;color:#e5bd52}.dv-boost-promo-arrow{color:#e5bd52}
+.dv-featured-section .dv-banner-section{margin:0!important}.dv-banner-section[hidden]{display:none!important}.dv-banner-viewport{border-radius:16px!important;border:1px solid #57451f!important}.dv-banner-slide{aspect-ratio:2.5/1!important;min-height:120px!important}
+.transactions{margin-top:0!important}.transactions .tx-card{border:1px solid #39301d!important;border-radius:15px!important;background:#121212!important}
+.dv-need-help{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border:1px solid #493b1c;border-radius:15px;background:linear-gradient(120deg,#1a170f,#111)}
+.dv-help-copy{display:flex;align-items:center;gap:10px;min-width:0}.dv-help-icon{width:37px;height:37px;flex:0 0 37px;display:grid;place-items:center;border-radius:11px;background:#34280f;color:#e5bd52;font-size:19px;font-weight:900}
+.dv-help-copy strong,.dv-help-copy small{display:block}.dv-help-copy strong{font-size:13px;color:#f5f0df}.dv-help-copy small{margin-top:3px;font-size:10px;line-height:1.4;color:#aaa18a}
+.dv-need-help>button{flex:0 0 auto;padding:10px 11px;border:1px solid #80621f;border-radius:10px;background:#e5bd52;color:#171208;font-size:10px;font-weight:800}.dv-need-help>button span{margin-left:3px}
+.dv-bottom-nav{position:fixed;z-index:300;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:760px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:9px 12px calc(9px + env(safe-area-inset-bottom));background:rgba(15,16,19,.97);border-top:1px solid #57451f;box-shadow:0 -10px 30px #0008;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.dv-bottom-nav-item{min-width:0;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:11px;color:#aaa394;text-decoration:none;font-size:10px;font-weight:700;line-height:1.1}.dv-bottom-nav-item svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.dv-bottom-nav-item.is-active{color:#e5bd52;background:#e5bd5212}
 .support-message-button{bottom:88px!important}
-#categoryGrid.grid{grid-template-columns:repeat(5,minmax(0,1fr))!important}
-@media(max-width:650px){
- .dv-bottom-nav{padding-left:7px;padding-right:7px;gap:2px}
- .dv-bottom-nav-item{min-height:47px;font-size:9px;gap:3px}
- .dv-bottom-nav-item svg{width:19px;height:19px}
- main{padding-bottom:132px!important}
- #categoryGrid.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
- #categoryGrid .cat{min-height:94px!important;padding:11px 7px!important}
- #categoryGrid .cat-icon{width:39px!important;height:39px!important;flex-basis:39px!important}
- #categoryGrid .cat-name{font-size:11px!important}
-}
-@media(min-width:651px){
- .dv-bottom-nav{bottom:14px;width:min(100% - 32px,560px);border:1px solid #57451f;border-radius:18px;padding:9px 14px calc(9px + env(safe-area-inset-bottom))}
- main{padding-bottom:120px!important}
- .support-message-button{bottom:24px!important}
-}
+@media(min-width:761px){.dv-bottom-nav{bottom:14px;width:min(100% - 32px,560px);border:1px solid #57451f;border-radius:18px}.support-message-button{bottom:24px!important}}
+@media(max-width:420px){main{padding:12px 12px 125px!important}.wallet{padding:17px 15px 14px!important}#walletBalance{font-size:27px!important}.dv-feature-links{gap:8px}.dv-feature-link{min-height:108px;padding:11px!important}.dv-feature-copy strong{font-size:11px!important}.dv-feature-copy small{font-size:9px!important}#categoryGrid.grid{gap:6px!important}#categoryGrid .cat{min-height:88px!important;padding:7px 2px!important}#categoryGrid .cat-icon{width:34px!important;height:34px!important;flex-basis:34px!important}#categoryGrid .cat-name{font-size:9px!important}.dv-need-help{align-items:flex-start;flex-direction:column}.dv-need-help>button{width:100%}}
 </style>
