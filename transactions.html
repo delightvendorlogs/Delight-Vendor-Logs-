@@ -519,7 +519,7 @@ main{max-width:900px!important;padding:12px 14px 55px!important}
 
           <div class="description">
             ${escapeHTML(
-              customerTransactionLabel(transaction)
+              removeProviderNames(transaction.description || "")
             )}
           </div>
 
@@ -552,12 +552,33 @@ main{max-width:900px!important;padding:12px 14px 55px!important}
    */
 
   function customerTransactionLabel(transaction){
- const raw=String(transaction?.type||transaction?.transaction_type||'').toLowerCase();
+ const type=String(transaction?.type||transaction?.transaction_type||'').trim();
+ const description=String(transaction?.description||'').trim();
+ const raw=(type+' '+description).toLowerCase();
  if(/refund|revers/.test(raw))return 'Refund';
- if(/deposit|fund|credit|top.?up/.test(raw))return 'Wallet funding';
- if(/withdraw/.test(raw))return 'Withdrawal';
- if(/virtual.?number|sms|otp|number.?purchase/.test(raw))return 'Virtual number purchase';
- return 'Service purchase';
+ if(/deposit|fund|credit|top.?up/.test(type.toLowerCase()))return 'Wallet funding';
+ if(/withdraw/.test(type.toLowerCase()))return 'Withdrawal';
+
+ // Use the saved transaction description to show what the customer actually
+ // purchased, while removing known provider names from the customer-facing text.
+ let detail=removeProviderNames(description)
+   .replace(/\\b(?:provider|supplier|vendor)\\b/gi,'')
+   .replace(/[|:–—-]+/g,' ')
+   .replace(/\\s{2,}/g,' ')
+   .trim();
+ detail=detail.replace(/^(?:purchase|purchased|payment|transaction)\\s+(?:of|for)\\s+/i,'');
+ detail=detail.replace(/^(?:virtual\\s+number|number)\\s+(?:purchase|order)\\s*(?:for|of)?\\s*/i,'');
+ detail=detail.replace(/^(?:service|product)\\s+(?:purchase|order)\\s*(?:for|of)?\\s*/i,'');
+
+ const isVirtual=/virtual.?number|sms|otp|number.?purchase/.test(raw);
+ if(isVirtual){
+   if(detail && !/^(?:virtual number|number purchase|sms purchase|otp purchase)$/i.test(detail))
+     return 'Virtual Number Purchase · '+detail;
+   return 'Virtual Number Purchase';
+ }
+ if(detail && !/^(?:service purchase|purchase|service order)$/i.test(detail))
+   return detail;
+ return 'Service Purchase';
 }
 function customerTransactionStatus(value){
  const raw=String(value||'').toLowerCase();
