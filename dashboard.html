@@ -3162,16 +3162,8 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
 
 
             <div class="wallet-actions">
-
-                <button
-                    class="wallet-action fund"
-                    type="button"
-                    onclick="location.href='wallet.html'"
-                >
-                    ＋ Fund Wallet
-                </button>
-
-
+                <button class="wallet-action fund" type="button" onclick="location.href='wallet.html'">⊕ Fund Wallet</button>
+                <span class="wallet-caption">Your wallet</span>
             </div>
 
         </section>
@@ -3182,12 +3174,12 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
         <section class="dv-dashboard-section dv-quick-access"><div class="section-head"><h2>Quick Access</h2></div><div class="dv-feature-links" aria-label="Quick marketplace links">
   <a class="dv-feature-link dv-feature-virtual" href="virtualnumber.html">
     <span class="dv-feature-icon" aria-hidden="true">☎</span>
-    <span class="dv-feature-copy"><strong>Get All Country Numbers</strong><small>Choose a country and get a number for verification</small></span>
+    <span class="dv-feature-copy"><strong>All Country Numbers</strong><small>Get a number for verification</small></span>
     <span class="dv-feature-arrow" aria-hidden="true">→</span>
   </a>
   <a class="dv-feature-link dv-feature-social" href="sociallogs.html">
     <span class="dv-feature-icon" aria-hidden="true">▣</span>
-    <span class="dv-feature-copy"><strong>Get All Social Logs</strong><small>Explore social logs, testing apps, streaming and more</small></span>
+    <span class="dv-feature-copy"><strong>Social Logs</strong><small>Browse available accounts</small></span>
     <span class="dv-feature-arrow" aria-hidden="true">→</span>
   </a>
 </div></section>
@@ -3224,7 +3216,7 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
              SPECIAL SERVICE CARDS
         ====================================================== -->
 
-        <section class="dv-dashboard-section dv-featured-section"><div class="section-head"><h2>Featured Offers</h2></div><section id="dvDashboardBannerSection" class="dv-banner-section" hidden aria-label="Featured offers"><div class="dv-banner-viewport" id="dvBannerViewport"><div class="dv-banner-track" id="dvBannerTrack"></div><button class="dv-banner-arrow dv-banner-prev" id="dvBannerPrev" type="button" aria-label="Previous banner">‹</button><button class="dv-banner-arrow dv-banner-next" id="dvBannerNext" type="button" aria-label="Next banner">›</button></div><div class="dv-banner-dots" id="dvBannerDots"></div></section></section>
+        <section class="dv-dashboard-section dv-featured-section"><div class="section-head"><h2>Featured Offers</h2><span class="dv-featured-note">Promotional slider</span></div><section id="dvDashboardBannerSection" class="dv-banner-section" hidden aria-label="Featured offers"><div class="dv-banner-viewport" id="dvBannerViewport"><div class="dv-banner-track" id="dvBannerTrack"></div><button class="dv-banner-arrow dv-banner-prev" id="dvBannerPrev" type="button" aria-label="Previous banner">‹</button><button class="dv-banner-arrow dv-banner-next" id="dvBannerNext" type="button" aria-label="Next banner">›</button></div><div class="dv-banner-dots" id="dvBannerDots"></div></section></section>
 
 
         <!-- RECENT TRANSACTIONS -->
@@ -4996,94 +4988,48 @@ async function loadCategories(){
 
 function renderCategories(){
 
-    const grid =
-        document.getElementById(
-            "categoryGrid"
-        );
-
-
-    if(!grid){
-
-        return;
-    }
-
+    const grid = document.getElementById("categoryGrid");
+    if(!grid) return;
 
     grid.innerHTML = "";
 
+    // Dashboard preview layout: seven live category shortcuts plus a More tile.
+    categories.slice(0, 7).forEach(category => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "cat";
+        button.onclick = () => selectCategory(category.name);
 
-    categories.forEach(
-        (
-            category,
-            index
-        ) => {
+        const iconBox = document.createElement("div");
+        iconBox.className = "cat-icon";
+        iconBox.innerHTML = dashboardIcon(category.name, "dashboard-line-icon");
 
-            const button =
-                document.createElement(
-                    "button"
-                );
+        const nameBox = document.createElement("div");
+        nameBox.className = "cat-name";
+        nameBox.textContent = category.name;
 
+        button.appendChild(iconBox);
+        button.appendChild(nameBox);
+        grid.appendChild(button);
+    });
 
-            button.type =
-                "button";
+    const more = document.createElement("button");
+    more.type = "button";
+    more.className = "cat cat-more";
+    more.setAttribute("aria-label", "View all categories");
+    more.onclick = () => { location.href = "categories.html"; };
 
+    const moreIcon = document.createElement("div");
+    moreIcon.className = "cat-icon";
+    moreIcon.textContent = "+";
 
-            button.className =
-                "cat";
+    const moreName = document.createElement("div");
+    moreName.className = "cat-name";
+    moreName.textContent = "More";
 
-
-            button.onclick =
-                () =>
-                    selectCategory(
-                        category.name
-                    );
-
-
-            const icon = dashboardIcon(category.name, "dashboard-line-icon");
-
-
-            const iconBox =
-                document.createElement(
-                    "div"
-                );
-
-
-            iconBox.className =
-                "cat-icon";
-
-
-            iconBox.innerHTML =
-                icon;
-
-
-            const nameBox =
-                document.createElement(
-                    "div"
-                );
-
-
-            nameBox.className =
-                "cat-name";
-
-
-            nameBox.textContent =
-                category.name;
-
-
-            button.appendChild(
-                iconBox
-            );
-
-
-            button.appendChild(
-                nameBox
-            );
-
-
-            grid.appendChild(
-                button
-            );
-        }
-    );
+    more.appendChild(moreIcon);
+    more.appendChild(moreName);
+    grid.appendChild(more);
 }
 
 
@@ -6219,4 +6165,82 @@ main{padding:15px 15px 120px!important;max-width:760px;margin:0 auto}
 .support-message-button{bottom:88px!important}
 @media(min-width:761px){.dv-bottom-nav{bottom:14px;width:min(100% - 32px,560px);border:1px solid #57451f;border-radius:18px}.support-message-button{bottom:24px!important}}
 @media(max-width:420px){main{padding:12px 12px 125px!important}.wallet{padding:17px 15px 14px!important}#walletBalance{font-size:27px!important}.dv-feature-links{gap:8px}.dv-feature-link{min-height:108px;padding:11px!important}.dv-feature-copy strong{font-size:11px!important}.dv-feature-copy small{font-size:9px!important}#categoryGrid.grid{gap:6px!important}#categoryGrid .cat{min-height:88px!important;padding:7px 2px!important}#categoryGrid .cat-icon{width:34px!important;height:34px!important;flex-basis:34px!important}#categoryGrid .cat-name{font-size:9px!important}.dv-need-help{align-items:flex-start;flex-direction:column}.dv-need-help>button{width:100%}}
+</style>
+
+
+<style id="dv-dashboard-reference-match">
+/* Final mobile layout overrides: follow the supplied three-screen reference. */
+header{padding:14px 16px!important;gap:10px!important;border-bottom:1px solid #2c2414!important}
+header .brand{order:0;flex:1;min-width:0;gap:11px!important}
+header .brand h1{color:#f5f0df!important;font-size:17px!important}
+header .brand p{color:#b8ad8d!important;font-size:11px!important}
+header .menu-btn{order:2!important}
+header .notification-btn{order:1!important}
+main{width:100%!important;max-width:760px!important;margin:0 auto!important;padding:15px 15px 112px!important}
+.wallet{padding:18px 19px 17px!important;margin:5px 0 23px!important;border:1px solid #8b6d20!important;border-radius:20px!important;background:#1d190e!important;box-shadow:none!important}
+.wallet:before,.wallet:after{display:none!important}
+.wallet-label{font-size:12px!important;letter-spacing:.2px!important;color:#d3c397!important}
+.status{padding:7px 12px!important;background:#12351e!important;border:0!important;color:#1db65b!important;font-size:12px!important}
+.status i{display:none!important}
+.balance-row{margin:16px 0 20px!important}
+#walletBalance{font-size:clamp(28px,6vw,36px)!important;color:#fff0c9!important}
+.wallet .eye{display:none!important}
+.wallet-actions{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;margin:0!important;padding:0!important;border:0!important}
+.wallet-action.fund{width:auto!important;min-width:0!important;height:46px!important;padding:0 19px!important;border-radius:13px!important;font-size:14px!important}
+.wallet-caption{color:#bdb39a;font-size:13px;white-space:nowrap}
+.dv-dashboard-section{margin:0 0 22px!important}
+.dv-dashboard-section .section-head{margin:0 0 13px!important}
+.dv-dashboard-section .section-head h2{font-size:19px!important;font-weight:800!important;color:#f5f0df!important}
+.dv-view-all{font-size:13px!important;font-weight:600!important}
+.dv-feature-links{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:11px!important;margin:0!important}
+.dv-feature-link{min-width:0!important;min-height:205px!important;padding:17px 16px!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:flex-start!important;gap:13px!important;border:1px solid #493b1c!important;border-radius:17px!important;background:#191919!important;box-shadow:none!important}
+.dv-feature-icon{width:35px!important;height:35px!important;flex:0 0 35px!important;padding:0!important;background:transparent!important;border:0!important;border-radius:0!important;color:#e5bd52!important;font-size:27px!important}
+.dv-feature-copy{display:flex!important;flex-direction:column!important;gap:8px!important;min-width:0!important}
+.dv-feature-copy strong{font-size:16px!important;line-height:1.3!important;color:#fff!important}
+.dv-feature-copy small{font-size:13px!important;line-height:1.5!important;color:#aaa!important}
+.dv-feature-arrow{display:none!important}
+.dv-feature-copy .dv-feature-cta{display:block!important;margin-top:2px!important;color:#e5bd52!important;font-size:12px!important;font-weight:800!important}
+.dv-browse-section .categories{padding:0!important;margin:0!important;background:transparent!important;border:0!important}
+#categoryGrid.grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:10px!important}
+#categoryGrid .cat{min-width:0!important;min-height:108px!important;padding:11px 5px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:9px!important;border:1px solid #252525!important;border-radius:16px!important;background:#191919!important;color:#f5f0df!important}
+#categoryGrid .cat-icon{width:35px!important;height:35px!important;flex:0 0 35px!important;display:grid!important;place-items:center!important;background:transparent!important;border:0!important;color:#e5bd52!important;font-size:23px!important}
+#categoryGrid .cat-icon .dashboard-line-icon{width:25px!important;height:25px!important}
+#categoryGrid .cat-name{font-size:12px!important;line-height:1.25!important;text-align:center!important;color:#e7e0d0!important;overflow-wrap:anywhere!important}
+#categoryGrid .cat-more{background:#191919!important;border:1px solid #252525!important}
+#categoryGrid .cat-more .cat-icon{font-size:27px!important}
+.dv-social-section .dv-boost-promo{min-height:122px!important;padding:16px!important;gap:12px!important;border:1px solid #80621f!important;border-radius:18px!important;background:#211a0c!important;box-shadow:none!important}
+.dv-social-section .dv-boost-promo-icon{display:none!important}
+.dv-social-section .dv-boost-promo-copy strong{font-size:16px!important;color:#fff!important}
+.dv-social-section .dv-boost-promo-copy small{font-size:13px!important;line-height:1.5!important;color:#bdb39a!important}
+.dv-social-section .dv-boost-promo-cta{font-size:13px!important}
+.dv-featured-section .section-head{display:flex!important;align-items:center!important;justify-content:space-between!important}
+.dv-featured-note{color:#bdb39a;font-size:13px}
+.dv-featured-section .dv-banner-section{margin:0!important}
+.dv-featured-section .dv-banner-viewport{border:1px solid #493b1c!important;border-radius:17px!important;background:#211a0c!important}
+.dv-featured-section .dv-banner-slide{aspect-ratio:2.5/1!important;min-height:145px!important}
+.transactions{margin:0 0 20px!important}
+.transactions .section-head{display:flex!important;align-items:center!important;justify-content:space-between!important;margin:0 0 13px!important}
+.transactions .section-head h2{font-size:19px!important;color:#fff!important}
+.transactions .view{border:0!important;background:transparent!important;color:#e5bd52!important;font-size:13px!important}
+.transactions .tx-card{padding:0!important;border:1px solid #252525!important;border-radius:17px!important;background:#191919!important;box-shadow:none!important}
+.transactions .tx{padding:17px!important}
+.dv-need-help{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:9px!important;min-height:145px!important;padding:18px!important;border:1px solid #252525!important;border-radius:17px!important;background:#191919!important;text-align:center!important}
+.dv-help-copy{display:flex!important;flex-direction:column!important;align-items:center!important;gap:8px!important}
+.dv-help-icon{width:auto!important;height:auto!important;flex:0 0 auto!important;background:transparent!important;border:0!important;color:#e5bd52!important;font-size:26px!important}
+.dv-help-copy strong{font-size:17px!important;color:#fff!important}
+.dv-help-copy small{font-size:13px!important;color:#aaa!important}
+.dv-need-help>button{width:auto!important;padding:0!important;border:0!important;background:transparent!important;color:#aaa!important;font-size:13px!important;font-weight:500!important}
+.dv-need-help>button span{display:none!important}
+.dv-bottom-nav{max-width:760px!important}
+@media(max-width:420px){
+ main{padding:13px 12px 112px!important}
+ .wallet{padding:17px 15px!important}
+ .dv-feature-link{min-height:190px!important;padding:14px 12px!important;gap:12px!important}
+ .dv-feature-copy strong{font-size:15px!important}
+ .dv-feature-copy small{font-size:12px!important}
+ #categoryGrid.grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important}
+ #categoryGrid .cat{min-height:100px!important;padding:9px 3px!important}
+ #categoryGrid .cat-name{font-size:11px!important}
+ .dv-need-help{min-height:140px!important}
+}
 </style>
