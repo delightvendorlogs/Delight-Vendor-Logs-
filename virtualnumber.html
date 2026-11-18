@@ -23,7 +23,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica
 button,input,select{font:inherit}
 button{cursor:pointer}
 button:disabled{opacity:.55;cursor:not-allowed}
-.container{max-width:900px;margin:auto;padding:16px}
+.container{max-width:900px;margin:auto;padding:16px 16px 118px}
 header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
 
 .brand{
@@ -87,6 +87,16 @@ p{line-height:1.5}
 .tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:20px 0;width:100%;overflow:visible}
 .tab{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 4px;border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:12px;font-weight:800;font-size:clamp(10px,2.8vw,14px);line-height:1.2;text-align:center;white-space:normal;overflow-wrap:anywhere}
 .tab.active{color:#111;background:var(--gold);border-color:var(--gold)}
+.tab-main{display:block;font-size:clamp(10px,2.8vw,14px);font-weight:900;line-height:1.25}
+.tab-provider{display:block;font-size:10px;font-weight:700;opacity:.78;line-height:1.2}
+.tab.active .tab-provider{opacity:.8;color:#28200b}
+.page-intro{margin:10px 0 16px}.page-intro h1{margin:0 0 6px;font-size:25px}.page-intro p{margin:0;line-height:1.5}
+.dv-bottom-nav{position:fixed;z-index:300;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:760px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:9px 12px calc(9px + env(safe-area-inset-bottom));background:rgba(15,16,19,.97);border-top:1px solid #57451f;box-shadow:0 -10px 30px #0008;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.dv-bottom-nav-item{min-width:0;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:11px;color:#aaa394;text-decoration:none;font-size:10px;font-weight:700;line-height:1.1}
+.dv-bottom-nav-item svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.dv-bottom-nav-item.is-active{color:#e5bd52;background:#e5bd5212}
+@media(min-width:761px){.dv-bottom-nav{bottom:14px;width:min(100% - 32px,560px);border:1px solid #57451f;border-radius:18px}.container{padding-bottom:125px}}
+@media(max-width:420px){.container{padding:12px 12px 120px}.wallet{min-width:116px;padding:10px 11px}.wallet strong{font-size:16px}.tab{min-height:66px;padding:9px 3px}.tab-provider{font-size:9px}}
 .tab-cheapest{display:inline-flex;align-items:center;border-radius:999px;padding:3px 7px;background:#14532d;color:#bbf7d0;font-size:10px;font-weight:900;letter-spacing:.3px}
 .panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px}
 .field{width:100%;padding:13px;background:#090909;color:var(--text);border:1px solid #343434;border-radius:11px;outline:none}
@@ -254,21 +264,21 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
 </div>
 
  <div class="wallet">
-  <small>Wallet Balance</small>
+  <small>AVAILABLE WALLET BALANCE</small>
   <strong id="walletBalance">Loading…</strong>
   <a href="wallet.html" class="fund-wallet-btn"><span>＋</span> Fund Wallet</a>
  </div>
 </header>
 
 <a href="dashboard.html" class="back-dashboard-btn"><span>←</span> Back to Dashboard</a>
-<h1>Virtual Numbers</h1>
-<p class="muted small">Choose a number service, search for a country or service, then manage your numbers below.</p>
+<div class="page-intro"><h1>Virtual Numbers</h1>
+<p class="muted small">Choose a provider, select your country and service, then manage your number orders below.</p></div>
 <div id="globalMessage" class="message"></div>
 
 <div class="tabs">
- <button class="tab" id="usaTab" onclick="openUSA()">USA</button>
- <button class="tab" id="allTab" onclick="openAll()">All Countries</button>
- <button class="tab" id="smsbowerTab" onclick="openSmsBower()">All Countries 2 <span class="tab-cheapest">CHEAPEST</span></button>
+ <button class="tab" id="usaTab" onclick="openUSA()"><span class="tab-main">USA</span><span class="tab-provider">TextVerified</span></button>
+ <button class="tab" id="allTab" onclick="openAll()"><span class="tab-main">All Countries</span><span class="tab-provider">VirtualSMS</span></button>
+ <button class="tab" id="smsbowerTab" onclick="openSmsBower()"><span class="tab-main">All Countries 2</span><span class="tab-provider">SMSBower</span><span class="tab-cheapest">CHEAPEST</span></button>
 </div>
 
 <section id="usaSection" class="section">
@@ -342,6 +352,24 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
  <div id="ordersList"><div class="loading">Checking your session…</div></div>
 </section>
 </div>
+
+<nav class="dv-bottom-nav" aria-label="Main navigation">
+  <a class="dv-bottom-nav-item" href="dashboard.html">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Home</span>
+  </a>
+  <a class="dv-bottom-nav-item is-active" href="categories.html" aria-current="page">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Categories</span>
+  </a>
+  <a class="dv-bottom-nav-item" href="wallet.html">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="15" rx="2"/><path d="M2.5 9h19M16 14h2"/></svg><span>Wallet</span>
+  </a>
+  <a class="dv-bottom-nav-item" href="purchases.html">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 1.9-1.5L22 8H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg><span>Orders</span>
+  </a>
+  <a class="dv-bottom-nav-item" href="profile.html">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0"/></svg><span>Profile</span>
+  </a>
+</nav>
 
 <div id="verificationOverlay" class="verification-overlay" role="dialog" aria-modal="true" aria-labelledby="verificationTitle">
  <div class="verification-modal">
