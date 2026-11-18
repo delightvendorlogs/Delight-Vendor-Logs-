@@ -3074,6 +3074,18 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
 }
 
 </style>
+<style id="dv-menu-categories-style">
+/* Expandable All Categories item in the dashboard menu */
+.menu-categories-toggle{display:flex;width:100%;align-items:center;text-align:left;background:transparent;border:0;border-bottom:1px solid #eee7d7;font:inherit;cursor:pointer}
+.menu-categories-toggle>span:nth-child(2){flex:1}
+.menu-categories-chevron{font-size:20px;color:#d4af37;transition:transform .18s ease}
+.menu-categories-toggle[aria-expanded="true"] .menu-categories-chevron{transform:rotate(180deg)}
+.menu-category-list{padding:5px 0 8px 12px;border-bottom:1px solid #eee7d7}
+.menu-category-list[hidden]{display:none!important}
+.menu-category-option{display:flex;width:100%;align-items:center;gap:10px;padding:12px 8px;border:0;border-bottom:1px solid #29220f;background:transparent;color:inherit;text-align:left;font:inherit;font-size:14px;cursor:pointer}
+.menu-category-option:last-child{border-bottom:0}
+.menu-category-option .menu-item-icon{color:#d4af37}
+</style>
 </head>
 
 
@@ -4109,17 +4121,7 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
         </button>
 
     </div>
-
-
-    <div
-        class="menu-item"
-        onclick="location.href='profile.html'"
-    >
-        <span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></span> Profile
-    </div>
-
-
-    <div
+<div
         class="menu-item"
         onclick="location.href='wallet.html'"
     >
@@ -4149,18 +4151,7 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
     >
         <span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span> Pending Orders
     </div>
-
-
-    <div
-        class="menu-item"
-        onclick="location.href='profile.html#change-password'"
-    >
-        <span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19 13v-2l2-1-2-4-2 1-2-1V4H9v2L7 7 5 6 3 10l2 1v2l-2 1 2 4 2-1 2 1v2h6v-2l2-1 2 1 2-4z"/></svg></span> Settings
-    </div>
-
-
-    <div class="menu-item" onclick="location.href='sociallogs.html'"><span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg></span> All Services</div>
-    <div class="menu-item" onclick="location.href='refer.html'"><span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><path d="M3 20a6 6 0 0 1 12 0M16 15a4 4 0 0 1 5 4"/></svg></span> Refer &amp; Earn</div>
+<div class="menu-item" onclick="location.href='refer.html'"><span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><path d="M3 20a6 6 0 0 1 12 0M16 15a4 4 0 0 1 5 4"/></svg></span> Refer &amp; Earn</div>
     <div class="menu-item" onclick="location.href='notification.html'"><span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></span> Notifications</div>
     <div class="menu-item menu-logout" onclick="logoutFromDashboard()"><span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10"/></svg></span> Sign out</div>
     <div
@@ -4170,15 +4161,19 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
         <span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4zM8 9h8M8 12h5"/></svg></span> Need Contact Support?
     </div>
 
-
-    <div
-        class="menu-item"
-        style="color:#b00020"
-        onclick="closeMenu()"
+    <button
+        id="menuCategoriesToggle"
+        class="menu-item menu-categories-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="menuCategoryList"
+        onclick="toggleMenuCategories()"
     >
-        <span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 12 12M18 6 6 18"/></svg></span> Close
-    </div>
-
+        <span class="menu-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
+        <span>All Categories</span>
+        <span class="menu-categories-chevron" aria-hidden="true">⌄</span>
+    </button>
+    <div id="menuCategoryList" class="menu-category-list" hidden></div>
 
 </div>
 
@@ -6066,6 +6061,48 @@ function renderCategories(){
 }
 </script><script>
 (function(){const section=document.getElementById('dvDashboardBannerSection'),track=document.getElementById('dvBannerTrack'),dots=document.getElementById('dvBannerDots'),viewport=document.getElementById('dvBannerViewport');if(!section||!track||!window.supabase)return;const client=window.supabase.createClient('https://hkfhehbhmucymusaytoe.supabase.co','sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_');let items=[],index=0,timer=null,startX=0;const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function show(){track.style.transform='translateX(-'+index*100+'%)';dots.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('active',i===index))}function go(n){if(!items.length)return;index=(n+items.length)%items.length;show();restart()}function restart(){clearInterval(timer);if(items.length>1)timer=setInterval(()=>{index=(index+1)%items.length;show()},3000)}function render(){if(!items.length){section.hidden=true;clearInterval(timer);return}section.hidden=false;track.innerHTML=items.map(b=>'<a class="dv-banner-slide" href="'+esc(b.destination_url)+'" target="_blank" rel="noopener noreferrer" aria-label="'+esc(b.alt_text||'Promotional banner')+'"><img src="'+esc(b.image_url)+'" alt="'+esc(b.alt_text||'Promotional banner')+'" loading="lazy">'+(b.button_text?'<span class="dv-banner-cta">'+esc(b.button_text)+'</span>':'')+'</a>').join('');dots.innerHTML=items.length>1?items.map((_,i)=>'<button type="button" class="dv-banner-dot'+(i===0?' active':'')+'" aria-label="Show banner '+(i+1)+'" data-index="'+i+'"></button>').join(''):'';dots.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>go(Number(b.dataset.index))));index=0;show();restart()}async function load(){const {data,error}=await client.from('dashboard_banners').select('id,image_url,destination_url,button_text,alt_text,display_order').eq('is_active',true).is('deleted_at',null).order('display_order',{ascending:true}).order('created_at',{ascending:false});if(error){console.warn('Dashboard banners unavailable:',error.message);return}items=data||[];render()}document.getElementById('dvBannerPrev')?.addEventListener('click',()=>go(index-1));document.getElementById('dvBannerNext')?.addEventListener('click',()=>go(index+1));viewport?.addEventListener('touchstart',e=>{startX=e.changedTouches[0].clientX},{passive:true});viewport?.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-startX;if(Math.abs(dx)>45)go(index+(dx<0?1:-1))},{passive:true});document.addEventListener('visibilitychange',()=>{if(document.hidden)clearInterval(timer);else restart()});load()})();
+</script>
+
+
+<script>
+function renderMenuCategories(){
+    const list=document.getElementById("menuCategoryList");
+    if(!list)return;
+    const available=(Array.isArray(categories)?categories:[]).filter(item=>item&&item.is_active!==false&&item.name&&item.name!=="Home");
+    list.innerHTML="";
+    if(!available.length){
+        const empty=document.createElement("div");
+        empty.className="menu-category-option";
+        empty.textContent="No categories available";
+        list.appendChild(empty);
+        return;
+    }
+    available.forEach(category=>{
+        const button=document.createElement("button");
+        button.type="button";
+        button.className="menu-category-option";
+        const icon=document.createElement("span");
+        icon.className="menu-item-icon";
+        icon.innerHTML=dashboardIcon(category.name);
+        const label=document.createElement("span");
+        label.textContent=category.name;
+        button.append(icon,label);
+        button.addEventListener("click",()=>{
+            closeMenu();
+            selectCategory(category.name);
+        });
+        list.appendChild(button);
+    });
+}
+function toggleMenuCategories(){
+    const list=document.getElementById("menuCategoryList");
+    const toggle=document.getElementById("menuCategoriesToggle");
+    if(!list||!toggle)return;
+    const opening=list.hidden;
+    if(opening)renderMenuCategories();
+    list.hidden=!opening;
+    toggle.setAttribute("aria-expanded",String(opening));
+}
 </script>
 
 <script src="branding.js"></script>
