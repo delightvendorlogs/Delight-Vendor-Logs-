@@ -307,7 +307,7 @@ main{
 <section class="card"><h2>Add Money</h2><p class="card-hint">Enter the amount you want to add to your wallet.</p><input id="amount" type="number" min="100" step="1" placeholder="₦ Enter amount" inputmode="numeric"><p class="quick-label">Choose an amount</p>
 <div class="quick-select"><button type="button" class="quick-amount" onclick="selectAmount(100)">₦100</button><button type="button" class="quick-amount" onclick="selectAmount(200)">₦200</button><button type="button" class="quick-amount" onclick="selectAmount(500)">₦500</button><button type="button" class="quick-amount" onclick="selectAmount(1000)">₦1,000</button><button type="button" class="quick-amount" onclick="selectAmount(2000)">₦2,000</button><button type="button" class="quick-amount" onclick="selectAmount(5000)">₦5,000</button><button type="button" class="quick-amount" onclick="selectAmount(10000)">₦10,000</button><button type="button" class="quick-amount" onclick="selectAmount(20000)">₦20,000</button></div>
 <button id="continueButton" class="btn" onclick="continuePayment()">Continue to Payment</button><p id="message"></p><p class="balance-note" style="text-align:center;margin-top:2px">🔒 Secure Paystack checkout</p></section>
-<div class="back" onclick="location.href='dashboard.html'"><span aria-hidden="true">←</span> Back to Dashboard</div>
+<a class="back" href="dashboard.html"><span aria-hidden="true">←</span> Back to Dashboard</a>
 </main>
 <nav class="dv-bottom-nav" aria-label="Main navigation">
 <a class="dv-bottom-nav-item" href="dashboard.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></a>
@@ -480,5 +480,10 @@ loadWallet().then(checkReturnedPayment);
 
 <script src="branding.js"></script>
 <script src="assets/site-announcement.js" defer></script>
-</body>
+<style id="dv-wallet-final-alignment">
+.quick-select{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;align-items:stretch!important;gap:9px!important}
+.quick-amount{display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;min-width:0!important;min-height:44px!important;padding:10px 2px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:clip!important;font-size:clamp(11px,3.2vw,13px)!important;font-variant-numeric:tabular-nums!important;letter-spacing:-.2px!important;line-height:1!important}
+.back{display:flex!important;min-height:50px!important;margin:12px 0 22px!important;text-decoration:none!important;position:relative!important;z-index:2!important}
+body{padding-bottom:105px!important}
+</style></body>
 </html>
