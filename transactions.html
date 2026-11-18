@@ -562,13 +562,13 @@ main{max-width:900px!important;padding:12px 14px 55px!important}
  // Use the saved transaction description to show what the customer actually
  // purchased, while removing known provider names from the customer-facing text.
  let detail=removeProviderNames(description)
-   .replace(/\\b(?:provider|supplier|vendor)\\b/gi,'')
+   .replace(/\b(?:provider|supplier|vendor)\b/gi,'')
    .replace(/[|:–—-]+/g,' ')
-   .replace(/\\s{2,}/g,' ')
+   .replace(/\s{2,}/g,' ')
    .trim();
- detail=detail.replace(/^(?:purchase|purchased|payment|transaction)\\s+(?:of|for)\\s+/i,'');
- detail=detail.replace(/^(?:virtual\\s+number|number)\\s+(?:purchase|order)\\s*(?:for|of)?\\s*/i,'');
- detail=detail.replace(/^(?:service|product)\\s+(?:purchase|order)\\s*(?:for|of)?\\s*/i,'');
+ detail=detail.replace(/^(?:purchase|purchased|payment|transaction)\s+(?:of|for)\s+/i,'');
+ detail=detail.replace(/^(?:virtual\s+number|number)\s+(?:purchase|order)\s*(?:for|of)?\s*/i,'');
+ detail=detail.replace(/^(?:service|product)\s+(?:purchase|order)\s*(?:for|of)?\s*/i,'');
 
  const isVirtual=/virtual.?number|sms|otp|number.?purchase/.test(raw);
  if(isVirtual){
