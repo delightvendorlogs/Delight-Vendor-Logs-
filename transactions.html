@@ -207,13 +207,13 @@ main{max-width:900px!important;padding:12px 14px 55px!important}
 
 
   <div class="card">
-    <p class="balance-label">Your Balance</p>
+    <p class="balance-label">AVAILABLE WALLET BALANCE</p>
     <p id="walletBalance">Loading...</p>
   </div>
 
   <div id="transactionStats" class="transaction-stats" aria-label="Transaction status filters"></div>
 
-  <div class="dv-refresh-row"><span>Latest wallet activity</span><button class="refresh" onclick="loadTransactions()">↻ Refresh</button></div>
+  <div class="dv-refresh-row"><span>Recent Transactions</span><button class="refresh" onclick="loadTransactions()">↻ Refresh</button></div>
 
   <div class="card">
     <div id="transactions">
@@ -665,5 +665,55 @@ function removeProviderNames(value) {
 <script src="branding.js"></script>
 <script src="assets/site-announcement.js" defer></script>
 <style id="dv-balanced-transactions">body{font-size:15px!important}.dv-list-header{max-width:1120px!important;padding:22px clamp(15px,3vw,30px) 18px!important}.dv-list-header h1{font-size:clamp(25px,3vw,32px)!important}.dv-list-header p{font-size:14px!important}.dv-list-header>a{font-size:13px!important;padding:10px 14px!important}main{max-width:1120px!important;padding:22px clamp(14px,3vw,30px) 60px!important}.card{padding:19px!important;border-radius:18px!important;margin-bottom:14px!important}.balance-label{font-size:13px!important}#walletBalance{font-size:clamp(29px,3vw,36px)!important}.transaction-stats{gap:11px!important;margin:16px 0 19px!important}.transaction-stat{padding:14px 15px!important;border-radius:14px!important}.transaction-stat strong{font-size:23px!important}.transaction-stat span{font-size:13px!important}.dv-refresh-row{font-size:14px!important;margin:18px 0 12px!important}.refresh{font-size:13px!important;min-height:42px!important;padding:10px 15px!important}#transactions{gap:11px!important}.transaction{padding:17px!important;border-radius:15px!important}.transaction-type{font-size:15px!important}.amount{font-size:17px!important}.status,.description{font-size:13px!important;line-height:1.55!important}.date{font-size:12px!important}@media(max-width:600px){.dv-list-header{padding:16px 14px!important}.dv-list-header h1{font-size:24px!important}.dv-list-header p{font-size:12px!important}main{padding:15px 13px 45px!important}.card{padding:14px!important}.transaction-stats{gap:8px!important;margin:13px 0 16px!important}.transaction-stat{padding:12px 10px!important}.transaction-stat strong{font-size:20px!important}.transaction-stat span{font-size:12px!important}.dv-refresh-row{font-size:12px!important;margin:14px 0 10px!important}.transaction{padding:14px!important}.transaction-type{font-size:14px!important}.amount{font-size:16px!important}.status,.description{font-size:12px!important}}</style>
+
+<style id="dv-approved-transaction-design">
+:root{color-scheme:dark;--dv-gold:#edc961;--dv-muted:#bdb18e}
+html,body{min-height:100%;background:#090a0d!important;color:#f7f1e4!important}
+body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;background:radial-gradient(ellipse at 50% -10%,#30230c,transparent 40%),#090a0d!important;font-size:15px!important}
+.dv-list-header{max-width:1120px!important;margin:auto!important;padding:22px clamp(15px,3vw,30px) 18px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:16px!important;text-align:left!important;background:transparent!important;border-bottom:1px solid #57451f!important}
+.dv-list-header span{font-size:10px!important;letter-spacing:1.4px!important;color:#d8b75e!important;font-weight:850!important}
+.dv-list-header h1{margin:7px 0 5px!important;color:#fff1d0!important;font-size:clamp(25px,3vw,32px)!important;font-weight:900!important}
+.dv-list-header p{margin:0!important;color:#aaa18f!important;font-size:14px!important}
+.dv-list-header>a{padding:10px 14px!important;border:1px solid #4a3b1e!important;border-radius:12px!important;color:#edcb6d!important;text-decoration:none!important;background:#15161b!important;font-size:13px!important;font-weight:750!important}
+main{max-width:1120px!important;margin:auto!important;padding:22px clamp(14px,3vw,30px) 60px!important}
+.card{padding:19px!important;border:1px solid #332d20!important;border-radius:18px!important;background:linear-gradient(145deg,#17181d,#101116)!important;box-shadow:0 16px 40px #0006!important;margin:0 0 14px!important}
+.balance-label{margin:0 0 6px!important;color:#bdb18e!important;font-size:13px!important;letter-spacing:.7px!important;font-weight:800!important}
+#walletBalance{margin:0!important;color:#f0cf70!important;font-size:clamp(29px,3vw,36px)!important;font-weight:900!important}
+.transaction-stats{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:11px!important;margin:16px 0 19px!important}
+.transaction-stat{min-width:0!important;text-align:left!important;padding:14px 15px!important;border:1px solid #40351f!important;border-radius:14px!important;background:linear-gradient(145deg,#1a1b20,#111216)!important;color:#f5f0df!important;cursor:pointer!important}
+.transaction-stat strong{display:block!important;font-size:23px!important;color:#edc961!important;margin-top:7px!important}
+.transaction-stat span{font-size:13px!important;color:#b8ad8d!important}
+.transaction-stat.active{border-color:#d8b34c!important;background:#241d0e!important;box-shadow:0 0 0 1px #d4af3740 inset!important}
+.dv-refresh-row{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;margin:18px 0 12px!important;color:#bdb18e!important;font-size:14px!important;font-weight:750!important}
+.refresh{width:auto!important;min-width:0!important;min-height:42px!important;margin:0!important;padding:10px 15px!important;border:0!important;border-radius:12px!important;background:linear-gradient(120deg,#f1d47a,#c79a31)!important;color:#171208!important;font-size:13px!important;font-weight:850!important;cursor:pointer!important}
+#transactions{display:flex!important;flex-direction:column!important;gap:11px!important}
+.transaction{padding:17px!important;border:1px solid #383020!important;border-radius:15px!important;background:linear-gradient(145deg,#1b1c21,#111216)!important}
+.transaction-top{display:flex!important;justify-content:space-between!important;gap:10px!important;align-items:center!important}
+.transaction-type{color:#fff1d0!important;font-size:15px!important;font-weight:800!important}
+.amount{font-size:17px!important;font-weight:850!important;white-space:nowrap!important}
+.positive{color:#4ade80!important}.negative{color:#f87171!important}
+.status{display:inline-flex!important;align-items:center!important;width:max-content!important;margin-top:9px!important;padding:5px 10px!important;border-radius:99px!important;background:#241d0e!important;border:1px solid #57451f!important;color:#edc961!important;font-size:12px!important;font-weight:750!important}
+.description{display:none!important}
+.date{margin-top:9px!important;color:#817b70!important;font-size:12px!important}
+.empty,.error{padding:30px 10px!important;text-align:center!important;color:#aaa18f!important}
+.error{color:#f87171!important}
+@media(max-width:600px){
+.dv-list-header{padding:16px 14px!important;align-items:flex-start!important}
+.dv-list-header h1{font-size:24px!important}.dv-list-header p{font-size:12px!important}
+.dv-list-header>a{padding:9px 10px!important;font-size:11px!important;white-space:nowrap!important}
+main{padding:15px 13px 45px!important}
+.card{padding:14px!important}
+.transaction-stats{gap:8px!important;margin:13px 0 16px!important}
+.transaction-stat{padding:12px 10px!important}
+.transaction-stat strong{font-size:20px!important}.transaction-stat span{font-size:12px!important}
+.dv-refresh-row{font-size:12px!important;margin:14px 0 10px!important}
+.refresh{padding:9px 12px!important;font-size:12px!important}
+.transaction{padding:14px!important}
+.transaction-type{font-size:14px!important}.amount{font-size:16px!important}
+.status{font-size:11px!important}.date{font-size:11px!important}
+}
+@media(max-width:380px){.transaction-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}.transaction-top{align-items:flex-start!important}.amount{font-size:14px!important}}
+</style>
+
 </body>
 </html>
