@@ -32,9 +32,17 @@ h1{font-size:clamp(25px,4vw,36px);margin:8px 0}.intro{color:#b8ad8d;line-height:
 @media(min-width:760px){.category-list{display:flex;flex-direction:column}}
 @media(max-width:480px){.topbar{padding:14px;gap:10px}.brand{font-size:13px}.brand img{width:32px;height:32px}main{padding:22px 14px 35px}.category-row{min-height:88px;padding:15px 16px;gap:12px;border-radius:17px;border-left-width:4px}.category-icon{width:54px;height:54px;flex-basis:54px;border-radius:14px}.category-icon svg{width:28px;height:28px}.category-copy{gap:6px}.category-name{font-size:16px}.category-desc{font-size:13px}.arrow{width:40px;height:40px;flex-basis:40px;font-size:23px}}
 </style>
+<style id="dv-categories-navigation">
+main{padding-bottom:125px!important}
+.dv-bottom-nav{position:fixed;z-index:300;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:760px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:9px 12px calc(9px + env(safe-area-inset-bottom));background:rgba(15,16,19,.97);border-top:1px solid #57451f;box-shadow:0 -10px 30px #0008;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.dv-bottom-nav-item{min-width:0;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:11px;color:#aaa394;text-decoration:none;font-size:10px;font-weight:700;line-height:1.1}
+.dv-bottom-nav-item svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.dv-bottom-nav-item.is-active{color:#e5bd52;background:#e5bd5212}
+@media(min-width:761px){.dv-bottom-nav{bottom:14px;width:min(100% - 32px,560px);border:1px solid #57451f;border-radius:18px}}
+</style>
 </head>
 <body>
-<header class="topbar"><a class="back" href="dashboard.html">← Back to Dashboard</a><a class="home-link" href="dashboard.html" aria-label="Go to Home">⌂ Home</a><a class="brand" href="dashboard.html"><img src="assets/dv-logo.png" alt="DV logo"><span>Delight Vendor Logs</span></a></header>
+<header class="topbar"><a class="back" href="dashboard.html" aria-label="Back to Dashboard">← Back to Dashboard</a><a class="brand" href="dashboard.html"><img src="assets/dv-logo.png" alt="DV logo"><span>Delight Vendor Logs</span></a><button class="notification-btn" type="button" aria-label="Notifications" onclick="location.href='notification.html'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></button></header>
 <main><div class="eyebrow">Explore services</div><h1>All Categories</h1><p class="intro">Choose a category to view its available services.</p><div id="categoryList" class="category-list"><div class="state">Loading categories…</div></div></main>
 <script>
 const client=window.supabase.createClient("https://hkfhehbhmucymusaytoe.supabase.co","sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_");
@@ -77,12 +85,20 @@ document.addEventListener("click",e=>{if(e.target.closest("a.category-row"))sess
 load();
 </script>
 <script src="branding.js"></script><script src="assets/site-announcement.js" defer></script>
+<nav class="dv-bottom-nav" aria-label="Main navigation">
+<a class="dv-bottom-nav-item" href="dashboard.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></a>
+<a class="dv-bottom-nav-item is-active" href="categories.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Categories</span></a>
+<a class="dv-bottom-nav-item" href="wallet.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="15" rx="2"/><path d="M2.5 9h19M16 14h2"/></svg><span>Wallet</span></a>
+<a class="dv-bottom-nav-item" href="purchases.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 1.9-1.5L22 8H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg><span>Orders</span></a>
+<a class="dv-bottom-nav-item" href="profile.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0"/></svg><span>Profile</span></a>
+</nav>
 </body></html>
 
 <style id="dv-categories-approved-preview">
-.topbar{max-width:1050px;padding:14px 18px;gap:10px;flex-wrap:wrap}
-.back,.home-link{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 12px;border:1px solid #493b1c;border-radius:11px;color:#d4af37;text-decoration:none;font-size:12px;font-weight:700;white-space:nowrap}
-.home-link{background:#211a0c}
+.topbar{max-width:1050px;padding:14px 18px;gap:10px;flex-wrap:nowrap}
+.back{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 12px;border:1px solid #493b1c;border-radius:11px;color:#d4af37;text-decoration:none;font-size:12px;font-weight:700;white-space:nowrap}
+.notification-btn{display:grid;place-items:center;flex:0 0 40px;width:40px;height:40px;border-radius:13px;border:1px solid #8b6d20;background:#111;color:#d4af37;cursor:pointer}
+.notification-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .brand{margin-left:auto;text-decoration:none;color:#f5f0df;font-size:14px}
 main{max-width:900px;padding:24px 18px 42px}
 h1{font-size:clamp(23px,4vw,30px);margin:7px 0}
@@ -97,9 +113,10 @@ h1{font-size:clamp(23px,4vw,30px);margin:7px 0}
 .arrow{width:36px;height:36px;flex-basis:36px;font-size:21px}
 @media(max-width:480px){
  .topbar{padding:12px;gap:7px}
- .back,.home-link{min-height:35px;padding:7px 9px;font-size:11px}
- .brand{width:100%;margin:4px 0 0;font-size:13px}
+ .back{min-height:35px;padding:7px 9px;font-size:11px;flex:0 0 auto}
+ .brand{width:auto;min-width:0;margin:0;font-size:12px;flex:1}
  .brand img{width:30px;height:30px}
+ .notification-btn{width:36px;height:36px;flex-basis:36px}
  main{padding:19px 13px 32px}
  .category-row{min-height:72px;padding:11px 12px;gap:10px;border-radius:14px}
  .category-icon{width:44px;height:44px;flex-basis:44px;border-radius:12px}
