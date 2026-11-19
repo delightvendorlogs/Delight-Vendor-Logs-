@@ -68,7 +68,7 @@
 #products .dv-working-tool-buy{width:100%;margin-top:12px;background:#e9bd53;color:#171208;border:0;border-radius:9px;padding:10px 8px;font-weight:800;font-size:14px}
 #products .dv-working-tool-buy:disabled{opacity:.55;cursor:not-allowed}
 @media(max-width:360px){#products .dv-working-tools-grid{gap:8px}#products .dv-working-tool-card{padding:9px}#products .dv-working-tool-name{font-size:12px}#products .dv-working-tool-price{font-size:18px}}
-</style></head><!DOCTYPE html>
+</style><style id="dv-unread-notification-badge-style">.notification-btn{position:relative}.dv-unread-notification-badge{position:absolute;top:-7px;right:-7px;min-width:19px;height:19px;padding:0 5px;display:flex;align-items:center;justify-content:center;border:2px solid #080808;border-radius:999px;background:#e53935;color:#fff;font:800 10px/1 Arial,sans-serif;box-shadow:0 2px 7px #0009}.dv-unread-notification-badge[hidden]{display:none!important}</style></head><!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -3127,7 +3127,7 @@ main{max-width:1040px!important;padding:12px 14px 64px!important}
 
 
     <button class="menu-btn" type="button" aria-label="Open menu" onclick="openMenu()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
-    <button class="notification-btn" type="button" aria-label="Notifications" onclick="location.href='notification.html'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></button>
+    <button class="notification-btn" type="button" aria-label="Notifications" onclick="location.href='notification.html'"><span id="dvUnreadNotificationBadge" class="dv-unread-notification-badge" hidden></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></button>
 
 </header>
 
@@ -6150,7 +6150,39 @@ main{max-width:1160px!important;margin:0 auto!important;padding:20px clamp(14px,
   </a>
 </nav>
 
-</body>
+<script id="dv-dashboard-unread-notifications">
+(async function(){
+ const badge=document.getElementById("dvUnreadNotificationBadge");
+ if(!badge||!window.supabase||!window.supabase.createClient)return;
+ const client=window.supabase.createClient("https://hkfhehbhmucymusaytoe.supabase.co","sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_");
+ async function refreshUnreadBadge(){
+  try{
+   const sessionResult=await client.auth.getSession();
+   const user=sessionResult?.data?.session?.user;
+   if(!user){badge.hidden=true;return}
+   const [regularResult,virtualResult]=await Promise.allSettled([
+    client.functions.invoke("delight-notifications",{body:{action:"list"}}),
+    client.from("virtual_number_notifications").select("id",{count:"exact",head:true}).eq("user_id",user.id).is("read_at",null)
+   ]);
+   let total=0;
+   if(regularResult.status==="fulfilled"&&!regularResult.value.error){
+    const rows=regularResult.value.data?.notifications||[];
+    total+=rows.filter(n=>!n.read_at).length;
+   }
+   if(virtualResult.status==="fulfilled"&&!virtualResult.value.error){
+    total+=virtualResult.value.count||0;
+   }
+   badge.textContent=total>99?"99+":String(total);
+   badge.hidden=total===0;
+   badge.setAttribute("aria-label",total+" unread notifications");
+  }catch(error){console.warn("Could not refresh unread notification badge:",error)}
+ }
+ await refreshUnreadBadge();
+ window.addEventListener("focus",refreshUnreadBadge);
+ document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshUnreadBadge()});
+ setInterval(refreshUnreadBadge,30000);
+})();
+</script></body>
 
 </html>
 
