@@ -1368,13 +1368,9 @@ async function purchaseNumber(){
    virtualNotificationSnapshots.set(String(boughtOrder.id),{number:String(getOrderNumber(boughtOrder)||"").trim(),code:String(getCode(boughtOrder)||"").trim(),sms:String(getSms(boughtOrder)||"").trim()});
   }
 
-  // Close the confirmation panel after the purchase request completes.
-  // This removes the large dead area and brings the saved order history into view.
-  setSection(null);
+  // Keep the user in the purchase area after checkout; switching sections here
+  // collapses the page and can force the browser back to the top.
   showGlobal("Purchase request submitted. Check My Number Orders for its current status.","success");
-  requestAnimationFrame(()=>{
-   document.querySelector(".orders-panel")?.scrollIntoView({behavior:"smooth",block:"start"});
-  });
  }catch(e){
   console.error("Purchase failed:",e);
   await Promise.allSettled([refreshWallet(),loadOrders()]);
