@@ -501,7 +501,8 @@ async function processVirtualNumberNotificationChanges(orders){
   }
   next.set(id,{number,code,sms});
  }
- virtualNotificationSnapshots=next;
+ virtualNotificationSnapshots.clear();
+ for(const [snapshotId,snapshot] of next)virtualNotificationSnapshots.set(snapshotId,snapshot);
 }
 const virtualNotificationSnapshots=new Map();
 
