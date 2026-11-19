@@ -244,15 +244,23 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
 @media(max-width:480px){.container{padding-bottom:90px}}
 
 
-/* Short virtual-number purchase and SMS toast notifications */
-.vn-toast-stack{position:fixed;z-index:12000;top:calc(12px + env(safe-area-inset-top));right:12px;width:min(390px,calc(100vw - 24px));display:grid;gap:9px;pointer-events:none}
-.vn-toast{pointer-events:auto;display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;padding:13px;background:linear-gradient(145deg,#202020,#101010);border:1px solid rgba(212,175,55,.8);border-radius:15px;box-shadow:0 14px 40px #000b;animation:vnToastIn .22s ease-out;}
-.vn-toast-icon{width:36px;height:36px;border-radius:11px;background:#d4af3720;display:grid;place-items:center;color:#e8c65c;font-size:19px;overflow:hidden}
-.vn-toast-icon img{width:23px;height:23px;object-fit:contain}
-.vn-toast-copy{min-width:0}.vn-toast-title{font-size:11px;color:#d4af37;font-weight:900;letter-spacing:.07em;text-transform:uppercase;margin-bottom:4px}.vn-toast-message{font-size:13px;line-height:1.4;color:#fff;overflow-wrap:anywhere}.vn-toast-value{font-weight:900;color:#f5d76e;letter-spacing:.03em}
-.vn-toast-copybtn{border:1px solid #d4af37;background:#d4af37;color:#111;border-radius:9px;padding:8px 10px;font-size:11px;font-weight:900;cursor:pointer}.vn-toast-close{position:absolute;right:8px;top:5px;border:0;background:transparent;color:#a99b72;font-size:16px;cursor:pointer}
-@keyframes vnToastIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:480px){.vn-toast-stack{top:calc(8px + env(safe-area-inset-top));right:8px;width:calc(100vw - 16px)}.vn-toast{padding:11px;grid-template-columns:34px minmax(0,1fr) auto;gap:8px}}
+/* iPhone-style virtual-number and SMS notification banners */
+.vn-toast-stack{position:fixed;z-index:12000;top:calc(8px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:min(440px,calc(100vw - 16px));display:grid;gap:9px;pointer-events:none}
+.vn-toast{pointer-events:auto;display:grid;grid-template-columns:34px minmax(0,1fr);column-gap:10px;row-gap:7px;align-items:start;padding:12px 13px 13px;background:rgba(38,38,40,.94);border:1px solid rgba(255,255,255,.16);border-radius:21px;box-shadow:0 8px 30px rgba(0,0,0,.42);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);animation:vnToastIn .28s cubic-bezier(.2,.8,.2,1)}
+.vn-toast-top{grid-column:1 / -1;display:flex;align-items:center;gap:7px;min-width:0}
+.vn-toast-icon{width:30px;height:30px;flex:0 0 30px;border-radius:8px;background:#171717;display:grid;place-items:center;overflow:hidden}
+.vn-toast-icon img{width:100%;height:100%;object-fit:cover}
+.vn-toast-app{font-size:12px;font-weight:700;color:#f5f5f7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vn-toast-time{margin-left:auto;color:#b7b7bc;font-size:11px;white-space:nowrap}
+.vn-toast-copy{grid-column:1 / -1;min-width:0;padding-left:1px}
+.vn-toast-title{font-size:14px;color:#fff;font-weight:750;margin:0 0 3px;letter-spacing:0;text-transform:none}
+.vn-toast-message{font-size:13px;line-height:1.42;color:#e7e7e9;overflow-wrap:anywhere}
+.vn-toast-value{font-size:16px;font-weight:800;color:#fff;letter-spacing:.025em;margin-top:3px;overflow-wrap:anywhere}
+.vn-toast-bottom{grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.vn-toast-meta{font-size:11px;color:#bcbcc1;min-width:0;overflow-wrap:anywhere}
+.vn-toast-copybtn{border:0;background:#d4af37;color:#171717;border-radius:999px;padding:7px 13px;font-size:12px;font-weight:800;cursor:pointer;flex:0 0 auto}
+@keyframes vnToastIn{from{opacity:0;transform:translateY(-16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:480px){.vn-toast{padding:11px 12px 12px;border-radius:20px}.vn-toast-title{font-size:14px}.vn-toast-message{font-size:13px}}
 </style>
 <link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css"></head>
 <body>
@@ -454,17 +462,26 @@ function virtualNotificationDetails(order){
 function showVirtualToast({title,message,value,copyValue,serviceIcon,flag}){
  const stack=$("virtualToastStack");if(!stack)return;
  const card=document.createElement("div");card.className="vn-toast";
- const icon=document.createElement("div");icon.className="vn-toast-icon";icon.innerHTML=serviceIcon||"📱";
+ const top=document.createElement("div");top.className="vn-toast-top";
+ const icon=document.createElement("div");icon.className="vn-toast-icon";
+ const logo=document.createElement("img");logo.src="assets/dv-logo.png";logo.alt="";icon.appendChild(logo);
+ const app=document.createElement("div");app.className="vn-toast-app";app.textContent="Delight Vendor Logs";
+ const time=document.createElement("div");time.className="vn-toast-time";time.textContent="now";
+ top.append(icon,app,time);
  const copy=document.createElement("div");copy.className="vn-toast-copy";
- const heading=document.createElement("div");heading.className="vn-toast-title";heading.textContent=(flag||"")+" "+title;
+ const heading=document.createElement("div");heading.className="vn-toast-title";heading.textContent=title;
  const body=document.createElement("div");body.className="vn-toast-message";body.textContent=message;
  if(value){const strong=document.createElement("div");strong.className="vn-toast-value";strong.textContent=value;body.appendChild(strong)}
  copy.append(heading,body);
- const button=document.createElement("button");button.type="button";button.className="vn-toast-copybtn";button.textContent="Copy";
- button.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(String(copyValue||""));button.textContent="Copied";setTimeout(()=>{button.textContent="Copy"},1100)}catch{button.textContent="Unavailable"}});
- card.append(icon,copy,button);stack.appendChild(card);
- while(stack.children.length>3)stack.firstElementChild.remove();
- window.setTimeout(()=>{card.style.transition="opacity .25s,transform .25s";card.style.opacity="0";card.style.transform="translateY(-6px)";window.setTimeout(()=>card.remove(),260)},3600);
+ const bottom=document.createElement("div");bottom.className="vn-toast-bottom";
+ const meta=document.createElement("div");meta.className="vn-toast-meta";
+ if(flag){const flagNode=document.createElement("span");flagNode.innerHTML=flag;meta.appendChild(flagNode);meta.appendChild(document.createTextNode(" "))}
+ meta.appendChild(document.createTextNode("Virtual Number · "+(title.toLowerCase().includes("sms")?"New SMS":"Purchase update")));
+ const button=document.createElement("button");button.type="button";button.className="vn-toast-copybtn";button.textContent=title.toLowerCase().includes("sms")?"Copy code":"Copy number";
+ button.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(String(copyValue||""));button.textContent="Copied";setTimeout(()=>{button.textContent=title.toLowerCase().includes("sms")?"Copy code":"Copy number"},1100)}catch{button.textContent="Unavailable"}});
+ bottom.append(meta,button);card.append(top,copy,bottom);stack.appendChild(card);
+ while(stack.children.length>2)stack.firstElementChild.remove();
+ window.setTimeout(()=>{card.style.transition="opacity .28s,transform .28s";card.style.opacity="0";card.style.transform="translateY(-12px) scale(.98)";window.setTimeout(()=>card.remove(),290)},3600);
 }
 async function saveVirtualNumberNotification(order,eventType,title,message,details){
  const key=String(order.id)+"|"+eventType;if(virtualNotificationEventsSeen.has(key))return;
