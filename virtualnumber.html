@@ -481,19 +481,24 @@ function showVirtualToast({title,message,value,copyValue,serviceIcon,flag}){
  button.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(String(copyValue||""));button.textContent="Copied";setTimeout(()=>{button.textContent=title.toLowerCase().includes("sms")?"Copy code":"Copy number"},1100)}catch{button.textContent="Unavailable"}});
  bottom.append(meta,button);card.append(top,copy,bottom);stack.appendChild(card);
  while(stack.children.length>2)stack.firstElementChild.remove();
- window.setTimeout(()=>{card.style.transition="opacity .28s,transform .28s";card.style.opacity="0";card.style.transform="translateY(-12px) scale(.98)";window.setTimeout(()=>card.remove(),290)},3600);
+ window.setTimeout(()=>{card.style.transition="opacity .28s,transform .28s";card.style.opacity="0";card.style.transform="translateY(-12px) scale(.98)";window.setTimeout(()=>card.remove(),290)},6000);
 }
 async function saveVirtualNumberNotification(order,eventType,title,message,details){
- const key=String(order.id)+"|"+eventType;if(virtualNotificationEventsSeen.has(key))return;
- virtualNotificationEventsSeen.add(key);
+ const key=String(order.id)+"|"+eventType;
+ if(virtualNotificationEventsSeen.has(key))return "exists";
  try{
+  const existing=await sb.from("virtual_number_notifications").select("id").eq("user_id",currentUser.id).eq("order_id",order.id).eq("event_type",eventType).maybeSingle();
+  if(existing.error)throw existing.error;
+  if(existing.data){virtualNotificationEventsSeen.add(key);return "exists";}
   const {error}=await sb.from("virtual_number_notifications").insert({
    user_id:currentUser.id,order_id:order.id,event_type:eventType,title,message,
    phone_number:getOrderNumber(order)||null,otp_code:getCode(order)||null,sms_text:getSms(order)||null,
    service_name:details.service,country_name:details.country
   });
   if(error)throw error;
- }catch(error){console.warn("Could not save virtual-number notification:",error);}
+  virtualNotificationEventsSeen.add(key);
+  return "created";
+ }catch(error){console.warn("Could not save virtual-number notification:",error);return "failed";}
 }
 async function processVirtualNumberNotificationChanges(orders){
  const next=new Map();
@@ -501,22 +506,25 @@ async function processVirtualNumberNotificationChanges(orders){
   const id=String(order.id),number=String(getOrderNumber(order)||"").trim(),code=String(getCode(order)||"").trim(),sms=String(getSms(order)||"").trim();
   const prior=virtualNotificationSnapshots.get(id)||{number:"",code:"",sms:""};
   const details=virtualNotificationDetails(order);
+  let savedNumber=number,savedCode=code,savedSms=sms;
   if(number&&!prior.number){
    const title=details.country+" "+details.service+" number purchased";
    const message="Your "+details.country+" "+details.service+" number is";
-   showVirtualToast({title:"Number purchased",message,value:number,copyValue:number,serviceIcon:details.icon,flag:details.flag});
-   await saveVirtualNumberNotification(order,"number_purchased",title,message,details);
+   const result=await saveVirtualNumberNotification(order,"number_purchased",title,message,details);
+   if(result==="created")showVirtualToast({title:"Number purchased",message,value:number,copyValue:number,serviceIcon:details.icon,flag:details.flag});
+   if(result==="failed")savedNumber=prior.number;
   }
   if((code&&!prior.code)||(!prior.sms&&sms&&!prior.code&&!code)){
    const value=code||extractCodeFromSms(sms)||"";
    if(value){
     const title=details.country+" "+details.service+" verification code";
     const message="Your "+details.country+" "+details.service+" verification code is";
-    showVirtualToast({title:"SMS received",message,value,copyValue:value,serviceIcon:details.icon,flag:details.flag});
-    await saveVirtualNumberNotification(order,"sms_received",title,message,details);
+    const result=await saveVirtualNumberNotification(order,"sms_received",title,message,details);
+    if(result==="created")showVirtualToast({title:"SMS received",message,value,copyValue:value,serviceIcon:details.icon,flag:details.flag});
+    if(result==="failed"){savedCode=prior.code;savedSms=prior.sms;}
    }
   }
-  next.set(id,{number,code,sms});
+  next.set(id,{number:savedNumber,code:savedCode,sms:savedSms});
  }
  virtualNotificationSnapshots.clear();
  for(const [snapshotId,snapshot] of next)virtualNotificationSnapshots.set(snapshotId,snapshot);
@@ -1334,7 +1342,15 @@ async function purchaseNumber(){
   }
   showMessage("confirmMessage","Purchase request submitted. Refreshing your orders…","success");
   await Promise.allSettled([refreshWallet(),loadOrders()]);
-  const boughtOrder=purchaseResult?.order?.id?{...purchaseResult.order,provider_key:purchaseResult.order.provider_key||chosenProvider}:allOrders.find(o=>String(o.id)===String(purchaseResult?.order?.id)) || allOrders.find(o=>orderProvider(o)===chosenProvider&&getOrderNumber(o));
+  const boughtOrder=(purchaseResult?.order?.id?allOrders.find(o=>String(o.id)===String(purchaseResult.order.id))||{...purchaseResult.order,provider_key:purchaseResult.order.provider_key||chosenProvider}:null) || allOrders.find(o=>orderProvider(o)===chosenProvider&&getOrderNumber(o));
+  if(boughtOrder&&getOrderNumber(boughtOrder)){
+   const details=virtualNotificationDetails({...boughtOrder,service_name:boughtOrder.service_name||selectedService.name,country_name:boughtOrder.country_name||selectedCountry.name,country_code:boughtOrder.country_code||selectedCountry.code});
+   const title=details.country+" "+details.service+" number purchased";
+   const message="Your "+details.country+" "+details.service+" number is";
+   const result=await saveVirtualNumberNotification(boughtOrder,"number_purchased",title,message,details);
+   if(result==="created")showVirtualToast({title:"Number purchased",message,value:getOrderNumber(boughtOrder),copyValue:getOrderNumber(boughtOrder),serviceIcon:details.icon,flag:details.flag});
+   virtualNotificationSnapshots.set(String(boughtOrder.id),{number:String(getOrderNumber(boughtOrder)||"").trim(),code:String(getCode(boughtOrder)||"").trim(),sms:String(getSms(boughtOrder)||"").trim()});
+  }
 
   setSection(chosenProvider==="textverified"?"usaSection":"allSection");
   showGlobal("Purchase request submitted. Check My Number Orders for its current status.","success");
