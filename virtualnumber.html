@@ -486,7 +486,7 @@ async function processVirtualNumberNotificationChanges(orders){
   const details=virtualNotificationDetails(order);
   if(number&&!prior.number){
    const title=details.country+" "+details.service+" number purchased";
-   const message="Your "+details.country+" "+details.service+" number is "+number;
+   const message="Your "+details.country+" "+details.service+" number is";
    showVirtualToast({title:"Number purchased",message,value:number,copyValue:number,serviceIcon:details.icon,flag:details.flag});
    await saveVirtualNumberNotification(order,"number_purchased",title,message,details);
   }
@@ -494,7 +494,7 @@ async function processVirtualNumberNotificationChanges(orders){
    const value=code||extractCodeFromSms(sms)||"";
    if(value){
     const title=details.country+" "+details.service+" verification code";
-    const message="Your "+details.country+" "+details.service+" verification code is "+value;
+    const message="Your "+details.country+" "+details.service+" verification code is";
     showVirtualToast({title:"SMS received",message,value,copyValue:value,serviceIcon:details.icon,flag:details.flag});
     await saveVirtualNumberNotification(order,"sms_received",title,message,details);
    }
