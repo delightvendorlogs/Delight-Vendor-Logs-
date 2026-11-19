@@ -543,7 +543,8 @@ body{background:radial-gradient(ellipse at 0 0,rgba(212,175,55,.18),transparent 
                         id="togglePassword"
                         onclick="togglePasswordVisibility()"
                         aria-label="Show password"
-                    >👁</button>
+                        aria-pressed="false"
+                    >Show</button>
 
                 </div>
             </div>
@@ -717,12 +718,14 @@ function togglePasswordVisibility() {
 
     if (password.type === "password") {
         password.type = "text";
-        toggle.textContent = "🙈";
+        toggle.textContent = "Hide";
         toggle.setAttribute("aria-label", "Hide password");
+        toggle.setAttribute("aria-pressed", "true");
     } else {
         password.type = "password";
-        toggle.textContent = "👁";
+        toggle.textContent = "Show";
         toggle.setAttribute("aria-label", "Show password");
+        toggle.setAttribute("aria-pressed", "false");
     }
 }
 
