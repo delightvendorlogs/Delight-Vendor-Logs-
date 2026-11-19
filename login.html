@@ -445,6 +445,42 @@ body {
     }
 }
 
+
+/* APPROVED PREMIUM LOGIN REDESIGN */
+body{background:radial-gradient(ellipse at 0 0,rgba(212,175,55,.18),transparent 30%),radial-gradient(ellipse at 100% 100%,rgba(212,175,55,.13),transparent 28%),#050505;padding:28px 16px}
+.login-wrapper{max-width:520px}
+.logo{margin-bottom:25px}
+.logo .delight{color:#f5c842;font-size:clamp(38px,8vw,54px);letter-spacing:-2px;text-shadow:0 3px 22px rgba(212,175,55,.22)}
+.logo .vendor{color:#e8bd42;font-size:15px;letter-spacing:4px;margin-top:7px}
+.logo:after{content:"YOUR TRUSTED DIGITAL MARKETPLACE";display:block;margin-top:10px;color:#a99558;font-size:9px;font-weight:800;letter-spacing:2px}
+.login-card{background:linear-gradient(145deg,#141414,#090909);border:1px solid #b58e2b;border-radius:22px;padding:30px 28px 24px;box-shadow:0 20px 65px rgba(0,0,0,.6),0 0 28px rgba(212,175,55,.10)}
+.login-header{margin-bottom:26px}
+.login-header h1{font-size:clamp(27px,5vw,34px)}
+.login-header p{font-size:14px;color:#bdbdbd}
+.form-group{margin-bottom:18px}
+.form-group label{color:#e6c45b;font-size:13px;margin-bottom:8px}
+.form-group input{height:58px;border:1px solid #70591f;border-radius:14px;background:#171717;padding:0 16px;font-size:15px}
+.password-input{padding-right:48px!important}
+.toggle-password{height:58px;width:46px;font-size:17px}
+.form-group input:focus{border-color:#f0c64c;box-shadow:0 0 0 3px rgba(212,175,55,.12)}
+.forgot-row{margin:2px 0 20px}
+.forgot-row a{font-size:13px;color:#edc34b}
+.login-btn{height:60px;border-radius:14px;background:linear-gradient(135deg,#f4d36a,#dca91e);font-size:17px;box-shadow:0 8px 24px rgba(212,175,55,.17)}
+.secure-signin{display:flex;align-items:center;justify-content:center;gap:9px;margin:20px 0 18px;color:#c8c8c8;font-size:13px}
+.secure-signin span{color:#e8bd42;font-size:20px}
+.register-text{margin:12px 0 18px;font-size:13px;color:#c4c4c4}
+.register-text a{color:#efc64e}
+.bottom-links{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid rgba(212,175,55,.25);padding-top:13px;margin-top:10px}
+.bottom-links .policy-menu{border:0;padding:0;margin:0;text-align:left}
+.bottom-links .policy-menu summary{border:0;background:transparent;padding:8px 0;color:#efc64e;font-size:13px}
+.bottom-links .back-home{margin:0;text-align:right}
+.bottom-links .back-home a{color:#efc64e;font-size:13px}
+.policy-links{background:#101010}
+.footer{color:#999;font-size:11px;margin-top:22px}
+.footer:after{content:"Your Trusted Vendor Platform";display:block;margin-top:6px;color:#e5bd43;font-style:italic}
+@media(max-width:420px){body{padding:18px 12px}.login-card{padding:24px 18px 20px}.login-header h1{font-size:27px}.form-group input,.toggle-password{height:54px}.login-btn{height:55px}.bottom-links{align-items:flex-start}}
+@media(max-height:700px){body{align-items:flex-start;padding-top:16px}.logo{margin-bottom:16px}.login-card{padding-top:20px;padding-bottom:18px}}
+
 </style>
 <link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css"></head>
 
@@ -528,6 +564,8 @@ body {
                 Continue
             </button>
 
+            <div class="secure-signin"><span>♢</span> Secure sign-in</div>
+
             <!-- MESSAGE -->
 
             <div
@@ -541,6 +579,7 @@ body {
 
         <!-- TERMS & POLICIES -->
 
+        <div class="bottom-links">
         <details class="policy-menu" id="policyMenu">
             <summary>Terms &amp; Policies</summary>
 
@@ -552,6 +591,10 @@ body {
                 <a href="faq.html">Frequently Asked Questions (FAQ)</a>
             </div>
         </details>
+        <div class="back-home">
+            <a href="index.html">⌂ Back to Home</a>
+        </div>
+        </div>
 
         <!-- REGISTER -->
 
@@ -560,12 +603,6 @@ body {
             <a id="createAccountLink" href="register.html">Create Account</a>
         </div>
 
-    </div>
-
-    <!-- BACK HOME -->
-
-    <div class="back-home">
-        <a href="index.html">← Back to Home</a>
     </div>
 
     <!-- FOOTER -->
