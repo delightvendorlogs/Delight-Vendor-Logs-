@@ -484,21 +484,22 @@ function showVirtualToast({title,message,value,copyValue,serviceIcon,flag}){
  window.setTimeout(()=>{card.style.transition="opacity .28s,transform .28s";card.style.opacity="0";card.style.transform="translateY(-12px) scale(.98)";window.setTimeout(()=>card.remove(),290)},6000);
 }
 async function saveVirtualNumberNotification(order,eventType,title,message,details){
- const key=String(order.id)+"|"+eventType;
+ const dbEventType=eventType==="number_purchased"?"purchase":eventType==="sms_received"?"otp":eventType;
+ const key=String(order.id)+"|"+dbEventType;
  if(virtualNotificationEventsSeen.has(key))return "exists";
  try{
-  const existing=await sb.from("virtual_number_notifications").select("id").eq("user_id",currentUser.id).eq("order_id",order.id).eq("event_type",eventType).maybeSingle();
+  const existing=await sb.from("virtual_number_notifications").select("id").eq("user_id",currentUser.id).eq("order_id",order.id).eq("event_type",dbEventType).maybeSingle();
   if(existing.error)throw existing.error;
   if(existing.data){virtualNotificationEventsSeen.add(key);return "exists";}
   const {error}=await sb.from("virtual_number_notifications").insert({
-   user_id:currentUser.id,order_id:order.id,event_type:eventType,title,message,
+   user_id:currentUser.id,order_id:order.id,event_type:dbEventType,title,message,
    phone_number:getOrderNumber(order)||null,otp_code:getCode(order)||null,sms_text:getSms(order)||null,
    service_name:details.service,country_name:details.country
   });
   if(error)throw error;
   virtualNotificationEventsSeen.add(key);
   return "created";
- }catch(error){console.warn("Could not save virtual-number notification:",error);return "failed";}
+ }catch(error){console.error("Could not save virtual-number notification:",error);return "failed";}
 }
 async function processVirtualNumberNotificationChanges(orders){
  const next=new Map();
