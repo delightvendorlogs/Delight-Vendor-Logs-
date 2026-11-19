@@ -511,7 +511,7 @@ async function processVirtualNumberNotificationChanges(orders){
    const title=details.country+" "+details.service+" number purchased";
    const message="Your "+details.country+" "+details.service+" number is";
    const result=await saveVirtualNumberNotification(order,"number_purchased",title,message,details);
-   if(result==="created")showVirtualToast({title:"Number purchased",message,value:number,copyValue:number,serviceIcon:details.icon,flag:details.flag});
+   if(result!=="failed")showVirtualToastOnce(order,"number_purchased",{title:"Number purchased",message,value:number,copyValue:number,serviceIcon:details.icon,flag:details.flag});
    if(result==="failed")savedNumber=prior.number;
   }
   if((code&&!prior.code)||(!prior.sms&&sms&&!prior.code&&!code)){
@@ -520,7 +520,7 @@ async function processVirtualNumberNotificationChanges(orders){
     const title=details.country+" "+details.service+" verification code";
     const message="Your "+details.country+" "+details.service+" verification code is";
     const result=await saveVirtualNumberNotification(order,"sms_received",title,message,details);
-    if(result==="created")showVirtualToast({title:"SMS received",message,value,copyValue:value,serviceIcon:details.icon,flag:details.flag});
+    if(result!=="failed")showVirtualToastOnce(order,"sms_received",{title:"SMS received",message,value,copyValue:value,serviceIcon:details.icon,flag:details.flag});
     if(result==="failed"){savedCode=prior.code;savedSms=prior.sms;}
    }
   }
@@ -530,6 +530,13 @@ async function processVirtualNumberNotificationChanges(orders){
  for(const [snapshotId,snapshot] of next)virtualNotificationSnapshots.set(snapshotId,snapshot);
 }
 const virtualNotificationSnapshots=new Map();
+const virtualToastEventsShown=new Set();
+function showVirtualToastOnce(order,eventType,payload){
+ const key=String(order?.id||"")+"|"+eventType;
+ if(virtualToastEventsShown.has(key))return;
+ virtualToastEventsShown.add(key);
+ showVirtualToast(payload);
+}
 
 function escapeHTML(v){
  return String(v??"").replace(/[&<>"']/g,c=>({
@@ -1348,11 +1355,12 @@ async function purchaseNumber(){
    const title=details.country+" "+details.service+" number purchased";
    const message="Your "+details.country+" "+details.service+" number is";
    const result=await saveVirtualNumberNotification(boughtOrder,"number_purchased",title,message,details);
-   if(result==="created")showVirtualToast({title:"Number purchased",message,value:getOrderNumber(boughtOrder),copyValue:getOrderNumber(boughtOrder),serviceIcon:details.icon,flag:details.flag});
+   if(result!=="failed")showVirtualToastOnce(boughtOrder,"number_purchased",{title:"Number purchased",message,value:getOrderNumber(boughtOrder),copyValue:getOrderNumber(boughtOrder),serviceIcon:details.icon,flag:details.flag});
    virtualNotificationSnapshots.set(String(boughtOrder.id),{number:String(getOrderNumber(boughtOrder)||"").trim(),code:String(getCode(boughtOrder)||"").trim(),sms:String(getSms(boughtOrder)||"").trim()});
   }
 
-  setSection(chosenProvider==="textverified"?"usaSection":"allSection");
+  // Keep the user in the purchase area after checkout; switching sections here
+  // collapses the page and can force the browser back to the top.
   showGlobal("Purchase request submitted. Check My Number Orders for its current status.","success");
  }catch(e){
   console.error("Purchase failed:",e);
