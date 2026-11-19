@@ -262,7 +262,15 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
 @keyframes vnToastIn{from{opacity:0;transform:translateY(-16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:480px){.vn-toast{padding:11px 12px 12px;border-radius:20px}.vn-toast-title{font-size:14px}.vn-toast-message{font-size:13px}}
 </style>
-<link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css"></head>
+<link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css">
+<style id="dv-virtual-number-compact-orders-gap">
+/* Keep inactive provider/purchase panels fully collapsed and bring order history closer to the active selector. */
+.section{min-height:0!important;height:auto!important;margin:0!important;padding:0!important}
+.section:not(.active){display:none!important;height:0!important;min-height:0!important;margin:0!important;padding:0!important;overflow:hidden!important}
+.section.active{display:block!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;overflow:visible!important}
+.orders-panel{margin-top:8px!important}
+</style>
+</head>
 <body>
 <div id="virtualToastStack" class="vn-toast-stack" aria-live="polite" aria-atomic="false"></div>
 
