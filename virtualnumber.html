@@ -264,11 +264,13 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
 </style>
 <link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css">
 <style id="dv-virtual-number-compact-orders-gap">
-/* Keep inactive provider/purchase panels fully collapsed and bring order history closer to the active selector. */
+/* Keep inactive provider/purchase panels fully collapsed. Remove the extra
+   bottom space beneath the active selector card before the order history. */
 .section{min-height:0!important;height:auto!important;margin:0!important;padding:0!important}
 .section:not(.active){display:none!important;height:0!important;min-height:0!important;margin:0!important;padding:0!important;overflow:hidden!important}
 .section.active{display:block!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;overflow:visible!important}
-.orders-panel{margin-top:8px!important}
+.section.active > .panel{margin-bottom:0!important}
+.orders-panel{margin-top:12px!important}
 </style>
 </head>
 <body>
