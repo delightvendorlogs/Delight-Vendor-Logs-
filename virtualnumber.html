@@ -243,9 +243,21 @@ hr{border:0;border-top:1px solid #2a2a2a;margin:16px 0}
 @media(min-width:761px){.dv-bottom-nav{bottom:14px;width:min(100% - 32px,560px);border:1px solid #57451f;border-radius:18px}}
 @media(max-width:480px){.container{padding-bottom:90px}}
 
+
+/* Short virtual-number purchase and SMS toast notifications */
+.vn-toast-stack{position:fixed;z-index:12000;top:calc(12px + env(safe-area-inset-top));right:12px;width:min(390px,calc(100vw - 24px));display:grid;gap:9px;pointer-events:none}
+.vn-toast{pointer-events:auto;display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;padding:13px;background:linear-gradient(145deg,#202020,#101010);border:1px solid rgba(212,175,55,.8);border-radius:15px;box-shadow:0 14px 40px #000b;animation:vnToastIn .22s ease-out;}
+.vn-toast-icon{width:36px;height:36px;border-radius:11px;background:#d4af3720;display:grid;place-items:center;color:#e8c65c;font-size:19px;overflow:hidden}
+.vn-toast-icon img{width:23px;height:23px;object-fit:contain}
+.vn-toast-copy{min-width:0}.vn-toast-title{font-size:11px;color:#d4af37;font-weight:900;letter-spacing:.07em;text-transform:uppercase;margin-bottom:4px}.vn-toast-message{font-size:13px;line-height:1.4;color:#fff;overflow-wrap:anywhere}.vn-toast-value{font-weight:900;color:#f5d76e;letter-spacing:.03em}
+.vn-toast-copybtn{border:1px solid #d4af37;background:#d4af37;color:#111;border-radius:9px;padding:8px 10px;font-size:11px;font-weight:900;cursor:pointer}.vn-toast-close{position:absolute;right:8px;top:5px;border:0;background:transparent;color:#a99b72;font-size:16px;cursor:pointer}
+@keyframes vnToastIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:480px){.vn-toast-stack{top:calc(8px + env(safe-area-inset-top));right:8px;width:calc(100vw - 16px)}.vn-toast{padding:11px;grid-template-columns:34px minmax(0,1fr) auto;gap:8px}}
 </style>
 <link rel="icon" type="image/png" href="assets/dv-logo.png"><link rel="apple-touch-icon" href="assets/dv-logo.png"><link rel="stylesheet" href="site-theme.css"></head>
 <body>
+<div id="virtualToastStack" class="vn-toast-stack" aria-live="polite" aria-atomic="false"></div>
+
 
 <div class="container">
 <header>
@@ -429,6 +441,69 @@ let poller=null,fetchSmsPoller=null,fetchSmsRefreshing=false,countdownTimer=null
 let currentSection=null,optionsCache=[],initGeneration=0,servicesGeneration=0;
 let cancellationOrderId=null,cancellationBusy=false,refreshingOrders=false;
 const statusRefreshTimes=new Map();
+let virtualNotificationSnapshotsReady=false;
+const virtualNotificationEventsSeen=new Set();
+
+function virtualNotificationDetails(order){
+ const service=cleanCustomerLabel(order.display_service_name||order.service_name||order.service_code||"Virtual Number")||"Virtual Number";
+ const country=String(order.country_name||order.country_code||"Unknown country");
+ const flag=countryFlag({name:country,code:order.country_code});
+ const icon=serviceIconHTML(service);
+ return {service,country,flag,icon};
+}
+function showVirtualToast({title,message,value,copyValue,serviceIcon,flag}){
+ const stack=$("virtualToastStack");if(!stack)return;
+ const card=document.createElement("div");card.className="vn-toast";
+ const icon=document.createElement("div");icon.className="vn-toast-icon";icon.innerHTML=serviceIcon||"📱";
+ const copy=document.createElement("div");copy.className="vn-toast-copy";
+ const heading=document.createElement("div");heading.className="vn-toast-title";heading.textContent=(flag||"")+" "+title;
+ const body=document.createElement("div");body.className="vn-toast-message";body.textContent=message;
+ if(value){const strong=document.createElement("div");strong.className="vn-toast-value";strong.textContent=value;body.appendChild(strong)}
+ copy.append(heading,body);
+ const button=document.createElement("button");button.type="button";button.className="vn-toast-copybtn";button.textContent="Copy";
+ button.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(String(copyValue||""));button.textContent="Copied";setTimeout(()=>{button.textContent="Copy"},1100)}catch{button.textContent="Unavailable"}});
+ card.append(icon,copy,button);stack.appendChild(card);
+ while(stack.children.length>3)stack.firstElementChild.remove();
+ window.setTimeout(()=>{card.style.transition="opacity .25s,transform .25s";card.style.opacity="0";card.style.transform="translateY(-6px)";window.setTimeout(()=>card.remove(),260)},3600);
+}
+async function saveVirtualNumberNotification(order,eventType,title,message,details){
+ const key=String(order.id)+"|"+eventType;if(virtualNotificationEventsSeen.has(key))return;
+ virtualNotificationEventsSeen.add(key);
+ try{
+  const {error}=await sb.from("virtual_number_notifications").insert({
+   user_id:currentUser.id,order_id:order.id,event_type:eventType,title,message,
+   phone_number:getOrderNumber(order)||null,otp_code:getCode(order)||null,sms_text:getSms(order)||null,
+   service_name:details.service,country_name:details.country
+  });
+  if(error)throw error;
+ }catch(error){console.warn("Could not save virtual-number notification:",error);}
+}
+async function processVirtualNumberNotificationChanges(orders){
+ const next=new Map();
+ for(const order of orders||[]){
+  const id=String(order.id),number=String(getOrderNumber(order)||"").trim(),code=String(getCode(order)||"").trim(),sms=String(getSms(order)||"").trim();
+  const prior=virtualNotificationSnapshots.get(id)||{number:"",code:"",sms:""};
+  const details=virtualNotificationDetails(order);
+  if(number&&!prior.number){
+   const title=details.country+" "+details.service+" number purchased";
+   const message="Your "+details.country+" "+details.service+" number is "+number;
+   showVirtualToast({title:"Number purchased",message,value:number,copyValue:number,serviceIcon:details.icon,flag:details.flag});
+   await saveVirtualNumberNotification(order,"number_purchased",title,message,details);
+  }
+  if((code&&!prior.code)||(!prior.sms&&sms&&!prior.code&&!code)){
+   const value=code||extractCodeFromSms(sms)||"";
+   if(value){
+    const title=details.country+" "+details.service+" verification code";
+    const message="Your "+details.country+" "+details.service+" verification code is "+value;
+    showVirtualToast({title:"SMS received",message,value,copyValue:value,serviceIcon:details.icon,flag:details.flag});
+    await saveVirtualNumberNotification(order,"sms_received",title,message,details);
+   }
+  }
+  next.set(id,{number,code,sms});
+ }
+ virtualNotificationSnapshots=next;
+}
+const virtualNotificationSnapshots=new Map();
 
 function escapeHTML(v){
  return String(v??"").replace(/[&<>"']/g,c=>({
@@ -1399,6 +1474,7 @@ async function loadOrders(){
   });
 
   await resolveOrderServiceNames(allOrders);
+  if(virtualNotificationSnapshotsReady){await processVirtualNumberNotificationChanges(allOrders);}else{allOrders.forEach(o=>virtualNotificationSnapshots.set(String(o.id),{number:String(getOrderNumber(o)||"").trim(),code:String(getCode(o)||"").trim(),sms:String(getSms(o)||"").trim()}));virtualNotificationSnapshotsReady=true;}
   renderOrders();
   showMessage("ordersMessage","");
 
