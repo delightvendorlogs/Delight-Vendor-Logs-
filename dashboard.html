@@ -6390,7 +6390,6 @@ main{width:100%!important;max-width:760px!important;margin:0 auto!important;padd
 #dvCustomerPhoneInput:focus{border-color:#f5c518;box-shadow:0 0 0 3px #d4af3725}
 #dvCustomerPhoneSubmit{display:block;width:100%;min-height:50px;margin-top:17px;border:0;border-radius:12px;background:linear-gradient(135deg,#f5d778,#c49a24);color:#171208;font-size:14px;font-weight:900;cursor:pointer}
 #dvCustomerPhoneSubmit:disabled{opacity:.65;cursor:wait}
-#dvCustomerPhoneLater{display:block;width:100%;margin-top:12px;padding:10px;border:0;background:transparent;color:#d4af37;font-size:12px;font-weight:700;cursor:pointer}
 #dvCustomerPhoneStatus{min-height:18px;margin:10px 0 0;color:#d8cda9;font-size:12px;line-height:1.45;text-align:center}
 #dvCustomerPhonePrivacy{margin:8px 0 0;color:#8f897b;font-size:10px;line-height:1.45;text-align:center}
 @media(max-width:380px){#dvCustomerPhoneOverlay .dv-phone-card{padding:20px}#dvCustomerPhoneOverlay h2{font-size:20px}}
@@ -6406,7 +6405,6 @@ main{width:100%!important;max-width:760px!important;margin:0 auto!important;padd
       <button id="dvCustomerPhoneSubmit" type="submit">SUBMIT NUMBER</button>
       <p id="dvCustomerPhoneStatus" role="status" aria-live="polite"></p>
     </form>
-    <button id="dvCustomerPhoneLater" type="button">Maybe later</button>
     <p id="dvCustomerPhonePrivacy">Your number is saved privately for the site administrator.</p>
   </section>
 </div>
@@ -6416,18 +6414,10 @@ main{width:100%!important;max-width:760px!important;margin:0 auto!important;padd
   const form = document.getElementById("dvCustomerPhoneForm");
   const input = document.getElementById("dvCustomerPhoneInput");
   const submit = document.getElementById("dvCustomerPhoneSubmit");
-  const later = document.getElementById("dvCustomerPhoneLater");
   const status = document.getElementById("dvCustomerPhoneStatus");
-  if(!overlay || !form || !input || !submit || !later || !status || !window.supabase) return;
-
-  function closePrompt(){
-    overlay.classList.remove("dv-phone-open");
-    overlay.setAttribute("aria-hidden","true");
-    sessionStorage.setItem("dvCustomerPhonePromptDismissed","1");
-  }
+  if(!overlay || !form || !input || !submit || !status || !window.supabase) return;
 
   async function initialisePrompt(){
-    if(sessionStorage.getItem("dvCustomerPhonePromptDismissed")==="1") return;
     try{
       const {data:{user},error}=await supabaseClient.auth.getUser();
       if(error || !user) return;
@@ -6441,7 +6431,6 @@ main{width:100%!important;max-width:760px!important;margin:0 auto!important;padd
     }
   }
 
-  later.addEventListener("click",closePrompt);
   form.addEventListener("submit",async function(event){
     event.preventDefault();
     const phone=input.value.trim();
@@ -6456,7 +6445,6 @@ main{width:100%!important;max-width:760px!important;margin:0 auto!important;padd
       if(error || !data?.success) throw new Error(data?.error||error?.message||"Your number could not be submitted.");
       status.textContent="Your number has been submitted successfully.";
       submit.textContent="SUBMITTED";
-      sessionStorage.setItem("dvCustomerPhonePromptDismissed","1");
       setTimeout(()=>{
         overlay.classList.remove("dv-phone-open");
         overlay.setAttribute("aria-hidden","true");
