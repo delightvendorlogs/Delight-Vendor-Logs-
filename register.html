@@ -52,6 +52,7 @@ footer{text-align:center;color:#777368;font-size:12px;padding:18px 16px 24px}
 <div class="field"><label for="firstName">First name</label><input id="firstName" type="text" placeholder="Enter your first name" autocomplete="given-name" maxlength="60" required></div>
 <div class="field"><label for="lastName">Last name</label><input id="lastName" type="text" placeholder="Enter your last name" autocomplete="family-name" maxlength="60" required></div>
 <div class="field"><label for="email">Email address</label><input id="email" type="email" placeholder="you@example.com" autocomplete="email" maxlength="254" required></div>
+<div class="field"><label for="phone">Phone number</label><input id="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="Enter your phone number" required></div>
 <div class="field"><label for="referralCode">Referral code <span style="color:var(--muted);font-weight:500">(optional)</span></label><input id="referralCode" type="text" placeholder="Enter a referral code if you have one" autocomplete="off" maxlength="40"><p class="hint">If someone invited you, enter their code here.</p></div>
 <div class="field"><label for="password">Password</label><div class="input-wrap"><input class="password-input" id="password" type="password" placeholder="Create a password" autocomplete="new-password" minlength="6" required><button class="toggle-password" type="button" id="togglePassword" aria-label="Show password">Show</button></div><p class="hint">Use at least 6 characters.</p></div>
 <button class="submit" id="createButton" type="button">Create account</button>
@@ -89,6 +90,7 @@ const createButton = document.getElementById("createButton");
 const firstNameInput = document.getElementById("firstName");
 const lastNameInput = document.getElementById("lastName");
 const emailInput = document.getElementById("email");
+const phoneInput = document.getElementById("phone");
 const passwordInput = document.getElementById("password");
 const referralInput = document.getElementById("referralCode");
 document.getElementById("year").textContent = new Date().getFullYear();
@@ -129,7 +131,10 @@ createButton.addEventListener("click", async () => {
   const lastName = lastNameInput.value.trim();
   const email = emailInput.value.trim().toLowerCase();
   const password = passwordInput.value;
+  const phone = phoneInput.value.trim();
   const referralCode = referralInput.value.trim().toUpperCase();
+  const digits = phone.replace(/\D/g, "");
+  if (!phone || phone.length > 24 || digits.length < 7 || digits.length > 15 || !/^[+0-9][0-9 +().-]*$/.test(phone)) { showMessage("Please enter a valid phone number.", "error"); phoneInput.focus(); return; }
   if (!firstName || !lastName || !email || !password) { showMessage("Please fill in all required fields.", "error"); return; }
   if (!emailInput.checkValidity()) { showMessage("Please enter a valid email address.", "error"); emailInput.focus(); return; }
   if (password.length < 6) { showMessage("Your password must contain at least 6 characters.", "error"); passwordInput.focus(); return; }
@@ -139,7 +144,7 @@ createButton.addEventListener("click", async () => {
     const fullName = firstName + " " + lastName;
     const { data, error } = await client.auth.signUp({
       email, password,
-      options: { data: { name: fullName, first_name: firstName, last_name: lastName, referral_code: referralCode || null } }
+      options: { data: { name: fullName, full_name: fullName, first_name: firstName, last_name: lastName, phone, referral_code: referralCode || null } }
     });
     if (error) throw error;
     if (data && data.user && data.user.id) await sendWelcomeForRegistration(data.user.id);
