@@ -4402,6 +4402,7 @@ function renderUsers(){
                 .toLowerCase()
                 .includes(search) ||
 
+                String(user.phone || "").toLowerCase().includes(search) ||
                 String(
                     user.id || ""
                 )
@@ -4460,6 +4461,7 @@ function renderUsers(){
                 )}
 
                 <br>
+                Phone: ${escapeHTML(user.phone || "Not provided")}<br>
 
                 User ID:
                 ${escapeHTML(
