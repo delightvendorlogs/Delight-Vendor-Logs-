@@ -673,11 +673,17 @@ body{background:#080808!important;color:#f5f0df!important}
       }
 
 
-      users =
-        Array.isArray(data)
-          ? data
-          : [];
-
+      users = Array.isArray(data) ? data : [];
+      const ids = users.map(user => user.user_id).filter(Boolean);
+      if (ids.length) {
+        const { data: profiles, error: profileError } = await supabaseClient
+          .from("profiles").select("id,phone").in("id", ids);
+        if (profileError) console.warn("Wallet admin phone lookup failed:", profileError);
+        else {
+          const phoneMap = new Map((profiles || []).map(profile => [String(profile.id), profile.phone || ""]));
+          users = users.map(user => ({ ...user, phone: phoneMap.get(String(user.user_id)) || user.phone || "" }));
+        }
+      }
 
       renderUsers();
 
@@ -762,16 +768,15 @@ body{background:#080808!important;color:#f5f0df!important}
             user.email || ""
           ).toLowerCase();
 
-        const id =
-          String(
-            user.user_id || ""
-          ).toLowerCase();
+        const id = String(user.user_id || "").toLowerCase();
+        const phone = String(user.phone || "").toLowerCase();
 
 
         return (
           name.includes(search) ||
           email.includes(search) ||
-          id.includes(search)
+          id.includes(search) ||
+          phone.includes(search)
         );
 
       });
@@ -830,9 +835,11 @@ body{background:#080808!important;color:#f5f0df!important}
                   </div>
 
                   <div class="user-id">
-                    ${escapeHtml(
-                      user.user_id
-                    )}
+                    ${escapeHtml(user.user_id)}
+                  </div>
+
+                  <div class="email">
+                    Phone: ${escapeHtml(user.phone || "Not provided")}
                   </div>
 
                 </div>
