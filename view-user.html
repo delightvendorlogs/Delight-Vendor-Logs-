@@ -477,6 +477,11 @@ th{background:#211b10!important;color:#f3d36b!important}
         </div>
 
         <div class="info-box">
+          <small>Phone Number</small>
+          <strong id="userPhone">Not provided</strong>
+        </div>
+
+        <div class="info-box">
           <small>User ID</small>
           <strong id="userId" style="word-break:break-all;">—</strong>
         </div>
@@ -898,8 +903,17 @@ th{background:#211b10!important;color:#f3d36b!important}
     }
 
 
-    allUsers =
-      data || [];
+    allUsers = data || [];
+    const profileIds = allUsers.map(user => user.user_id).filter(Boolean);
+    if (profileIds.length) {
+      const { data: phoneProfiles, error: phoneError } = await supabaseClient
+        .from("profiles").select("id,phone").in("id", profileIds);
+      if (phoneError) console.warn("Customer phone lookup failed:", phoneError);
+      else {
+        const phoneMap = new Map((phoneProfiles || []).map(profile => [String(profile.id), profile.phone]));
+        allUsers = allUsers.map(user => ({ ...user, phone: phoneMap.get(String(user.user_id)) || user.phone || "" }));
+      }
+    }
 
     renderUsers(
       allUsers
@@ -951,16 +965,15 @@ th{background:#211b10!important;color:#f3d36b!important}
               user.full_name || ""
             ).toLowerCase();
 
-          const id =
-            String(
-              user.user_id || ""
-            ).toLowerCase();
+          const id = String(user.user_id || "").toLowerCase();
+          const phone = String(user.phone || "").toLowerCase();
 
 
           return (
             email.includes(search) ||
             name.includes(search) ||
-            id.includes(search)
+            id.includes(search) ||
+            phone.includes(search)
           );
 
         }
@@ -1021,6 +1034,10 @@ th{background:#211b10!important;color:#f3d36b!important}
                 user.email ||
                 "No email"
               )}
+            </small>
+
+            <small>
+              Phone: ${escapeHtml(user.phone || "Not provided")}
             </small>
 
             <small>
@@ -1099,13 +1116,8 @@ th{background:#211b10!important;color:#f3d36b!important}
       "No name";
 
 
-    document
-      .getElementById(
-        "userEmail"
-      )
-      .textContent =
-      user?.email ||
-      "No email";
+    document.getElementById("userEmail").textContent = user?.email || "No email";
+    document.getElementById("userPhone").textContent = user?.phone || "Not provided";
 
 
     document
