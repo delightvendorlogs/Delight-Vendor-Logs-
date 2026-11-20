@@ -6377,7 +6377,7 @@ main{width:100%!important;max-width:760px!important;margin:0 auto!important;padd
 .dv-help-channel{display:flex;align-items:center;justify-content:center;min-height:38px;padding:8px 10px;border:1px solid #493b1c;border-radius:11px;background:#211a0c;color:#e5bd52!important;text-decoration:none;font-size:12px;font-weight:700}
 @media(max-width:600px){.dv-help-channels{gap:7px}.dv-help-channel{min-height:35px;font-size:11px;padding:7px}}
 </style>
-<!-- Private phone-number request for one designated customer account -->
+<!-- Universal missing-phone request -->
 <style id="dv-customer-phone-prompt">
 #dvCustomerPhoneOverlay{position:fixed;inset:0;z-index:10050;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 #dvCustomerPhoneOverlay.dv-phone-open{display:flex}
@@ -6412,7 +6412,6 @@ main{width:100%!important;max-width:760px!important;margin:0 auto!important;padd
 </div>
 <script id="dv-customer-phone-prompt-logic">
 (function(){
-  const targetEmail = "muizodubayo26@gmail.com";
   const overlay = document.getElementById("dvCustomerPhoneOverlay");
   const form = document.getElementById("dvCustomerPhoneForm");
   const input = document.getElementById("dvCustomerPhoneInput");
@@ -6431,9 +6430,9 @@ main{width:100%!important;max-width:760px!important;margin:0 auto!important;padd
     if(sessionStorage.getItem("dvCustomerPhonePromptDismissed")==="1") return;
     try{
       const {data:{user},error}=await supabaseClient.auth.getUser();
-      if(error || !user || String(user.email||"").toLowerCase()!==targetEmail) return;
-      const {data,error:statusError}=await supabaseClient.functions.invoke("submit_customer_phone",{body:{action:"status"}});
-      if(statusError || !data?.success || data.submitted) return;
+      if(error || !user) return;
+      const {data,error:statusError}=await supabaseClient.functions.invoke("customer-phone",{body:{action:"status"}});
+      if(statusError || !data?.success || data.hasPhone) return;
       overlay.classList.add("dv-phone-open");
       overlay.setAttribute("aria-hidden","false");
       setTimeout(()=>input.focus(),120);
@@ -6451,7 +6450,7 @@ main{width:100%!important;max-width:760px!important;margin:0 auto!important;padd
     submit.textContent="SUBMITTING...";
     status.textContent="Saving your number securely...";
     try{
-      const {data,error}=await supabaseClient.functions.invoke("submit_customer_phone",{
+      const {data,error}=await supabaseClient.functions.invoke("customer-phone",{
         body:{action:"submit",phone_number:phone}
       });
       if(error || !data?.success) throw new Error(data?.error||error?.message||"Your number could not be submitted.");
