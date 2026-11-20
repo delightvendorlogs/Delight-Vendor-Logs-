@@ -516,10 +516,12 @@
         </div>
         <span class="detail-symbol" aria-hidden="true">✉</span>
       </div>
+<div class="detail-row"><div class="detail-info"><span>PHONE NUMBER</span><strong id="detailPhone">Not provided</strong></div><span class="detail-symbol" aria-hidden="true">☎</span></div>
     </section>
 
 
-    <section class="account-action-card" id="edit-name">
+    <section class="account-action-card" id="edit-phone"><h2>Phone Number</h2><p class="account-action-hint">Keep your contact number up to date.</p><label class="account-action-label" for="editPhoneInput">Phone Number</label><input class="account-action-input" id="editPhoneInput" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="Enter your phone number"><button class="account-action-button" id="savePhoneButton" type="button" onclick="saveProfilePhone()">Save Phone Number</button><p class="account-action-message" id="phoneMessage" role="status" aria-live="polite"></p></section>
+<section class="account-action-card" id="edit-name">
       <h2>Edit Name</h2>
       <p class="account-action-hint">Update the name displayed on your account.</p>
       <label class="account-action-label" for="editNameInput">Full Name</label>
@@ -676,6 +678,11 @@
 
       document.getElementById("userEmail").textContent = user.email || "Not available";
       document.getElementById("detailEmail").textContent = user.email || "Not available";
+      const {data: phoneData, error: phoneError} = await supabaseClient.functions.invoke("customer-phone", {body:{action:"status"}});
+      if (phoneError) console.warn("Phone lookup failed:", phoneError.message);
+      const savedPhone = phoneData?.success ? (phoneData.phone || "") : "";
+      document.getElementById("detailPhone").textContent = savedPhone || "Not provided";
+      document.getElementById("editPhoneInput").value = savedPhone;
 
 
       /* MEMBER SINCE */
@@ -725,6 +732,19 @@
     }
 
 
+
+    /* SAVE PROFILE PHONE */
+    async function saveProfilePhone() {
+      const input=document.getElementById("editPhoneInput"), message=document.getElementById("phoneMessage"), button=document.getElementById("savePhoneButton");
+      const phone=input.value.trim(), digits=phone.replace(/\D/g, "");
+      message.textContent="";
+      if(phone.length>24||digits.length<7||digits.length>15||!/^[+0-9][0-9 +().-]*$/.test(phone)){message.textContent="Please enter a valid phone number.";input.focus();return;}
+      button.disabled=true;button.textContent="Saving…";
+      const {data,error}=await supabaseClient.functions.invoke("customer-phone",{body:{action:"update",phone_number:phone}});
+      button.disabled=false;button.textContent="Save Phone Number";
+      if(error||!data?.success){message.textContent=data?.error||error?.message||"Could not save your number.";return;}
+      document.getElementById("detailPhone").textContent=data.phone||phone;message.style.color="#8be0a4";message.textContent="Phone number updated successfully.";
+    }
 
     /* SAVE PROFILE NAME */
     async function saveProfileName() {
