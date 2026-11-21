@@ -594,6 +594,10 @@ function formatError(error,fallback){
  const m=raw.toLowerCase();
  const code=String(error?.code||error?.data?.error||"").toUpperCase();
  const details=error?.data&&typeof error.data==="object"?error.data:{};
+ const providerDetails=JSON.stringify(details).toLowerCase();
+ if(chosenProvider==="virtualsms"&&/out of stock|temporarily out of stock|number unavailable|currently unavailable|no stock|no number available|no inventory|not available for this country/.test(m+" "+providerDetails)){
+  return "Number is currently out of stock. Please try again.";
+ }
 
  if(code==="PROVIDER_INSUFFICIENT_FUNDS"||code==="SMSBOWER_PROVIDER_INSUFFICIENT_FUNDS"||/\bNO_BALANCE\b/.test(code)){
   return "Insufficient fund. Please contact support.";
@@ -1284,8 +1288,8 @@ async function selectService(index){
   if(stockUnavailable){
    optionsCache=[];
    selectedOption=null;
-   $("optionsList").innerHTML='<div class="notice" style="border-color:#a94444;background:#351818;color:#ffb6b6"><strong>Number out of stock</strong><p style="margin:7px 0 0">This service is currently unavailable in '+escapeHTML(selectedCountry?.name||"the selected country")+'. Your wallet has not been charged and no order has been created. Please choose another country or try again later.</p></div><button class="btn btn-dark full" style="margin-top:10px" onclick="selectService('+index+')">Check Availability Again</button>';
-   showMessage("optionsMessage","Out of stock — choose another country or try again later.","error");
+   $("optionsList").innerHTML='<div class="empty">Number is currently out of stock. Please try again.</div><button class="btn btn-dark full" onclick="selectService('+index+')">Try Again</button>';
+   showMessage("optionsMessage","Number is currently out of stock. Please try again.","error");
    return;
   }
   $("optionsList").innerHTML='<div class="empty">Could not load prices or availability.</div><button class="btn btn-dark full" onclick="selectService('+index+')">Retry</button>';
