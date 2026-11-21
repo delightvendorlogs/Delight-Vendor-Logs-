@@ -998,6 +998,7 @@ async function recoverUnlinkedVirtualSmsOrder(order: any, userId: string): Promi
     String(order.provider_key).toLowerCase() !== "virtualsms" ||
     str(order.provider_order_id, order.provider_order) ||
     !["waiting", "pending"].includes(str(order.status).toLowerCase()) ||
+    String(order.provider_state).toLowerCase() === "provider_out_of_stock" ||
     !API_KEY
   ) return order;
 
@@ -1100,6 +1101,24 @@ async function recoverUnlinkedVirtualSmsOrder(order: any, userId: string): Promi
 
 async function actionStatus(orderId: string, userId: string) {
   let order = await ownedOrder(orderId, userId);
+  if (String(order.provider_state).toLowerCase() === "provider_out_of_stock") {
+    const refund = await refundFailedProviderPurchase(orderId);
+    if (refund.success) {
+      return response({
+        success: true,
+        refunded: true,
+        order_id: orderId,
+        message: "No number was available. The reserved wallet amount has been restored.",
+      });
+    }
+    return response({
+      success: true,
+      pending: true,
+      refund_pending: true,
+      order,
+      message: "The provider confirmed no stock. The wallet refund is still being processed.",
+    }, 202);
+  }
   if (!str(order.provider_order_id, order.provider_order) && String(order.provider_key).toLowerCase() === "virtualsms") {
     order = await recoverUnlinkedVirtualSmsOrder(order, userId);
     if (!str(order.provider_order_id, order.provider_order)) {
