@@ -847,11 +847,39 @@ async function actionBuy(body: any, userId: string, req: Request) {
       message: errorMessage,
     });
 
-    // A 404 is a definite API/resource error, not proof of low provider balance.
-    // Do not falsely mark it as a successful purchase or as a confirmed refund.
+    // A provider 404 explicitly saying there is no stock means no number
+    // was issued. Restore the reserved wallet amount and remove the failed
+    // temporary order atomically; do not leave the customer charged.
     if (errorStatus === 404) {
+      if (/temporarily out of stock|out of stock|no stock|no numbers? available|unavailable for this combination/i.test(errorMessage)) {
+        const refund = await refundFailedProviderPurchase(orderId);
+        if (refund.success) {
+          return fail(
+            "No number is available for this service and country right now. Your wallet has been restored. Please try another country or check back later.",
+            409,
+            { order_id: orderId, refunded: true },
+          );
+        }
+
+        return fail(
+          "The provider has no number in stock right now. Your wallet refund is still being confirmed; please do not purchase again.",
+          502,
+          { order_id: orderId, refund_pending: true },
+        );
+      }
+
+      // An unrelated 404 may be an API/resource problem. Keep it marked for
+      // read-only reconciliation rather than blindly retrying the purchase.
+      await supabase
+        .from("virtual_number_orders")
+        .update({ provider_state: "purchase_unconfirmed", updated_at: new Date().toISOString() })
+        .eq("id", orderId)
+        .eq("user_id", userId)
+        .eq("provider_key", "virtualsms")
+        .is("provider_order_id", null);
+
       return fail(
-        "Unable to complete this purchase. Please contact support before retrying.",
+        "Unable to confirm this purchase yet. We are checking the provider record; please do not purchase again.",
         502,
         {
           order_id: orderId,
