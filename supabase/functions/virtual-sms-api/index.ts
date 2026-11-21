@@ -847,6 +847,42 @@ async function actionBuy(body: any, userId: string, req: Request) {
       message: errorMessage,
     });
 
+    // VirtualSMS can return 503 "Provider temporarily unavailable" when
+    // it cannot allocate a number. No number/order ID was returned, so clean
+    // up the reservation and tell the customer stock is unavailable instead
+    // of leaving a misleading "Confirming provider purchase" order card.
+    if (
+      errorStatus === 503 &&
+      /temporarily unavailable|service unavailable|temporarily down/i.test(errorMessage)
+    ) {
+      const refund = await refundFailedProviderPurchase(orderId);
+
+      if (refund.success) {
+        return fail(
+          "Number is currently out of stock. Please try again.",
+          409,
+          { refunded: true },
+        );
+      }
+
+      await supabase
+        .from("virtual_number_orders")
+        .update({
+          provider_state: "provider_out_of_stock",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", orderId)
+        .eq("user_id", userId)
+        .eq("provider_key", "virtualsms")
+        .is("provider_order_id", null);
+
+      return fail(
+        "Number is currently out of stock. Please try again.",
+        502,
+        { order_id: orderId, refund_pending: true },
+      );
+    }
+
     // A provider 404 explicitly saying there is no stock means no number
     // was issued. Restore the reserved wallet amount and remove the failed
     // temporary order atomically; do not leave the customer charged.
