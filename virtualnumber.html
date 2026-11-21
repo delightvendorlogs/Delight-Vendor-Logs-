@@ -1275,6 +1275,19 @@ async function selectService(index){
   renderOptions(optionsCache);
  }catch(e){
   console.error("Price request failed:",e);
+  const providerMessage=String(e?.message||"").toLowerCase();
+  const providerData=JSON.stringify(e?.data||{}).toLowerCase();
+  const stockUnavailable=chosenProvider==="virtualsms"&&(
+   /out of stock|temporarily out of stock|no stock|not available|unavailable|no number|no inventory/.test(providerMessage+" "+providerData)||
+   Number(e?.data?.status||e?.data?.provider_status)===404
+  );
+  if(stockUnavailable){
+   optionsCache=[];
+   selectedOption=null;
+   $("optionsList").innerHTML='<div class="notice" style="border-color:#a94444;background:#351818;color:#ffb6b6"><strong>Number out of stock</strong><p style="margin:7px 0 0">This service is currently unavailable in '+escapeHTML(selectedCountry?.name||"the selected country")+'. Your wallet has not been charged and no order has been created. Please choose another country or try again later.</p></div><button class="btn btn-dark full" style="margin-top:10px" onclick="selectService('+index+')">Check Availability Again</button>';
+   showMessage("optionsMessage","Out of stock — choose another country or try again later.","error");
+   return;
+  }
   $("optionsList").innerHTML='<div class="empty">Could not load prices or availability.</div><button class="btn btn-dark full" onclick="selectService('+index+')">Retry</button>';
   showMessage("optionsMessage",formatError(e,"Unable to load prices. Please retry."),"error");
  }
@@ -1682,7 +1695,17 @@ function renderOrders(){
   $("ordersList").innerHTML='<div class="empty">You have no virtual number orders yet.</div>';
   return;
  }
- $("ordersList").innerHTML=allOrders.map(o=>{
+ const customerVisibleOrders=allOrders.filter(o=>!(
+  orderProvider(o)==="virtualsms"&&
+  !getOrderNumber(o)&&
+  !providerOrderId(o)&&
+  String(o.provider_state||"").toLowerCase()==="provider_out_of_stock"
+ ));
+ if(!customerVisibleOrders.length){
+  $("ordersList").innerHTML='<div class="empty">You have no active virtual number orders yet.</div>';
+  return;
+ }
+ $("ordersList").innerHTML=customerVisibleOrders.map(o=>{
   const status=normalizeStatus(o);
   const id=Number(o.id);
   const number=String(getOrderNumber(o)||"");
