@@ -1449,14 +1449,16 @@ async function refreshOrders(){
    .sort((a,b)=>(statusRefreshTimes.get(String(a.id))||0)-(statusRefreshTimes.get(String(b.id))||0))
    .slice(0,5);
 
-  await Promise.allSettled(candidates.map(async o=>{
+  const pollResults=await Promise.allSettled(candidates.map(async o=>{
    statusRefreshTimes.set(String(o.id),Date.now());
    return invoke(orderProvider(o),statusActionForProvider(orderProvider(o)),orderActionPayload(o));
   }));
+  const refundedUnavailable=pollResults.some(result=>result.status==="fulfilled"&&result.value?.refunded);
 
   // Fetch from Supabase again after provider checks so new OTPs are displayed.
   if(currentUser?.id!==userId)return;
   await Promise.allSettled([loadOrders(),refreshWallet()]);
+  if(refundedUnavailable)showGlobal("The provider had no number in stock. Your wallet refund has been confirmed.","info");
   
  }finally{
   refreshingOrders=false;
@@ -1699,12 +1701,13 @@ function renderOrders(){
   const hold=cancelHoldSeconds(o);
   const left=durationSeconds(o);
 
-  const purchaseUnconfirmed=pending&&!number&&!providerOrderId(o)&&orderProvider(o)==="virtualsms";
-  const searching=pending&&!number&&!providerOrderId(o)&&!purchaseUnconfirmed;
-  const headline=pending?(number?"Number Reserved":purchaseUnconfirmed?"Confirming provider purchase":searching?"Looking for available number":"Number request pending"):
+  const providerOutOfStock=pending&&!number&&!providerOrderId(o)&&String(o.provider_state||"").toLowerCase()==="provider_out_of_stock";
+  const purchaseUnconfirmed=pending&&!number&&!providerOrderId(o)&&orderProvider(o)==="virtualsms"&&!providerOutOfStock;
+  const searching=pending&&!number&&!providerOrderId(o)&&!purchaseUnconfirmed&&!providerOutOfStock;
+  const headline=pending?(number?"Number Reserved":providerOutOfStock?"Number unavailable":purchaseUnconfirmed?"Confirming provider purchase":searching?"Looking for available number":"Number request pending"):
    received?"Verification Successful":
    cancelled?"Order Cancelled":expired?"Number Timed Out":failed?"Order Failed":"Refunded";
-  const subtitle=pending?(number?"Waiting for verification code":purchaseUnconfirmed?"We are checking whether your number was created. Please do not purchase again.":searching?"We are checking availability. Your order will update here.":"Waiting for number confirmation"):
+  const subtitle=pending?(number?"Waiting for verification code":providerOutOfStock?"The provider has no stock for this option. Your wallet refund is being processed.":purchaseUnconfirmed?"We are checking whether your number was created. Please do not purchase again.":searching?"We are checking availability. Your order will update here.":"Waiting for number confirmation"):
    received?(code?"SMS received for this number":sms?"SMS received; full message is shown below":"SMS received for this number"):
    cancelled?"This number order has ended":
    expired?"The verification time ended and the refund was processed":
@@ -1718,19 +1721,19 @@ function renderOrders(){
    <div class="order-service"><span class="purchase-choice">${serviceChoiceHTML(service)} · <span>${countryIcon} ${escapeHTML(country)}</span></span></div>
    <div class="number-box">
     <div class="number-label">${pending?"YOUR PHONE NUMBER":"PHONE NUMBER"}</div>
-    <div class="${pending?"number-big":"number-small"}">${escapeHTML(number||(purchaseUnconfirmed?"Confirming with the number service…":searching?"Searching for an available number…":"Waiting for number confirmation"))}</div>
+    <div class="${pending?"number-big":"number-small"}">${escapeHTML(number||(providerOutOfStock?"No number available":purchaseUnconfirmed?"Confirming with the number service…":searching?"Searching for an available number…":"Waiting for number confirmation"))}</div>
     <div class="number-meta"><span>${serviceIconHTML(service)} ${escapeHTML(service)} · ${countryIcon} ${escapeHTML(country)}</span><span>Order #${escapeHTML(o.id)}</span></div>
    </div>`;
 
   if(pending){
    html+=`<div class="timer-area">
-    <div class="timer-label">${purchaseUnconfirmed?"Purchase confirmation":searching?"Search status":left===null?"Expiry information":"Time remaining"}</div>
-    <div class="timer-value ${left===0?"timer-expired":""}" data-countdown="${escapeHTML(o.id)}">${purchaseUnconfirmed?'<span class="search-spinner" aria-hidden="true"></span>Checking…':searching?'<span class="search-spinner" aria-hidden="true"></span>Searching…':left===null?"—":countdownText(left)}</div>
-    <div class="timer-note">${purchaseUnconfirmed?"We are checking the provider record. Do not submit another purchase.":hold>0?"Cancellation unlocks in "+countdownText(hold):searching?"You can cancel this request if no number has been assigned.":left===null?"Waiting for the exact expiry time":"Countdown uses the confirmed expiry time"}</div>
+    <div class="timer-label">${providerOutOfStock?"Refund status":purchaseUnconfirmed?"Purchase confirmation":searching?"Search status":left===null?"Expiry information":"Time remaining"}</div>
+    <div class="timer-value ${left===0?"timer-expired":""}" data-countdown="${escapeHTML(o.id)}">${providerOutOfStock?'<span class="search-spinner" aria-hidden="true"></span>Refunding…':purchaseUnconfirmed?'<span class="search-spinner" aria-hidden="true"></span>Checking…':searching?'<span class="search-spinner" aria-hidden="true"></span>Searching…':left===null?"—":countdownText(left)}</div>
+    <div class="timer-note">${providerOutOfStock?"Your wallet will be updated automatically.":purchaseUnconfirmed?"We are checking the provider record. Do not submit another purchase.":hold>0?"Cancellation unlocks in "+countdownText(hold):searching?"You can cancel this request if no number has been assigned.":left===null?"Waiting for the exact expiry time":"Countdown uses the confirmed expiry time"}</div>
    </div>
    <div class="order-actions">
-    <button class="btn btn-black" onclick="checkOrder(${id})">◉ &nbsp; ${purchaseUnconfirmed?"Check Purchase":"Check Code"}</button>
-    <button class="btn btn-danger" ${hold>0||purchaseUnconfirmed?"disabled":""} onclick="cancelOrder(${id})">${purchaseUnconfirmed?"Awaiting Confirmation":hold>0?"Cancel Locked":searching?"⊗ &nbsp; Cancel Request":"⊗ &nbsp; Cancel Order"}</button>
+    <button class="btn btn-black" onclick="checkOrder(${id})">◉ &nbsp; ${providerOutOfStock?"Check Refund":purchaseUnconfirmed?"Check Purchase":"Check Code"}</button>
+    <button class="btn btn-danger" ${hold>0||purchaseUnconfirmed||providerOutOfStock?"disabled":""} onclick="cancelOrder(${id})">${providerOutOfStock?"Refund Pending":purchaseUnconfirmed?"Awaiting Confirmation":hold>0?"Cancel Locked":searching?"⊗ &nbsp; Cancel Request":"⊗ &nbsp; Cancel Order"}</button>
    </div>`;
   }
 
@@ -1865,8 +1868,12 @@ async function checkOrder(id){
  showMessage("ordersMessage",provider==="virtualsms"&&!providerOrderId(o)?"Checking whether the provider created this purchase. Please do not purchase again.":"Checking order status…","info");
  try{
   const oldCode=getCode(o);
-  await invoke(provider,statusActionForProvider(provider),orderActionPayload(o));
+  const actionResult=await invoke(provider,statusActionForProvider(provider),orderActionPayload(o));
   await Promise.allSettled([loadOrders(),refreshWallet()]);
+  if(actionResult?.refunded){
+   showMessage("ordersMessage","No number was available for this option. Your wallet refund has been confirmed.","success");
+   return;
+  }
   const updated=allOrders.find(x=>String(x.id)===String(id));
   const status=updated?normalizeStatus(updated):"waiting";
   if(status==="received")showMessage("ordersMessage","Verification code received. Check the order card.","success");
