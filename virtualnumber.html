@@ -925,7 +925,7 @@ async function init(){
 
   // The USA tab is the default landing view; users can still switch tabs normally.
   if(poller)clearInterval(poller);
-  poller=setInterval(()=>{if(currentUser)refreshOrders();},30000);
+  poller=setInterval(()=>{if(currentUser)refreshOrders();},10000);
   if(fetchSmsPoller)clearInterval(fetchSmsPoller);
   fetchSmsPoller=setInterval(()=>{if(currentUser)refreshFetchSmsOrders();},5000);
   await openUSA();
@@ -1439,11 +1439,12 @@ async function refreshOrders(){
   const candidates=allOrders
    .filter(o=>{
     const status=normalizeStatus(o);
-    return orderProvider(o)!=="fetchsms" &&
+    const provider=orderProvider(o);
+    return provider!=="fetchsms" &&
      !getCode(o) &&
      (status==="waiting" || status==="received") &&
-     Boolean(providerOrderId(o)) &&
-     Boolean(orderProvider(o));
+     Boolean(provider) &&
+     (Boolean(providerOrderId(o)) || provider==="virtualsms");
    })
    .sort((a,b)=>(statusRefreshTimes.get(String(a.id))||0)-(statusRefreshTimes.get(String(b.id))||0))
    .slice(0,5);
@@ -1589,7 +1590,7 @@ function orderDate(o){
 }
 function getOrderNumber(o){return o.number??o.phone_number??o.phone??o.phoneNumber??"";}
 function getSms(o){
- const value=o.full_sms??o.sms_text??o.message??"";
+ const value=o.full_sms??o.sms_text??o.message??o.text??"";
  if(typeof value!=="string")return "";
  const trimmed=value.trim();
  if(trimmed.startsWith("{")||trimmed.startsWith("[")){
@@ -1697,11 +1698,12 @@ function renderOrders(){
   const hold=cancelHoldSeconds(o);
   const left=durationSeconds(o);
 
-  const searching=pending&&!number&&!providerOrderId(o);
-  const headline=pending?(number?"Number Reserved":searching?"Looking for available number":"Number request pending"):
+  const purchaseUnconfirmed=pending&&!number&&!providerOrderId(o)&&String(o.provider_state||"").toLowerCase()==="purchase_unconfirmed";
+  const searching=pending&&!number&&!providerOrderId(o)&&!purchaseUnconfirmed;
+  const headline=pending?(number?"Number Reserved":purchaseUnconfirmed?"Confirming provider purchase":searching?"Looking for available number":"Number request pending"):
    received?"Verification Successful":
    cancelled?"Order Cancelled":expired?"Number Timed Out":failed?"Order Failed":"Refunded";
-  const subtitle=pending?(number?"Waiting for verification code":searching?"We are checking availability. Your order will update here.":"Waiting for number confirmation"):
+  const subtitle=pending?(number?"Waiting for verification code":purchaseUnconfirmed?"We are checking whether your number was created. Please do not purchase again.":searching?"We are checking availability. Your order will update here.":"Waiting for number confirmation"):
    received?(code?"SMS received for this number":sms?"SMS received; full message is shown below":"SMS received for this number"):
    cancelled?"This number order has ended":
    expired?"The verification time ended and the refund was processed":
@@ -1715,19 +1717,19 @@ function renderOrders(){
    <div class="order-service"><span class="purchase-choice">${serviceChoiceHTML(service)} · <span>${countryIcon} ${escapeHTML(country)}</span></span></div>
    <div class="number-box">
     <div class="number-label">${pending?"YOUR PHONE NUMBER":"PHONE NUMBER"}</div>
-    <div class="${pending?"number-big":"number-small"}">${escapeHTML(number||(searching?"Searching for an available number…":"Waiting for number confirmation"))}</div>
+    <div class="${pending?"number-big":"number-small"}">${escapeHTML(number||(purchaseUnconfirmed?"Confirming with the number service…":searching?"Searching for an available number…":"Waiting for number confirmation"))}</div>
     <div class="number-meta"><span>${serviceIconHTML(service)} ${escapeHTML(service)} · ${countryIcon} ${escapeHTML(country)}</span><span>Order #${escapeHTML(o.id)}</span></div>
    </div>`;
 
   if(pending){
    html+=`<div class="timer-area">
-    <div class="timer-label">${searching?"Search status":left===null?"Expiry information":"Time remaining"}</div>
-    <div class="timer-value ${left===0?"timer-expired":""}" data-countdown="${escapeHTML(o.id)}">${searching?'<span class="search-spinner" aria-hidden="true"></span>Searching…':left===null?"—":countdownText(left)}</div>
-    <div class="timer-note">${hold>0?"Cancellation unlocks in "+countdownText(hold):searching?"You can cancel this request if no number has been assigned.":left===null?"Waiting for the exact expiry time":"Countdown uses the confirmed expiry time"}</div>
+    <div class="timer-label">${purchaseUnconfirmed?"Purchase confirmation":searching?"Search status":left===null?"Expiry information":"Time remaining"}</div>
+    <div class="timer-value ${left===0?"timer-expired":""}" data-countdown="${escapeHTML(o.id)}">${purchaseUnconfirmed?'<span class="search-spinner" aria-hidden="true"></span>Checking…':searching?'<span class="search-spinner" aria-hidden="true"></span>Searching…':left===null?"—":countdownText(left)}</div>
+    <div class="timer-note">${purchaseUnconfirmed?"We are checking the provider record. Do not submit another purchase.":hold>0?"Cancellation unlocks in "+countdownText(hold):searching?"You can cancel this request if no number has been assigned.":left===null?"Waiting for the exact expiry time":"Countdown uses the confirmed expiry time"}</div>
    </div>
    <div class="order-actions">
-    <button class="btn btn-black" onclick="checkOrder(${id})">◉ &nbsp; Check Code</button>
-    <button class="btn btn-danger" ${hold>0?"disabled":""} onclick="cancelOrder(${id})">${hold>0?"Cancel Locked":searching?"⊗ &nbsp; Cancel Request":"⊗ &nbsp; Cancel Order"}</button>
+    <button class="btn btn-black" onclick="checkOrder(${id})">◉ &nbsp; ${purchaseUnconfirmed?"Check Purchase":"Check Code"}</button>
+    <button class="btn btn-danger" ${hold>0||purchaseUnconfirmed?"disabled":""} onclick="cancelOrder(${id})">${purchaseUnconfirmed?"Awaiting Confirmation":hold>0?"Cancel Locked":searching?"⊗ &nbsp; Cancel Request":"⊗ &nbsp; Cancel Order"}</button>
    </div>`;
   }
 
@@ -1859,7 +1861,7 @@ async function checkOrder(id){
   showMessage("ordersMessage","The saved order could not be matched to a number service. Contact support before trying again.","error");
   return;
  }
- showMessage("ordersMessage","Checking order status…","info");
+ showMessage("ordersMessage",provider==="virtualsms"&&!providerOrderId(o)?"Checking whether the provider created this purchase. Please do not purchase again.":"Checking order status…","info");
  try{
   const oldCode=getCode(o);
   await invoke(provider,statusActionForProvider(provider),orderActionPayload(o));
@@ -1871,6 +1873,7 @@ async function checkOrder(id){
   else if(status==="refunded")showMessage("ordersMessage","The saved order status confirms a refund.","success");
   else if(status==="expired")showMessage("ordersMessage","Number timed out. The automatic wallet refund is confirmed on the order card.","success");
   else if(status==="failed")showMessage("ordersMessage","The saved order status is failed. Check the refund status shown on the order.","info");
+  else if(updated&&provider==="virtualsms"&&!providerOrderId(updated))showMessage("ordersMessage","The provider has not confirmed the number yet. We will keep checking automatically; please do not purchase again.","info");
   else showMessage("ordersMessage","Status check completed. The saved order is still pending; no cancellation or refund has been confirmed.","info");
  }catch(e){
   console.error("Status check failed:",e);
@@ -1883,6 +1886,10 @@ function cancelOrder(id){
  const o=allOrders.find(x=>String(x.id)===String(id));
  if(!o){
   showMessage("ordersMessage","Order not found. Refresh the list and try again.","error");
+  return;
+ }
+ if(orderProvider(o)==="virtualsms"&&!providerOrderId(o)){
+  showMessage("ordersMessage","This purchase is still being confirmed. Please check its status before requesting cancellation.","info");
   return;
  }
  if(normalizeStatus(o)!=="waiting"&&!(normalizeStatus(o)==="received"&&!getCode(o)&&!o.code_received_at)){
