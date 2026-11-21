@@ -571,7 +571,7 @@ function extractOtpFromText(value: unknown): string {
   }
 
   // Accept a standalone code, including codes split into two digit groups.
-  const standalone = text.match(/(?:^|[^0-9])([0-9]{3,8}(?:[- ][0-9]{2,8})?)(?![0-9])/);
+  const standalone = text.match(/(?:^|[^0-9])([0-9]{4,8}(?:[- ][0-9]{2,8})?)(?![0-9])/);
   return standalone?.[1]?.trim() ?? "";
 }
 
