@@ -51,7 +51,7 @@ function str(...values: unknown[]): string {
 function getRows(data: any): any[] {
   if (Array.isArray(data)) return data;
 
-  for (const key of ["data", "results", "countries", "services", "orders"]) {
+  for (const key of ["data", "results", "countries", "services", "orders", "transactions"]) {
     if (Array.isArray(data?.[key])) return data[key];
   }
 
@@ -555,15 +555,14 @@ function extractOtpFromText(value: unknown): string {
       : JSON.stringify(value);
   if (!raw) return "";
 
-  // Provider messages can contain HTML-escaped punctuation and grouped codes.
   const text = raw
     .replace(/&#39;|&#x27;/gi, "'")
     .replace(/&nbsp;/gi, " ")
     .replace(/[‐‑‒–—]/g, "-");
 
   const patterns = [
-    /(?:verification\\s+code|sms\\s+code|security\\s+code|one[-\\s]?time\\s+(?:password|code)|passcode|otp|pin|code)\\s*(?:is|:|=|-)?\\s*["'“]?([0-9]{3,8}(?:[- ][0-9]{2,8})?)\\b/i,
-    /(?:code|otp|pin)[^0-9]{0,24}([0-9]{3,8}(?:[- ][0-9]{2,8})?)\\b/i,
+    /(?:verification\s+code|sms\s+code|security\s+code|one[-\s]?time\s+(?:password|code)|passcode|otp|pin|code)\s*(?:is|:|=|-)?\s*["'“]?([0-9]{3,8}(?:[- ][0-9]{2,8})?)\b/i,
+    /(?:code|otp|pin)[^0-9]{0,24}([0-9]{3,8}(?:[- ][0-9]{2,8})?)\b/i,
   ];
 
   for (const pattern of patterns) {
@@ -571,9 +570,9 @@ function extractOtpFromText(value: unknown): string {
     if (match) return match[1].trim();
   }
 
-  // Some providers send only the code without a label.
-  const standalone = text.match(/(?:^|[^0-9])([0-9]{4,8})(?![0-9])/);
-  return standalone?.[1] ?? "";
+  // Accept a standalone code, including codes split into two digit groups.
+  const standalone = text.match(/(?:^|[^0-9])([0-9]{3,8}(?:[- ][0-9]{2,8})?)(?![0-9])/);
+  return standalone?.[1]?.trim() ?? "";
 }
 
 function extractOtp(data: any): string {
@@ -596,7 +595,7 @@ function extractOtp(data: any): string {
     if (explicit || value == null || typeof value === "object") return;
     if (["otp", "code", "sms_code", "smscode", "verification_code", "verificationcode", "pin", "one_time_code", "onetimecode"].includes(key)) {
       const candidate = str(value);
-      if (/^\\d{3,10}$/.test(candidate)) explicit = candidate;
+      if (/^\d{3,10}$/.test(candidate)) explicit = candidate;
     }
   });
   return explicit;
@@ -863,23 +862,222 @@ async function actionBuy(body: any, userId: string, req: Request) {
     }
 
     // A timeout or server error can be ambiguous: the provider may have
-    // created the order before the connection failed. Do not auto-refund
-    // or claim success without confirmation.
+    // created the order before the connection failed. Keep the wallet
+    // reservation safe and mark it for read-only transaction reconciliation.
+    await supabase
+      .from("virtual_number_orders")
+      .update({
+        provider_state: "purchase_unconfirmed",
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", orderId)
+      .eq("user_id", userId)
+      .eq("provider_key", "virtualsms")
+      .is("provider_order_id", null);
+
     return response(
       {
         success: true,
         pending: true,
+        purchase_confirmation_pending: true,
         order_id: orderId,
         message:
-          "The provider has not confirmed this purchase yet. Please check your order status and do not submit another purchase.",
+          "We are confirming whether the number was created. Do not submit another purchase; refresh this order shortly.",
       },
       202,
     );
   }
 }
 
+
+function normalizedProviderMatch(value: unknown): string {
+  return str(value).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim().replace(/\s+/g, " ");
+}
+
+function transactionMatchesUnlinkedOrder(tx: any, order: any): boolean {
+  const type = str(tx?.type, tx?.transaction_type).toLowerCase();
+  const providerOrderId = str(tx?.order_id, tx?.orderId);
+  if (type !== "purchase" || !providerOrderId) return false;
+
+  const createdAt = new Date(order?.created_at ?? order?.purchased_at ?? 0).getTime();
+  const txAt = new Date(tx?.created_at ?? tx?.timestamp ?? 0).getTime();
+  if (!Number.isFinite(createdAt) || !Number.isFinite(txAt)) return false;
+  if (txAt < createdAt - 90_000 || txAt > createdAt + 30 * 60_000) return false;
+
+  const description = normalizedProviderMatch(tx?.description ?? tx?.details ?? tx?.memo);
+  if (!description) return false;
+  const tokens = new Set(description.split(" "));
+
+  const rawService = str(order?.service_name, order?.service_code);
+  const serviceCode = str(order?.service_code).toLowerCase();
+  const serviceAliases: Record<string, string> = {
+    wa: "whatsapp", tg: "telegram", bw: "signal", gr_sg: "signal",
+    fb: "facebook", lf: "tiktok", ig: "instagram", tw: "twitter",
+    fu: "snapchat", go: "google", gm: "gmail",
+  };
+  const serviceName = serviceAliases[serviceCode] || normalizedProviderMatch(rawService);
+  const serviceMatches = Boolean(
+    (serviceName && description.includes(serviceName)) ||
+    (serviceCode.length >= 2 && tokens.has(serviceCode))
+  );
+
+  const countryName = normalizedProviderMatch(order?.country_name);
+  const countryCodeByName: Record<string, string> = {
+    "united states": "US", "united states of america": "US", usa: "US",
+    canada: "CA", mexico: "MX", brazil: "BR", argentina: "AR", chile: "CL",
+    colombia: "CO", peru: "PE", jamaica: "JM", "puerto rico": "PR",
+    nigeria: "NG", ghana: "GH", kenya: "KE", "south africa": "ZA",
+    egypt: "EG", morocco: "MA", algeria: "DZ", tunisia: "TN", uganda: "UG",
+    cameroon: "CM", senegal: "SN", ethiopia: "ET", tanzania: "TZ",
+    rwanda: "RW", zambia: "ZM", zimbabwe: "ZW",
+    india: "IN", pakistan: "PK", bangladesh: "BD", indonesia: "ID",
+    malaysia: "MY", singapore: "SG", philippines: "PH", thailand: "TH",
+    vietnam: "VN", japan: "JP", china: "CN", "hong kong": "HK",
+    taiwan: "TW", "south korea": "KR", turkey: "TR", "saudi arabia": "SA",
+    israel: "IL", qatar: "QA", kuwait: "KW", oman: "OM", bahrain: "BH",
+    jordan: "JO", iraq: "IQ", iran: "IR",
+    australia: "AU", "new zealand": "NZ",
+    france: "FR", germany: "DE", italy: "IT", spain: "ES",
+    portugal: "PT", netherlands: "NL", belgium: "BE", switzerland: "CH",
+    austria: "AT", ireland: "IE", "united kingdom": "GB", uk: "GB",
+    poland: "PL", ukraine: "UA", russia: "RU", sweden: "SE", norway: "NO",
+    denmark: "DK", finland: "FI", greece: "GR", romania: "RO",
+    bulgaria: "BG", hungary: "HU", croatia: "HR", serbia: "RS",
+    slovakia: "SK", slovenia: "SI", czechia: "CZ", "czech republic": "CZ",
+    iceland: "IS", luxembourg: "LU", cyprus: "CY", estonia: "EE",
+    latvia: "LV", lithuania: "LT", malta: "MT", moldova: "MD",
+    belarus: "BY", albania: "AL", "bosnia and herzegovina": "BA",
+    montenegro: "ME", "north macedonia": "MK",
+  };
+  const countryCode = str(order?.country_key).toUpperCase() ||
+    countryCodeByName[countryName] || "";
+  const countryMatches = Boolean(
+    (countryName && description.includes(countryName)) ||
+    (countryCode && tokens.has(countryCode.toLowerCase()))
+  );
+
+  return serviceMatches && countryMatches;
+}
+/*
+ * A purchase can time out after the provider has created it. Never repeat the
+ * purchase POST in that situation. Reconcile against the provider's read-only
+ * transaction history, then fetch the matching order by its provider ID.
+ */
+async function recoverUnlinkedVirtualSmsOrder(order: any, userId: string): Promise<any> {
+  if (
+    !order ||
+    String(order.user_id) !== userId ||
+    String(order.provider_key).toLowerCase() !== "virtualsms" ||
+    str(order.provider_order_id, order.provider_order) ||
+    !["waiting", "pending"].includes(str(order.status).toLowerCase()) ||
+    !API_KEY
+  ) return order;
+
+  try {
+    const createdAt = new Date(order.created_at ?? order.purchased_at ?? Date.now()).getTime();
+    if (!Number.isFinite(createdAt)) return order;
+
+    const from = new Date(createdAt - 90_000).toISOString();
+    const to = new Date(Date.now() + 30_000).toISOString();
+    const txPayload = await providerRequest(
+      "/customer/transactions?type=purchase&from=" + encodeURIComponent(from) +
+      "&to=" + encodeURIComponent(to) + "&limit=100",
+    );
+    const transactions = getRows(txPayload);
+    const matches = transactions.filter((tx: any) => transactionMatchesUnlinkedOrder(tx, order));
+
+    // If the match is not unique, leave it untouched rather than attaching a
+    // different customer's or another simultaneous purchase to this order.
+    if (matches.length !== 1) return order;
+
+    const providerId = str(matches[0]?.order_id, matches[0]?.orderId);
+    if (!providerId) return order;
+
+    const details = await providerRequest(
+      "/customer/order/" + encodeURIComponent(providerId),
+    );
+    const objects = [
+      details,
+      details?.data,
+      details?.order,
+      details?.result,
+      details?.data?.order,
+      details?.result?.order,
+    ].filter((item: any) => item && typeof item === "object");
+
+    let phone = "";
+    for (const item of objects) {
+      phone = str(item?.phone_number, item?.number, item?.phone, item?.msisdn);
+      if (phone) break;
+    }
+
+    const otp = extractOtp(details);
+    const smsText = extractSmsText(details);
+    const providerState = str(
+      details?.status, details?.state, details?.data?.status,
+      details?.order?.status, details?.data?.order?.status,
+      details?.result?.status,
+    ).toLowerCase();
+    const expiry = extractProviderExpiry(details);
+    const completed = Boolean(otp || smsText || providerMessages(details).length) ||
+      /^(completed|complete|finished|success|successful|verified|verification_completed|sms_received|received)$/.test(providerState);
+
+    const updates: Record<string, unknown> = {
+      provider_order_id: providerId,
+      provider_state: providerState || (completed ? "completed" : "waiting"),
+      updated_at: new Date().toISOString(),
+    };
+    if (phone) {
+      updates.number = phone;
+      updates.phone_number = phone;
+    }
+    if (expiry) updates.provider_expires_at = expiry;
+    if (otp) {
+      updates.otp_code = otp;
+      updates.code_received_at = order.code_received_at || new Date().toISOString();
+    }
+    if (smsText) updates.full_sms = smsText;
+    if (completed) updates.status = "received";
+
+    const { data, error } = await supabase
+      .from("virtual_number_orders")
+      .update(updates)
+      .eq("id", order.id)
+      .eq("user_id", userId)
+      .eq("provider_key", "virtualsms")
+      .is("provider_order_id", null)
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      console.error("VirtualSMS unlinked-order recovery could not be saved:", {
+        order_id: order.id,
+        message: error.message,
+        code: error.code,
+      });
+      return order;
+    }
+
+    return data ?? order;
+  } catch (error) {
+    // A provider 5xx/timeout is still ambiguous. Keep the reservation pending
+    // and let the next refresh retry only the read-only reconciliation call.
+    console.warn("VirtualSMS unlinked-order recovery is still pending:", {
+      order_id: order.id,
+      message: error instanceof Error ? error.message : String(error),
+    });
+    return order;
+  }
+}
+
 async function actionStatus(orderId: string, userId: string) {
-  const order = await ownedOrder(orderId, userId);
+  let order = await ownedOrder(orderId, userId);
+  if (!str(order.provider_order_id, order.provider_order) && String(order.provider_key).toLowerCase() === "virtualsms") {
+    order = await recoverUnlinkedVirtualSmsOrder(order, userId);
+    if (!str(order.provider_order_id, order.provider_order)) {
+      return response({ success: true, order, pending: true, purchase_confirmation_pending: true });
+    }
+  }
   if (order.provider_state === AUTOMATIC_REFUND_MARKER) {
     return response({ success: true, order, automatic_provider_refund: true });
   }
@@ -1228,6 +1426,20 @@ async function actionOrders(userId: string) {
     .order("created_at", { ascending: false });
 
   if (initialError) throw new Error("Unable to load your orders.");
+
+  // Reconcile a small batch of purchases whose provider response was
+  // ambiguous before polling any known provider order IDs.
+  const unlinkedOrders = (initialOrders ?? [])
+    .filter((order: any) =>
+      ["waiting", "pending"].includes(String(order.status ?? "").toLowerCase()) &&
+      !str(order.provider_order_id, order.provider_order) &&
+      order.provider_state !== AUTOMATIC_REFUND_MARKER
+    )
+    .slice(0, 5);
+
+  for (const order of unlinkedOrders) {
+    await recoverUnlinkedVirtualSmsOrder(order, userId);
+  }
 
   // Refresh a small batch of active orders so new SMS codes appear when
   // the dashboard requests the order list. This does not create purchases.
